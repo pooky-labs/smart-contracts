@@ -33,7 +33,7 @@ struct MintRandomRequest {
     uint256 ballId;
 }
 
-struct BallPxpPoints {
+struct BallUpdates {
     uint256 ballId;
     uint256 addPxp;
     bool toLevelUp;

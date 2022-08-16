@@ -6,6 +6,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {BallRarity, MintTemplate, MintRandomRequest} from "./types/DataTypes.sol";
+import {Errors} from './types/Errors.sol';
 
 contract PookyBallMinter is OwnableUpgradeable {
 
@@ -43,8 +44,8 @@ contract PookyBallMinter is OwnableUpgradeable {
 
     function mintFromTemplate(uint256 mintTemplateId) external {
         MintTemplate storage template = mintTemplates[mintTemplateId];
-        require(template.canMint == true, "E");
-        require(template.currentMints < template.maxMints, "E");
+        require(template.canMint == true, Errors.MINTING_DISABLED);
+        require(template.currentMints < template.maxMints, Errors.MAX_MINTS_REACHED);
         
         template.currentMints++;
         IERC20(template.payingToken).transferFrom(msg.sender, address(this), template.price);

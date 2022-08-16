@@ -5,6 +5,7 @@ import "./interfaces/IPookyBall.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {BallInfo,BallRarity} from "./types/DataTypes.sol";
+import {Errors} from './types/Errors.sol';
 
 contract PookyBall is IPookyBall, ERC721Upgradeable, OwnableUpgradeable {
 
@@ -19,7 +20,6 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, OwnableUpgradeable {
     event BallLevelChange(uint256 indexed ballId, uint256 level);
     event BallAddPxp(uint256 indexed ballId, uint256 addPxp);
     event BallSetRandomEntropy(uint256 indexed ballId, bytes32 randomEntropy);
-
 
     function initialize(
         string memory name_, 
@@ -41,7 +41,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, OwnableUpgradeable {
     }
 
     modifier onlyPookyContracts {
-        require(pookyContracts[msg.sender], "E");
+        require(pookyContracts[msg.sender], Errors.ONLY_POOKY_CONTRACTS);
         _;
     } 
 
@@ -58,7 +58,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, OwnableUpgradeable {
     }
     
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-        require(_exists(tokenId), "E");
+        require(_exists(tokenId), Errors.TOKEN_DOESNT_EXIST);
 
         return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, uintToStr(tokenId), ".json")) : "";
     }
@@ -84,10 +84,6 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, OwnableUpgradeable {
         balls[ballId].level = newLevel;
         emit BallLevelChange(ballId, newLevel);
     }
-
-    // function setBallInfo(uint256 ballId, BallInfo memory ballInfo) external onlyPookyContracts {
-    //     balls[ballId] = ballInfo;
-    // }
 
     function _mintBall(address to, BallInfo memory ballInfo) internal returns(uint256) {
         lastBallId++;

@@ -6,7 +6,8 @@ import "./interfaces/IPook.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import {Signature, BallPxpPoints, BallInfo, BallRarity} from "./types/DataTypes.sol";
+import {Signature, BallUpdates, BallInfo, BallRarity} from "./types/DataTypes.sol";
+import {Errors} from './types/Errors.sol';
 
 contract PookyGame is OwnableUpgradeable {
 
@@ -30,29 +31,25 @@ contract PookyGame is OwnableUpgradeable {
     // TODO: put correct values
     function _setLevelPxpNeeded() internal {
         levelPxpNeeded.push(0); // level 0
-        levelPxpNeeded.push(0); // level 1
+        levelPxpNeeded.push(3 ether); // level 1
         for(uint256 i=2; i<=100; i++) {
-            levelPxpNeeded.push(i*1000);
+            levelPxpNeeded.push( (levelPxpNeeded[i-1] * 120) / 100 );
         }
-
     }
 
     // TODO: put correct values
     function _setLevelCost() internal {
-        levelCost.push(0); // level 0
-        levelCost.push(0); // level 1
-        levelCost.push(100 ether); // level 2;
-        for(uint256 i=3; i<=100; i++) {
-            levelCost.push( (levelCost[i-1] * 120)/100 );
+        for(uint256 i=0; i<100; i++) {
+            levelCost.push( levelPxpNeeded[i] / 3 );
         }
     }
 
     // TODO: put correct values
     function _setMaxBallLevel() internal {
-        maxBallLevelPerRarity[BallRarity.Uncommon] = 20;
-        maxBallLevelPerRarity[BallRarity.Rare] = 40;
-        maxBallLevelPerRarity[BallRarity.Epic] = 60;
-        maxBallLevelPerRarity[BallRarity.Legendary] = 80;
+        maxBallLevelPerRarity[BallRarity.Uncommon] = 40;
+        maxBallLevelPerRarity[BallRarity.Rare] = 60;
+        maxBallLevelPerRarity[BallRarity.Epic] = 80;
+        maxBallLevelPerRarity[BallRarity.Legendary] = 100;
         maxBallLevelPerRarity[BallRarity.Mythic] = 100;
     }
 
@@ -76,11 +73,11 @@ contract PookyGame is OwnableUpgradeable {
     }
 
     function levelUp(uint256 ballId) public {
-        require(IERC721(address(pookyBall)).ownerOf(ballId) == msg.sender, "E");
+        require(IERC721(address(pookyBall)).ownerOf(ballId) == msg.sender, Errors.MUST_BE_OWNER);
 
         BallInfo memory ball = pookyBall.getBallInfo(ballId);
-        require(ball.pxp > levelPxpNeeded[ball.level+1], "E");
-        require(ball.level < maxBallLevelPerRarity[ball.rarity], "E");
+        require(ball.pxp > levelPxpNeeded[ball.level+1], Errors.NOT_ENOUGH_PXP);
+        require(ball.level < maxBallLevelPerRarity[ball.rarity], Errors.MAX_LEVEL_REACHED);
 
         IERC20(address(pookToken)).transferFrom(msg.sender, address(this), levelCost[ball.level + 1]);
 
@@ -89,20 +86,19 @@ contract PookyGame is OwnableUpgradeable {
 
     function matchweekClaim(
         uint256 pookAmount, 
-        BallPxpPoints[] calldata ballPoints,
+        BallUpdates[] calldata ballUpdates,
         uint256 ttl,
         Signature memory sig
     ) external {
-
-        require(verifySignature(abi.encode(pookAmount, ballPoints, ttl), sig, pookySigner), "E");
-        require(ttl < block.timestamp, "E");
+        require(verifySignature(abi.encode(pookAmount, ballUpdates, ttl), sig, pookySigner), Errors.FALSE_SIGNATURE);
+        require(block.timestamp < ttl, Errors.TTL_PASSED);
         
         pookToken.mint(msg.sender, pookAmount);
 
-        for(uint256 i=0; i<ballPoints.length; i++) {
-            pookyBall.addBallPxp(ballPoints[i].ballId, ballPoints[i].addPxp);
-            if (ballPoints[i].toLevelUp) {
-                levelUp(ballPoints[i].ballId);
+        for(uint256 i=0; i<ballUpdates.length; i++) {
+            pookyBall.addBallPxp(ballUpdates[i].ballId, ballUpdates[i].addPxp);
+            if (ballUpdates[i].toLevelUp) {
+                levelUp(ballUpdates[i].ballId);
             }
         }
     }  

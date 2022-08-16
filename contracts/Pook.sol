@@ -1,16 +1,20 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {Errors} from "./types/Errors.sol";
 
-contract POOK is ERC20, Ownable {
+contract Pook is ERC20Upgradeable, OwnableUpgradeable {
 
     mapping(address => bool) public pookyContracts;
 
-    constructor(string memory name_, string memory symbol_) ERC20(name_, symbol_) Ownable() {
-
+    function initialize(
+        string memory name_, 
+        string memory symbol_
+    ) public initializer {
+        __ERC20_init(name_, symbol_);
+        __Ownable_init();
     }
 
     function setPookyContract(address contractAddress, bool toSet) external onlyOwner {
@@ -18,7 +22,7 @@ contract POOK is ERC20, Ownable {
     }
 
     modifier onlyPookyContracts {
-        require(pookyContracts[msg.sender], "E");
+        require(pookyContracts[msg.sender], Errors.ONLY_POOKY_CONTRACTS);
         _;
     } 
 
