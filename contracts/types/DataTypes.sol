@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: agpl-3.0
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
 enum BallRarity {
@@ -11,12 +11,13 @@ enum BallRarity {
 
 struct BallInfo {
     BallRarity rarity;
-    bytes32 randomEntropy;
+    uint256 randomEntropy;
     uint256 level;
     uint256 pxp;
     bool canBreed;
     uint256 cardSlots;
     uint256[] cards;
+    uint256 revokableUntilTimestamp;
 }
 
 struct MintTemplate {
@@ -25,7 +26,7 @@ struct MintTemplate {
     uint256 maxMints;
     uint256 currentMints;
     uint256 price;
-    address payingToken;
+    address payingToken; // 0x0 for native
 }
 
 struct MintRandomRequest {
