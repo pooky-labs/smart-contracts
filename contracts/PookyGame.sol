@@ -2,7 +2,7 @@
 pragma solidity ^0.8.9;
 
 import "./interfaces/IPookyBall.sol";
-import "./interfaces/IPook.sol";
+import "./interfaces/IPOK.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
@@ -13,8 +13,9 @@ contract PookyGame is OwnableUpgradeable {
 
     IPookyBall public pookyBall;
     address public pookySigner;
+    mapping(uint256 => bool) usedNonce;
 
-    IPook public pookToken;
+    IPOK public pookToken;
 
     uint256[] public levelPxpNeeded;
     uint256[] public levelCost;
@@ -62,7 +63,7 @@ contract PookyGame is OwnableUpgradeable {
     }
 
     function setPookToken(address _pookToken) external onlyOwner {
-        pookToken = IPook(_pookToken);
+        pookToken = IPOK(_pookToken);
     }
 
     function verifySignature(bytes memory message, Signature memory sig, address sigWalletCheck) private pure returns (bool) {
@@ -88,10 +89,14 @@ contract PookyGame is OwnableUpgradeable {
         uint256 pookAmount, 
         BallUpdates[] calldata ballUpdates,
         uint256 ttl,
+        uint256 nonce,
         Signature memory sig
     ) external {
-        require(verifySignature(abi.encode(pookAmount, ballUpdates, ttl), sig, pookySigner), Errors.FALSE_SIGNATURE);
+        require(verifySignature(abi.encode(pookAmount, ballUpdates, ttl, nonce), sig, pookySigner), Errors.FALSE_SIGNATURE);
+        require(!usedNonce[nonce], Errors.USED_NONCE);
         require(block.timestamp < ttl, Errors.TTL_PASSED);
+
+        usedNonce[nonce] = true;
         
         pookToken.mint(msg.sender, pookAmount);
 
@@ -101,5 +106,5 @@ contract PookyGame is OwnableUpgradeable {
                 levelUp(ballUpdates[i].ballId);
             }
         }
-    }  
+    } 
 }
