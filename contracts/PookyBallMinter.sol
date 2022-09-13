@@ -10,6 +10,17 @@ import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import {BallRarity, MintTemplate, MintRandomRequest} from "./types/DataTypes.sol";
 import {Errors} from './types/Errors.sol';
 
+/**
+ * @notice PookyBallMinter is contract for minting balls with defined MintTemplates.
+ * @notice   This contract is the base contract for PookyMintEvent, and will be used 
+ * @notice   for the PookyStore.
+ * @notice Contract is using Chainlink VRF requests to get randomEntropy for the ball.
+ * @notice   
+ *
+ * @notice Roles:
+ * @notice   DEFAULT_ADMIN_ROLE can add/remove roles
+ * @notice   MOD role can create/change mint templates
+ */
 contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
 
     IPookyBall public pookyBall;
@@ -58,10 +69,19 @@ contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
         vrf_subscriptionId = _subscriptionId;
     }
 
+    /**
+     * @dev sets the address of PookyBall contract
+     * @dev only POOKY_CONTRACT role can call this function
+     */
     function setPookyBallContract(address pookyBallAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
         pookyBall = IPookyBall(pookyBallAddress);
     }
 
+    /**
+     * @notice creates the new mint template with `newMintTemplate` parameters
+     * @notice only MOD role can call this function
+     * @notice emits event CreateMintTemplate
+     */
     function createMintTemplate(MintTemplate memory newMintTemplate) external onlyRole(MOD) returns(uint256) {
         lastMintTemplateId++;
         mintTemplates[lastMintTemplateId] = newMintTemplate;
@@ -69,11 +89,22 @@ contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
         return lastMintTemplateId;
     }
 
+    /**
+     * @notice change if tokens can be minted using minting template with id `mintTemplateId`
+     * @notice only MOD role can call this function
+     * @notice emits event SetMintTemplateCanMint
+     */
     function changeMintTemplateCanMint(uint256 mintTemplateId, bool _canMint) external onlyRole(MOD) {
         mintTemplates[mintTemplateId].canMint = _canMint;
         emit SetMintTemplateCanMint(mintTemplateId, _canMint);
     }
 
+    /**
+     * @dev internal function used to request new mint for the address `user`, using mint template `mintTemplateId`
+     * @dev  and the ball will be revokable until `revokableUntilTimestamp`.
+     * @dev function does all the checks, and requests random entropy from the Chainlink VRF.
+     * @notice emits events RequestMintFromTemplate and  RandomnessRequested
+     */
     function _requestMintFromTemplate(address user, uint256 mintTemplateId, uint256 revokableUntilTimestamp) internal {
         MintTemplate storage template = mintTemplates[mintTemplateId];
         require(template.canMint == true, Errors.MINTING_DISABLED);
@@ -87,6 +118,10 @@ contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
         _requestRandomEntropyForMint(user, newBallId);
     }
 
+    /**
+     * @dev internal function used to request random entropy from the Chainilnk VRF
+     * @notice emits event RandomnessRequested
+     */
     function _requestRandomEntropyForMint(address user, uint256 ballId) internal {
 
         uint256 requestId = VRF_COORDINATOR.requestRandomWords(
@@ -101,6 +136,13 @@ contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
         emit RandomnessRequested(requestId, user, ballId);
     }
 
+    /**
+     * @dev this function is used in the response from Chainlink
+     * @dev we are using only first received number to set ball random entropy.
+     * @param requestId id of the sent request
+     * @param randomWords received random wards.
+     * @notice emits event RandomnessFullfiled
+     */
     function fulfillRandomWords(
         uint256 requestId,
         uint256[] memory randomWords

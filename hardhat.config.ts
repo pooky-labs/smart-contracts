@@ -1,6 +1,8 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 
+import 'solidity-docgen';
+
 require('dotenv').config();
 
 import "./tasks/helperTasks";
@@ -24,7 +26,11 @@ const config: HardhatUserConfig = {
 
   etherscan: {
     apiKey: process.env.POLYGONSCAN_API_KEY
-  }
+  },
+
+  docgen: { 
+    pages: 'files'
+  },
 };
 
 export default config;

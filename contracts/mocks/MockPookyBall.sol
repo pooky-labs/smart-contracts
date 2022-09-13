@@ -4,6 +4,9 @@ pragma solidity ^0.8.9;
 import "../PookyBall.sol";
 import {BallInfo} from "../types/DataTypes.sol";
 
+/**
+ * @notice Mock PookyBall contract used for testing which allows everybody to mint new balls
+ */
 contract MockPookyBall is PookyBall {
     function mock_mintBall(address to, BallInfo memory ballInfo) external returns(uint256) {
         return _mintBall(to, ballInfo);

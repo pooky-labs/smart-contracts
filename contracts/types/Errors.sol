@@ -2,6 +2,9 @@
 pragma solidity ^0.8.9;
 
 // TODO: separate by contracts
+/**
+ * @notice Errors used in require statements.
+ */
 library Errors {
     string public constant ONLY_POOKY_CONTRACTS = '1'; // msg.sender must be pooky contract
     string public constant TOKEN_DOESNT_EXIST = '2'; // token id must exist
