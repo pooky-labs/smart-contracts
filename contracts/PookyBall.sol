@@ -3,64 +3,55 @@ pragma solidity ^0.8.9;
 
 import "./interfaces/IPookyBall.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import {BallInfo,BallRarity} from "./types/DataTypes.sol";
 import {Errors} from './types/Errors.sol';
 
-contract PookyBall is IPookyBall, ERC721Upgradeable, OwnableUpgradeable {
+contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
 
-    string public baseURI;
-    string public _contractURI;
+    string public baseUri;
+    string public contractUri;
+
+    bytes32 public constant POOKY_CONTRACT = keccak256("POOKY_CONTRACT");
 
     uint256 lastBallId;
     mapping(uint256 => BallInfo) public balls;
 
-    mapping(address => bool) public pookyContracts;
-
     event BallLevelChange(uint256 indexed ballId, uint256 level);
     event BallAddPxp(uint256 indexed ballId, uint256 addPxp);
-    event BallSetRandomEntropy(uint256 indexed ballId, bytes32 randomEntropy);
+    event BallSetRandomEntropy(uint256 indexed ballId, uint256 randomEntropy);
 
     function initialize(
-        string memory name_, 
-        string memory symbol_, 
-        string memory baseURI_,
-        string memory contractURI_
+        string memory _name, 
+        string memory _symbol, 
+        string memory _baseUri,
+        string memory _contractUri,
+        address _admin
     ) public initializer {
+        __ERC721_init(_name, _symbol);
+        __AccessControl_init();
+        _setupRole(DEFAULT_ADMIN_ROLE, _admin);
 
-        __ERC721_init(name_, symbol_);
-        __Ownable_init();
-
-       
-        baseURI = baseURI_;
-        _contractURI = contractURI_;
+        baseUri = _baseUri;
+        contractUri = _contractUri;
     }
-
-    function setPookyContract(address contractAddress, bool toSet) external onlyOwner {
-        pookyContracts[contractAddress] = toSet;
-    }
-
-    modifier onlyPookyContracts {
-        require(pookyContracts[msg.sender], Errors.ONLY_POOKY_CONTRACTS);
-        _;
-    } 
 
     function contractURI() public view returns (string memory) {
-        return _contractURI;
+        return contractUri;
     }
 
-    function setContractURI(string memory contractURI_) external onlyOwner {
-        _contractURI = contractURI_;
+    function setContractURI(string memory _contractUri) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        contractUri = _contractUri;
     }
 
     function _baseURI() internal view virtual override returns (string memory) {
-        return baseURI;
+        return baseUri;
     }
     
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         require(_exists(tokenId), Errors.TOKEN_DOESNT_EXIST);
 
-        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, uintToStr(tokenId), ".json")) : "";
+        return bytes(baseUri).length > 0 ? string(abi.encodePacked(baseUri, uintToStr(tokenId), ".json")) : "";
     }
 
     function getBallInfo(uint256 ballId) external view returns(BallInfo memory) {
@@ -71,7 +62,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, OwnableUpgradeable {
         return balls[ballId].pxp;
     }
 
-    function addBallPxp(uint256 ballId, uint256 addPxpAmount) external onlyPookyContracts {
+    function addBallPxp(uint256 ballId, uint256 addPxpAmount) external onlyRole(POOKY_CONTRACT) {
         balls[ballId].pxp += addPxpAmount;
         emit BallAddPxp(ballId, addPxpAmount);
     }
@@ -80,7 +71,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, OwnableUpgradeable {
         return balls[ballId].level;
     }
 
-    function changeBallLevel(uint256 ballId, uint256 newLevel) external onlyPookyContracts {
+    function changeBallLevel(uint256 ballId, uint256 newLevel) external onlyRole(POOKY_CONTRACT) {
         balls[ballId].level = newLevel;
         emit BallLevelChange(ballId, newLevel);
     }
@@ -92,24 +83,63 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, OwnableUpgradeable {
         return lastBallId;
     }
 
-    function mintWithRarity(address to, BallRarity rarity) external onlyPookyContracts returns(uint256) {
+    function mintWithRarity(address to, BallRarity rarity) external onlyRole(POOKY_CONTRACT) returns(uint256) {
         return _mintBall(
             to, 
             BallInfo(
                 rarity, // rarity
-                "", // randomEntropy
+                0, // randomEntropy
                 0, // level
                 0, // pxp
                 true, // canBreed
                 1, // cardSlots
-                new uint[](0) // cards
+                new uint[](0), // cards,
+                0 // revokableUntilTimestamp
             )
         );
     }
 
-    function setRandomEntropy(uint256 ballId, bytes32 _randomEntropy) external onlyPookyContracts {
+    function mintWithRarityAndRevokableTimestamp(
+        address to, 
+        BallRarity rarity,
+        uint256 revokableUntil
+    ) external onlyRole(POOKY_CONTRACT) returns(uint256) {
+        return _mintBall(
+            to, 
+            BallInfo(
+                rarity, // rarity
+                0, // randomEntropy
+                0, // level
+                0, // pxp
+                true, // canBreed
+                1, // cardSlots
+                new uint[](0), // cards,
+                revokableUntil // revokableUntilTimestamp
+            )
+        );
+    }
+
+    function revokeBall(uint256 ballId) external onlyRole(POOKY_CONTRACT) {
+        require(block.timestamp <= balls[ballId].revokableUntilTimestamp, Errors.REVOKABLE_TIMESTAMP_PASSED);
+        _burn(ballId);
+    }
+
+    function setRandomEntropy(uint256 ballId, uint256 _randomEntropy) external onlyRole(POOKY_CONTRACT) {
         balls[ballId].randomEntropy = _randomEntropy;
         emit BallSetRandomEntropy(ballId, _randomEntropy);
+    }
+
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) override internal {
+        if (from == address(0) || to == address(0)) return;
+        require(block.timestamp > balls[tokenId].revokableUntilTimestamp, Errors.CANT_TRNSFER_WHILE_REVOKABLE);
+    }
+
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Upgradeable, AccessControlUpgradeable) returns (bool) {
+        return super.supportsInterface(interfaceId);
     }
 
     function uintToStr(uint _i) internal pure returns (string memory _uintAsString) {
