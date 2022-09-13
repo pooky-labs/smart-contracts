@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@chainlink/contracts": "^0.4.1",
     "@ethersproject/abi": "^5.6.4",
     "@ethersproject/providers": "^5.6.8",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.2",
@@ -22,6 +23,7 @@
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.6.4",
     "chai": "^4.3.6",
+    "dotenv": "^16.0.1",
     "ethers": "^5.6.9",
     "hardhat": "^2.10.1",
     "hardhat-gas-reporter": "^1.0.8",
