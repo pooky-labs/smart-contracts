@@ -147,7 +147,7 @@ contract PookyMintEvent is PookyBallMinter {
 
         _mintBalls(msg.sender, numberOfBalls, templateId, 0);
 
-        (bool sent, bytes memory data) = treasuryWallet.call{value: msg.value}("");
+        (bool sent, ) = treasuryWallet.call{value: msg.value}("");
         require(sent, Errors.TREASURY_TRANSFER_FAIL);
     }
 

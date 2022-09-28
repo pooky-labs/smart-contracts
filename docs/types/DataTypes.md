@@ -20,9 +20,6 @@ struct BallInfo {
   uint256 randomEntropy;
   uint256 level;
   uint256 pxp;
-  bool canBreed;
-  uint256 cardSlots;
-  uint256[] cards;
   uint256 revokableUntilTimestamp;
 }
 ```

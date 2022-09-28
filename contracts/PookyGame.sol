@@ -23,38 +23,33 @@ contract PookyGame is OwnableUpgradeable {
     mapping(uint256 => bool) usedNonce;
 
     IPOK public pookToken;
-
     uint256[] public levelPxpNeeded;
     uint256[] public levelCost;
     mapping(BallRarity => uint256) maxBallLevelPerRarity;
 
     function initialize() public initializer {
         __Ownable_init();
-        
-        _setLevelPxpNeeded();
-        _setLevelCost();
-        _setMaxBallLevel();
     }
 
     // TODO: put correct values
     /**
-     * @dev internal function used in initialization to set pxp points 
+     * @dev function used in initialization to set pxp points 
      * @dev   which is needed for ball to get to the each level
      */
-    function _setLevelPxpNeeded() internal {
-        levelPxpNeeded.push(0); // level 0
-        levelPxpNeeded.push(3 ether); // level 1
+    function _setLevelPxpNeeded() external onlyOwner {
+        levelPxpNeeded.push(0);
+        levelPxpNeeded.push(3 ether);
         for(uint256 i=2; i<=100; i++) {
-            levelPxpNeeded.push( (levelPxpNeeded[i-1] * 120) / 100 );
+            levelPxpNeeded.push((levelPxpNeeded[i-1] * 120) / 100);
         }
     }
 
     // TODO: put correct values
     /**
-     * @dev internal function used in initialization to set cost of levelling up
+     * @dev function used in initialization to set cost of levelling up
      * @dev   the ball for the each level
      */
-    function _setLevelCost() internal {
+    function _setLevelCost() external onlyOwner {
         for(uint256 i=0; i<100; i++) {
             levelCost.push( levelPxpNeeded[i] / 3 );
         }
@@ -62,9 +57,9 @@ contract PookyGame is OwnableUpgradeable {
 
     // TODO: put correct values
     /**
-     * @dev internal function used in initialization to set maximum level of the ball per rarity
+     * @dev function used in initialization to set maximum level of the ball per rarity
      */
-    function _setMaxBallLevel() internal {
+    function _setMaxBallLevel() external onlyOwner {
         maxBallLevelPerRarity[BallRarity.Uncommon] = 40;
         maxBallLevelPerRarity[BallRarity.Rare] = 60;
         maxBallLevelPerRarity[BallRarity.Epic] = 80;

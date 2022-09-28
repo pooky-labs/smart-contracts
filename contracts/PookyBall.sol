@@ -122,16 +122,13 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
     function mintWithRarity(address to, BallRarity rarity) external onlyRole(POOKY_CONTRACT) returns(uint256) {
         return _mintBall(
             to, 
-            BallInfo(
-                rarity, // rarity
-                0, // randomEntropy
-                0, // level
-                0, // pxp
-                true, // canBreed
-                1, // cardSlots
-                new uint[](0), // cards,
-                0 // revokableUntilTimestamp
-            )
+            BallInfo({
+                rarity: rarity,
+                randomEntropy: 0,
+                level: 0,
+                pxp: 0,
+                revokableUntilTimestamp: 0
+            })
         );
     }
 
@@ -147,16 +144,13 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
     ) external onlyRole(POOKY_CONTRACT) returns(uint256) {
         return _mintBall(
             to, 
-            BallInfo(
-                rarity, // rarity
-                0, // randomEntropy
-                0, // level
-                0, // pxp
-                true, // canBreed
-                1, // cardSlots
-                new uint[](0), // cards,
-                revokableUntil // revokableUntilTimestamp
-            )
+            BallInfo({
+                rarity: rarity,
+                randomEntropy: 0,
+                level: 0, 
+                pxp: 0,
+                revokableUntilTimestamp: revokableUntil 
+            })
         );
     }
 

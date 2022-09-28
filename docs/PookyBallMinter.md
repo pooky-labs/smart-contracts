@@ -108,6 +108,15 @@ event RandomnessFullfiled(uint256 requestId, uint256 ballId, uint256 randomEntro
 function __PookyBallMinter_init(uint256 _startFromId, address _admin, address _vrfCoordinator, uint32 _callbackGasLimit, uint16 _requestConfirmations, bytes32 _keyHash, uint64 _subscriptionId) public
 ```
 
+### setVrfSubscriptionId
+
+```solidity
+function setVrfSubscriptionId(uint64 subscriptionId, uint32 callbackGasLimit, uint16 requestConfirmation, bytes32 keyHash) external
+```
+
+sets the configuration for chainlink vrf
+only MOD role can call this function
+
 ### setPookyBallContract
 
 ```solidity
@@ -115,7 +124,7 @@ function setPookyBallContract(address pookyBallAddress) external
 ```
 
 _sets the address of PookyBall contract
-only POOKY_CONTRACT role can call this function_
+only DEFAULT_ADMIN_ROLE role can call this function_
 
 ### createMintTemplate
 
@@ -169,6 +178,8 @@ emits event RandomnessFullfiled
 
 _this function is used in the response from Chainlink
 we are using only first received number to set ball random entropy._
+
+#### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |

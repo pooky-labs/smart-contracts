@@ -1,0 +1,17 @@
+{
+    "PookyBall": {
+      "address": "0x1CBa6751C4f79425FC70eaA19de66C015E6BF486"
+    },
+    "PookyMintEvent": {
+      "address": "0x349083Dfc7817C4335fAFd0341834879898783Dd"
+    },
+    "PookyGame": {
+      "address": "0x472FA08e9BE4Fbe2426bA6575bFE569fEA72940b"
+    },
+    "MockPOK": {
+      "address": "0xB359121Cf16AEc66A7e62dAe5c4C383feD171735"
+    },
+    "POK": {
+      "address": "0x4DAb79ad0B8334e96DC5c63f15d47eeab93715F9"
+    }
+  }

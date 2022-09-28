@@ -1,37 +1,25 @@
-
 import { task } from "hardhat/config";
-import { Wallet } from "ethers";
+import { BigNumber, Wallet } from "ethers";
+import { getContractFromJsonDb } from "../helpers/DbHelper";
+import { HRE } from "./set-hre";
+import { BallUpdates, signMatchweekClaimMessage } from "./helpers";
 
 task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
-    const accounts = await hre.ethers.getSigners();
+  await hre.run("set-hre");
+  const accounts = await HRE.ethers.getSigners();
 
-    for (const account of accounts) {
-      console.log(account.address);
-    }
+  for (const account of accounts) {
+    console.log(account.address);
+  }
 });
 
-task("createTestAccount", "Creates new wallet (use only for dev testing)", async (taskArgs, hre) => {
+task(
+  "createTestAccount",
+  "Creates new wallet (use only for dev testing)",
+  async (taskArgs, hre) => {
+    await hre.run("set-hre");
     let newWallet = hre.ethers.Wallet.createRandom();
     console.log("address: ", newWallet.address);
     console.log("private key: ", newWallet.privateKey);
-});
-
-task("sendNativeToken", "Sends native token (ETH/MATIC) from one to another address")
-    .addPositionalParam("fromPK", "Private key from address")
-    .addPositionalParam("toAddress", "address to send")
-    .addPositionalParam("amount", "amount to send")
-    .setAction(async (taskArgs, hre) => {
-        let wallet = new Wallet(taskArgs.fromPK, hre.ethers.provider);
-
-        console.log("Sending", taskArgs.amount, "from", wallet.address, "to", taskArgs.toAddress);
-        const tx = await wallet.sendTransaction({  
-            to: taskArgs.toAddress, 
-            value: hre.ethers.utils.parseEther(taskArgs.amount)
-        });
-        await tx.wait();
-        
-        console.log(`Tx hash: ${tx.hash}`);
-    });
-
-
-
+  }
+);

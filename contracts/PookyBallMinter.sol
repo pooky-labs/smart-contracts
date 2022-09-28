@@ -70,8 +70,24 @@ contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
     }
 
     /**
+     * @notice sets the configuration for chainlink vrf
+     * @notice only MOD role can call this function
+     */
+    function setVrfSubscriptionId(
+        uint64 subscriptionId,
+        uint32 callbackGasLimit,
+        uint16 requestConfirmation,
+        bytes32 keyHash
+    ) external onlyRole(MOD) {
+        vrf_subscriptionId = subscriptionId;
+        vrf_callbackGasLimit = callbackGasLimit;
+        vrf_requestConfirmations = requestConfirmation;
+        vrf_keyHash = keyHash;
+    }
+
+    /**
      * @dev sets the address of PookyBall contract
-     * @dev only POOKY_CONTRACT role can call this function
+     * @dev only DEFAULT_ADMIN_ROLE role can call this function
      */
     function setPookyBallContract(address pookyBallAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
         pookyBall = IPookyBall(pookyBallAddress);

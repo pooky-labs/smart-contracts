@@ -1,14 +1,13 @@
-
-import { BigNumber, Wallet } from "ethers";
 import { task } from "hardhat/config";
-import { text } from "stream/consumers";
-
-import {MOCK_POOK, POOKY_BALL_MINTER, MOCK_POOKY_BALL, POOKY_GAME} from "./contracts";
+import { BigNumber, Wallet } from "ethers";
+import { getContractFromJsonDb } from "../helpers/DbHelper";
+import { HRE } from "./set-hre";
 import { BallUpdates, signMatchweekClaimMessage } from "./helpers";
+import {MOCK_POOK, POOKY_BALL_MINTER, MOCK_POOKY_BALL, POOKY_GAME} from "./contracts";
 
 // MOCK MINTS
 
-task("mockPookMint", "Mints mock pook token to address")
+  task("mockPookMint", "Mints mock pook token to address")
     .addPositionalParam("toAddress", "address to mint")
     .addPositionalParam("amount", "amount to mint")
     .setAction(async (taskArgs, hre) => {
@@ -25,75 +24,252 @@ task("mockPookMint", "Mints mock pook token to address")
     });
 
 
-// PokyBall contract
-task("getBallInfo", "Reads ball info from the contract")
-    .addPositionalParam("ballId", "ball id")
-    .setAction(async(taskArgs, hre) => {
-        let mockPookyBall  = await hre.ethers.getContractAt(MOCK_POOKY_BALL.name, MOCK_POOKY_BALL.address);
-        let ballInfo = await mockPookyBall.balls(taskArgs.ballId);
-        let ballOwner = await mockPookyBall.ownerOf(taskArgs.ballId);
 
-        console.log("Ball info id ", taskArgs.ballId);
-        console.log(ballInfo);
-        console.log("Owner: ", ballOwner);
-    });
-
-// PookyBallMinter contract
-task("createMintTemplate", "Creates new mint template")
+  task("createMintTemplate", "Creates new mint template")
     .addPositionalParam("rarity", "Minting ball with this rarity")
-    .addPositionalParam("maxMints", "Maximum number of mints")
+    .addPositionalParam("maxmints", "Maximum number of mints")
     .addPositionalParam("price", "Price of one mint")
-    .setAction(async (taskArgs, hre) => {
-
-        let ballMinter = await hre.ethers.getContractAt(POOKY_BALL_MINTER.name, POOKY_BALL_MINTER.address);
-
-        console.log("Creating new mint template with ball rarity", taskArgs.rarity, ", max mints", taskArgs.maxMints, ", price", taskArgs.price);
-
-        // mint template with POOK as paying token
-        let mintTemplate = {
-            canMint: true,
-            rarity: taskArgs.rarity,
-            maxMints: taskArgs.maxMints,
-            currentMints: 0,
-            price: hre.ethers.utils.parseEther(taskArgs.price),
-            payingToken: MOCK_POOK.address
-        }
-
-        let [deployer] = await hre.ethers.getSigners();
-
-        let tx = await ballMinter.connect(deployer).createMintTemplate(mintTemplate);
-        await tx.wait();
-
-        console.log(`Tx hash: ${tx.hash}`);
+    .setAction(async (params, hre) => {
+      await hre.run("set-hre");
+  
+      let [, , , MOD] = await hre.ethers.getSigners();
+  
+      let pookyMintEventContract = await getContractFromJsonDb(
+        "PookyMintEvent",
+        hre
+      );
+      let pokToken = await getContractFromJsonDb("POK", hre);
+  
+      console.log("Creating new mint template with specificatons:");
+      console.log("Rarity: ", params.rarity);
+      console.log("Maximum mints: ", params.maxmints);
+      console.log("Price: ", params.price);
+  
+      //Mint template with POOK as paying token
+      let mintTemplate = {
+        canMint: true,
+        rarity: params.rarity,
+        maxMints: params.maxmints,
+        currentMints: 0,
+        price: hre.ethers.utils.parseEther(params.price),
+        payingToken: pokToken.address,
+      };
+  
+      let tx = await pookyMintEventContract
+        .connect(MOD)
+        .createMintTemplate(mintTemplate);
+      await tx.wait();
+  
+      console.log(`Tx hash: ${tx.hash}`);
     });
-
-task("getMintTemplate", "Reads mint template status from the contract")
-    .addPositionalParam("templateId", "mint template id")
-    .setAction(async(taskArgs, hre) => {
-        let ballMinter = await hre.ethers.getContractAt(POOKY_BALL_MINTER.name, POOKY_BALL_MINTER.address);
-        let mintTemplate = await ballMinter.mintTemplates(taskArgs.templateId);
-
-        console.log("Template with id ", taskArgs.templateId);
-        console.log(mintTemplate);
+  
+  task("changeMintTemplate", "Change canMint option in mint template")
+    .addPositionalParam("templateId", "Id of template to change")
+    .addPositionalParam(
+      "mintable",
+      "0 for non mintable any other number for mintable"
+    )
+    .setAction(async (params, hre) => {
+      await hre.run("set-hre");
+  
+      let [, , , MOD] = await hre.ethers.getSigners();
+      const mintable = params.mintable ? true : false;
+  
+      let pookyMintEventContract = await getContractFromJsonDb(
+        "PookyMintEvent",
+        hre
+      );
+      const tx = await pookyMintEventContract
+        .connect(MOD)
+        .changeMintTemplateCanMint(params.templateId, mintable);
+      await tx.wait();
+  
+      console.log("Done");
     });
-
-// hh mintFromTemplate 0x8a3c739351bdf9cfd18be05df02d84594b2d5b3c86f120d9fac0abbc55b0a0b5 2 --network mumbai
-
-task("mintFromTemplate", "Mints from existing template")
-    .addPositionalParam("userPK", "private key of sender")
-    .addPositionalParam("templateId", "mint template id")
-    .setAction(async(taskArgs, hre) => {
-        let mockPook = await hre.ethers.getContractAt(MOCK_POOK.name, MOCK_POOK.address);
-        let ballMinter = await hre.ethers.getContractAt(POOKY_BALL_MINTER.name, POOKY_BALL_MINTER.address);
-        let user = new Wallet(taskArgs.userPK, hre.ethers.provider);
-
-        console.log("Minting for user", user.address, ", templateId ", taskArgs.templateId);
-
-        let tx_ap = await mockPook.connect(user).approve(ballMinter.address, hre.ethers.utils.parseEther("1000000"));
-        await tx_ap.wait();
-
-        let tx = await ballMinter.connect(user).mintFromTemplate(taskArgs.templateId);
-        await tx.wait();
-
-        console.log(`Tx hash: ${tx.hash}`);
+  
+  task("mintBall", "Mint ball from mint template for given user")
+    .addPositionalParam("number", "Number of balls")
+    .addPositionalParam("templateNumber", "Template idex")
+    .setAction(async (params, hre) => {
+      await hre.run("set-hre");
+      let [, , , , player] = await hre.ethers.getSigners();
+  
+      let pookyMintEventContract = await getContractFromJsonDb(
+        "PookyMintEvent",
+        hre
+      );
+      const template = await pookyMintEventContract.mintTemplates(
+        parseInt(params.templateNumber) + 1
+      );
+  
+      const tx = await pookyMintEventContract
+        .connect(player)
+        .mintBalls(params.number, params.templateNumber, {
+          value: template.price,
+        });
+      await tx.wait();
+  
+      console.log("Minted");
     });
+  
+  task("levelUpBall", "Level up ball with given index")
+    .addPositionalParam("index", "Ball index")
+    .setAction(async (params, hre) => {
+      await hre.run("set-hre");
+      let [, , , , player] = await hre.ethers.getSigners();
+      const MAX_UINT =
+        "1157920892373161954235709850086879078532699846656405640394";
+  
+      let pookyGameContract = await getContractFromJsonDb("PookyGame", hre);
+      let pookContract = await getContractFromJsonDb("POK", hre);
+  
+      let tx = await pookContract
+        .connect(player)
+        .approve(pookyGameContract.address, MAX_UINT);
+      await tx.wait();
+  
+      tx = await pookyGameContract.connect(player).levelUp(params.index);
+      await tx.wait();
+  
+      console.log("Done");
+    });
+  
+  task("mintBallsAuthorized", "Backend signer mint balls for user")
+    .addPositionalParam("user", "Address of user")
+    .addPositionalParam("numberOfBalls", "Number of balls to mint")
+    .addPositionalParam("templateId", "Id of template to mint from")
+    .setAction(async (params, hre) => {
+      await hre.run("set-hre");
+      let [, backendSigner, , ,] = await hre.ethers.getSigners();
+  
+      let pookyMintEventContract = await getContractFromJsonDb(
+        "PookyMintEvent",
+        hre
+      );
+  
+      const tx = await pookyMintEventContract
+        .connect(backendSigner)
+        .mintBallsAuthorized(
+          params.user,
+          params.numberOfBalls,
+          params.templateId
+        );
+      await tx.wait();
+  
+      console.log("Done");
+    });
+  
+  task("revokeBallAuthorized", "Backend signer revokes ball")
+    .addPositionalParam("ballId", "ID of balls to revoke")
+    .setAction(async (params, hre) => {
+      await hre.run("set-hre");
+      let [, backendSigner, , ,] = await hre.ethers.getSigners();
+  
+      let pookyMintEventContract = await getContractFromJsonDb(
+        "PookyMintEvent",
+        hre
+      );
+  
+      const tx = await pookyMintEventContract
+        .connect(backendSigner)
+        .revokeBallAuthorized(params.ballId);
+      await tx.wait();
+  
+      console.log("Done");
+    });
+  
+  task("matchweekClaim", "Level up ball with given index").setAction(
+    async (params, hre) => {
+      await hre.run("set-hre");
+      let [deployer, backendSigner, , , player] = await hre.ethers.getSigners();
+  
+      const pookyGameContract = await getContractFromJsonDb("PookyGame", hre);
+  
+      const pookAmount = hre.ethers.utils.parseEther("10");
+      const ballUpdates: BallUpdates = {
+        ballId: BigNumber.from(1),
+        addPxp: hre.ethers.utils.parseEther("100"),
+        toLevelUp: false,
+      };
+      const ttl = hre.ethers.utils.parseEther("9999999999999");
+      const nonce = hre.ethers.utils.parseEther("8");
+  
+      const signature = await signMatchweekClaimMessage(
+        pookAmount,
+        [ballUpdates],
+        ttl,
+        nonce,
+        new Wallet(
+          "0x8f282f032216244d71f32a6d967c3962b553bd7bf40e5adfd9bb9a6b5af54a67"
+        )
+      );
+  
+      const tx = await pookyGameContract
+        .connect(player)
+        .matchweekClaim(pookAmount, [ballUpdates], ttl, nonce, signature);
+      await tx.wait();
+  
+      console.log("Done");
+    }
+  );
+  
+  task("grantRoles", "Grant all necessary roles to all contracts").setAction(
+    async (params, hre) => {
+      await hre.run("set-hre");
+      console.log(hre.network.name);
+      let [, backendSigner, , MOD] = await hre.ethers.getSigners();
+  
+      let pokContract = await getContractFromJsonDb("POK", hre);
+      let pookyBallContract = await getContractFromJsonDb("PookyBall", hre);
+      let pookyMintEventContract = await getContractFromJsonDb(
+        "PookyMintEvent",
+        hre
+      );
+      let pookyGameContract = await getContractFromJsonDb("PookyGame", hre);
+  
+      await (
+        await pokContract.functions.grantRole(
+          hre.ethers.utils.solidityKeccak256(["string"], ["POOKY_CONTRACT"]),
+          pookyMintEventContract.address
+        )
+      ).wait();
+  
+      await (
+        await pokContract.grantRole(
+          hre.ethers.utils.solidityKeccak256(["string"], ["POOKY_CONTRACT"]),
+          pookyGameContract.address
+        )
+      ).wait();
+  
+      await (
+        await pookyBallContract.grantRole(
+          hre.ethers.utils.solidityKeccak256(["string"], ["POOKY_CONTRACT"]),
+          pookyMintEventContract.address
+        )
+      ).wait();
+  
+      await (
+        await pookyBallContract.grantRole(
+          hre.ethers.utils.solidityKeccak256(["string"], ["POOKY_CONTRACT"]),
+          pookyGameContract.address
+        )
+      ).wait();
+  
+      await (
+        await pookyMintEventContract.grantRole(
+          hre.ethers.utils.solidityKeccak256(["string"], ["BE"]),
+          backendSigner.address
+        )
+      ).wait();
+  
+      await (
+        await pookyMintEventContract.grantRole(
+          hre.ethers.utils.solidityKeccak256(["string"], ["MOD"]),
+          MOD.address
+        )
+      ).wait();
+  
+      console.log("Done");
+    }
+  );
+  

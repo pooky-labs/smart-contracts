@@ -114,6 +114,8 @@ address vrfCoordinator
 function __VRFConsumerBaseV2_init(address _vrfCoordinator) internal
 ```
 
+#### Parameters
+
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | _vrfCoordinator | address | address of VRFCoordinator contract |
@@ -133,6 +135,8 @@ _VRFConsumerBaseV2 expects its subcontracts to have a method with this
 signature, and will call it once it has verified the proof
 associated with the randomness. (It is triggered via a call to
 rawFulfillRandomness, below.)_
+
+#### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |

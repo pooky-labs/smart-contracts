@@ -16,18 +16,12 @@ enum BallRarity {
  *   Backend uses random entropy of the ball to generate images and other ball metadata.
  * @param level Ball level
  * @param pxp Pxp points of the ball
- * @param canBreed `//TODO: not used, delete for now!
- * @param cardSlots//TODO: not used, delete for now!
- * @param cards //TODO: not used, delete for now
  */
 struct BallInfo {
     BallRarity rarity;
     uint256 randomEntropy;
     uint256 level;
     uint256 pxp;
-    bool canBreed;
-    uint256 cardSlots;
-    uint256[] cards;
     uint256 revokableUntilTimestamp;
 }
 

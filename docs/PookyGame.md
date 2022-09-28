@@ -59,28 +59,28 @@ function initialize() public
 ### _setLevelPxpNeeded
 
 ```solidity
-function _setLevelPxpNeeded() internal
+function _setLevelPxpNeeded() external
 ```
 
-_internal function used in initialization to set pxp points 
+_function used in initialization to set pxp points 
   which is needed for ball to get to the each level_
 
 ### _setLevelCost
 
 ```solidity
-function _setLevelCost() internal
+function _setLevelCost() external
 ```
 
-_internal function used in initialization to set cost of levelling up
+_function used in initialization to set cost of levelling up
   the ball for the each level_
 
 ### _setMaxBallLevel
 
 ```solidity
-function _setMaxBallLevel() internal
+function _setMaxBallLevel() external
 ```
 
-_internal function used in initialization to set maximum level of the ball per rarity_
+_function used in initialization to set maximum level of the ball per rarity_
 
 ### setPookyBallContract
 
@@ -135,6 +135,8 @@ function matchweekClaim(uint256 pookAmount, struct BallUpdates[] ballUpdates, ui
 
 Function used to claim rewards after the matchweek. 
 All parameters must be confirmed by backend and valid signature of them provided.
+
+#### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |

@@ -118,6 +118,8 @@ only MOD role can call this function
 function mintsLeft(address user) public view returns (uint256)
 ```
 
+#### Return Values
+
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | [0] | uint256 | retunrs number of the avilable mints left to the address `user` |

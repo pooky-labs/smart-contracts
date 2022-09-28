@@ -99,6 +99,8 @@ _See {IERC721Metadata-tokenURI}._
 function getBallInfo(uint256 ballId) external view returns (struct BallInfo)
 ```
 
+#### Return Values
+
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | [0] | struct BallInfo | returns BallInfo struct with all ball parameters for the Pooky Ball with id `ballId` |
@@ -108,6 +110,8 @@ function getBallInfo(uint256 ballId) external view returns (struct BallInfo)
 ```solidity
 function getBallPxp(uint256 ballId) external view returns (uint256)
 ```
+
+#### Return Values
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
@@ -122,6 +126,8 @@ function addBallPxp(uint256 ballId, uint256 addPxpAmount) external
 adds pxp points to the Pooky Ball with id `ballId`
 only POOKY_CONTRACT role can call this function
 
+#### Parameters
+
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | ballId | uint256 |  |
@@ -132,6 +138,8 @@ only POOKY_CONTRACT role can call this function
 ```solidity
 function getBallLevel(uint256 ballId) external view returns (uint256)
 ```
+
+#### Return Values
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
