@@ -1,10 +1,13 @@
 import { HardhatUserConfig } from "hardhat/config";
+import "@nomicfoundation/hardhat-toolbox";
 import "@openzeppelin/hardhat-upgrades";
 import "./tasks/helperTasks";
 import "./tasks/pookyTasks";
 import "./tasks/setTasks";
 import "./tasks/getTasks";
 import "solidity-docgen";
+import "@nomicfoundation/hardhat-chai-matchers";
+import "@nomiclabs/hardhat-ethers";
 
 require("dotenv").config();
 

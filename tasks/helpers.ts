@@ -1,4 +1,4 @@
-import { BigNumber, utils, Wallet } from "ethers";
+import { BigNumber, Signer, utils, Wallet } from "ethers";
 
 // export interface Sign {
 //     _v: BigNumber,
@@ -30,7 +30,7 @@ export async function signMatchweekClaimMessage(
   ballUpdates: BallUpdates[],
   ttl: BigNumber,
   nonce: BigNumber,
-  signer: Wallet
+  signer: Signer
 ): Promise<Sign> {
   let message = utils.defaultAbiCoder.encode(
     [

@@ -73,12 +73,14 @@ contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
      * @notice sets the configuration for chainlink vrf
      * @notice only MOD role can call this function
      */
-    function setVrfSubscriptionId(
+    function setVrfParameters(
+        address vrfCoordinator,
         uint64 subscriptionId,
         uint32 callbackGasLimit,
         uint16 requestConfirmation,
         bytes32 keyHash
     ) external onlyRole(MOD) {
+        VRF_COORDINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
         vrf_subscriptionId = subscriptionId;
         vrf_callbackGasLimit = callbackGasLimit;
         vrf_requestConfirmations = requestConfirmation;

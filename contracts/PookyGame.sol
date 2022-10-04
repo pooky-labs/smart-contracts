@@ -110,7 +110,7 @@ contract PookyGame is OwnableUpgradeable {
         require(IERC721(address(pookyBall)).ownerOf(ballId) == msg.sender, Errors.MUST_BE_OWNER);
 
         BallInfo memory ball = pookyBall.getBallInfo(ballId);
-        require(ball.pxp > levelPxpNeeded[ball.level+1], Errors.NOT_ENOUGH_PXP);
+        require(ball.pxp >= levelPxpNeeded[ball.level+1], Errors.NOT_ENOUGH_PXP);
         require(ball.level < maxBallLevelPerRarity[ball.rarity], Errors.MAX_LEVEL_REACHED);
 
         IERC20(address(pookToken)).transferFrom(msg.sender, address(this), levelCost[ball.level + 1]);
