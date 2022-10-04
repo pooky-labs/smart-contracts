@@ -30,6 +30,7 @@ describe("Test", async function () {
   let pookyMintEventContract: Contract;
   let pookyGameContract: Contract;
   let usedNonce: BigNumber;
+  let vrfCoordinatorContract: Contract;
 
   function generateRandomNumberWithUpperLimit(limit: number) {
     return Math.ceil(Math.random() * (limit - ONE) + ONE);
@@ -396,7 +397,7 @@ describe("Test", async function () {
       const tx = await pookyBallContract.connect(deployer).setContractURI(URI);
       await tx.wait();
 
-      const contractUriAfter = await pookyBallContract.contractUri();
+      const contractUriAfter = await pookyBallContract.contractURI();
       expect(contractUriAfter).to.be.equal(
         URI,
         "Contract URI is not setted correctly"
@@ -682,7 +683,7 @@ describe("Test", async function () {
       const VrfCoordinator = await ethers.getContractFactory(
         "VRFCoordinatorV2Mock"
       );
-      const vrfCoordinatorContract = await VrfCoordinator.deploy(
+      vrfCoordinatorContract = await VrfCoordinator.deploy(
         ethers.utils.parseEther(ZERO.toString()),
         ethers.utils.parseEther(ZERO.toString())
       );
@@ -719,7 +720,7 @@ describe("Test", async function () {
         );
       await tx.wait();
 
-      expect(await pookyMintEventContract.VRF_COORDINATOR()).to.be.equal(
+      expect(await pookyMintEventContract.vrf_coordinator()).to.be.equal(
         vrfCoordinatorContract.address,
         "Vrf Coordinator is not setted successfully"
       );
@@ -855,12 +856,35 @@ describe("Test", async function () {
         await player.getAddress()
       );
 
-      const tx = await pookyMintEventContract
+      let tx = await pookyMintEventContract
         .connect(player)
         .mintBalls(numberOfBalls, lastMintTemplateId, {
           value: (numberOfBalls * ballPrice).toString(),
         });
       await tx.wait();
+
+      let ballId =  await pookyBallContract.lastBallId();
+
+      expect(await pookyBallContract.ownerOf(ballId)).to.be.equal(
+        pookyMintEventContract.address
+      );
+
+      const randomEntropy = generateRandomNumberWithUpperLimit(HUNDRED);
+
+      tx = await vrfCoordinatorContract.fulfillRandomWordsWithOverride(
+        1,
+        pookyMintEventContract.address,
+        [randomEntropy]
+      );
+      await tx.wait();
+
+      let ball = await pookyBallContract.getBallInfo(ballId);
+
+      expect(ball.randomEntropy).to.be.equal(randomEntropy);
+
+      expect(await pookyBallContract.ownerOf(ballId)).to.be.equal(
+        await player.getAddress()
+      );
 
       const treasuryBalanceAfterMint = await ethers.provider.getBalance(
         await treasury.getAddress()
@@ -878,6 +902,16 @@ describe("Test", async function () {
       );
     });
 
+    it("Check ball info", async function () {
+      let ballId =  await pookyBallContract.lastBallId();
+
+      expect(await pookyBallContract.getBallPxp(ballId)).to.be.equal(0);
+
+      expect(await pookyBallContract.tokenURI(ballId)).to.be.equal(
+        await pookyBallContract.baseUri() + ballId + ".json"
+      );
+    });
+
     it("User with BE role successfully mints ball authorized", async function () {
       const numberOfBalls = ONE;
       const lastMintTemplateId =
@@ -887,13 +921,21 @@ describe("Test", async function () {
         await player.getAddress()
       );
 
-      const tx = await pookyMintEventContract
+      let tx = await pookyMintEventContract
         .connect(backendSigner)
         .mintBallsAuthorized(
           await player.getAddress(),
           numberOfBalls,
           lastMintTemplateId
         );
+      await tx.wait();
+
+      const randomEntropy = generateRandomNumberWithUpperLimit(HUNDRED);
+      tx = await vrfCoordinatorContract.fulfillRandomWordsWithOverride(
+        2,
+        pookyMintEventContract.address,
+        [randomEntropy]
+      );
       await tx.wait();
 
       const userBallanceOfBallsAfter = await pookyBallContract.balanceOf(
@@ -1165,6 +1207,18 @@ describe("Test", async function () {
         pookyGameContract.connect(player).levelUp(ONE)
       ).to.be.revertedWith("7");
     });
+  });
+
+  describe("Revoking Balls", function () {
+    it("User fails to send ball while it is revokable", async function() {
+      const ballId = await pookyMintEventContract.ballsMinted();
+ 
+      await expect(
+        pookyBallContract
+          .connect(player)
+          .transferFrom(await player.getAddress(), await mod.getAddress(), ballId)
+      ).to.be.revertedWith("13");
+    });
 
     it("User with BE role successfully revokes ball authorized", async function () {
       const ballBalanceBefore = await pookyBallContract.balanceOf(
@@ -1183,6 +1237,31 @@ describe("Test", async function () {
       );
 
       expect(ballBalanceAfter).to.be.equal(ballBalanceBefore.sub(ONE));
+    });
+  });
+
+  describe("POK soulbound", function () {
+    it("User is able to send POK while transfers enabled", async function() {
+      await pokContract.connect(player).transfer(
+        await mod.getAddress(),
+        ethers.utils.parseEther("1")
+      );
+
+      expect(await pokContract.balanceOf(await mod.getAddress())).to.be.equal(
+        ethers.utils.parseEther("1")
+      );
+    });
+
+    it("User fails to send POK while not transferable", async function() {
+
+      await pokContract.connect(deployer).setTransferEnabled(false);
+
+      await expect(
+        pokContract.connect(player).transfer(
+          await mod.getAddress(),
+          ethers.utils.parseEther("1")
+        ))
+      .to.be.revertedWith("11");
     });
   });
 });

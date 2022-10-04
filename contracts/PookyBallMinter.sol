@@ -28,7 +28,7 @@ contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
     bytes32 public constant MOD = keccak256("MOD");
 
     /* VRF */
-    VRFCoordinatorV2Interface public VRF_COORDINATOR;
+    VRFCoordinatorV2Interface public vrf_coordinator;
     uint64 public vrf_subscriptionId;
     uint32 public vrf_callbackGasLimit;
     uint16 public vrf_requestConfirmations;
@@ -61,11 +61,10 @@ contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
 
         __VRFConsumerBaseV2_init(_vrfCoordinator);
 
+        vrf_coordinator = VRFCoordinatorV2Interface(_vrfCoordinator);
         vrf_callbackGasLimit = _callbackGasLimit;
         vrf_requestConfirmations = _requestConfirmations;
         vrf_keyHash = _keyHash;
-
-        VRF_COORDINATOR = VRFCoordinatorV2Interface(_vrfCoordinator);
         vrf_subscriptionId = _subscriptionId;
     }
 
@@ -74,13 +73,13 @@ contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
      * @notice only MOD role can call this function
      */
     function setVrfParameters(
-        address vrfCoordinator,
+        address _coordinator,
         uint64 subscriptionId,
         uint32 callbackGasLimit,
         uint16 requestConfirmation,
         bytes32 keyHash
     ) external onlyRole(MOD) {
-        VRF_COORDINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
+        vrf_coordinator = VRFCoordinatorV2Interface(_coordinator);
         vrf_subscriptionId = subscriptionId;
         vrf_callbackGasLimit = callbackGasLimit;
         vrf_requestConfirmations = requestConfirmation;
@@ -129,7 +128,12 @@ contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
         require(template.currentMints < template.maxMints, Errors.MAX_MINTS_REACHED);
 
         template.currentMints++;
-        uint256 newBallId = pookyBall.mintWithRarityAndRevokableTimestamp(user, template.rarity, revokableUntilTimestamp);
+        uint256 newBallId = 
+            pookyBall.mintWithRarityAndRevokableTimestamp(
+                address(this), 
+                template.rarity, 
+                revokableUntilTimestamp
+            );
 
         emit RequestMintFromTemplate(mintTemplateId, user);
 
@@ -142,7 +146,7 @@ contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
      */
     function _requestRandomEntropyForMint(address user, uint256 ballId) internal {
 
-        uint256 requestId = VRF_COORDINATOR.requestRandomWords(
+        uint256 requestId = vrf_coordinator.requestRandomWords(
             vrf_keyHash,
             vrf_subscriptionId,
             vrf_requestConfirmations,
@@ -171,5 +175,10 @@ contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
         IERC721(address(pookyBall)).transferFrom(address(this), request.user, request.ballId);
 
         emit RandomnessFullfiled(requestId, request.ballId, randomWords[0]);
+    }
+
+    function rawFulfillRandomWords(uint256 requestId, uint256[] memory randomWords) override external {
+        require(msg.sender == address(vrf_coordinator), Errors.ONLY_VRF_COORDINATOR);
+        fulfillRandomWords(requestId, randomWords);
     }
 }

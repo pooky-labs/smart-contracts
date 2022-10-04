@@ -124,7 +124,7 @@ abstract contract VRFConsumerBaseV2 {
   // rawFulfillRandomness is called by VRFCoordinator when it receives a valid VRF
   // proof. rawFulfillRandomness then calls fulfillRandomness, after validating
   // the origin of the call
-  function rawFulfillRandomWords(uint256 requestId, uint256[] memory randomWords) external {
+  function rawFulfillRandomWords(uint256 requestId, uint256[] memory randomWords) external virtual {
     if (msg.sender != vrfCoordinator) {
       revert OnlyCoordinatorCanFulfill(msg.sender, vrfCoordinator);
     }

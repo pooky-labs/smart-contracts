@@ -4,7 +4,7 @@ pragma solidity ^0.8.9;
 import {BallRarity, BallInfo} from "../types/DataTypes.sol";
 
 interface IPookyBall {
-    function mintWithRarity(address to, BallRarity rarity) external returns(uint256);
+    // function mintWithRarity(address to, BallRarity rarity) external returns(uint256);
     function mintWithRarityAndRevokableTimestamp(
         address to, 
         BallRarity rarity,

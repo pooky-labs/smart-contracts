@@ -3,7 +3,7 @@
 pragma solidity ^0.8.4;
 
 import {VRFCoordinatorV2Interface} from "../interfaces/VRFCoordinatorV2Interface.sol";
-//import "../VRFConsumerBaseV2.sol";
+import "../VRFConsumerBaseV2.sol";
 
 contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
   uint96 public immutable BASE_FEE;
@@ -114,11 +114,13 @@ contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
     } else if (_words.length != req.numWords) {
       revert InvalidRandomWords();
     }
-/*
+
     VRFConsumerBaseV2 v;
     bytes memory callReq = abi.encodeWithSelector(v.rawFulfillRandomWords.selector, _requestId, _words);
     (bool success, ) = _consumer.call{gas: req.callbackGasLimit}(callReq);
-*/
+
+    require(success, "Consumer call not succesfull");
+
     uint96 payment = uint96(BASE_FEE + ((startGas - gasleft()) * GAS_PRICE_LINK));
     if (s_subscriptions[req.subId].balance < payment) {
       revert InsufficientBalance();

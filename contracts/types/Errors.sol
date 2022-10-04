@@ -25,4 +25,5 @@ library Errors {
     string public constant TREASURY_TRANSFER_FAIL = '17'; // failed transfer to treasury wallet
     string public constant NEEDS_BIGGER_TIER = '18'; // user's tier still can't buy
     string public constant MAX_MINT_SUPPLY_REACHED = '19'; // max minting supply reached
+    string public constant ONLY_VRF_COORDINATOR = '20'; // only vrf coordinator can call the contract
 }

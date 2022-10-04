@@ -11,7 +11,7 @@ export async function prepareContracts() {
     },
     {
       name: "PookyBall",
-      initValues: ["Pooky Ball", "POOKY BALL", "", "", deployer.address],
+      initValues: ["Pooky Ball", "POOKY BALL", "https://baseuri/", "https://contracturi", deployer.address],
     },
     {
       name: "PookyMintEvent",

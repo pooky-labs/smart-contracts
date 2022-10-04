@@ -22,7 +22,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
 
     bytes32 public constant POOKY_CONTRACT = keccak256("POOKY_CONTRACT");
 
-    uint256 lastBallId;
+    uint256 public lastBallId;
     mapping(uint256 => BallInfo) public balls;
 
     event BallLevelChange(uint256 indexed ballId, uint256 level);
@@ -52,10 +52,6 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
         contractUri = _contractUri;
     }
 
-    function _baseURI() internal view virtual override returns (string memory) {
-        return baseUri;
-    }
-    
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         require(_exists(tokenId), Errors.TOKEN_DOESNT_EXIST);
 
@@ -182,6 +178,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
         uint256 tokenId
     ) override internal {
         if (from == address(0) || to == address(0)) return;
+        if (hasRole(POOKY_CONTRACT, from)) return;
         require(block.timestamp > balls[tokenId].revokableUntilTimestamp, Errors.CANT_TRNSFER_WHILE_REVOKABLE);
     }
 
