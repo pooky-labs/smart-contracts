@@ -1,0 +1,36 @@
+@startuml
+participant User
+participant AppBackend
+box #F0F8FF
+participant PookyMintEvent
+participant PookyBallMinter
+end box
+participant PookyBall
+participant ChainlinkVRF
+
+User -> AppBackend : pays with credit card
+
+group User Transaction
+  AppBackend -> PookyMintEvent : mintBallsAuthorized\n(userAddress, templateId, numberOfBalls)
+  group loop [numberOfBalls times]
+    PookyMintEvent -> PookyBallMinter : _requestMintFromTemplate\n(templateId)
+    PookyBallMinter -> PookyBall : mintBall
+    PookyBall --> PookyBallMinter : ball minted
+    PookyBallMinter -> ChainlinkVRF : requestRandomWords
+  end
+end
+
+group Chainlink Callback Transaction
+  ChainlinkVRF -> PookyBallMinter : fulfillRandomWords
+  PookyBallMinter -> PookyBall : setRandomEntropy
+  PookyBallMinter -> User : transfer ball
+end
+
+group#Pink #Pink Payment dispute
+    User <-> AppBackend: Payment disputed
+    AppBackend -> PookyMintEvent: revokeBallAuthorized
+    PookyMintEvent -> PookyBall: revokeBall
+    PookyBall <--> User: ball burned
+end
+
+@enduml

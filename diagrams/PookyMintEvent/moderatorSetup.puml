@@ -1,0 +1,14 @@
+@startuml
+participant Moderator
+box #F0F8FF
+participant PookyMintEvent
+participant PookyBallMinter
+end box
+
+Moderator -> PookyBallMinter : setVrfParameters
+
+Moderator -> PookyBallMinter: createMintTemplate(rarity)
+activate PookyBallMinter
+PookyBallMinter --> Moderator: templateId
+deactivate PookyBallMinter
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+participant User
+box #F0F8FF
+participant PookyMintEvent
+participant PookyBallMinter
+end box
+participant PookyBall
+participant ChainlinkVRF
+
+group User Transaction
+  User -> PookyMintEvent : mintBalls\n(templateId, numberOfBalls)
+  group loop [numberOfBalls times]
+    PookyMintEvent -> PookyBallMinter : _requestMintFromTemplate\n(templateId)
+    PookyBallMinter -> PookyBall : mintBall
+    PookyBall --> PookyBallMinter : ball minted
+    PookyBallMinter -> ChainlinkVRF : requestRandomWords
+  end
+end
+
+group Chainlink Callback Transaction
+  ChainlinkVRF -> PookyBallMinter : fulfillRandomWords
+  PookyBallMinter -> PookyBall : setRandomEntropy
+  PookyBallMinter -> User : transfer ball
+end
+
+@enduml
