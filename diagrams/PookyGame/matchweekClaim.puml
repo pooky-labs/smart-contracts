@@ -1,0 +1,20 @@
+@startuml
+
+participant User
+participant Backend
+participant PookyGame
+participant POK
+participant PookyBall
+
+
+User -> Backend : matcweek claim reward
+Backend --> User : calculate reward and send signature
+User -> PookyGame : matchweekClaim\n(POKreward, BallUpdates, signature)
+PookyGame -> PookyGame : check if signature\nis valid
+PookyGame -> POK : mint POK reward
+POK --> User : mint POK
+group loop [BallUpdates.length times]
+  PookyGame -> PookyBall : addBallPxp\nlevelUp
+end
+
+@enduml
