@@ -2,11 +2,11 @@
 
 ## PookyGame
 
-PookyGame is contract used from the game. 
-  Contains function to update ball points after the matchweek and level up balls.
+PookyGame is contract used from the game.
+Contains function to update ball points after the matchweek and level up balls.
 
 Roles:
-  owner role can set contract parameters
+owner role can set contract parameters
 
 ### pookyBall
 
@@ -56,25 +56,25 @@ mapping(enum BallRarity => uint256) maxBallLevelPerRarity
 function initialize() public
 ```
 
-### _setLevelPxpNeeded
+### \_setLevelPxpNeeded
 
 ```solidity
 function _setLevelPxpNeeded() external
 ```
 
-_function used in initialization to set pxp points 
-  which is needed for ball to get to the each level_
+_function used in initialization to set pxp points
+which is needed for ball to get to the each level_
 
-### _setLevelCost
+### \_setLevelCost
 
 ```solidity
 function _setLevelCost() external
 ```
 
 _function used in initialization to set cost of levelling up
-  the ball for the each level_
+the ball for the each level_
 
-### _setMaxBallLevel
+### \_setMaxBallLevel
 
 ```solidity
 function _setMaxBallLevel() external
@@ -125,7 +125,7 @@ function levelUp(uint256 ballId) public
 ```
 
 level up the ball with `ballId`. Must be called by the ball owner.
-  required amount of POK tokens are paid from the user address.
+required amount of POK tokens are paid from the user address.
 
 ### matchweekClaim
 
@@ -133,16 +133,15 @@ level up the ball with `ballId`. Must be called by the ball owner.
 function matchweekClaim(uint256 pookAmount, struct BallUpdates[] ballUpdates, uint256 ttl, uint256 nonce, struct Signature sig) external
 ```
 
-Function used to claim rewards after the matchweek. 
+Function used to claim rewards after the matchweek.
 All parameters must be confirmed by backend and valid signature of them provided.
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| pookAmount | uint256 | amount of POK token to reward to the user |
-| ballUpdates | struct BallUpdates[] | array of BallUpdates struct containing parameters for all balls which should be rewarded points. |
-| ttl | uint256 | timestamp until signature is valid |
-| nonce | uint256 | unique nonce send by backend, used to not allow resending the same signature. |
-| sig | struct Signature | structe contain parameters of the ECDSA signature from the backend. Must be signed by `pookySigner` |
-
+| Name        | Type                 | Description                                                                                         |
+| ----------- | -------------------- | --------------------------------------------------------------------------------------------------- |
+| pookAmount  | uint256              | amount of POK token to reward to the user                                                           |
+| ballUpdates | struct BallUpdates[] | array of BallUpdates struct containing parameters for all balls which should be rewarded points.    |
+| ttl         | uint256              | timestamp until signature is valid                                                                  |
+| nonce       | uint256              | unique nonce send by backend, used to not allow resending the same signature.                       |
+| sig         | struct Signature     | structe contain parameters of the ECDSA signature from the backend. Must be signed by `pookySigner` |

@@ -4,11 +4,11 @@
 
 PookyMintEvent contract is the extension of PookyBallMinter, used only for initial minting event.
 Before minting starts, templates with different rarities should be made
- using function from the base PookyBallMinter contract
+using function from the base PookyBallMinter contract
 
 Roles:
-  DEFAULT_ADMIN_ROLE can add/remove roles
-  BE role represents backend which can mint to the user address
+DEFAULT_ADMIN_ROLE can add/remove roles
+BE role represents backend which can mint to the user address
 
 ### userTiers
 
@@ -120,11 +120,11 @@ function mintsLeft(address user) public view returns (uint256)
 
 #### Return Values
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| [0] | uint256 | retunrs number of the avilable mints left to the address `user` |
+| Name | Type    | Description                                                     |
+| ---- | ------- | --------------------------------------------------------------- |
+| [0]  | uint256 | retunrs number of the avilable mints left to the address `user` |
 
-### _mintBalls
+### \_mintBalls
 
 ```solidity
 function _mintBalls(address user, uint256 numberOfBalls, uint256 templateId, uint256 revokeUntilTimestamp) internal
@@ -136,8 +136,8 @@ function _mintBalls(address user, uint256 numberOfBalls, uint256 templateId, uin
 function mintBallsAuthorized(address user, uint256 numberOfBalls, uint256 templateId) external
 ```
 
-function called by backend to mint `numberOfBalls` balls to the address `user` with 
-  template id `templateId`. 
+function called by backend to mint `numberOfBalls` balls to the address `user` with
+template id `templateId`.
 This function is used when the user paid offchain for the balls.
 Revoke period is set if there is dispute in the payment during this period.
 only BE role can call this function
@@ -159,4 +159,3 @@ function mintBalls(uint256 numberOfBalls, uint256 templateId) external payable
 ```
 
 function callable by users to mint
-

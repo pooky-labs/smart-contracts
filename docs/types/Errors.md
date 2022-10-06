@@ -117,4 +117,3 @@ string NEEDS_BIGGER_TIER
 ```solidity
 string MAX_MINT_SUPPLY_REACHED
 ```
-

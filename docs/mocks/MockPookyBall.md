@@ -15,4 +15,3 @@ function mock_mintBall(address to, struct BallInfo ballInfo) external returns (u
 ```solidity
 function mock_setBallInfo(uint256 ballId, struct BallInfo ballInfo) external
 ```
-
