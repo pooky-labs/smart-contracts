@@ -11,10 +11,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup environment
-        uses: ./.github/actions/setup
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
       - name: Lint with ESLint
-        run: pnpm eslint
+        run: npm run eslint
 
   solhint:
     name: Lint with Solhint
@@ -22,10 +27,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup environment
-        uses: ./.github/actions/setup
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
       - name: Lint with Solhint
-        run: pnpm solhint
+        run: npm run solhint
 
   gas:
     name: Runs the gas estimator with the tests
@@ -33,10 +43,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup environment
-        uses: ./.github/actions/setup
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
       - name: Run the tests
-        run: pnpm test:gas
+        run: npm run test:gas
         env:
           COINMARKETCAP_API_KEY: ${{ secrets.COINMARKETCAP_API_KEY }}
 
@@ -46,10 +61,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup environment
-        uses: ./.github/actions/setup
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
       - name: Run the tests in coverage mode
-        run: pnpm test:coverage
+        run: npm run test:coverage
       - name: Send the coverage results to Codecov
         uses: codecov/codecov-action@v2
         with:
