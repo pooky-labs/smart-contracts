@@ -4,6 +4,7 @@ node_modules
 .env
 coverage
 coverage.json
+typings
 
 #Hardhat files
 cache
