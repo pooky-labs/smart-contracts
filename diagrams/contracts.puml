@@ -1,0 +1,102 @@
+@startuml
+
+object ERC20
+object POK {
+   transferEnabled
+==
+  # mint() : PC
+  # setTransferEnabled() : ADMIN
+}
+
+ERC20 *-- POK
+
+struct BallInfo {
+  rarity
+  randomEntropy
+  level
+  pxp
+  revokableUntilTimestamp
+}
+
+object ERC721
+
+object PookyBall {
+  + map balls
+==
+  + getBallInfo()
+  + getBallPxp()
+..
+  # addBallPxp() : PC
+  # changeBallLevel() : PC
+  # mintWithRarityAndRevokableTimestamp() : PC
+  # revokeBall() : PC
+  # setRandomEntropy() : PC
+}
+ERC721 *-- PookyBall
+"PookyBall::map balls" -> BallInfo
+
+struct MintTemplate {
+  canMint
+  rarity
+  maxMints
+  currentMints
+  price
+  payingToken
+}
+
+object PookyBallMinter {
+  + map mintTemplates
+==
+  #createMintTemplate() : MOD
+  # changeMintTemplateCanMint() : MOD
+..
+  # rawFulfillRandomWords() : CL
+..
+  ~ _requestMintFromTemplate()
+}
+
+"PookyBallMinter::map mintTemplates" -> MintTemplate
+
+object PookyMintEvent {
+  + mintBalls()
+..
+  # mintBallsAuthorized() : BE
+  # revokeBallAuthorized() : BE
+..
+  # setAddressTier() : MOD
+  # setMinTierToBuy() : MOD
+}
+
+object PookyMarketplace {
+  TBD
+}
+
+
+PookyBallMinter *-- PookyMintEvent
+PookyBallMinter *-- PookyMarketplace
+
+object PookyGame {
+  + matchweekClaim()
+  + levelUp()
+}
+
+object Legend #LightBlue {
+  + public function
+  # authorized function
+  ~ internal function
+}
+
+object Roles #LightGreen {
+  PC - Pooky Contract
+  ADMIN - Important admin
+  MOD - Moderator
+  BE - Backend wallet
+  CL - Chainlink
+}
+
+Legend -[hidden]-> Roles
+POK -[hidden]> PookyBall
+PookyBall -[hidden]-> PookyBallMinter
+POK -[hidden]-> PookyGame
+
+@enduml
