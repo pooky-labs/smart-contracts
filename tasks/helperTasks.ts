@@ -1,11 +1,8 @@
-import { task } from "hardhat/config";
-import { BigNumber, Wallet } from "ethers";
-import { getContractFromJsonDb } from "../helpers/DbHelper";
-import { HRE } from "./set-hre";
-import { BallUpdates, signMatchweekClaimMessage } from "./helpers";
+import { HRE } from './set-hre';
+import { task } from 'hardhat/config';
 
-task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
-  await hre.run("set-hre");
+task('accounts', 'Prints the list of accounts', async (taskArgs, hre) => {
+  await hre.run('set-hre');
   const accounts = await HRE.ethers.getSigners();
 
   for (const account of accounts) {
@@ -13,13 +10,9 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
-task(
-  "createTestAccount",
-  "Creates new wallet (use only for dev testing)",
-  async (taskArgs, hre) => {
-    await hre.run("set-hre");
-    let newWallet = hre.ethers.Wallet.createRandom();
-    console.log("address: ", newWallet.address);
-    console.log("private key: ", newWallet.privateKey);
-  }
-);
+task('createTestAccount', 'Creates new wallet (use only for dev testing)', async (taskArgs, hre) => {
+  await hre.run('set-hre');
+  const newWallet = hre.ethers.Wallet.createRandom();
+  console.log('address: ', newWallet.address);
+  console.log('private key: ', newWallet.privateKey);
+});

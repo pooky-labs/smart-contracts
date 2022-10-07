@@ -2,11 +2,13 @@
 
 ## VRFConsumerBaseV2
 
-***************************************************************************
-Interface for contracts using VRF randomness
-*****************************************************************************
+---
 
-_PURPOSE
+Interface for contracts using VRF randomness
+
+---
+
+\_PURPOSE
 
 Reggie the Random Oracle (not his real job) wants to provide randomness
 to Vera the verifier in such a way that Vera can be sure he's not
@@ -23,21 +25,24 @@ from the output space.
 The purpose of this contract is to make it easy for unrelated contracts
 to talk to Vera the verifier about the work Reggie is doing, to provide
 simple access to a verifiable source of randomness. It ensures 2 things:
+
 1. The fulfillment came from the VRFCoordinator
 2. The consumer contract implements fulfillRandomWords.
-*****************************************************************************
+
+---
+
 USAGE
 
 Calling contracts must inherit from VRFConsumerBase, and can
 initialize VRFConsumerBase's attributes in their constructor as
 shown:
 
-  contract VRFConsumer {
-    constructor(<other arguments>, address _vrfCoordinator, address _link)
-      VRFConsumerBase(_vrfCoordinator) public {
-        <initialization with other arguments goes here>
-      }
-  }
+contract VRFConsumer {
+constructor(<other arguments>, address \_vrfCoordinator, address \_link)
+VRFConsumerBase(\_vrfCoordinator) public {
+<initialization with other arguments goes here>
+}
+}
 
 The oracle will have given you an ID for the VRF keypair they have
 committed to (let's call it keyHash). Create subscription, fund it
@@ -62,7 +67,8 @@ if your contract could have multiple requests in flight simultaneously.
 Colliding `requestId`s are cryptographically impossible as long as seeds
 differ.
 
-*****************************************************************************
+---
+
 SECURITY CONSIDERATIONS
 
 A method with the ability to call your fulfillRandomness method directly
@@ -72,7 +78,7 @@ it cannot be directly called by anything other than this base contract
 
 For your users to trust that your contract's random behavior is free
 from malicious interference, it's best if you can write it so that all
-behaviors implied by a VRF response are executed *during* your
+behaviors implied by a VRF response are executed _during_ your
 fulfillRandomness method. If your contract must store the response (or
 anything derived from it) and use it later, you must ensure that any
 user-significant behavior which depends on that stored value cannot be
@@ -85,7 +91,7 @@ you must ensure that the order in which the VRF responses arrive cannot
 be used to manipulate your contract's user-significant behavior.
 
 Since the block hash of the block which contains the requestRandomness
-call is mixed into the input to the VRF *last*, a sufficiently powerful
+call is mixed into the input to the VRF _last_, a sufficiently powerful
 miner could, in principle, fork the blockchain to evict the block
 containing the request, forcing the request to be included in a
 different block with a different hash, and therefore a different input
@@ -94,7 +100,7 @@ cost. This cost scales with the number of blocks the VRF oracle waits
 until it calls responds to a request. It is for this reason that
 that you can signal to an oracle you'd like them to wait longer before
 responding to the request (however this is not enforced in the contract
-and so remains effective only in the case of unmodified oracle software)._
+and so remains effective only in the case of unmodified oracle software).\_
 
 ### OnlyCoordinatorCanFulfill
 
@@ -108,7 +114,7 @@ error OnlyCoordinatorCanFulfill(address have, address want)
 address vrfCoordinator
 ```
 
-### __VRFConsumerBaseV2_init
+### \_\_VRFConsumerBaseV2_init
 
 ```solidity
 function __VRFConsumerBaseV2_init(address _vrfCoordinator) internal
@@ -116,9 +122,9 @@ function __VRFConsumerBaseV2_init(address _vrfCoordinator) internal
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| _vrfCoordinator | address | address of VRFCoordinator contract |
+| Name             | Type    | Description                        |
+| ---------------- | ------- | ---------------------------------- |
+| \_vrfCoordinator | address | address of VRFCoordinator contract |
 
 ### fulfillRandomWords
 
@@ -138,9 +144,9 @@ rawFulfillRandomness, below.)_
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| requestId | uint256 | The Id initially returned by requestRandomness |
+| Name        | Type      | Description                                              |
+| ----------- | --------- | -------------------------------------------------------- |
+| requestId   | uint256   | The Id initially returned by requestRandomness           |
 | randomWords | uint256[] | the VRF output expanded to the requested number of words |
 
 ### rawFulfillRandomWords
@@ -148,4 +154,3 @@ rawFulfillRandomness, below.)_
 ```solidity
 function rawFulfillRandomWords(uint256 requestId, uint256[] randomWords) external
 ```
-

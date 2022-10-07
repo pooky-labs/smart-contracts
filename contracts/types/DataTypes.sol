@@ -2,27 +2,27 @@
 pragma solidity ^0.8.9;
 
 enum BallRarity {
-    Uncommon,
-    Rare,
-    Epic,
-    Legendary,
-    Mythic
+  Uncommon,
+  Rare,
+  Epic,
+  Legendary,
+  Mythic
 }
 
 /**
  * @notice BallInfo represents all ball parameters which is stored in the onchain storage.
  * @param rarity Rarity of the ball
- * @param randomEntropy Random entropy received from Chainlink VRF. 
+ * @param randomEntropy Random entropy received from Chainlink VRF.
  *   Backend uses random entropy of the ball to generate images and other ball metadata.
  * @param level Ball level
  * @param pxp Pxp points of the ball
  */
 struct BallInfo {
-    BallRarity rarity;
-    uint256 randomEntropy;
-    uint256 level;
-    uint256 pxp;
-    uint256 revokableUntilTimestamp;
+  BallRarity rarity;
+  uint256 randomEntropy;
+  uint256 level;
+  uint256 pxp;
+  uint256 revokableUntilTimestamp;
 }
 
 /**
@@ -35,12 +35,12 @@ struct BallInfo {
  * @param payingToken address of the token with which user pays. If the native token is used 0x0 should be set.
  */
 struct MintTemplate {
-    bool canMint;
-    BallRarity rarity;
-    uint256 maxMints;
-    uint256 currentMints;
-    uint256 price;
-    address payingToken; // 0x0 for native
+  bool canMint;
+  BallRarity rarity;
+  uint256 maxMints;
+  uint256 currentMints;
+  uint256 price;
+  address payingToken; // 0x0 for native
 }
 
 /**
@@ -49,8 +49,8 @@ struct MintTemplate {
  * @param ballId id of the ball
  */
 struct MintRandomRequest {
-    address user;
-    uint256 ballId;
+  address user;
+  uint256 ballId;
 }
 
 /**
@@ -60,19 +60,16 @@ struct MintRandomRequest {
  * @param toLevelUp flag if ball should be leveled up
  */
 struct BallUpdates {
-    uint256 ballId;
-    uint256 addPxp;
-    bool toLevelUp;
+  uint256 ballId;
+  uint256 addPxp;
+  bool toLevelUp;
 }
 
 /**
  * @notice Signature struct containing parameters of the ECDSA signature
  */
 struct Signature {
-    uint8 _v;
-    bytes32 _r; 
-    bytes32 _s;
+  uint8 _v;
+  bytes32 _r;
+  bytes32 _s;
 }
-
-
-

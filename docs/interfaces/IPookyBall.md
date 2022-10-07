@@ -55,4 +55,3 @@ function changeBallLevel(uint256 ballId, uint256 newLevel) external
 ```solidity
 function revokeBall(uint256 ballId) external
 ```
-

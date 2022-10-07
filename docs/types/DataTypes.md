@@ -10,6 +10,7 @@ enum BallRarity {
   Legendary,
   Mythic
 }
+
 ```
 
 ## BallInfo
@@ -44,6 +45,7 @@ struct MintRandomRequest {
   address user;
   uint256 ballId;
 }
+
 ```
 
 ## BallUpdates
@@ -54,6 +56,7 @@ struct BallUpdates {
   uint256 addPxp;
   bool toLevelUp;
 }
+
 ```
 
 ## Signature
@@ -64,5 +67,5 @@ struct Signature {
   bytes32 _r;
   bytes32 _s;
 }
-```
 
+```
