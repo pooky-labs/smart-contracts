@@ -1,4 +1,4 @@
-import { BallUpdatesStruct, SignatureStruct } from '../../typings/contracts/PookyGame';
+import { BallUpdatesStruct } from '../../typings/contracts/PookyGame';
 import { BigNumberish, Signer, utils } from 'ethers';
 
 /**
@@ -15,20 +15,11 @@ export async function signMatchweek(
   ttl: BigNumberish,
   nonce: BigNumberish,
   signer: Signer,
-): Promise<SignatureStruct> {
+): Promise<string> {
   const message = utils.defaultAbiCoder.encode(
     ['uint256', 'tuple(uint256 ballId, uint256 addPxp, bool toLevelUp)[]', 'uint256', 'uint256'],
     [amount, ballUpdates, ttl, nonce],
   );
-  const hashedMessage = utils.keccak256(message);
-
-  // https://stackoverflow.com/questions/69576099/cant-validate-authenticated-message-with-ecdsa-recover
-  const signedMessage = await signer.signMessage(utils.arrayify(hashedMessage));
-  const signature = utils.splitSignature(signedMessage);
-
-  return {
-    _v: signature.v,
-    _r: signature.r,
-    _s: signature.s,
-  };
+  const hash = utils.keccak256(message);
+  return signer.signMessage(utils.arrayify(hash));
 }
