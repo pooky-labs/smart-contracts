@@ -2,6 +2,7 @@
 pragma solidity ^0.8.9;
 
 import './interfaces/IPookyBall.sol';
+import '@openzeppelin/contracts/utils/Strings.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 import { BallInfo, BallRarity } from './types/DataTypes.sol';
@@ -16,6 +17,8 @@ import { Errors } from './types/Errors.sol';
  * @notice   POOKY_CONTRACT role can mint new tokens
  */
 contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
+  using Strings for uint256;
+
   string public baseUri;
   string public contractUri;
 
@@ -54,7 +57,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
     require(_exists(tokenId), Errors.TOKEN_DOESNT_EXIST);
 
-    return bytes(baseUri).length > 0 ? string(abi.encodePacked(baseUri, uintToStr(tokenId), '.json')) : '';
+    return bytes(baseUri).length > 0 ? string(abi.encodePacked(baseUri, tokenId.toString(), '.json')) : '';
   }
 
   /**
@@ -161,7 +164,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
     address from,
     address to,
     uint256 tokenId
-  ) internal override {
+  ) internal view override {
     if (from == address(0) || to == address(0)) return;
     if (hasRole(POOKY_CONTRACT, from)) return;
     require(block.timestamp > balls[tokenId].revokableUntilTimestamp, Errors.CANT_TRNSFER_WHILE_REVOKABLE);
@@ -175,30 +178,5 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
     returns (bool)
   {
     return super.supportsInterface(interfaceId);
-  }
-
-  /**
-   * @dev library function to convert int to string
-   */
-  function uintToStr(uint256 _i) internal pure returns (string memory _uintAsString) {
-    if (_i == 0) {
-      return '0';
-    }
-    uint256 j = _i;
-    uint256 len;
-    while (j != 0) {
-      len++;
-      j /= 10;
-    }
-    bytes memory bstr = new bytes(len);
-    uint256 k = len;
-    while (_i != 0) {
-      k = k - 1;
-      uint8 temp = (48 + uint8(_i - (_i / 10) * 10));
-      bytes1 b1 = bytes1(temp);
-      bstr[k] = b1;
-      _i /= 10;
-    }
-    return string(bstr);
   }
 }
