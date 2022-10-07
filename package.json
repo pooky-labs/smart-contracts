@@ -17,7 +17,7 @@
     "format": "prettier --write '{**/*,*}.{js,ts,sol,json,yml,yaml,md}'",
     "compile": "hardhat compile",
     "test": "hardhat test",
-    "test:gas": "HH_REPORT_GAS=true hardhat test",
+    "test:gas": "REPORT_GAS=true hardhat test",
     "test:coverage": "hardhat coverage",
     "solhint": "solhint 'contracts/**/*.sol'",
     "eslint": "eslint '**/*.{js,ts}'"
