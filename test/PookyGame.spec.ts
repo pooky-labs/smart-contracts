@@ -1,13 +1,14 @@
 import { HUNDRED, MAX_UINT, MAXIMUM_UNCOMMON_BALL_LEVEL, ONE } from '../lib/constants';
-import { deployContracts } from '../lib/deployContracts';
 import getSigners from '../lib/getSigners';
 import { signMatchweek } from '../lib/helpers/signMatchweek';
 import { randInt, randUint256 } from '../lib/rand';
 import { POOKY_CONTRACT } from '../lib/roles';
+import stackFixture from '../lib/testing/stackFixture';
 import { BallRarity } from '../lib/types';
 import waitTx from '../lib/waitTx';
 import { POK, PookyBall, PookyGame } from '../typings';
 import { BallUpdatesStruct } from '../typings/contracts/PookyGame';
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { BigNumber } from 'ethers';
@@ -25,7 +26,7 @@ describe('PookyGame', () => {
 
   beforeEach(async () => {
     ({ deployer, backendSigner, player, mod } = await getSigners());
-    ({ PookyGame, PookyBall, POK } = await deployContracts({ log: false, writeInDB: false }));
+    ({ PookyGame, PookyBall, POK } = await loadFixture(stackFixture));
   });
 
   describe('configuration', () => {

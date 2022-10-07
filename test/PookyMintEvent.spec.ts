@@ -1,12 +1,13 @@
 import { DEFAULT_ADMIN_ROLE, GAS_LIMIT, HUNDRED, ONE, ZERO } from '../lib/constants';
-import { deployContracts } from '../lib/deployContracts';
 import getSigners from '../lib/getSigners';
 import { randInt } from '../lib/rand';
 import { BE, MOD, POOKY_CONTRACT } from '../lib/roles';
 import { expectHasRole, expectMissingRole } from '../lib/testing/roles';
+import stackFixture from '../lib/testing/stackFixture';
 import { BallRarity } from '../lib/types';
 import waitTx from '../lib/waitTx';
 import { POK, PookyBall, PookyMintEvent, VRFCoordinatorV2Mock, VRFCoordinatorV2Mock__factory } from '../typings';
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
@@ -25,7 +26,7 @@ describe('PookyMintEvent', () => {
 
   beforeEach(async () => {
     ({ deployer, backendSigner, mod, treasury, player } = await getSigners());
-    ({ PookyMintEvent, POK, PookyBall } = await deployContracts({ log: false, writeInDB: false }));
+    ({ PookyMintEvent, POK, PookyBall } = await loadFixture(stackFixture));
 
     // Create a default template
     await PookyMintEvent.connect(mod).createMintTemplate({

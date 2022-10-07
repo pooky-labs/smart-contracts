@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-import './interfaces/IPookyBall.sol';
-import './VRFConsumerBaseV2.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import '@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol';
+import './interfaces/IPookyBall.sol';
 import { BallRarity, MintTemplate, MintRandomRequest } from './types/DataTypes.sol';
 import { Errors } from './types/Errors.sol';
+import './vendor/VRFConsumerBaseV2.sol';
 
 /**
  * @notice PookyBallMinter is contract for minting balls with defined MintTemplates.

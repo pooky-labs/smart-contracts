@@ -3,7 +3,7 @@
 pragma solidity ^0.8.4;
 
 import { VRFCoordinatorV2Interface } from '../interfaces/VRFCoordinatorV2Interface.sol';
-import '../VRFConsumerBaseV2.sol';
+import '../vendor/VRFConsumerBaseV2.sol';
 
 contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
   uint96 public immutable BASE_FEE;

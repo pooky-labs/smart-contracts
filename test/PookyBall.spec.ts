@@ -1,11 +1,12 @@
 import { BALL_MAXIMUM_RARITY, DEFAULT_ADMIN_ROLE, HUNDRED } from '../lib/constants';
-import { deployContracts } from '../lib/deployContracts';
 import getSigners from '../lib/getSigners';
 import { randInt } from '../lib/rand';
 import { POOKY_CONTRACT } from '../lib/roles';
 import { expectHasRole, expectMissingRole } from '../lib/testing/roles';
+import stackFixture from '../lib/testing/stackFixture';
 import waitTx from '../lib/waitTx';
 import { PookyBall, PookyMintEvent } from '../typings';
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 
@@ -17,7 +18,7 @@ describe('PookyBall', () => {
 
   beforeEach(async () => {
     ({ deployer, player } = await getSigners());
-    ({ PookyBall, PookyMintEvent } = await deployContracts({ log: false, writeInDB: false }));
+    ({ PookyBall, PookyMintEvent } = await loadFixture(stackFixture));
   });
 
   describe('configuration', () => {
