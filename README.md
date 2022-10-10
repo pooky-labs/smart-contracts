@@ -9,8 +9,6 @@ To see all commands:
 
 # Testnet
 
-test
-
 ## Faucet
 
 https://mumbaifaucet.com/
