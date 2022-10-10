@@ -101,8 +101,8 @@ contract PookyGame is OwnableUpgradeable {
     bytes memory signature,
     address sigWalletCheck
   ) private pure returns (bool) {
-    bytes32 hash = keccak256(message).toEthSignedMessageHash();
-    address signer = hash.recover(signature);
+    bytes32 messageHash = keccak256(message).toEthSignedMessageHash();
+    address signer = messageHash.recover(signature);
     return signer == sigWalletCheck;
   }
 
