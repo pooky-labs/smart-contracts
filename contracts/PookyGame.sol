@@ -7,7 +7,7 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import '@openzeppelin/contracts/utils/cryptography/ECDSA.sol';
-import { Signature, BallUpdates, BallInfo, BallRarity } from './types/DataTypes.sol';
+import { BallUpdates, BallInfo, BallRarity } from './types/DataTypes.sol';
 import { Errors } from './types/Errors.sol';
 
 /**
