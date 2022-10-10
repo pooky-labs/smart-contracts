@@ -64,12 +64,3 @@ struct BallUpdates {
   uint256 addPxp;
   bool toLevelUp;
 }
-
-/**
- * @notice Signature struct containing parameters of the ECDSA signature
- */
-struct Signature {
-  uint8 _v;
-  bytes32 _r;
-  bytes32 _s;
-}

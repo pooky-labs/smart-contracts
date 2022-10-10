@@ -6,7 +6,8 @@ import './interfaces/IPOK.sol';
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
-import { Signature, BallUpdates, BallInfo, BallRarity } from './types/DataTypes.sol';
+import '@openzeppelin/contracts/utils/cryptography/ECDSA.sol';
+import { BallUpdates, BallInfo, BallRarity } from './types/DataTypes.sol';
 import { Errors } from './types/Errors.sol';
 
 /**
@@ -17,6 +18,8 @@ import { Errors } from './types/Errors.sol';
  * @notice   owner role can set contract parameters
  */
 contract PookyGame is OwnableUpgradeable {
+  using ECDSA for bytes32;
+
   IPookyBall public pookyBall;
   address public pookySigner;
   mapping(uint256 => bool) usedNonce;
@@ -92,16 +95,14 @@ contract PookyGame is OwnableUpgradeable {
 
   /**
    * @dev internal library function to verify the signature
-   * @dev can be replaced by OZ ECDSA library
    */
   function verifySignature(
     bytes memory message,
-    Signature memory sig,
+    bytes memory signature,
     address sigWalletCheck
   ) private pure returns (bool) {
-    bytes32 messageHash = keccak256(message);
-    bytes32 signedMessageHash = keccak256(abi.encodePacked('\x19Ethereum Signed Message:\n32', messageHash));
-    address signer = ecrecover(signedMessageHash, sig._v, sig._r, sig._s);
+    bytes32 messageHash = keccak256(message).toEthSignedMessageHash();
+    address signer = messageHash.recover(signature);
     return signer == sigWalletCheck;
   }
 
@@ -135,7 +136,7 @@ contract PookyGame is OwnableUpgradeable {
     BallUpdates[] calldata ballUpdates,
     uint256 ttl,
     uint256 nonce,
-    Signature memory sig
+    bytes memory sig
   ) external {
     require(verifySignature(abi.encode(pookAmount, ballUpdates, ttl, nonce), sig, pookySigner), Errors.FALSE_SIGNATURE);
     require(!usedNonce[nonce], Errors.USED_NONCE);
