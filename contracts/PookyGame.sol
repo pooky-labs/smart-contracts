@@ -105,10 +105,6 @@ contract PookyGame is AccessControlUpgradeable {
   }
 
   /**
-   * @notice level up the ball with `tokenId`. Must be called by the ball owner.
-   * @notice   required amount of POK tokens are paid from the user address.
-   */
-  /**
    * @notice Level up a Pooky Ball in exchange of a certain amount of $POK token.
    * @dev Requirements
    * - msg.sender must be the Pooky Ball owner

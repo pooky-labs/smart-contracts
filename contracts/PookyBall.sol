@@ -158,6 +158,18 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   }
 
   /**
+   * @dev Internal function that can mint any ball without any restriction; it keeps track of the lastTokenId.
+   */
+  function _mintBall(address to, BallInfo memory ballInfo) internal returns (uint256) {
+    lastTokenId++;
+
+    _mint(to, lastTokenId);
+    balls[lastTokenId] = ballInfo;
+
+    return lastTokenId;
+  }
+
+  /**
    * @notice Mint a ball with a specific {BallRarity} and with a specific revocation date/time, with all other Ball
    * parameters set to default.
    * @dev Requirements:
@@ -171,18 +183,8 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
     BallRarity rarity,
     uint256 revocableUntil
   ) external onlyRole(POOKY_CONTRACT) returns (uint256) {
-    lastTokenId++;
-
-    _mint(to, lastTokenId);
-    balls[lastTokenId] = BallInfo({
-      rarity: rarity,
-      randomEntropy: 0,
-      level: 0,
-      pxp: 0,
-      revocableUntil: revocableUntil
-    });
-
-    return lastTokenId;
+    return
+      _mintBall(to, BallInfo({ rarity: rarity, randomEntropy: 0, level: 0, pxp: 0, revocableUntil: revocableUntil }));
   }
 
   /**

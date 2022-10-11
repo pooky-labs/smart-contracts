@@ -1,29 +1,17 @@
 import { getContractFromJsonDb } from '../lib/helpers/DbHelper';
+import waitTx from '../lib/waitTx';
+import { POK, PookyBall, PookyBallGenesisMinter, PookyGame } from '../typings';
 import { task } from 'hardhat/config';
 
 task('setPookyBallContract', 'Sets PookyBall contract', async (taskArgs, hre) => {
   await hre.run('set-hre');
 
-  const pookyBallContract = await getContractFromJsonDb('PookyBall', hre);
-  const pookyMintEventContract = await getContractFromJsonDb('PookyMintEvent', hre);
-  const pookyGameContract = await getContractFromJsonDb('PookyGame', hre);
+  const PookyBall = await getContractFromJsonDb<PookyBall>('PookyBall', hre);
+  const PookyBallGenesisMinter = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
+  const PookyGame = await getContractFromJsonDb<PookyGame>('PookyGame', hre);
 
-  let tx = await pookyMintEventContract.setPookyBallContract(pookyBallContract.address);
-  await tx.wait();
-
-  tx = await pookyGameContract.setPookyBallContract(pookyBallContract.address);
-  await tx.wait();
-
-  console.log('Done');
-});
-
-task('setPookySigner', 'Sets BE signer', async (taskArgs, hre) => {
-  await hre.run('set-hre');
-  const [, backendSigner, , ,] = await hre.ethers.getSigners();
-  const pookyGameContract = await getContractFromJsonDb('PookyGame', hre);
-
-  const tx = await pookyGameContract.setPookySigner(backendSigner.address);
-  await tx.wait();
+  await waitTx(PookyBallGenesisMinter.setPookyBallContract(PookyBall.address));
+  await waitTx(PookyGame.setPookyBallContract(PookyBall.address));
 
   console.log('Done');
 });
@@ -31,11 +19,10 @@ task('setPookySigner', 'Sets BE signer', async (taskArgs, hre) => {
 task('setPOKToken', 'Sets POK token address', async (taskArgs, hre) => {
   await hre.run('set-hre');
 
-  const pokContract = await getContractFromJsonDb('POK', hre);
-  const pookyGameContract = await getContractFromJsonDb('PookyGame', hre);
+  const POK = await getContractFromJsonDb<POK>('POK', hre);
+  const PookyGame = await getContractFromJsonDb<PookyGame>('PookyGame', hre);
 
-  const tx = await pookyGameContract.setPookToken(pokContract.address);
-  await tx.wait();
+  await waitTx(PookyGame.setPOKContract(POK.address));
 
   console.log('Done');
 });
@@ -44,11 +31,10 @@ task('setMinTierToBuy', 'Sets minimum tier to mint ball')
   .addPositionalParam('tier', 'Minimum tier')
   .setAction(async (params, hre) => {
     await hre.run('set-hre');
-    const [, , , MOD, player] = await hre.ethers.getSigners();
+    const [, , , MOD] = await hre.ethers.getSigners();
 
-    const pookyMintEventContract = await getContractFromJsonDb('PookyMintEvent', hre);
-    const tx = await pookyMintEventContract.connect(MOD).setMinTierToBuy(hre.ethers.utils.parseEther(params.tier));
-    await tx.wait();
+    const PookyBallGenesisMinter = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
+    await waitTx(PookyBallGenesisMinter.connect(MOD).setMinTierToBuy(hre.ethers.utils.parseEther(params.tier)));
 
     console.log('Done');
   });
@@ -60,11 +46,8 @@ task('setAddressTier', 'Sets minimum tier to mint ball')
     await hre.run('set-hre');
     const [, , , MOD, player] = await hre.ethers.getSigners();
 
-    const pookyMintEventContract = await getContractFromJsonDb('PookyMintEvent', hre);
-    const tx = await pookyMintEventContract
-      .connect(MOD)
-      .setAddressTier(player.address, hre.ethers.utils.parseEther(params.tier));
-    await tx.wait();
+    const PookyBallGenesisMinter = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
+    await waitTx(PookyBallGenesisMinter.connect(MOD).setTierBatch([player.address], params.tier));
 
     console.log('Done');
   });
@@ -75,11 +58,8 @@ task('setMaxBallsPerUser', 'Sets maximum balls per user')
     await hre.run('set-hre');
     const [, , , MOD] = await hre.ethers.getSigners();
 
-    const pookyMintEventContract = await getContractFromJsonDb('PookyMintEvent', hre);
-    const tx = await pookyMintEventContract
-      .connect(MOD)
-      .setMaxBallsPerUser(hre.ethers.utils.parseEther(params.maximum));
-    await tx.wait();
+    const PookyBallGenesisMinter = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
+    await waitTx(PookyBallGenesisMinter.connect(MOD).setMaxBallsPerUser(params.maximum));
 
     console.log('Done');
   });
@@ -90,9 +70,8 @@ task('setRevokePeriod', 'Sets revoke period')
     await hre.run('set-hre');
     const [, , , MOD] = await hre.ethers.getSigners();
 
-    const pookyMintEventContract = await getContractFromJsonDb('PookyMintEvent', hre);
-    const tx = await pookyMintEventContract.connect(MOD).setRevokePeriod(params.period);
-    await tx.wait();
+    const PookyBallGenesisMinter = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
+    await waitTx(PookyBallGenesisMinter.connect(MOD).setRevokePeriod(params.period));
 
     console.log('Done');
   });
@@ -100,9 +79,8 @@ task('setRevokePeriod', 'Sets revoke period')
 task('setLevelPxpNeeded', 'Sets pxp needed for all levels').setAction(async (params, hre) => {
   await hre.run('set-hre');
 
-  const pookyGameContract = await getContractFromJsonDb('PookyGame', hre);
-  const tx = await pookyGameContract._setLevelPxpNeeded();
-  await tx.wait();
+  const PookyGame = await getContractFromJsonDb<PookyGame>('PookyGame', hre);
+  await waitTx(PookyGame._setLevelPXP());
 
   console.log('Done');
 });
@@ -110,9 +88,8 @@ task('setLevelPxpNeeded', 'Sets pxp needed for all levels').setAction(async (par
 task('setLevelCost', 'Sets cost for all levels').setAction(async (params, hre) => {
   await hre.run('set-hre');
 
-  const pookyGameContract = await getContractFromJsonDb('PookyGame', hre);
-  const tx = await pookyGameContract._setLevelCost();
-  await tx.wait();
+  const PookyGame = await getContractFromJsonDb<PookyGame>('PookyGame', hre);
+  await waitTx(PookyGame._setLevelPOKCost());
 
   console.log('Done');
 });
@@ -120,9 +97,8 @@ task('setLevelCost', 'Sets cost for all levels').setAction(async (params, hre) =
 task('setMaxBallLevel', 'Sets maximum ball level for every ball type').setAction(async (params, hre) => {
   await hre.run('set-hre');
 
-  const pookyGameContract = await getContractFromJsonDb('PookyGame', hre);
-  const tx = await pookyGameContract._setMaxBallLevel();
-  await tx.wait();
+  const PookyGame = await getContractFromJsonDb<PookyGame>('PookyGame', hre);
+  await waitTx(PookyGame._setMaxBallLevel());
 
   console.log('Done');
 });
@@ -132,76 +108,44 @@ task('setTransferEnabled', 'Sets transfer enabled on POK contract')
   .setAction(async (params, hre) => {
     await hre.run('set-hre');
 
-    const enabled = params.enabled ? true : false;
-
-    const pokContract = await getContractFromJsonDb('POK', hre);
-    const tx = await pokContract.setTransferEnabled(enabled);
-    await tx.wait();
+    const POK = await getContractFromJsonDb<POK>('POK', hre);
+    await waitTx(POK.setTransferEnabled(Boolean(params.enabled)));
 
     console.log('Done');
   });
 
-task('setPookyBallUri', 'Sets contract URI from PookyBall contract')
+task('setContractURI', 'Sets contract URI from PookyBall contract')
   .addPositionalParam('contractURI', 'ContractURI')
   .setAction(async (params, hre) => {
     await hre.run('set-hre');
 
-    const pookyBallContract = await getContractFromJsonDb('PookyBall', hre);
-    const tx = await pookyBallContract.setContractURI(params.contractURI);
-    await tx.wait();
+    const PookyBall = await getContractFromJsonDb<PookyBall>('PookyBall', hre);
+    await waitTx(PookyBall.setContractURI(params.contractURI));
 
     console.log('Done');
   });
 
 task('setVrfSubscriptionId', 'Sets contract URI from PookyBall contract')
+  .addPositionalParam('coordinator', 'VRF subscription id')
   .addPositionalParam('subscriptionID', 'VRF subscription id')
-  .setAction(async (params, hre) => {
-    await hre.run('set-hre');
-    const [, , , MOD] = await hre.ethers.getSigners();
-
-    const pookyMintEventContract = await getContractFromJsonDb('PookyMintEvent', hre);
-
-    const tx = await pookyMintEventContract.connect(MOD).setVrfSubscriptionId(params.subscriptionID);
-    await tx.wait();
-
-    console.log('Done');
-  });
-
-task('setVrfCallbackGasLimit', 'Sets contract URI from PookyBall contract')
   .addPositionalParam('callbackGasLimit', 'VRF callback gas limit')
-  .setAction(async (params, hre) => {
-    await hre.run('set-hre');
-    const [, , , MOD] = await hre.ethers.getSigners();
-
-    const pookyMintEventContract = await getContractFromJsonDb('PookyMintEvent', hre);
-    const tx = await pookyMintEventContract.connect(MOD).setVrfCallbackGasLimit(params.callbackGasLimit);
-    await tx.wait();
-
-    console.log('Done');
-  });
-
-task('setVrfRequestConfirmations', 'Sets contract URI from PookyBall contract')
   .addPositionalParam('requestConfirmations', 'VRF request confirmations')
-  .setAction(async (params, hre) => {
-    await hre.run('set-hre');
-    const [, , , MOD] = await hre.ethers.getSigners();
-
-    const pookyMintEventContract = await getContractFromJsonDb('PookyMintEvent', hre);
-    const tx = await pookyMintEventContract.connect(MOD).setVrfRequestConfirmations(params.requestConfirmations);
-    await tx.wait();
-
-    console.log('Done');
-  });
-
-task('setVrfKeyHash', 'Sets contract URI from PookyBall contract')
   .addPositionalParam('keyHash', 'VRF key hash')
   .setAction(async (params, hre) => {
     await hre.run('set-hre');
     const [, , , MOD] = await hre.ethers.getSigners();
 
-    const pookyMintEventContract = await getContractFromJsonDb('PookyMintEvent', hre);
-    const tx = await pookyMintEventContract.connect(MOD).setVrfKeyHash(params.keyHash);
-    await tx.wait();
+    const PookyBallGenesisMinter = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
+
+    await waitTx(
+      PookyBallGenesisMinter.connect(MOD).setVrfParameters(
+        params.coordinator,
+        params.subscriptionID,
+        params.callbackGasLimit,
+        params.requestConfirmations,
+        params.keyHash,
+      ),
+    );
 
     console.log('Done');
   });

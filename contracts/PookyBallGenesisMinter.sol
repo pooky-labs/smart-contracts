@@ -112,7 +112,7 @@ contract PookyBallGenesisMinter is PookyBallMinter {
    * - only MOD role can manage the allowlist.
    */
   function setTierBatch(address[] memory accounts, uint256[] memory tiers) external onlyRole(MOD) {
-    require(accounts.length == tiers.length, 'Size mismatch');
+    require(accounts.length == tiers.length, Errors.SIZE_MISMATCH);
 
     for (uint256 i = 0; i < accounts.length; i++) {
       userTiers[accounts[i]] = tiers[i];

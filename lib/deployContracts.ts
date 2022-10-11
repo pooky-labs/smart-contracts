@@ -1,4 +1,11 @@
-import { POK__factory, PookyBall__factory, PookyGame__factory, PookyBallGenesisMinter__factory } from '../typings';
+import {
+  POK__factory,
+  PookyBall__factory,
+  PookyGame__factory,
+  PookyBallGenesisMinter__factory,
+  PookyBallMock__factory,
+  POKMock__factory,
+} from '../typings';
 import * as Params from './constants';
 import { deployWithProxy } from './deployWithProxy';
 import getSigners from './getSigners';
@@ -14,6 +21,9 @@ interface DeployContractsOptions {
 
   /** Write the deployed contracts to the file database. */
   writeInDB?: boolean;
+
+  /** Use mocked POK and PookyBall instead */
+  mock?: boolean;
 }
 
 /**
@@ -23,16 +33,19 @@ interface DeployContractsOptions {
 export async function deployContracts({
   log = true,
   writeInDB = true,
+  mock = false,
 }: DeployContractsOptions = {}): Promise<ContractStack> {
   const { deployer, treasury, backendSigner, mod } = await getSigners();
   logger.setSettings({
     minLevel: log ? 'silly' : 'error',
   });
 
-  const POK = await deployWithProxy(new POK__factory().connect(deployer), ['Pook Token', 'POK', deployer.address]);
+  const POKFactory = mock ? new POKMock__factory() : new POK__factory();
+  const POK = await deployWithProxy(POKFactory.connect(deployer), ['Pook Token', 'POK', deployer.address]);
   logger.info('Deployed POK to', POK.address);
 
-  const PookyBall = await deployWithProxy(new PookyBall__factory().connect(deployer), [
+  const PookyBallFactory = mock ? new PookyBallMock__factory() : new PookyBall__factory();
+  const PookyBall = await deployWithProxy(PookyBallFactory.connect(deployer), [
     'Pooky Ball',
     'POOKY BALL',
     'https://baseuri/',
@@ -60,8 +73,14 @@ export async function deployContracts({
   logger.info('Deployed PookyGame to', PookyGame.address);
 
   if (writeInDB) {
-    await registerContractInJsonDb('POK', POK);
-    await registerContractInJsonDb('PookyBall', PookyBall);
+    if (mock) {
+      await registerContractInJsonDb('POKMock', POK);
+      await registerContractInJsonDb('PookyBallMock', PookyBall);
+    } else {
+      await registerContractInJsonDb('POK', POK);
+      await registerContractInJsonDb('PookyBall', PookyBall);
+    }
+
     await registerContractInJsonDb('PookyBallGenesisMinter', PookyBallGenesisMinter);
     await registerContractInJsonDb('PookyGame', PookyGame);
   }

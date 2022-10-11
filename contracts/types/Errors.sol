@@ -29,4 +29,5 @@ library Errors {
   string public constant MAX_MINT_SUPPLY_REACHED = '19'; // max minting supply reached
   string public constant ONLY_VRF_COORDINATOR = '20'; // only vrf coordinator can call the contract
   string public constant BALL_ENTROPY_ALREADY_SET = '21'; // ball entropy was already set
+  string public constant SIZE_MISMATCH = '21'; // ball entropy was already set
 }
