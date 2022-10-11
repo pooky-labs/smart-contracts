@@ -1,67 +1,52 @@
 // SPDX-License-Identifier: UNLICENSED
+// Pooky Game Contracts (PookyGame.sol)
+
 pragma solidity ^0.8.9;
 
 import './interfaces/IPookyBall.sol';
 import './interfaces/IPOK.sol';
-import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
-import '@openzeppelin/contracts/utils/cryptography/ECDSA.sol';
+import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol';
 import { BallUpdates, BallInfo, BallRarity } from './types/DataTypes.sol';
 import { Errors } from './types/Errors.sol';
 
 /**
- * @notice PookyGame is contract used from the game.
- * @notice   Contains function to update ball points after the matchweek and level up balls.
+ * @title PookyBallMinter
+ * @author Pooky Engineering Team
  *
- * @notice Roles:
- * @notice   owner role can set contract parameters
+ * @notice The contract controls the on-chain features of the Pooky game.
+ * Notable features:
+ * - Claim prediction rewards (Pooky Ball PXP + $POK tokens) using a signature from the Pooky back-end.
+ * - Level up Pooky Balls by spending $POK token.
+ *
+ * Roles:
+ * - DEFAULT_ADMIN_ROLE can add/remove roles.
+ * - REWARD_SIGNER can sign rewards claims.
  */
-contract PookyGame is OwnableUpgradeable {
-  using ECDSA for bytes32;
+contract PookyGame is AccessControlUpgradeable {
+  using ECDSAUpgradeable for bytes32;
 
+  // Roles
+  bytes32 public constant REWARD_SIGNER = keccak256('REWARD_SIGNER');
+
+  // Contracts
   IPookyBall public pookyBall;
-  address public pookySigner;
-  mapping(uint256 => bool) usedNonce;
+  IPOK public pok;
 
-  IPOK public pookToken;
-  uint256[] public levelPxpNeeded;
-  uint256[] public levelCost;
+  uint256[] public levelPXP;
+  uint256[] public levelPOKCost;
   mapping(BallRarity => uint256) maxBallLevelPerRarity;
+  mapping(uint256 => bool) usedNonces;
 
-  function initialize() public initializer {
-    __Ownable_init();
+  function initialize(address _admin) public initializer {
+    __AccessControl_init();
+    _setupRole(DEFAULT_ADMIN_ROLE, _admin);
   }
 
-  // TODO: put correct values
   /**
-   * @dev function used in initialization to set pxp points
-   * @dev   which is needed for ball to get to the each level
+   * @dev Initialization function that sets the Pooky Ball maximum level for a given rarity.
    */
-  function _setLevelPxpNeeded() external onlyOwner {
-    levelPxpNeeded.push(0);
-    levelPxpNeeded.push(3 ether);
-    for (uint256 i = 2; i <= 100; i++) {
-      levelPxpNeeded.push((levelPxpNeeded[i - 1] * 120) / 100);
-    }
-  }
-
-  // TODO: put correct values
-  /**
-   * @dev function used in initialization to set cost of levelling up
-   * @dev   the ball for the each level
-   */
-  function _setLevelCost() external onlyOwner {
-    for (uint256 i = 0; i < 100; i++) {
-      levelCost.push(levelPxpNeeded[i] / 3);
-    }
-  }
-
-  // TODO: put correct values
-  /**
-   * @dev function used in initialization to set maximum level of the ball per rarity
-   */
-  function _setMaxBallLevel() external onlyOwner {
+  function _setMaxBallLevel() external onlyRole(DEFAULT_ADMIN_ROLE) {
     maxBallLevelPerRarity[BallRarity.Uncommon] = 40;
     maxBallLevelPerRarity[BallRarity.Rare] = 60;
     maxBallLevelPerRarity[BallRarity.Epic] = 80;
@@ -70,86 +55,108 @@ contract PookyGame is OwnableUpgradeable {
   }
 
   /**
-   * @notice sets the address of PookyBall contract
-   * @notice only owner role can call this function
+   * @dev Initialization function that sets the Pooky Ball PXP required for a given level.
+   * Levels range starts at 0 and ends at 100, inclusive.
+   * TODO(2022 Oct 11): exact formula is still in active discussion
    */
-  function setPookyBallContract(address pookyBallAddress) external onlyOwner {
-    pookyBall = IPookyBall(pookyBallAddress);
+  function _setLevelPXP() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    levelPXP.push(0);
+    levelPXP.push(3 ether);
+    for (uint256 i = 2; i <= 100; i++) {
+      levelPXP.push((levelPXP[i - 1] * 120) / 100);
+    }
   }
 
   /**
-   * @notice sets the address of backend signer
-   * @notice only owner role can call this function
+   * @dev Initialization function that sets the $POK token required to level up Pooky Ball at given level.
+   * Levels range starts at 0 and ends at 100, inclusive.
+   * TODO(2022 Oct 11): exact formula is still in active discussion
    */
-  function setPookySigner(address _pookySigner) external onlyOwner {
-    pookySigner = _pookySigner;
+  function _setLevelPOKCost() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    for (uint256 i = 0; i < 100; i++) {
+      levelPOKCost.push((levelPXP[i] / 3)); // $POK decimals are 18
+    }
   }
 
   /**
-   * @notice sets the address of POK token contract
-   * @notice only owner role can call this function
+   * @notice Sets the address of the PookyBall contract.
+   * @dev Requirements:
+   * - only DEFAULT_ADMIN_ROLE role can call this function.
    */
-  function setPookToken(address _pookToken) external onlyOwner {
-    pookToken = IPOK(_pookToken);
+  function setPookyBallContract(address _pookyBall) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    pookyBall = IPookyBall(_pookyBall);
   }
 
   /**
-   * @dev internal library function to verify the signature
+   * @notice Sets the address of the POK contract.
+   * @dev Requirements:
+   * - only DEFAULT_ADMIN_ROLE role can call this function.
    */
-  function verifySignature(
-    bytes memory message,
-    bytes memory signature,
-    address sigWalletCheck
-  ) private pure returns (bool) {
-    bytes32 messageHash = keccak256(message).toEthSignedMessageHash();
-    address signer = messageHash.recover(signature);
-    return signer == sigWalletCheck;
+  function setPOKContract(address _pok) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    pok = IPOK(_pok);
   }
 
   /**
-   * @notice level up the ball with `ballId`. Must be called by the ball owner.
+   * @dev Internal function that checks if a {message} has be signed by a REWARD_SIGNER.
+   */
+  function verifySignature(bytes memory message, bytes memory signature) private view returns (bool) {
+    address signer = keccak256(message).toEthSignedMessageHash().recover(signature);
+    return hasRole(REWARD_SIGNER, signer);
+  }
+
+  /**
+   * @notice level up the ball with `tokenId`. Must be called by the ball owner.
    * @notice   required amount of POK tokens are paid from the user address.
    */
-  function levelUp(uint256 ballId) public {
-    require(IERC721(address(pookyBall)).ownerOf(ballId) == msg.sender, Errors.MUST_BE_OWNER);
+  /**
+   * @notice Level up a Pooky Ball in exchange of a certain amount of $POK token.
+   * @dev Requirements
+   * - msg.sender must be the Pooky Ball owner
+   * - msg.sender must own enough $POK tokens
+   * - Pooky Ball should have enough PXP to reach the next level.
+   * - Pooky Ball level should be strictly less than the maximum allowed level for its rarity.
+   */
+  function levelUp(uint256 tokenId) public {
+    require(pookyBall.ownerOf(tokenId) == msg.sender, Errors.MUST_BE_OWNER);
 
-    BallInfo memory ball = pookyBall.getBallInfo(ballId);
-    require(ball.pxp >= levelPxpNeeded[ball.level + 1], Errors.NOT_ENOUGH_PXP);
+    BallInfo memory ball = pookyBall.getBallInfo(tokenId);
+    uint256 nextLevel = ball.level + 1;
+
+    require(ball.pxp >= levelPXP[nextLevel], Errors.NOT_ENOUGH_PXP);
     require(ball.level < maxBallLevelPerRarity[ball.rarity], Errors.MAX_LEVEL_REACHED);
 
-    IERC20(address(pookToken)).transferFrom(msg.sender, address(this), levelCost[ball.level + 1]);
-
-    pookyBall.changeBallLevel(ballId, ball.level + 1);
+    pok.burn(msg.sender, levelPOKCost[nextLevel]); // Burn $POK tokens
+    pookyBall.changeBallLevel(tokenId, nextLevel);
   }
 
   /**
-   * @notice Function used to claim rewards after the matchweek.
-   * @notice All parameters must be confirmed by backend and valid signature of them provided.
-   * @param pookAmount amount of POK token to reward to the user
-   * @param ballUpdates array of BallUpdates struct containing parameters for all balls which should be rewarded points.
-   * @param ttl timestamp until signature is valid
-   * @param nonce unique nonce send by backend, used to not allow resending the same signature.
-   * @param sig structe contain parameters of the ECDSA signature from the backend. Must be signed by `pookySigner`
+   * @notice Claim prediction rewards ($POK tokens and Ball PXP).
+   * @param POKAmount The $POK token amount.
+   * @param ballUpdates The updated to apply to the Pooky Balls (PXP and optional level up).
+   * @param ttl UNIX timestamp until signature is valid.
+   * @param nonce Unique word that prevents the usage the same signature twice.
+   * @param signature The signature of the previous parameters generated using the eth_personalSign RPC call.
    */
-  function matchweekClaim(
-    uint256 pookAmount,
+  function claimRewards(
+    uint256 POKAmount,
     BallUpdates[] calldata ballUpdates,
     uint256 ttl,
     uint256 nonce,
-    bytes memory sig
+    bytes memory signature
   ) external {
-    require(verifySignature(abi.encode(pookAmount, ballUpdates, ttl, nonce), sig, pookySigner), Errors.FALSE_SIGNATURE);
-    require(!usedNonce[nonce], Errors.USED_NONCE);
+    require(verifySignature(abi.encode(POKAmount, ballUpdates, ttl, nonce), signature), Errors.FALSE_SIGNATURE);
+    require(!usedNonces[nonce], Errors.USED_NONCE);
     require(block.timestamp < ttl, Errors.TTL_PASSED);
 
-    usedNonce[nonce] = true;
+    usedNonces[nonce] = true;
 
-    pookToken.mint(msg.sender, pookAmount);
+    pok.mint(msg.sender, POKAmount);
 
     for (uint256 i = 0; i < ballUpdates.length; i++) {
-      pookyBall.addBallPxp(ballUpdates[i].ballId, ballUpdates[i].addPxp);
-      if (ballUpdates[i].toLevelUp) {
-        levelUp(ballUpdates[i].ballId);
+      pookyBall.addBallPXP(ballUpdates[i].tokenId, ballUpdates[i].addPXP);
+
+      if (ballUpdates[i].shouldLevelUp) {
+        levelUp(ballUpdates[i].tokenId);
       }
     }
   }

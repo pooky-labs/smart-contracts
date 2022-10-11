@@ -1,5 +1,5 @@
 import { getContractFromJsonDb } from '../lib/helpers/DbHelper';
-import { signMatchweek } from '../lib/helpers/signMatchweek';
+import { signRewardsClaim } from '../lib/helpers/signRewardsClaim';
 import { BallUpdatesStruct } from '../typings/contracts/PookyGame';
 import { MOCK_POOK } from './contracts';
 import { BigNumber, Wallet } from 'ethers';
@@ -149,14 +149,14 @@ task('matchweekClaim', 'Level up ball with given index').setAction(async (params
 
   const pookAmount = hre.ethers.utils.parseEther('10');
   const ballUpdates: BallUpdatesStruct = {
-    ballId: BigNumber.from(1),
-    addPxp: hre.ethers.utils.parseEther('100'),
-    toLevelUp: false,
+    tokenId: BigNumber.from(1),
+    addPXP: hre.ethers.utils.parseEther('100'),
+    shouldLevelUp: false,
   };
   const ttl = hre.ethers.utils.parseEther('9999999999999');
   const nonce = hre.ethers.utils.parseEther('8');
 
-  const signature = await signMatchweek(
+  const signature = await signRewardsClaim(
     pookAmount,
     [ballUpdates],
     ttl,

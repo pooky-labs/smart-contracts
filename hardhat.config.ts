@@ -7,6 +7,7 @@ import '@nomicfoundation/hardhat-toolbox';
 import '@nomiclabs/hardhat-ethers';
 import '@openzeppelin/hardhat-upgrades';
 import { config as loadConfig } from 'dotenv';
+import 'hardhat-ignore-warnings';
 import { HardhatUserConfig } from 'hardhat/config';
 import set from 'lodash/set';
 import 'solidity-docgen';
@@ -15,6 +16,9 @@ loadConfig();
 
 const config: HardhatUserConfig = {
   solidity: '0.8.9',
+  warnings: {
+    'contracts/mocks/**/*': 'off',
+  },
   typechain: {
     outDir: 'typings',
     target: 'ethers-v5',
