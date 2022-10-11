@@ -2,56 +2,39 @@
 
 ## IPookyBall
 
-### mintWithRarity
+### getBallInfo
 
 ```solidity
-function mintWithRarity(address to, enum BallRarity rarity) external returns (uint256)
+function getBallInfo(uint256 tokenId) external view returns (struct BallInfo)
 ```
 
-### mintWithRarityAndRevokableTimestamp
+### mint
 
 ```solidity
-function mintWithRarityAndRevokableTimestamp(address to, enum BallRarity rarity, uint256 revokableUntil) external returns (uint256)
+function mint(address to, enum BallRarity rarity, uint256 revocableUntil) external returns (uint256)
 ```
 
 ### setRandomEntropy
 
 ```solidity
-function setRandomEntropy(uint256 ballId, uint256 _randomEntropy) external
+function setRandomEntropy(uint256 tokenId, uint256 _randomEntropy) external
 ```
 
-### getBallInfo
+### addBallPXP
 
 ```solidity
-function getBallInfo(uint256 ballId) external returns (struct BallInfo)
-```
-
-### getBallPxp
-
-```solidity
-function getBallPxp(uint256 ballId) external returns (uint256)
-```
-
-### addBallPxp
-
-```solidity
-function addBallPxp(uint256 ballId, uint256 addPxpAmount) external
-```
-
-### getBallLevel
-
-```solidity
-function getBallLevel(uint256 ballId) external returns (uint256)
+function addBallPXP(uint256 tokenId, uint256 addPxpAmount) external
 ```
 
 ### changeBallLevel
 
 ```solidity
-function changeBallLevel(uint256 ballId, uint256 newLevel) external
+function changeBallLevel(uint256 tokenId, uint256 newLevel) external
 ```
 
 ### revokeBall
 
 ```solidity
-function revokeBall(uint256 ballId) external
+function revokeBall(uint256 tokenId) external
 ```
+

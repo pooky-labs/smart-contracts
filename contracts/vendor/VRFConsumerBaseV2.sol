@@ -1,5 +1,13 @@
 // SPDX-License-Identifier: MIT
+// Pooky Game Contracts (vendor/VRFConsumerBaseV2.sol)
+
 pragma solidity ^0.8.4;
+
+/**
+ * @title VRFConsumerBaseV2
+ * @author Pooky Engineering Team
+ * @notice This contract is an adaptation from the VRFConsumerBaseV2 compatible with upgradable contracts.
+ */
 
 /** ****************************************************************************
  * @notice Interface for contracts using VRF randomness

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
+// Pooky Game Contracts (PookyBallMinter.sol)
+
 pragma solidity ^0.8.9;
 
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import '@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol';
 import './interfaces/IPookyBall.sol';
 import { BallRarity, MintTemplate, MintRandomRequest } from './types/DataTypes.sol';
@@ -11,22 +11,27 @@ import { Errors } from './types/Errors.sol';
 import './vendor/VRFConsumerBaseV2.sol';
 
 /**
- * @notice PookyBallMinter is contract for minting balls with defined MintTemplates.
- * @notice   This contract is the base contract for PookyMintEvent, and will be used
- * @notice   for the PookyStore.
- * @notice Contract is using Chainlink VRF requests to get randomEntropy for the ball.
- * @notice
+ * @title PookyBallMinter
+ * @author Pooky Engineering Team
  *
- * @notice Roles:
- * @notice   DEFAULT_ADMIN_ROLE can add/remove roles
- * @notice   MOD role can create/change mint templates
- */
-contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
-  IPookyBall public pookyBall;
+ * @notice PookyBallMinter contains the game logic related to Pooky Ball mint.
+ * Mints can only be triggers by specifying a MintTemplate id.
+ * This contract is the base contract for {PookyMintEvent}, and will be used for the PookyStore.
+ *
+ * Chainlink VRF requests are used to obtain randomEntropy for the Pooky Balls.
 
+ * Roles:
+ * - DEFAULT_ADMIN_ROLE can add/remove roles
+ * - MOD role can create/change mint templates
+ */
+abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
+  // Roles
   bytes32 public constant MOD = keccak256('MOD');
 
-  /* VRF */
+  // Contracts
+  IPookyBall public pookyBall;
+
+  // Chainlink VRF parameters
   VRFCoordinatorV2Interface public vrf_coordinator;
   uint64 public vrf_subscriptionId;
   uint32 public vrf_callbackGasLimit;
@@ -35,16 +40,20 @@ contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
 
   uint256 public lastMintTemplateId;
   mapping(uint256 => MintTemplate) public mintTemplates;
-
   mapping(uint256 => MintRandomRequest) public mintRandomRequests;
 
-  event CreateMintTemplate(uint256 indexed templateId); // TODO: add more parameters?
-  event SetMintTemplateCanMint(uint256 indexed templateId, bool canMint);
+  // MintTemplate events
+  event CreateMintTemplate(uint256 indexed templateId);
+  event MintTemplateEnabled(uint256 indexed templateId, bool enabled);
   event RequestMintFromTemplate(uint256 indexed templateId, address indexed user);
 
-  event RandomnessRequested(uint256 indexed requestId, address indexed user, uint256 indexed ballId);
-  event RandomnessFullfiled(uint256 indexed requestId, uint256 indexed ballId, uint256 randomEntropy);
+  // Chainlink VRF events
+  event RandomnessRequested(uint256 indexed requestId, address indexed user, uint256 indexed tokenId);
+  event RandomnessFulfilled(uint256 indexed requestId, uint256 indexed tokenId, uint256 randomEntropy);
 
+  /**
+   * Initialization function that sets Chainlink VRF parameters.
+   */
   function __PookyBallMinter_init(
     uint256 _startFromId,
     address _admin,
@@ -68,8 +77,9 @@ contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
   }
 
   /**
-   * @notice sets the configuration for chainlink vrf
-   * @notice only MOD role can call this function
+   * @notice Change the Chainlink VRF parameters.
+   * @dev Requirements:
+   * - only MOD role can change the Chainlink VRF parameters.
    */
   function setVrfParameters(
     address _coordinator,
@@ -86,17 +96,19 @@ contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
   }
 
   /**
-   * @dev sets the address of PookyBall contract
-   * @dev only DEFAULT_ADMIN_ROLE role can call this function
+   * @notice Sets the address of the PookyBall contract.
+   * @dev Requirements:
+   * - only DEFAULT_ADMIN_ROLE role can call this function.
    */
-  function setPookyBallContract(address pookyBallAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
-    pookyBall = IPookyBall(pookyBallAddress);
+  function setPookyBallContract(address _pookyBall) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    pookyBall = IPookyBall(_pookyBall);
   }
 
   /**
-   * @notice creates the new mint template with `newMintTemplate` parameters
-   * @notice only MOD role can call this function
-   * @notice emits event CreateMintTemplate
+   * @notice Create a new MintTemplate.
+   * @dev Requirements:
+   * - only MOD role can create MintTemplates.
+   * Emits a CreateMintTemplate event.
    */
   function createMintTemplate(MintTemplate memory newMintTemplate) external onlyRole(MOD) returns (uint256) {
     lastMintTemplateId++;
@@ -106,75 +118,80 @@ contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
   }
 
   /**
-   * @notice change if tokens can be minted using minting template with id `mintTemplateId`
-   * @notice only MOD role can call this function
-   * @notice emits event SetMintTemplateCanMint
+   * @notice Enable/disable mint for MintTemplate with id `mintTemplateId`.
+   * @dev Requirements:
+   * - only MOD role can create MintTemplates.
+   * Emits a MintTemplateEnabled event.
    */
-  function changeMintTemplateCanMint(uint256 mintTemplateId, bool _canMint) external onlyRole(MOD) {
-    mintTemplates[mintTemplateId].canMint = _canMint;
-    emit SetMintTemplateCanMint(mintTemplateId, _canMint);
+  function enableMintTemplate(uint256 mintTemplateId, bool _enabled) external onlyRole(MOD) {
+    mintTemplates[mintTemplateId].enabled = _enabled;
+    emit MintTemplateEnabled(mintTemplateId, _enabled);
   }
 
   /**
-   * @dev internal function used to request new mint for the address `user`, using mint template `mintTemplateId`
-   * @dev  and the ball will be revokable until `revokableUntilTimestamp`.
-   * @dev function does all the checks, and requests random entropy from the Chainlink VRF.
-   * @notice emits events RequestMintFromTemplate and  RandomnessRequested
+   * @dev Internal function that mints a ball to the current contract and that will later be forwarded to {recipient}.
+   * After checking all requirements:
+   * - MintTemplate is enabled.
+   * - MintTemplate maximum mints has not been reached.
+   * The random entropy is made to Chainlink VRF platform.
+   * Emits a RequestMintFromTemplate event.
+   * @param recipient The final recipient of the newly linted Pooky Ball.
+   * @param mintTemplateId The MintTemplate id.
+   * @param revocableUntil The UNIX timestamp until the ball can be revoked.
    */
   function _requestMintFromTemplate(
-    address user,
+    address recipient,
     uint256 mintTemplateId,
-    uint256 revokableUntilTimestamp
+    uint256 revocableUntil
   ) internal {
     MintTemplate storage template = mintTemplates[mintTemplateId];
-    require(template.canMint == true, Errors.MINTING_DISABLED);
+    require(template.enabled, Errors.MINTING_DISABLED);
     require(template.currentMints < template.maxMints, Errors.MAX_MINTS_REACHED);
 
     template.currentMints++;
-    uint256 newBallId = pookyBall.mintWithRarityAndRevokableTimestamp(
-      address(this),
-      template.rarity,
-      revokableUntilTimestamp
-    );
+    uint256 newTokenId = pookyBall.mint(address(this), template.rarity, revocableUntil);
 
-    emit RequestMintFromTemplate(mintTemplateId, user);
-
-    _requestRandomEntropyForMint(user, newBallId);
+    emit RequestMintFromTemplate(mintTemplateId, recipient);
+    _requestRandomEntropyForMint(recipient, newTokenId);
   }
 
   /**
-   * @dev internal function used to request random entropy from the Chainilnk VRF
-   * @notice emits event RandomnessRequested
+   * @dev Internal function used to request random entropy from the Chainlink VRF.
+   * Emits a RandomnessRequested event.
    */
-  function _requestRandomEntropyForMint(address user, uint256 ballId) internal {
+  function _requestRandomEntropyForMint(address recipient, uint256 tokenId) internal {
     uint256 requestId = vrf_coordinator.requestRandomWords(
       vrf_keyHash,
       vrf_subscriptionId,
       vrf_requestConfirmations,
       vrf_callbackGasLimit,
-      1
+      1 // Only one word is required
     );
 
-    mintRandomRequests[requestId] = MintRandomRequest(user, ballId);
-    emit RandomnessRequested(requestId, user, ballId);
+    mintRandomRequests[requestId] = MintRandomRequest(recipient, tokenId);
+    emit RandomnessRequested(requestId, recipient, tokenId);
   }
 
   /**
-   * @dev this function is used in the response from Chainlink
-   * @dev we are using only first received number to set ball random entropy.
-   * @param requestId id of the sent request
-   * @param randomWords received random wards.
-   * @notice emits event RandomnessFullfiled
+   * @dev Handle randomness response from Chainlink VRF coordinator.
+   * Since only 1 word is requested in {_requestRandomEntropyForMint}, only first received number is used to set the
+   * Pooky Ball random entropy.
+   * Emits a RandomnessFulfilled event.
    */
   function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
     MintRandomRequest storage request = mintRandomRequests[requestId];
 
-    pookyBall.setRandomEntropy(request.ballId, randomWords[0]);
-    IERC721(address(pookyBall)).transferFrom(address(this), request.user, request.ballId);
+    pookyBall.setRandomEntropy(request.tokenId, randomWords[0]);
+    pookyBall.transferFrom(address(this), request.recipient, request.tokenId);
 
-    emit RandomnessFullfiled(requestId, request.ballId, randomWords[0]);
+    emit RandomnessFulfilled(requestId, request.tokenId, randomWords[0]);
   }
 
+  /**
+   * @notice Called by the Chainlink VRF coordinator when fulfilling random words.
+   * @dev Requirements:
+   * - Only vrf_coordinator can call this function.
+   */
   function rawFulfillRandomWords(uint256 requestId, uint256[] memory randomWords) external override {
     require(msg.sender == address(vrf_coordinator), Errors.ONLY_VRF_COORDINATOR);
     fulfillRandomWords(requestId, randomWords);

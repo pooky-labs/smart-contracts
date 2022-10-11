@@ -10,7 +10,6 @@ enum BallRarity {
   Legendary,
   Mythic
 }
-
 ```
 
 ## BallInfo
@@ -21,7 +20,7 @@ struct BallInfo {
   uint256 randomEntropy;
   uint256 level;
   uint256 pxp;
-  uint256 revokableUntilTimestamp;
+  uint256 revocableUntil;
 }
 ```
 
@@ -29,7 +28,7 @@ struct BallInfo {
 
 ```solidity
 struct MintTemplate {
-  bool canMint;
+  bool enabled;
   enum BallRarity rarity;
   uint256 maxMints;
   uint256 currentMints;
@@ -42,30 +41,18 @@ struct MintTemplate {
 
 ```solidity
 struct MintRandomRequest {
-  address user;
-  uint256 ballId;
+  address recipient;
+  uint256 tokenId;
 }
-
 ```
 
 ## BallUpdates
 
 ```solidity
 struct BallUpdates {
-  uint256 ballId;
-  uint256 addPxp;
-  bool toLevelUp;
+  uint256 tokenId;
+  uint256 addPXP;
+  bool shouldLevelUp;
 }
-
 ```
 
-## Signature
-
-```solidity
-struct Signature {
-  uint8 _v;
-  bytes32 _r;
-  bytes32 _s;
-}
-
-```

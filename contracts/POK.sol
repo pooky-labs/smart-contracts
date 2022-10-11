@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
+// Pooky Game Contracts (POK.sol)
+
 pragma solidity ^0.8.9;
 
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
@@ -6,13 +8,17 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
 import { Errors } from './types/Errors.sol';
 
 /**
- * @notice POK is ERC20 token used inside of the game.
- * @notice   Mintable by other Pooky game contracts.
- * @notice   Non-transferable in the beginning, until transfering is enabled by admin.
+ * @title PookyBall
+ * @author Pooky Engineering Team
  *
- * @notice Roles:
- * @notice   DEFAULT_ADMIN_ROLE can add/remove roles, can enable/disable token transfers.
- * @notice   POOKY_CONTRACT role can mint new tokens, can receive/send tokens while transfers are disabled.
+ * @notice POK is ERC20 token used inside of the game.
+ * Mintable by other Pooky game contracts.
+ * $POK is soul-bounded during first gaming phase, where the Pooky team will balance the rewards.
+ * Transfers will later be enabled by the Pooky team.
+ *
+ * @dev Roles:
+ * - DEFAULT_ADMIN_ROLE can add/remove roles, can enable/disable token transfers.
+ * - POOKY_CONTRACT role can mint new tokens, can receive/send tokens while transfers are disabled.
  */
 contract POK is ERC20Upgradeable, AccessControlUpgradeable {
   event SetTransferEnabled(bool transferEnabled);
@@ -32,15 +38,27 @@ contract POK is ERC20Upgradeable, AccessControlUpgradeable {
   }
 
   /**
-   * @notice only POOKY_CONTRACT role can mint tokens
+   * @notice Mint an arbitrary amount of $POK to an account.
+   * @dev Requirements:
+   * - only POOKY_CONTRACT role can mint $POK tokens
    */
   function mint(address to, uint256 amount) external onlyRole(POOKY_CONTRACT) {
     _mint(to, amount);
   }
 
   /**
-   * @notice enable or disable transfers of tokens between users
-   * @notice only DEFAULT_ADMIN_ROLE role can call this function
+   * @notice Burn an arbitrary amount of $POK of an account.
+   * @dev Requirements:
+   * - only POOKY_CONTRACT role can mint $POK tokens
+   */
+  function burn(address from, uint256 amount) external onlyRole(POOKY_CONTRACT) {
+    _burn(from, amount);
+  }
+
+  /**
+   * @notice Enable/disable transfers of $POK tokens between users.
+   * @dev Requirements:
+   * - only POOKY_CONTRACT role can mint $POK tokens
    */
   function setTransferEnabled(bool _transferEnabled) external onlyRole(DEFAULT_ADMIN_ROLE) {
     transferEnabled = _transferEnabled;
@@ -48,15 +66,16 @@ contract POK is ERC20Upgradeable, AccessControlUpgradeable {
   }
 
   /**
-   * @dev don't allow transfer if disabled
-   * @dev if transfers are disabled it's still posible to mint/burn tokens,
-   * @dev and send it to, or receive from, pooky game contracts
+   * @dev Restrict the $POK transfers between accounts.
+   * - Do not allow transfer between users if they are disabled, see {POK-setTransferEnabled}.
+   * - Mints and burns are always allowed.
+   * - POOKY_CONTRACT can always send and receive tokens.
    */
   function _beforeTokenTransfer(
     address from,
     address to,
-    uint256 amount
-  ) internal override {
+    uint256
+  ) internal view override {
     if (transferEnabled) return;
     if (from == address(0) || to == address(0)) return;
     if (hasRole(POOKY_CONTRACT, from) || hasRole(POOKY_CONTRACT, to)) return;

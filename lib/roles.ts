@@ -9,5 +9,6 @@ export default function hashRole(role: string): string {
 }
 
 export const POOKY_CONTRACT = hashRole('POOKY_CONTRACT');
+export const REWARD_SIGNER = hashRole('REWARD_SIGNER');
 export const BE = hashRole('BE');
 export const MOD = hashRole('MOD');

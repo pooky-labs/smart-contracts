@@ -5,7 +5,7 @@ import { POOKY_CONTRACT } from '../lib/roles';
 import { expectHasRole, expectMissingRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
 import waitTx from '../lib/waitTx';
-import { POK, PookyGame, PookyMintEvent } from '../typings';
+import { POK, PookyGame, PookyBallGenesisMinter } from '../typings';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
@@ -18,11 +18,11 @@ describe('POK', async () => {
 
   let POK: POK;
   let PookyGame: PookyGame;
-  let PookyMintEvent: PookyMintEvent;
+  let PookyBallGenesisMinter: PookyBallGenesisMinter;
 
   beforeEach(async () => {
     ({ deployer, player, mod } = await getSigners());
-    ({ POK, PookyMintEvent, PookyGame } = await loadFixture(stackFixture));
+    ({ POK, PookyBallGenesisMinter, PookyGame } = await loadFixture(stackFixture));
 
     // In this specific test, the mod account is allowed to mint POK
     await waitTx(POK.grantRole(POOKY_CONTRACT, mod.address));
@@ -30,7 +30,7 @@ describe('POK', async () => {
 
   describe('configuration', () => {
     it('should have roles configured', async () => {
-      await expectHasRole(POK, PookyMintEvent, POOKY_CONTRACT);
+      await expectHasRole(POK, PookyBallGenesisMinter, POOKY_CONTRACT);
       await expectHasRole(POK, PookyGame, POOKY_CONTRACT);
     });
   });

@@ -1,10 +1,17 @@
-import { POK__factory, PookyBall__factory, PookyGame__factory, PookyMintEvent__factory } from '../typings';
+import {
+  POK__factory,
+  PookyBall__factory,
+  PookyGame__factory,
+  PookyBallGenesisMinter__factory,
+  PookyBallMock__factory,
+  POKMock__factory,
+} from '../typings';
 import * as Params from './constants';
 import { deployWithProxy } from './deployWithProxy';
 import getSigners from './getSigners';
 import { registerContractInJsonDb } from './helpers/DbHelper';
 import logger from './logger';
-import { BE, MOD, POOKY_CONTRACT } from './roles';
+import { BE, MOD, POOKY_CONTRACT, REWARD_SIGNER } from './roles';
 import { ContractStack } from './types';
 import waitTx from './waitTx';
 
@@ -14,6 +21,9 @@ interface DeployContractsOptions {
 
   /** Write the deployed contracts to the file database. */
   writeInDB?: boolean;
+
+  /** Use mocked POK and PookyBall instead */
+  mock?: boolean;
 }
 
 /**
@@ -23,16 +33,19 @@ interface DeployContractsOptions {
 export async function deployContracts({
   log = true,
   writeInDB = true,
+  mock = false,
 }: DeployContractsOptions = {}): Promise<ContractStack> {
   const { deployer, treasury, backendSigner, mod } = await getSigners();
   logger.setSettings({
     minLevel: log ? 'silly' : 'error',
   });
 
-  const POK = await deployWithProxy(new POK__factory().connect(deployer), ['Pook Token', 'POK', deployer.address]);
+  const POKFactory = mock ? new POKMock__factory() : new POK__factory();
+  const POK = await deployWithProxy(POKFactory.connect(deployer), ['Pook Token', 'POK', deployer.address]);
   logger.info('Deployed POK to', POK.address);
 
-  const PookyBall = await deployWithProxy(new PookyBall__factory().connect(deployer), [
+  const PookyBallFactory = mock ? new PookyBallMock__factory() : new PookyBall__factory();
+  const PookyBall = await deployWithProxy(PookyBallFactory.connect(deployer), [
     'Pooky Ball',
     'POOKY BALL',
     'https://baseuri/',
@@ -41,7 +54,7 @@ export async function deployContracts({
   ]);
   logger.info('Deployed PookyBall to', PookyBall.address);
 
-  const PookyMintEvent = await deployWithProxy(new PookyMintEvent__factory().connect(deployer), [
+  const PookyBallGenesisMinter = await deployWithProxy(new PookyBallGenesisMinter__factory().connect(deployer), [
     Params.START_ID,
     deployer.address,
     treasury.address,
@@ -54,34 +67,41 @@ export async function deployContracts({
     Params.KEY_HASH,
     Params.SUBSCRIPTION_ID,
   ]);
-  logger.info('Deployed PookyMintEvent to', PookyMintEvent.address);
+  logger.info('Deployed PookyBallGenesisMinter to', PookyBallGenesisMinter.address);
 
-  const PookyGame = await deployWithProxy(new PookyGame__factory().connect(deployer), []);
+  const PookyGame = await deployWithProxy(new PookyGame__factory().connect(deployer), [deployer.address]);
   logger.info('Deployed PookyGame to', PookyGame.address);
 
   if (writeInDB) {
-    await registerContractInJsonDb('POK', POK);
-    await registerContractInJsonDb('PookyBall', PookyBall);
-    await registerContractInJsonDb('PookyMintEvent', PookyMintEvent);
+    if (mock) {
+      await registerContractInJsonDb('POKMock', POK);
+      await registerContractInJsonDb('PookyBallMock', PookyBall);
+    } else {
+      await registerContractInJsonDb('POK', POK);
+      await registerContractInJsonDb('PookyBall', PookyBall);
+    }
+
+    await registerContractInJsonDb('PookyBallGenesisMinter', PookyBallGenesisMinter);
     await registerContractInJsonDb('PookyGame', PookyGame);
   }
 
-  await waitTx(POK.grantRole(POOKY_CONTRACT, PookyMintEvent.address));
+  await waitTx(POK.grantRole(POOKY_CONTRACT, PookyBallGenesisMinter.address));
   await waitTx(POK.grantRole(POOKY_CONTRACT, PookyGame.address));
 
-  await waitTx(PookyBall.grantRole(POOKY_CONTRACT, PookyMintEvent.address));
+  await waitTx(PookyBall.grantRole(POOKY_CONTRACT, PookyBallGenesisMinter.address));
   await waitTx(PookyBall.grantRole(POOKY_CONTRACT, PookyGame.address));
 
-  await waitTx(PookyMintEvent.grantRole(BE, backendSigner.address));
-  await waitTx(PookyMintEvent.grantRole(MOD, mod.address));
-  await waitTx(PookyMintEvent.setPookyBallContract(PookyBall.address));
+  await waitTx(PookyBallGenesisMinter.grantRole(BE, backendSigner.address));
+  await waitTx(PookyBallGenesisMinter.grantRole(MOD, mod.address));
+  await waitTx(PookyBallGenesisMinter.setPookyBallContract(PookyBall.address));
 
-  await waitTx(PookyGame._setLevelPxpNeeded());
-  await waitTx(PookyGame._setLevelCost());
+  await waitTx(PookyGame._setLevelPXP());
+  await waitTx(PookyGame._setLevelPOKCost());
   await waitTx(PookyGame._setMaxBallLevel());
   await waitTx(PookyGame.setPookyBallContract(PookyBall.address));
-  await waitTx(PookyGame.setPookToken(POK.address));
-  await waitTx(PookyGame.setPookySigner(backendSigner.address));
+  await waitTx(PookyGame.setPOKContract(POK.address));
 
-  return { POK, PookyBall, PookyMintEvent, PookyGame };
+  await waitTx(PookyGame.grantRole(REWARD_SIGNER, backendSigner.address));
+
+  return { POK, PookyBall, PookyBallGenesisMinter, PookyGame };
 }

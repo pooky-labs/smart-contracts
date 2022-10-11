@@ -4,11 +4,12 @@
 
 POK is ERC20 token used inside of the game.
 Mintable by other Pooky game contracts.
-Non-transferable in the beginning, until transfering is enabled by admin.
+$POK is soul-bounded during first gaming phase, where the Pooky team will balance the rewards.
+Transfers will later be enabled by the Pooky team.
 
-Roles:
-DEFAULT_ADMIN_ROLE can add/remove roles, can enable/disable token transfers.
-POOKY_CONTRACT role can mint new tokens, can receive/send tokens while transfers are disabled.
+_Roles:
+- DEFAULT_ADMIN_ROLE can add/remove roles, can enable/disable token transfers.
+- POOKY_CONTRACT role can mint new tokens, can receive/send tokens while transfers are disabled._
 
 ### SetTransferEnabled
 
@@ -40,7 +41,21 @@ function initialize(string _name, string _symbol, address _admin) public
 function mint(address to, uint256 amount) external
 ```
 
-only POOKY_CONTRACT role can mint tokens
+Mint an arbitrary amount of $POK to an account.
+
+_Requirements:
+- only POOKY_CONTRACT role can mint $POK tokens_
+
+### burn
+
+```solidity
+function burn(address from, uint256 amount) external
+```
+
+Burn an arbitrary amount of $POK of an account.
+
+_Requirements:
+- only POOKY_CONTRACT role can mint $POK tokens_
 
 ### setTransferEnabled
 
@@ -48,15 +63,19 @@ only POOKY_CONTRACT role can mint tokens
 function setTransferEnabled(bool _transferEnabled) external
 ```
 
-enable or disable transfers of tokens between users
-only DEFAULT_ADMIN_ROLE role can call this function
+Enable/disable transfers of $POK tokens between users.
 
-### \_beforeTokenTransfer
+_Requirements:
+- only POOKY_CONTRACT role can mint $POK tokens_
+
+### _beforeTokenTransfer
 
 ```solidity
-function _beforeTokenTransfer(address from, address to, uint256 amount) internal
+function _beforeTokenTransfer(address from, address to, uint256) internal view
 ```
 
-_don't allow transfer if disabled
-if transfers are disabled it's still posible to mint/burn tokens,
-and send it to, or receive from, pooky game contracts_
+_Restrict the $POK transfers between accounts.
+- Do not allow transfer between users if they are disabled, see {POK-setTransferEnabled}.
+- Mints and burns are always allowed.
+- POOKY_CONTRACT can always send and receive tokens._
+

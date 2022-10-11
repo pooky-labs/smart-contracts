@@ -2,24 +2,29 @@
 
 ## PookyBall
 
-PookyBall is ERC721 token representing Ball NFTs.
-Mintable by other Pooky game contracts.
+PookyBall is ERC721 token representing Pooky Ball NFTs. Balls are mintable by other Pooky game contracts.
+This contract does not hold any aspect of the Pooky gameplay and only serves as Pooky Ball information storage.
+
+Pooky Balls NFT have the following features (see {BallInfo}):
+- `rarity`
+- `randomEntropy` the ball random entropy (provided by Chainlink VRF v2) which is used to generate the ball image and
+  in-game boosts.
+- `level` the ball level
+- `pxp` the ball PXP (experience points)
+- `revocableUntil` the date/time until the ball can be revoked. See below for detailed explanations.
+
+Leveling up:
+Pooky Balls NFT gain PXP when used to place prediction on the Pooky game. Balls cannot loose PXP.
+Once a ball has acquired enough PXP, it can be leveled up in exchange of a certain amount of $POK token (see {POK}).
+
+NFT revocations:
+Pooky Balls NFT can be minted in response of a credit card payment. Since the charge can be disputed, tokens
+purchased with credit card are kept _revocable_ for a certain period of time.
+Revocable balls cannot be transferred and can be burned in case of a refund.
 
 Roles:
-DEFAULT_ADMIN_ROLE can add/remove roles
-POOKY_CONTRACT role can mint new tokens
-
-### baseUri
-
-```solidity
-string baseUri
-```
-
-### contractUri
-
-```solidity
-string contractUri
-```
+- DEFAULT_ADMIN_ROLE can add/remove roles
+- POOKY_CONTRACT role can mint new tokens
 
 ### POOKY_CONTRACT
 
@@ -27,10 +32,22 @@ string contractUri
 bytes32 POOKY_CONTRACT
 ```
 
-### lastBallId
+### baseURI_
 
 ```solidity
-uint256 lastBallId
+string baseURI_
+```
+
+### _contractURI
+
+```solidity
+string _contractURI
+```
+
+### lastTokenId
+
+```solidity
+uint256 lastTokenId
 ```
 
 ### balls
@@ -39,28 +56,28 @@ uint256 lastBallId
 mapping(uint256 => struct BallInfo) balls
 ```
 
-### BallLevelChange
-
-```solidity
-event BallLevelChange(uint256 ballId, uint256 level)
-```
-
-### BallAddPxp
-
-```solidity
-event BallAddPxp(uint256 ballId, uint256 addPxp)
-```
-
 ### BallSetRandomEntropy
 
 ```solidity
-event BallSetRandomEntropy(uint256 ballId, uint256 randomEntropy)
+event BallSetRandomEntropy(uint256 tokenId, uint256 randomEntropy)
+```
+
+### BallLevelChange
+
+```solidity
+event BallLevelChange(uint256 tokenId, uint256 level)
+```
+
+### BallAddPXP
+
+```solidity
+event BallAddPXP(uint256 tokenId, uint256 amount)
 ```
 
 ### initialize
 
 ```solidity
-function initialize(string _name, string _symbol, string _baseUri, string _contractUri, address _admin) public
+function initialize(string _name, string _symbol, string _baseURI_, string contractURI_, address _admin) public
 ```
 
 ### contractURI
@@ -69,21 +86,19 @@ function initialize(string _name, string _symbol, string _baseUri, string _contr
 function contractURI() public view returns (string)
 ```
 
+URI of the contract-level metadata.
+Specified by OpenSea documentation (https://docs.opensea.io/docs/contract-level-metadata).
+
 ### setContractURI
 
 ```solidity
-function setContractURI(string _contractUri) external
+function setContractURI(string contractURI_) external
 ```
 
-### \_baseURI
+Set the URI of the contract-level metadata.
 
-```solidity
-function _baseURI() internal view virtual returns (string)
-```
-
-_Base URI for computing {tokenURI}. If set, the resulting URI for each
-token will be the concatenation of the `baseURI` and the `tokenId`. Empty
-by default, can be overridden in child contracts._
+_Requirements:
+- Only DEFAULT_ADMIN_ROLE role can set the contract URI._
 
 ### tokenURI
 
@@ -91,125 +106,122 @@ by default, can be overridden in child contracts._
 function tokenURI(uint256 tokenId) public view virtual returns (string)
 ```
 
-_See {IERC721Metadata-tokenURI}._
+Metadata URI of the token {tokenId}.
+
+_See {IERC721Metadata-tokenURI}.
+Requirements:
+- Ball {tokenId} should exist (minted and not burned)._
 
 ### getBallInfo
 
 ```solidity
-function getBallInfo(uint256 ballId) external view returns (struct BallInfo)
+function getBallInfo(uint256 tokenId) external view returns (struct BallInfo)
 ```
 
-#### Return Values
+Ball information of a particular Pooky Ball.
 
-| Name | Type            | Description                                                                          |
-| ---- | --------------- | ------------------------------------------------------------------------------------ |
-| [0]  | struct BallInfo | returns BallInfo struct with all ball parameters for the Pooky Ball with id `ballId` |
+_Requirements:
+- Ball {tokenId} should exist (minted and not burned)._
 
-### getBallPxp
+### isRevocable
 
 ```solidity
-function getBallPxp(uint256 ballId) external view returns (uint256)
+function isRevocable(uint256 tokenId) public view returns (bool)
 ```
 
-#### Return Values
-
-| Name | Type    | Description                                           |
-| ---- | ------- | ----------------------------------------------------- |
-| [0]  | uint256 | returns pxp points of the Pooky Ball with id `ballId` |
-
-### addBallPxp
-
-```solidity
-function addBallPxp(uint256 ballId, uint256 addPxpAmount) external
-```
-
-adds pxp points to the Pooky Ball with id `ballId`
-only POOKY_CONTRACT role can call this function
-
-#### Parameters
-
-| Name         | Type    | Description             |
-| ------------ | ------- | ----------------------- |
-| ballId       | uint256 |                         |
-| addPxpAmount | uint256 | amount of points to add |
-
-### getBallLevel
-
-```solidity
-function getBallLevel(uint256 ballId) external view returns (uint256)
-```
-
-#### Return Values
-
-| Name | Type    | Description                                      |
-| ---- | ------- | ------------------------------------------------ |
-| [0]  | uint256 | returns level of the Pooky Ball with id `ballId` |
-
-### changeBallLevel
-
-```solidity
-function changeBallLevel(uint256 ballId, uint256 newLevel) external
-```
-
-changes the level of the Pooky Ball with id `ballId` to the `newLevel`
-only POOKY_CONTRACT role can call this function
-
-### \_mintBall
-
-```solidity
-function _mintBall(address to, struct BallInfo ballInfo) internal returns (uint256)
-```
-
-_mints new Pooky Ball with `ballInfo` parameters to the address `to`.
-id of the ball is set incrementally, starting from 1.
-this function is called internally, with default ball parameters_
-
-### mintWithRarity
-
-```solidity
-function mintWithRarity(address to, enum BallRarity rarity) external returns (uint256)
-```
-
-mints new Pooky Ball to the address `to` with set rarity to `rarity`
-and all other default parameters
-only POOKY_CONTRACT role can call this function
-
-### mintWithRarityAndRevokableTimestamp
-
-```solidity
-function mintWithRarityAndRevokableTimestamp(address to, enum BallRarity rarity, uint256 revokableUntil) external returns (uint256)
-```
-
-mints new Pooky Ball to the address `to` with set rarity to `rarity`,
-and revokable until `revokableUntil`. All other parameters are default.
-only POOKY_CONTRACT role can call this function
-
-### revokeBall
-
-```solidity
-function revokeBall(uint256 ballId) external
-```
-
-revokes the ball with id `ballId`.
-Ball is revokable only if current timestamp is less then `ball.revokableUntilTimestamp`
-only POOKY_CONTRACT role can call this function
+If a Pooky Ball with id {tokenId} is revocable.
 
 ### setRandomEntropy
 
 ```solidity
-function setRandomEntropy(uint256 ballId, uint256 _randomEntropy) external
+function setRandomEntropy(uint256 tokenId, uint256 _randomEntropy) external
 ```
 
-sets the random entropy to the ball with id `ballId` to `_randomEntropy`
-only POOKY_CONTRACT role can call this function
+Sets the random entropy of the Pooky Ball with id {tokenId}.
 
-### \_beforeTokenTransfer
+_Requirements:
+- Only POOKY_CONTRACT role can increase Pooky Balls levels.
+- Ball {tokenId} should exist (minted and not burned).
+- Previous entropy should be zero._
+
+### addBallPXP
 
 ```solidity
-function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal
+function addBallPXP(uint256 tokenId, uint256 amount) external
 ```
 
-_if the ball is still revokable, it can't be transfered._
+Add PXP (Experience points) to the Pooky Ball with id {tokenId}.
+
+_Requirements:
+- Only POOKY_CONTRACT role can increase Pooky Balls PXP.
+- Ball {tokenId} should exist (minted and not burned)._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| tokenId | uint256 | The Pooky Ball NFT id. |
+| amount | uint256 | The PXP amount to add the to Pooky Ball. |
+
+### changeBallLevel
+
+```solidity
+function changeBallLevel(uint256 tokenId, uint256 newLevel) external
+```
+
+Change the level of the Pooky Ball with id {tokenId} to the {newLevel}
+
+_Requirements:
+- Only POOKY_CONTRACT role can increase Pooky Balls levels.
+- Ball {tokenId} should exist (minted and not burned)._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| tokenId | uint256 | The Pooky Ball NFT id. |
+| newLevel | uint256 | The new Ball level. |
+
+### mint
+
+```solidity
+function mint(address to, enum BallRarity rarity, uint256 revocableUntil) external returns (uint256)
+```
+
+Mint a ball with a specific {BallRarity} and with a specific revocation date/time, with all other Ball
+parameters set to default.
+
+_Requirements:
+- Only POOKY_CONTRACT role can mint Pooky Balls._
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| to | address | The address which will own the minted Pooky Ball. |
+| rarity | enum BallRarity | The address which will own the minted Pooky Ball. |
+| revocableUntil | uint256 | The UNIX timestamp until the ball can be revoked. |
+
+### revokeBall
+
+```solidity
+function revokeBall(uint256 tokenId) external
+```
+
+Revoke and burn the Pooky Ball with id {tokenId}.
+
+_Requirements:
+- Only POOKY_CONTRACT role can mint Pooky Balls.
+- Ball is revocable only if current timestamp is less then `ball.revocableUntil`_
+
+### _beforeTokenTransfer
+
+```solidity
+function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal view
+```
+
+_Restrict revocable Pooky Balls transfers.
+Mints and burns are always allowed, as transfers from POOKY_CONTRACT role._
 
 ### supportsInterface
 
@@ -217,10 +229,5 @@ _if the ball is still revokable, it can't be transfered._
 function supportsInterface(bytes4 interfaceId) public view virtual returns (bool)
 ```
 
-### uintToStr
+IERC165 declaration.
 
-```solidity
-function uintToStr(uint256 _i) internal pure returns (string _uintAsString)
-```
-
-_library function to convert int to string_
