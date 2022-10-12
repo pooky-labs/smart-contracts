@@ -136,7 +136,7 @@ describe('PookyGame', () => {
       nonce = randUint256();
       ({ timestamp: currentTimestamp } = await ethers.provider.getBlock('latest'));
       amount = ethers.utils.parseEther(randInt(HUNDRED).toString());
-      ttl = currentTimestamp + 60 + randInt(HUNDRED); // at least 1 minute
+      ttl = currentTimestamp + 3600 + randInt(HUNDRED); // at least 1 minute
 
       await waitTx(PookyBall.grantRole(POOKY_CONTRACT, mod.address));
       await waitTx(PookyBall.connect(mod).mint(player.address, BallRarity.Common, 0));
