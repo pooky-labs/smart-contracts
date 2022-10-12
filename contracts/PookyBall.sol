@@ -8,7 +8,6 @@ import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol';
 import './interfaces/IPookyBall.sol';
 import { BallInfo, BallRarity } from './types/DataTypes.sol';
-import { Errors } from './types/Errors.sol';
 
 /**
  * @title PookyBall
@@ -52,7 +51,11 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
 
   event BallSetRandomEntropy(uint256 indexed tokenId, uint256 randomEntropy);
   event BallLevelChange(uint256 indexed tokenId, uint256 level);
-  event BallAddPXP(uint256 indexed tokenId, uint256 amount);
+  event ChangeBallPXP(uint256 indexed tokenId, uint256 amount);
+
+  error EntropyAlreadySet(uint256 tokenId);
+  error NotRevocableAnymore(uint256 tokenId, uint256 now);
+  error TransferLockedWhileRevocable(uint256 tokenId);
 
   function initialize(
     string memory _name,
@@ -93,7 +96,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
    * - Ball {tokenId} should exist (minted and not burned).
    */
   function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-    require(_exists(tokenId), Errors.TOKEN_NOT_FOUND);
+    _requireMinted(tokenId);
     return bytes(baseURI_).length > 0 ? string(abi.encodePacked(baseURI_, tokenId.toString(), '.json')) : '';
   }
 
@@ -103,7 +106,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
    * - Ball {tokenId} should exist (minted and not burned).
    */
   function getBallInfo(uint256 tokenId) external view returns (BallInfo memory) {
-    require(_exists(tokenId), Errors.TOKEN_NOT_FOUND);
+    _requireMinted(tokenId);
     return balls[tokenId];
   }
 
@@ -111,7 +114,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
    * @notice If a Pooky Ball with id {tokenId} is revocable.
    */
   function isRevocable(uint256 tokenId) public view returns (bool) {
-    require(_exists(tokenId), Errors.TOKEN_NOT_FOUND);
+    _requireMinted(tokenId);
     return block.timestamp <= balls[tokenId].revocableUntil;
   }
 
@@ -123,24 +126,29 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
    * - Previous entropy should be zero.
    */
   function setRandomEntropy(uint256 tokenId, uint256 _randomEntropy) external onlyRole(POOKY_CONTRACT) {
-    require(_exists(tokenId), Errors.TOKEN_NOT_FOUND);
-    require(balls[tokenId].randomEntropy == 0, Errors.BALL_ENTROPY_ALREADY_SET);
+    _requireMinted(tokenId);
+
+    if (balls[tokenId].randomEntropy != 0) {
+      revert EntropyAlreadySet(tokenId);
+    }
+
     balls[tokenId].randomEntropy = _randomEntropy;
     emit BallSetRandomEntropy(tokenId, _randomEntropy);
   }
 
   /**
-   * @notice Add PXP (Experience points) to the Pooky Ball with id {tokenId}.
+   * @notice Change the PXP (Experience points) of the Pooky Ball with id {tokenId}.
    * @dev Requirements:
    * - Only POOKY_CONTRACT role can increase Pooky Balls PXP.
    * - Ball {tokenId} should exist (minted and not burned).
    * @param tokenId The Pooky Ball NFT id.
    * @param amount The PXP amount to add the to Pooky Ball.
    */
-  function addBallPXP(uint256 tokenId, uint256 amount) external onlyRole(POOKY_CONTRACT) {
-    require(_exists(tokenId), Errors.TOKEN_NOT_FOUND);
-    balls[tokenId].pxp += amount;
-    emit BallAddPXP(tokenId, amount);
+  function changePXP(uint256 tokenId, uint256 amount) external onlyRole(POOKY_CONTRACT) {
+    _requireMinted(tokenId);
+
+    balls[tokenId].pxp = amount;
+    emit ChangeBallPXP(tokenId, amount);
   }
 
   /**
@@ -151,8 +159,9 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
    * @param tokenId The Pooky Ball NFT id.
    * @param newLevel The new Ball level.
    */
-  function changeBallLevel(uint256 tokenId, uint256 newLevel) external onlyRole(POOKY_CONTRACT) {
-    require(_exists(tokenId), Errors.TOKEN_NOT_FOUND);
+  function changeLevel(uint256 tokenId, uint256 newLevel) external onlyRole(POOKY_CONTRACT) {
+    _requireMinted(tokenId);
+
     balls[tokenId].level = newLevel;
     emit BallLevelChange(tokenId, newLevel);
   }
@@ -193,8 +202,11 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
    * - Only POOKY_CONTRACT role can mint Pooky Balls.
    * - Ball is revocable only if current timestamp is less then `ball.revocableUntil`
    */
-  function revokeBall(uint256 tokenId) external onlyRole(POOKY_CONTRACT) {
-    require(isRevocable(tokenId), Errors.REVOCABLE_TIMESTAMP_PASSED);
+  function revoke(uint256 tokenId) external onlyRole(POOKY_CONTRACT) {
+    if (!isRevocable(tokenId)) {
+      revert NotRevocableAnymore(tokenId, block.timestamp);
+    }
+
     _burn(tokenId);
   }
 
@@ -209,7 +221,10 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   ) internal view override {
     if (from == address(0) || to == address(0)) return;
     if (hasRole(POOKY_CONTRACT, from)) return;
-    require(!isRevocable(tokenId), Errors.CANT_TRANSFER_WHILE_REVOCABLE);
+
+    if (isRevocable(tokenId)) {
+      revert TransferLockedWhileRevocable(tokenId);
+    }
   }
 
   /**

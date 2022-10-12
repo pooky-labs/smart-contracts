@@ -1,11 +1,11 @@
 import { DEFAULT_ADMIN_ROLE, HUNDRED } from '../lib/constants';
 import getSigners from '../lib/getSigners';
+import parseEther from '../lib/parseEther';
 import { randInt } from '../lib/rand';
 import { POOKY_CONTRACT } from '../lib/roles';
 import { expectHasRole, expectMissingRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
-import waitTx from '../lib/waitTx';
-import { POK, PookyGame, PookyBallGenesisMinter } from '../typings';
+import { POK, PookyBallGenesisMinter, PookyGame } from '../typings';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
@@ -25,7 +25,7 @@ describe('POK', async () => {
     ({ POK, PookyBallGenesisMinter, PookyGame } = await loadFixture(stackFixture));
 
     // In this specific test, the mod account is allowed to mint POK
-    await waitTx(POK.grantRole(POOKY_CONTRACT, mod.address));
+    await POK.grantRole(POOKY_CONTRACT, mod.address);
   });
 
   describe('configuration', () => {
@@ -42,8 +42,14 @@ describe('POK', async () => {
     });
 
     it('should revert if non-POOKY_CONTRACT account tries to mint random amount of POK tokens', async () => {
-      const randomAmount = randInt(HUNDRED);
-      await expectMissingRole(POK.connect(player).mint(player.address, randomAmount), player, POOKY_CONTRACT);
+      await expectMissingRole(POK.connect(player).mint(player.address, parseEther(10)), player, POOKY_CONTRACT);
+    });
+  });
+
+  describe('setTransferEnabled', () => {
+    it('should allow DEFAULT_ADMIN_ROLE account to enable transfer', async () => {
+      await expect(POK.connect(deployer).setTransferEnabled(true)).to.emit(POK, 'SetTransferEnabled').withArgs(true);
+      expect(await POK.transferEnabled()).to.be.equal(true, 'Transfer is not enabled');
     });
 
     it('should revert if non-DEFAULT_ADMIN_ROLE account tries to enable/disable POK token transfer', async () => {
@@ -52,30 +58,27 @@ describe('POK', async () => {
     });
   });
 
-  describe('setTransferEnabled', () => {
-    it('should allow DEFAULT_ADMIN_ROLE account to enable transfer', async () => {
-      await waitTx(POK.connect(deployer).setTransferEnabled(true));
-      expect(await POK.transferEnabled()).to.be.equal(true, 'Transfer is not enabled');
-    });
-  });
-
   describe('transfer', () => {
     it('should allow users transfer POK after transfer have been enabled', async () => {
       // 1. Enable transfers
-      await waitTx(POK.connect(deployer).setTransferEnabled(true));
+      await POK.connect(deployer).setTransferEnabled(true);
 
       // 2. Mint 30 POK to player
-      await waitTx(POK.connect(mod).mint(player.address, ethers.utils.parseEther('30')));
+      await POK.connect(mod).mint(player.address, parseEther(30));
 
       // 3. Attempt to transfer 1 POK to mod
-      const amount = ethers.utils.parseEther('1');
+      const amount = parseEther(1);
       expect(() => POK.connect(player).transfer(mod.address, amount)).to.changeTokenBalance(POK, mod.address, amount);
     });
 
     it('should revert if POK is soul-bounded', async () => {
       // 1. Mint 30 POK to player
-      await waitTx(POK.connect(mod).mint(player.address, ethers.utils.parseEther('30')));
-      await expect(POK.connect(player).transfer(player.address, ethers.utils.parseEther('1'))).to.be.revertedWith('11');
+      await POK.connect(mod).mint(player.address, parseEther(30));
+
+      // 2. Attempt to transfer 1 POK to mod
+      await expect(POK.connect(player).transfer(player.address, parseEther(1)))
+        .to.be.revertedWithCustomError(POK, 'TransfersDisabled')
+        .withArgs();
     });
   });
 });

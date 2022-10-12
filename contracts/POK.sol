@@ -5,7 +5,6 @@ pragma solidity ^0.8.9;
 
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
-import { Errors } from './types/Errors.sol';
 
 /**
  * @title PookyBall
@@ -21,11 +20,14 @@ import { Errors } from './types/Errors.sol';
  * - POOKY_CONTRACT role can mint new tokens, can receive/send tokens while transfers are disabled.
  */
 contract POK is ERC20Upgradeable, AccessControlUpgradeable {
-  event SetTransferEnabled(bool transferEnabled);
-
+  // Roles
   bytes32 public constant POOKY_CONTRACT = keccak256('POOKY_CONTRACT');
 
   bool public transferEnabled;
+
+  event SetTransferEnabled(bool transferEnabled);
+
+  error TransfersDisabled();
 
   function initialize(
     string memory _name,
@@ -80,6 +82,6 @@ contract POK is ERC20Upgradeable, AccessControlUpgradeable {
     if (from == address(0) || to == address(0)) return;
     if (hasRole(POOKY_CONTRACT, from) || hasRole(POOKY_CONTRACT, to)) return;
 
-    revert(Errors.POK_TRANSFER_NOT_ENABLED);
+    revert TransfersDisabled();
   }
 }

@@ -2,7 +2,7 @@ import { POK, PookyBall, PookyBallGenesisMinter, PookyGame } from '../typings';
 import { BaseContract, ContractFactory } from 'ethers';
 
 export enum BallRarity {
-  Uncommon,
+  Common,
   Rare,
   Epic,
   Legendary,

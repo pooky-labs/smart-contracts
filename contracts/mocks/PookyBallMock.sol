@@ -15,7 +15,7 @@ contract PookyBallMock is PookyBall {
   }
 
   function mock_setBallInfo(uint256 tokenId, BallInfo memory ballInfo) external {
-    require(_exists(tokenId), Errors.TOKEN_NOT_FOUND);
+    _requireMinted(tokenId);
     balls[tokenId] = ballInfo;
   }
 }
