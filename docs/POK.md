@@ -1,5 +1,11 @@
 # Solidity API
 
+## TransfersDisabled
+
+```solidity
+error TransfersDisabled()
+```
+
 ## POK
 
 POK is ERC20 token used inside of the game.
@@ -11,12 +17,6 @@ _Roles:
 - DEFAULT_ADMIN_ROLE can add/remove roles, can enable/disable token transfers.
 - POOKY_CONTRACT role can mint new tokens, can receive/send tokens while transfers are disabled._
 
-### SetTransferEnabled
-
-```solidity
-event SetTransferEnabled(bool transferEnabled)
-```
-
 ### POOKY_CONTRACT
 
 ```solidity
@@ -27,6 +27,12 @@ bytes32 POOKY_CONTRACT
 
 ```solidity
 bool transferEnabled
+```
+
+### SetTransferEnabled
+
+```solidity
+event SetTransferEnabled(bool transferEnabled)
 ```
 
 ### initialize

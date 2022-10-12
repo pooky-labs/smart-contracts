@@ -4,7 +4,7 @@
 
 ```solidity
 enum BallRarity {
-  Uncommon,
+  Common,
   Rare,
   Epic,
   Legendary,

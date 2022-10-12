@@ -1,5 +1,41 @@
 # Solidity API
 
+## OwnershipRequired
+
+```solidity
+error OwnershipRequired(uint256 tokenId)
+```
+
+## MaximumLevelReached
+
+```solidity
+error MaximumLevelReached(uint256 tokenId, uint256 maxLevel)
+```
+
+## InsufficientPOKBalance
+
+```solidity
+error InsufficientPOKBalance(uint256 required, uint256 actual)
+```
+
+## InvalidSignature
+
+```solidity
+error InvalidSignature()
+```
+
+## ExpiredSignature
+
+```solidity
+error ExpiredSignature(uint256 expiration)
+```
+
+## NonceUsed
+
+```solidity
+error NonceUsed()
+```
+
 ## PookyGame
 
 The contract controls the on-chain features of the Pooky game.
@@ -29,16 +65,34 @@ contract IPookyBall pookyBall
 contract IPOK pok
 ```
 
-### levelPXP
+### PXP_DECIMALS
 
 ```solidity
-uint256[] levelPXP
+uint256 PXP_DECIMALS
 ```
 
-### levelPOKCost
+### PXP_BASE
 
 ```solidity
-uint256[] levelPOKCost
+uint256 PXP_BASE
+```
+
+### RATIO_DECIMALS
+
+```solidity
+uint256 RATIO_DECIMALS
+```
+
+### RATIO_PXP
+
+```solidity
+uint256 RATIO_PXP
+```
+
+### RATIO_POK
+
+```solidity
+uint256 RATIO_POK
 ```
 
 ### maxBallLevelPerRarity
@@ -47,10 +101,10 @@ uint256[] levelPOKCost
 mapping(enum BallRarity => uint256) maxBallLevelPerRarity
 ```
 
-### usedNonces
+### nonces
 
 ```solidity
-mapping(uint256 => bool) usedNonces
+mapping(uint256 => bool) nonces
 ```
 
 ### initialize
@@ -67,25 +121,48 @@ function _setMaxBallLevel() external
 
 _Initialization function that sets the Pooky Ball maximum level for a given rarity._
 
-### _setLevelPXP
+### levelPXP
 
 ```solidity
-function _setLevelPXP() external
+function levelPXP(uint256 level) public pure returns (uint256)
 ```
 
-_Initialization function that sets the Pooky Ball PXP required for a given level.
-Levels range starts at 0 and ends at 100, inclusive.
-TODO(2022 Oct 11): exact formula is still in active discussion_
+Get the PXP required to level up a ball to {level}.
 
-### _setLevelPOKCost
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| level | uint256 | The targeted level. |
+
+### levelPOK
 
 ```solidity
-function _setLevelPOKCost() external
+function levelPOK(uint256 level) public pure returns (uint256)
 ```
 
-_Initialization function that sets the $POK token required to level up Pooky Ball at given level.
-Levels range starts at 0 and ends at 100, inclusive.
-TODO(2022 Oct 11): exact formula is still in active discussion_
+Get the $POK tokens required to level up a ball to {level}. This does not take the ball PXP into account.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| level | uint256 | The targeted level. |
+
+### levelPOKCost
+
+```solidity
+function levelPOKCost(uint256 tokenId) public view returns (uint256)
+```
+
+Get the $POK tokens required to level up the ball identified by {tokenId}.
+This computation the ball PXP into account and add an additional POK fee if ball does not have enough PXP.
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| tokenId | uint256 | The targeted level. |
 
 ### setPookyBallContract
 
@@ -109,14 +186,6 @@ Sets the address of the POK contract.
 _Requirements:
 - only DEFAULT_ADMIN_ROLE role can call this function._
 
-### verifySignature
-
-```solidity
-function verifySignature(bytes message, bytes signature) private view returns (bool)
-```
-
-_Internal function that checks if a {message} has be signed by a REWARD_SIGNER._
-
 ### levelUp
 
 ```solidity
@@ -126,15 +195,22 @@ function levelUp(uint256 tokenId) public
 Level up a Pooky Ball in exchange of a certain amount of $POK token.
 
 _Requirements
-- msg.sender must be the Pooky Ball owner
-- msg.sender must own enough $POK tokens
-- Pooky Ball should have enough PXP to reach the next level.
-- Pooky Ball level should be strictly less than the maximum allowed level for its rarity._
+- msg.sender must be the owner of Pooky Ball tokenId.
+- Pooky Ball level should be strictly less than the maximum allowed level for its rarity.
+- msg.sender must own enough $POK tokens to pay the level up fee._
+
+### verifySignature
+
+```solidity
+function verifySignature(bytes message, bytes signature) private view returns (bool)
+```
+
+_Internal function that checks if a {message} has be signed by a REWARD_SIGNER._
 
 ### claimRewards
 
 ```solidity
-function claimRewards(uint256 POKAmount, struct BallUpdates[] ballUpdates, uint256 ttl, uint256 nonce, bytes signature) external
+function claimRewards(uint256 amountPOK, struct BallUpdates[] ballUpdates, uint256 ttl, uint256 nonce, bytes signature) external
 ```
 
 Claim prediction rewards ($POK tokens and Ball PXP).
@@ -143,7 +219,7 @@ Claim prediction rewards ($POK tokens and Ball PXP).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| POKAmount | uint256 | The $POK token amount. |
+| amountPOK | uint256 | The $POK token amount. |
 | ballUpdates | struct BallUpdates[] | The updated to apply to the Pooky Balls (PXP and optional level up). |
 | ttl | uint256 | UNIX timestamp until signature is valid. |
 | nonce | uint256 | Unique word that prevents the usage the same signature twice. |

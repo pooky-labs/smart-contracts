@@ -6,7 +6,13 @@ pragma solidity ^0.8.9;
 import './interfaces/IPookyBall.sol';
 import './PookyBallMinter.sol';
 import { BallRarity, MintTemplate, MintRandomRequest } from './types/DataTypes.sol';
-import { Errors } from './types/Errors.sol';
+
+error ArgumentSizeMismatch(uint256 x, uint256 y);
+error InsufficientValue(uint256 required, uint256 actual);
+error TransferFailed(address from);
+error TierTooLow(uint256 required, uint256 actual);
+error MaxMintsReached(uint256 remaining, uint256 requested);
+error MaxSupplyReached(uint256 remaining, uint256 requested);
 
 /**
  * @title PookyBallGenesisMinter
@@ -112,7 +118,9 @@ contract PookyBallGenesisMinter is PookyBallMinter {
    * - only MOD role can manage the allowlist.
    */
   function setTierBatch(address[] memory accounts, uint256[] memory tiers) external onlyRole(MOD) {
-    require(accounts.length == tiers.length, Errors.SIZE_MISMATCH);
+    if (accounts.length != tiers.length) {
+      revert ArgumentSizeMismatch(accounts.length, tiers.length);
+    }
 
     for (uint256 i = 0; i < accounts.length; i++) {
       userTiers[accounts[i]] = tiers[i];
@@ -133,9 +141,17 @@ contract PookyBallGenesisMinter is PookyBallMinter {
     uint256 amount,
     uint256 revokeUntil
   ) internal {
-    require(userTiers[recipient] >= minTierToBuy, Errors.NEEDS_BIGGER_TIER);
-    require(mintsLeft(recipient) >= amount, Errors.MAX_MINTS_USER_REACHED);
-    require(ballsMinted + amount <= maxMintSupply, Errors.MAX_MINT_SUPPLY_REACHED);
+    if (userTiers[recipient] < minTierToBuy) {
+      revert TierTooLow(minTierToBuy, userTiers[recipient]);
+    }
+
+    if (amount > mintsLeft(recipient)) {
+      revert MaxMintsReached(amount, mintsLeft(recipient));
+    }
+
+    if (ballsMinted + amount > maxMintSupply) {
+      revert MaxSupplyReached(amount, maxMintSupply - ballsMinted);
+    }
 
     userBallsMinted[recipient] += amount;
     ballsMinted += amount;
@@ -153,13 +169,18 @@ contract PookyBallGenesisMinter is PookyBallMinter {
    */
   function mint(uint256 templateId, uint256 amount) external payable {
     uint256 totalPrice = mintTemplates[templateId].price * amount;
-    require(msg.value >= totalPrice, Errors.MSG_VALUE_SMALL);
 
-    _mint(msg.sender, templateId, amount, 0); // mint with crypto:
+    if (msg.value < totalPrice) {
+      revert InsufficientValue(totalPrice, msg.value);
+    }
+
+    _mint(msg.sender, templateId, amount, 0);
 
     // Forward the funds to the treasury wallet
     (bool sent, ) = treasuryWallet.call{ value: msg.value }('');
-    require(sent, Errors.TREASURY_TRANSFER_FAIL);
+    if (!sent) {
+      revert TransferFailed(msg.sender);
+    }
   }
 
   /**
@@ -184,7 +205,7 @@ contract PookyBallGenesisMinter is PookyBallMinter {
    * @notice This function is used when there is dispute in the payment.
    * @notice only BE role can call this function
    */
-  function revokeBallAuthorized(uint256 tokenId) external onlyRole(BE) {
-    pookyBall.revokeBall(tokenId);
+  function revokeAuthorized(uint256 tokenId) external onlyRole(BE) {
+    pookyBall.revoke(tokenId);
   }
 }

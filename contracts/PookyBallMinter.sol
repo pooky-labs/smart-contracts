@@ -7,8 +7,11 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
 import '@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol';
 import './interfaces/IPookyBall.sol';
 import { BallRarity, MintTemplate, MintRandomRequest } from './types/DataTypes.sol';
-import { Errors } from './types/Errors.sol';
 import './vendor/VRFConsumerBaseV2.sol';
+
+error MintDisabled(uint256 templateId);
+error MaximumMintsReached(uint256 templateId, uint256 maximumMints);
+error OnlyVRFCoordinator(address coordinator, address actual);
 
 /**
  * @title PookyBallMinter
@@ -118,7 +121,7 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
   }
 
   /**
-   * @notice Enable/disable mint for MintTemplate with id `mintTemplateId`.
+   * @notice Enable/disable mint for MintTemplate with id `templateId`.
    * @dev Requirements:
    * - only MOD role can create MintTemplates.
    * Emits a MintTemplateEnabled event.
@@ -136,22 +139,28 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
    * The random entropy is made to Chainlink VRF platform.
    * Emits a RequestMintFromTemplate event.
    * @param recipient The final recipient of the newly linted Pooky Ball.
-   * @param mintTemplateId The MintTemplate id.
+   * @param templateId The MintTemplate id.
    * @param revocableUntil The UNIX timestamp until the ball can be revoked.
    */
   function _requestMintFromTemplate(
     address recipient,
-    uint256 mintTemplateId,
+    uint256 templateId,
     uint256 revocableUntil
   ) internal {
-    MintTemplate storage template = mintTemplates[mintTemplateId];
-    require(template.enabled, Errors.MINTING_DISABLED);
-    require(template.currentMints < template.maxMints, Errors.MAX_MINTS_REACHED);
+    MintTemplate storage template = mintTemplates[templateId];
+
+    if (!template.enabled) {
+      revert MintDisabled(templateId);
+    }
+
+    if (template.currentMints >= template.maxMints) {
+      revert MaximumMintsReached(templateId, template.maxMints);
+    }
 
     template.currentMints++;
     uint256 newTokenId = pookyBall.mint(address(this), template.rarity, revocableUntil);
 
-    emit RequestMintFromTemplate(mintTemplateId, recipient);
+    emit RequestMintFromTemplate(templateId, recipient);
     _requestRandomEntropyForMint(recipient, newTokenId);
   }
 
@@ -193,7 +202,10 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
    * - Only vrf_coordinator can call this function.
    */
   function rawFulfillRandomWords(uint256 requestId, uint256[] memory randomWords) external override {
-    require(msg.sender == address(vrf_coordinator), Errors.ONLY_VRF_COORDINATOR);
+    if (msg.sender != address(vrf_coordinator)) {
+      revert OnlyVRFCoordinator(address(vrf_coordinator), msg.sender);
+    }
+
     fulfillRandomWords(requestId, randomWords);
   }
 }

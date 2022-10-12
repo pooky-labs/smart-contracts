@@ -1,6 +1,7 @@
 import { HUNDRED, MAXIMUM_UNCOMMON_BALL_LEVEL, ONE } from '../lib/constants';
 import getSigners from '../lib/getSigners';
 import { signRewardsClaim } from '../lib/helpers/signRewardsClaim';
+import parseEther from '../lib/parseEther';
 import { randInt, randUint256 } from '../lib/rand';
 import { POOKY_CONTRACT, REWARD_SIGNER } from '../lib/roles';
 import { expectHasRole } from '../lib/testing/roles';
@@ -45,6 +46,81 @@ describe('PookyGame', () => {
     });
   });
 
+  describe('levelPXP', () => {
+    it('should return zero for level zero', async () => {
+      expect(await PookyGame.levelPXP(0)).to.equal(0);
+    });
+  });
+
+  describe('levelUp', () => {
+    let tokenId: BigNumber;
+
+    beforeEach(async () => {
+      await waitTx(POK.grantRole(POOKY_CONTRACT, mod.address));
+      await waitTx(PookyBall.grantRole(POOKY_CONTRACT, mod.address));
+      await waitTx(PookyBall.connect(mod).mint(player.address, BallRarity.Common, 0));
+      tokenId = await PookyBall.lastTokenId();
+    });
+
+    it('should allow player to level up a ball', async () => {
+      const currentLevel = 5;
+      await waitTx(PookyBall.connect(mod).changeLevel(tokenId, currentLevel));
+      await waitTx(PookyBall.connect(mod).changePXP(tokenId, parseEther(100)));
+      await waitTx(POK.connect(mod).mint(player.address, parseEther(10000)));
+
+      await expect(PookyGame.connect(player).levelUp(tokenId)).to.not.be.reverted;
+      const { level: newLevel } = await PookyBall.getBallInfo(tokenId);
+      expect(newLevel).to.equal(currentLevel + 1);
+    });
+
+    it('should allow player to level up a ball by exchanging POK to fill missing PXP', async () => {
+      const currentLevel = 5;
+      await waitTx(PookyBall.connect(mod).changeLevel(tokenId, currentLevel));
+      await waitTx(POK.connect(mod).mint(player.address, parseEther(100000)));
+
+      await expect(PookyGame.connect(player).levelUp(tokenId)).to.not.be.reverted;
+      const { level: newLevel } = await PookyBall.getBallInfo(tokenId);
+      expect(newLevel).to.equal(currentLevel + 1);
+    });
+
+    it('should revert if the player is not the owner of the ball', async () => {
+      const currentLevel = 5;
+      await waitTx(PookyBall.connect(player).transferFrom(player.address, mod.address, tokenId));
+      await waitTx(PookyBall.connect(mod).changeLevel(tokenId, currentLevel));
+      await waitTx(PookyBall.connect(mod).changePXP(tokenId, parseEther(100)));
+      await waitTx(POK.connect(mod).mint(mod.address, parseEther(10000)));
+
+      await expect(PookyGame.connect(player).levelUp(tokenId))
+        .to.be.revertedWithCustomError(PookyGame, 'OwnershipRequired')
+        .withArgs(tokenId);
+    });
+
+    it('should revert if the ball has reached the maximum level', async () => {
+      const currentLevel = 40;
+      await waitTx(PookyBall.connect(mod).changeLevel(tokenId, currentLevel));
+      await waitTx(PookyBall.connect(mod).changePXP(tokenId, parseEther(100000)));
+      await waitTx(POK.connect(mod).mint(player.address, parseEther(100000)));
+
+      await expect(PookyGame.connect(player).levelUp(tokenId))
+        .to.be.revertedWithCustomError(PookyGame, 'MaximumLevelReached')
+        .withArgs(tokenId, currentLevel);
+    });
+
+    it('should revert if the ball the user does not own enough POK', async () => {
+      const currentLevel = 5;
+
+      await waitTx(PookyBall.connect(mod).changeLevel(tokenId, currentLevel));
+      await waitTx(PookyBall.connect(mod).changePXP(tokenId, parseEther(100000)));
+      const requiredPOK = await PookyGame.levelPOKCost(tokenId);
+      const mintedPOK = requiredPOK.sub(1);
+      await waitTx(POK.connect(mod).mint(player.address, mintedPOK));
+
+      await expect(PookyGame.connect(player).levelUp(tokenId))
+        .to.be.revertedWithCustomError(PookyGame, 'InsufficientPOKBalance')
+        .withArgs(requiredPOK, mintedPOK);
+    });
+  });
+
   describe('claimRewards', () => {
     let nonce: BigNumber;
     let currentTimestamp: number;
@@ -63,7 +139,7 @@ describe('PookyGame', () => {
       ttl = currentTimestamp + 60 + randInt(HUNDRED); // at least 1 minute
 
       await waitTx(PookyBall.grantRole(POOKY_CONTRACT, mod.address));
-      await waitTx(PookyBall.connect(mod).mint(player.address, BallRarity.Uncommon, 0));
+      await waitTx(PookyBall.connect(mod).mint(player.address, BallRarity.Common, 0));
 
       tokenId = await PookyBall.lastTokenId();
       ballLevel = (await PookyBall.getBallInfo(tokenId)).level.toNumber();
@@ -96,19 +172,6 @@ describe('PookyGame', () => {
       expect(newBallLevel).to.be.equal(ballLevel + ONE);
     });
 
-    it('should revert if nonce has already been used', async () => {
-      const signature = await signRewardsClaim(amount, ballUpdates, ttl, nonce, backendSigner);
-
-      // First call: success!
-      await expect(PookyGame.connect(player).claimRewards(amount, ballUpdates, ttl, nonce, signature)).to.not.be
-        .reverted;
-
-      // Second call: reverted because nonce was already used
-      await expect(
-        PookyGame.connect(player).claimRewards(amount, ballUpdates, ttl, nonce, signature),
-      ).to.be.revertedWith('10');
-    });
-
     it('should revert if user tries to claim rewards with an invalid signature', async () => {
       const signature = await signRewardsClaim(amount, ballUpdates, ttl, nonce, backendSigner);
 
@@ -120,60 +183,31 @@ describe('PookyGame', () => {
           nonce,
           signature,
         ),
-      ).to.be.revertedWith('8');
+      )
+        .to.be.revertedWithCustomError(PookyGame, 'InvalidSignature')
+        .withArgs();
     });
 
     it('should revert if reward claim has expired', async () => {
       const expiredTimestamp = currentTimestamp - 100;
       const signature = await signRewardsClaim(amount, ballUpdates, expiredTimestamp, nonce, backendSigner);
 
-      await expect(
-        PookyGame.connect(player).claimRewards(amount, ballUpdates, expiredTimestamp, nonce, signature),
-      ).to.be.revertedWith('9');
+      await expect(PookyGame.connect(player).claimRewards(amount, ballUpdates, expiredTimestamp, nonce, signature))
+        .to.be.revertedWithCustomError(PookyGame, 'ExpiredSignature')
+        .withArgs(expiredTimestamp);
     });
 
-    it('should revert if sender is not a PookyBall owner', async () => {
+    it('should revert if nonce has already been used', async () => {
       const signature = await signRewardsClaim(amount, ballUpdates, ttl, nonce, backendSigner);
 
-      // deployer is not owner of the ball
-      await expect(
-        PookyGame.connect(deployer).claimRewards(amount, ballUpdates, ttl, nonce, signature),
-      ).to.be.revertedWith('5');
-    });
+      // First call: success!
+      await expect(PookyGame.connect(player).claimRewards(amount, ballUpdates, ttl, nonce, signature)).to.not.be
+        .reverted;
 
-    it('should revert if player does not own enough PXP to level up', async () => {
-      const ballUpdate: BallUpdatesStruct = {
-        tokenId: BigNumber.from(ONE),
-        addPXP: pxpNeededToLevelUp.sub(ONE), // not enough PXP!
-        shouldLevelUp: true,
-      };
-
-      const signature = await signRewardsClaim(amount, [ballUpdate], BigNumber.from(ttl), nonce, backendSigner);
-
-      await expect(
-        PookyGame.connect(player).claimRewards(amount, [ballUpdate], ttl, nonce, signature),
-      ).to.be.revertedWith('6');
-    });
-
-    it('should revert if ball has reach the maximum level', async () => {
-      await waitTx(POK.grantRole(POOKY_CONTRACT, mod.address));
-      await waitTx(PookyBall.grantRole(POOKY_CONTRACT, mod.address));
-
-      await waitTx(PookyBall.connect(mod).changeBallLevel(tokenId, MAXIMUM_UNCOMMON_BALL_LEVEL));
-      expect((await PookyBall.getBallInfo(tokenId)).level).to.equal(MAXIMUM_UNCOMMON_BALL_LEVEL);
-      const deltaPXP = await PookyGame.levelPXP(MAXIMUM_UNCOMMON_BALL_LEVEL + 1);
-
-      const ballUpdate: BallUpdatesStruct = {
-        tokenId: BigNumber.from(ONE),
-        addPXP: pxpNeededToLevelUp.sub(ONE),
-        shouldLevelUp: true,
-      };
-      await waitTx(POK.connect(mod).mint(player.address, deltaPXP));
-
-      const signature = await signRewardsClaim(amount, [ballUpdate], BigNumber.from(ttl), nonce, backendSigner);
-      await expect(
-        PookyGame.connect(player).claimRewards(amount, [ballUpdate], ttl, nonce, signature),
-      ).to.be.revertedWith('6');
+      // Second call: reverted because nonce was already used
+      await expect(PookyGame.connect(player).claimRewards(amount, ballUpdates, ttl, nonce, signature))
+        .to.be.revertedWithCustomError(PookyGame, 'NonceUsed')
+        .withArgs();
     });
   });
 });

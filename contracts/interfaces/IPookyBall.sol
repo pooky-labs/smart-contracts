@@ -15,9 +15,9 @@ interface IPookyBall is IERC721Upgradeable {
 
   function setRandomEntropy(uint256 tokenId, uint256 _randomEntropy) external;
 
-  function addBallPXP(uint256 tokenId, uint256 addPxpAmount) external;
+  function changePXP(uint256 tokenId, uint256 newPXP) external;
 
-  function changeBallLevel(uint256 tokenId, uint256 newLevel) external;
+  function changeLevel(uint256 tokenId, uint256 newLevel) external;
 
-  function revokeBall(uint256 tokenId) external;
+  function revoke(uint256 tokenId) external;
 }

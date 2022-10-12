@@ -1,5 +1,41 @@
 # Solidity API
 
+## ArgumentSizeMismatch
+
+```solidity
+error ArgumentSizeMismatch(uint256 x, uint256 y)
+```
+
+## InsufficientValue
+
+```solidity
+error InsufficientValue(uint256 required, uint256 actual)
+```
+
+## TransferFailed
+
+```solidity
+error TransferFailed(address from)
+```
+
+## TierTooLow
+
+```solidity
+error TierTooLow(uint256 required, uint256 actual)
+```
+
+## MaxMintsReached
+
+```solidity
+error MaxMintsReached(uint256 remaining, uint256 requested)
+```
+
+## MaxSupplyReached
+
+```solidity
+error MaxSupplyReached(uint256 remaining, uint256 requested)
+```
+
 ## PookyBallGenesisMinter
 
 Extension of PookyBallMinter that will only be used for the initial minting event.
@@ -181,10 +217,10 @@ _Requirements:
 | templateId | uint256 | The selected MintTemplate id. |
 | amount | uint256 | The number of balls minted by the user. |
 
-### revokeBallAuthorized
+### revokeAuthorized
 
 ```solidity
-function revokeBallAuthorized(uint256 tokenId) external
+function revokeAuthorized(uint256 tokenId) external
 ```
 
 function called by backend to revoke the ball.

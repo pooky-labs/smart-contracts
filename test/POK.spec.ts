@@ -54,7 +54,7 @@ describe('POK', async () => {
 
   describe('setTransferEnabled', () => {
     it('should allow DEFAULT_ADMIN_ROLE account to enable transfer', async () => {
-      await waitTx(POK.connect(deployer).setTransferEnabled(true));
+      await expect(POK.connect(deployer).setTransferEnabled(true)).to.emit(POK, 'SetTransferEnabled').withArgs(true);
       expect(await POK.transferEnabled()).to.be.equal(true, 'Transfer is not enabled');
     });
   });
@@ -73,9 +73,12 @@ describe('POK', async () => {
     });
 
     it('should revert if POK is soul-bounded', async () => {
-      // 1. Mint 30 POK to player
+      // Mint 30 POK to player
       await waitTx(POK.connect(mod).mint(player.address, ethers.utils.parseEther('30')));
-      await expect(POK.connect(player).transfer(player.address, ethers.utils.parseEther('1'))).to.be.revertedWith('11');
+
+      await expect(POK.connect(player).transfer(player.address, ethers.utils.parseEther('1')))
+        .to.be.revertedWithCustomError(POK, 'TransfersDisabled')
+        .withArgs();
     });
   });
 });

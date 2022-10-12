@@ -4,7 +4,7 @@
 pragma solidity ^0.8.9;
 
 enum BallRarity {
-  Uncommon,
+  Common,
   Rare,
   Epic,
   Legendary,

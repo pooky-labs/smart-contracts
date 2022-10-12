@@ -95,8 +95,6 @@ export async function deployContracts({
   await waitTx(PookyBallGenesisMinter.grantRole(MOD, mod.address));
   await waitTx(PookyBallGenesisMinter.setPookyBallContract(PookyBall.address));
 
-  await waitTx(PookyGame._setLevelPXP());
-  await waitTx(PookyGame._setLevelPOKCost());
   await waitTx(PookyGame._setMaxBallLevel());
   await waitTx(PookyGame.setPookyBallContract(PookyBall.address));
   await waitTx(PookyGame.setPOKContract(POK.address));

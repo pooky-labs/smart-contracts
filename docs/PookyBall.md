@@ -1,5 +1,23 @@
 # Solidity API
 
+## EntropyAlreadySet
+
+```solidity
+error EntropyAlreadySet(uint256 tokenId)
+```
+
+## NotRevocableAnymore
+
+```solidity
+error NotRevocableAnymore(uint256 tokenId, uint256 now)
+```
+
+## TransferLockedWhileRevocable
+
+```solidity
+error TransferLockedWhileRevocable(uint256 tokenId)
+```
+
 ## PookyBall
 
 PookyBall is ERC721 token representing Pooky Ball NFTs. Balls are mintable by other Pooky game contracts.
@@ -68,10 +86,10 @@ event BallSetRandomEntropy(uint256 tokenId, uint256 randomEntropy)
 event BallLevelChange(uint256 tokenId, uint256 level)
 ```
 
-### BallAddPXP
+### ChangeBallPXP
 
 ```solidity
-event BallAddPXP(uint256 tokenId, uint256 amount)
+event ChangeBallPXP(uint256 tokenId, uint256 amount)
 ```
 
 ### initialize
@@ -144,13 +162,13 @@ _Requirements:
 - Ball {tokenId} should exist (minted and not burned).
 - Previous entropy should be zero._
 
-### addBallPXP
+### changePXP
 
 ```solidity
-function addBallPXP(uint256 tokenId, uint256 amount) external
+function changePXP(uint256 tokenId, uint256 amount) external
 ```
 
-Add PXP (Experience points) to the Pooky Ball with id {tokenId}.
+Change the PXP (Experience points) of the Pooky Ball with id {tokenId}.
 
 _Requirements:
 - Only POOKY_CONTRACT role can increase Pooky Balls PXP.
@@ -163,10 +181,10 @@ _Requirements:
 | tokenId | uint256 | The Pooky Ball NFT id. |
 | amount | uint256 | The PXP amount to add the to Pooky Ball. |
 
-### changeBallLevel
+### changeLevel
 
 ```solidity
-function changeBallLevel(uint256 tokenId, uint256 newLevel) external
+function changeLevel(uint256 tokenId, uint256 newLevel) external
 ```
 
 Change the level of the Pooky Ball with id {tokenId} to the {newLevel}
@@ -181,6 +199,14 @@ _Requirements:
 | ---- | ---- | ----------- |
 | tokenId | uint256 | The Pooky Ball NFT id. |
 | newLevel | uint256 | The new Ball level. |
+
+### _mintBall
+
+```solidity
+function _mintBall(address to, struct BallInfo ballInfo) internal returns (uint256)
+```
+
+_Internal function that can mint any ball without any restriction; it keeps track of the lastTokenId._
 
 ### mint
 
@@ -202,10 +228,10 @@ _Requirements:
 | rarity | enum BallRarity | The address which will own the minted Pooky Ball. |
 | revocableUntil | uint256 | The UNIX timestamp until the ball can be revoked. |
 
-### revokeBall
+### revoke
 
 ```solidity
-function revokeBall(uint256 tokenId) external
+function revoke(uint256 tokenId) external
 ```
 
 Revoke and burn the Pooky Ball with id {tokenId}.

@@ -20,21 +20,21 @@ function mint(address to, enum BallRarity rarity, uint256 revocableUntil) extern
 function setRandomEntropy(uint256 tokenId, uint256 _randomEntropy) external
 ```
 
-### addBallPXP
+### changePXP
 
 ```solidity
-function addBallPXP(uint256 tokenId, uint256 addPxpAmount) external
+function changePXP(uint256 tokenId, uint256 newPXP) external
 ```
 
-### changeBallLevel
+### changeLevel
 
 ```solidity
-function changeBallLevel(uint256 tokenId, uint256 newLevel) external
+function changeLevel(uint256 tokenId, uint256 newLevel) external
 ```
 
-### revokeBall
+### revoke
 
 ```solidity
-function revokeBall(uint256 tokenId) external
+function revoke(uint256 tokenId) external
 ```
 

@@ -1,5 +1,23 @@
 # Solidity API
 
+## MintDisabled
+
+```solidity
+error MintDisabled(uint256 templateId)
+```
+
+## MaximumMintsReached
+
+```solidity
+error MaximumMintsReached(uint256 templateId, uint256 maximumMints)
+```
+
+## OnlyVRFCoordinator
+
+```solidity
+error OnlyVRFCoordinator(address coordinator, address actual)
+```
+
 ## PookyBallMinter
 
 PookyBallMinter contains the game logic related to Pooky Ball mint.
@@ -150,7 +168,7 @@ Emits a CreateMintTemplate event._
 function enableMintTemplate(uint256 mintTemplateId, bool _enabled) external
 ```
 
-Enable/disable mint for MintTemplate with id `mintTemplateId`.
+Enable/disable mint for MintTemplate with id `templateId`.
 
 _Requirements:
 - only MOD role can create MintTemplates.
@@ -159,7 +177,7 @@ Emits a MintTemplateEnabled event._
 ### _requestMintFromTemplate
 
 ```solidity
-function _requestMintFromTemplate(address recipient, uint256 mintTemplateId, uint256 revocableUntil) internal
+function _requestMintFromTemplate(address recipient, uint256 templateId, uint256 revocableUntil) internal
 ```
 
 _Internal function that mints a ball to the current contract and that will later be forwarded to {recipient}.
@@ -174,7 +192,7 @@ Emits a RequestMintFromTemplate event._
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | recipient | address | The final recipient of the newly linted Pooky Ball. |
-| mintTemplateId | uint256 | The MintTemplate id. |
+| templateId | uint256 | The MintTemplate id. |
 | revocableUntil | uint256 | The UNIX timestamp until the ball can be revoked. |
 
 ### _requestRandomEntropyForMint

@@ -37,7 +37,7 @@ describe('PookyBallGenesisMinter', () => {
     // Create a default template
     await PookyBallGenesisMinter.connect(mod).createMintTemplate({
       enabled: true,
-      rarity: BallRarity.Uncommon,
+      rarity: BallRarity.Common,
       maxMints: HUNDRED.toString(),
       currentMints: ZERO.toString(),
       price: ethers.utils.parseEther(ONE.toString()),
@@ -225,10 +225,10 @@ describe('PookyBallGenesisMinter', () => {
     });
   });
 
-  describe('revokeBallAuthorized', () => {
+  describe('revokeAuthorized', () => {
     it('should revert if non-BE account tries to revoke ball authorized', async () => {
       const randomBallId = randInt(HUNDRED);
-      await expectMissingRole(PookyBallGenesisMinter.connect(player).revokeBallAuthorized(randomBallId), player, BE);
+      await expectMissingRole(PookyBallGenesisMinter.connect(player).revokeAuthorized(randomBallId), player, BE);
     });
   });
 
@@ -398,7 +398,7 @@ describe('PookyBallGenesisMinter', () => {
     it('should expose the ball information', async () => {
       // Allow the mod account to mint a ball
       await waitTx(PookyBall.grantRole(POOKY_CONTRACT, mod.address));
-      await waitTx(PookyBall.connect(mod).mint(player.address, BallRarity.Uncommon, 0));
+      await waitTx(PookyBall.connect(mod).mint(player.address, BallRarity.Common, 0));
 
       const ballId = await PookyBall.lastTokenId();
       expect((await PookyBall.getBallInfo(ballId)).pxp).to.be.equal(0);
@@ -427,7 +427,7 @@ describe('PookyBallGenesisMinter', () => {
     await expect(PookyBall.connect(player).transferFrom(player.address, mod.address, ballId)).to.be.revertedWith('13');
   });
 
-  describe('revokeBallAuthorized', () => {
+  describe('revokeAuthorized', () => {
     beforeEach(async () => {
       const lastMintTemplateId = await PookyBallGenesisMinter.lastMintTemplateId();
       await waitTx(PookyBallGenesisMinter.connect(mod).setRevokePeriod(3600));
@@ -441,7 +441,7 @@ describe('PookyBallGenesisMinter', () => {
 
     it('should allow BE account to revoke authorized ball', async () => {
       const ballId = await PookyBallGenesisMinter.ballsMinted();
-      await expect(PookyBallGenesisMinter.connect(backendSigner).revokeBallAuthorized(ballId)).to.changeTokenBalance(
+      await expect(PookyBallGenesisMinter.connect(backendSigner).revokeAuthorized(ballId)).to.changeTokenBalance(
         PookyBall,
         player,
         -1,
