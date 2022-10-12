@@ -9,13 +9,6 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
 import '@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol';
 import { BallUpdates, BallInfo, BallRarity } from './types/DataTypes.sol';
 
-error OwnershipRequired(uint256 tokenId);
-error MaximumLevelReached(uint256 tokenId, uint256 maxLevel);
-error InsufficientPOKBalance(uint256 required, uint256 actual);
-error InvalidSignature();
-error ExpiredSignature(uint256 expiration);
-error NonceUsed();
-
 /**
  * @title PookyBallMinter
  * @author Pooky Engineering Team
@@ -47,6 +40,13 @@ contract PookyGame is AccessControlUpgradeable {
 
   mapping(BallRarity => uint256) maxBallLevelPerRarity;
   mapping(uint256 => bool) nonces;
+
+  error OwnershipRequired(uint256 tokenId);
+  error MaximumLevelReached(uint256 tokenId, uint256 maxLevel);
+  error InsufficientPOKBalance(uint256 required, uint256 actual);
+  error InvalidSignature();
+  error ExpiredSignature(uint256 expiration);
+  error NonceUsed();
 
   function initialize(address _admin) public initializer {
     __AccessControl_init();

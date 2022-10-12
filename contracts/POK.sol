@@ -6,8 +6,6 @@ pragma solidity ^0.8.9;
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 
-error TransfersDisabled();
-
 /**
  * @title PookyBall
  * @author Pooky Engineering Team
@@ -28,6 +26,8 @@ contract POK is ERC20Upgradeable, AccessControlUpgradeable {
   bool public transferEnabled;
 
   event SetTransferEnabled(bool transferEnabled);
+
+  error TransfersDisabled();
 
   function initialize(
     string memory _name,

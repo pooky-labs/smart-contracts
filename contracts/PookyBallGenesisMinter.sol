@@ -7,13 +7,6 @@ import './interfaces/IPookyBall.sol';
 import './PookyBallMinter.sol';
 import { BallRarity, MintTemplate, MintRandomRequest } from './types/DataTypes.sol';
 
-error ArgumentSizeMismatch(uint256 x, uint256 y);
-error InsufficientValue(uint256 required, uint256 actual);
-error TransferFailed(address from);
-error TierTooLow(uint256 required, uint256 actual);
-error MaxMintsReached(uint256 remaining, uint256 requested);
-error MaxSupplyReached(uint256 remaining, uint256 requested);
-
 /**
  * @title PookyBallGenesisMinter
  * @author Pooky Engineering Team
@@ -45,6 +38,13 @@ contract PookyBallGenesisMinter is PookyBallMinter {
   address public treasuryWallet;
 
   event UserTierSet(address indexed user, uint256 tier);
+
+  error ArgumentSizeMismatch(uint256 x, uint256 y);
+  error InsufficientValue(uint256 required, uint256 actual);
+  error TransferFailed(address from);
+  error TierTooLow(uint256 required, uint256 actual);
+  error MaxMintsReached(uint256 remaining, uint256 requested);
+  error MaxSupplyReached(uint256 remaining, uint256 requested);
 
   function initialize(
     uint256 _startFromId,

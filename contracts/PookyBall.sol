@@ -9,10 +9,6 @@ import '@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol';
 import './interfaces/IPookyBall.sol';
 import { BallInfo, BallRarity } from './types/DataTypes.sol';
 
-error EntropyAlreadySet(uint256 tokenId);
-error NotRevocableAnymore(uint256 tokenId, uint256 now);
-error TransferLockedWhileRevocable(uint256 tokenId);
-
 /**
  * @title PookyBall
  * @author Pooky Engineering Team
@@ -56,6 +52,10 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   event BallSetRandomEntropy(uint256 indexed tokenId, uint256 randomEntropy);
   event BallLevelChange(uint256 indexed tokenId, uint256 level);
   event ChangeBallPXP(uint256 indexed tokenId, uint256 amount);
+
+  error EntropyAlreadySet(uint256 tokenId);
+  error NotRevocableAnymore(uint256 tokenId, uint256 now);
+  error TransferLockedWhileRevocable(uint256 tokenId);
 
   function initialize(
     string memory _name,

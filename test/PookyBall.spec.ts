@@ -6,7 +6,6 @@ import { POOKY_CONTRACT } from '../lib/roles';
 import { expectHasRole, expectMissingRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
 import { BallRarity } from '../lib/types';
-import waitTx from '../lib/waitTx';
 import { PookyBall, PookyBallGenesisMinter } from '../typings';
 import { faker } from '@faker-js/faker';
 import { anyUint } from '@nomicfoundation/hardhat-chai-matchers/withArgs';
@@ -37,7 +36,7 @@ describe('PookyBall', () => {
       const contractURIBefore = await PookyBall.contractURI();
       const URI = contractURIBefore + 'Some random URI';
 
-      await waitTx(PookyBall.connect(deployer).setContractURI(URI));
+      await PookyBall.connect(deployer).setContractURI(URI);
 
       const contractURIAfter = await PookyBall.contractURI();
       expect(contractURIAfter).to.be.equal(URI, 'Contract URI is not set correctly');
@@ -50,10 +49,8 @@ describe('PookyBall', () => {
 
   describe('transfer', () => {
     it('should revert if token is still revocable', async () => {
-      await waitTx(PookyBall.grantRole(POOKY_CONTRACT, mod.address));
-      await waitTx(
-        PookyBall.connect(mod).mint(player.address, BallRarity.Common, Math.floor(Date.now() / 1000) + 3600),
-      );
+      await PookyBall.grantRole(POOKY_CONTRACT, mod.address);
+      await PookyBall.connect(mod).mint(player.address, BallRarity.Common, Math.floor(Date.now() / 1000) + 3600);
       const tokenId = await PookyBall.lastTokenId();
 
       expect(PookyBall.connect(player).transferFrom(player.address, mod.address, tokenId))
@@ -75,8 +72,8 @@ describe('PookyBall', () => {
     });
 
     it('should revert if entropy is set twice', async () => {
-      await waitTx(PookyBall.grantRole(POOKY_CONTRACT, mod.address));
-      await waitTx(PookyBall.connect(mod).mint(player.address, BallRarity.Common, 0));
+      await PookyBall.grantRole(POOKY_CONTRACT, mod.address);
+      await PookyBall.connect(mod).mint(player.address, BallRarity.Common, 0);
       const tokenId = await PookyBall.lastTokenId();
 
       await expect(PookyBall.connect(mod).setRandomEntropy(tokenId, 1)).to.not.be.reverted;
@@ -127,8 +124,8 @@ describe('PookyBall', () => {
 
   describe('revoke', async () => {
     it('should revert if ball is revocation date is over', async () => {
-      await waitTx(PookyBall.grantRole(POOKY_CONTRACT, mod.address));
-      await waitTx(PookyBall.connect(mod).mint(player.address, BallRarity.Common, 0));
+      await PookyBall.grantRole(POOKY_CONTRACT, mod.address);
+      await PookyBall.connect(mod).mint(player.address, BallRarity.Common, 0);
       const tokenId = await PookyBall.lastTokenId();
 
       await expect(PookyBall.connect(mod).revoke(tokenId))

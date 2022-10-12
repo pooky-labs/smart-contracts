@@ -1,4 +1,4 @@
-import { HUNDRED, MAXIMUM_UNCOMMON_BALL_LEVEL, ONE } from '../lib/constants';
+import { HUNDRED, ONE } from '../lib/constants';
 import getSigners from '../lib/getSigners';
 import { signRewardsClaim } from '../lib/helpers/signRewardsClaim';
 import parseEther from '../lib/parseEther';
@@ -7,7 +7,6 @@ import { POOKY_CONTRACT, REWARD_SIGNER } from '../lib/roles';
 import { expectHasRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
 import { BallRarity } from '../lib/types';
-import waitTx from '../lib/waitTx';
 import { POK, PookyBall, PookyGame } from '../typings';
 import { BallUpdatesStruct } from '../typings/contracts/PookyGame';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
@@ -56,17 +55,17 @@ describe('PookyGame', () => {
     let tokenId: BigNumber;
 
     beforeEach(async () => {
-      await waitTx(POK.grantRole(POOKY_CONTRACT, mod.address));
-      await waitTx(PookyBall.grantRole(POOKY_CONTRACT, mod.address));
-      await waitTx(PookyBall.connect(mod).mint(player.address, BallRarity.Common, 0));
+      await POK.grantRole(POOKY_CONTRACT, mod.address);
+      await PookyBall.grantRole(POOKY_CONTRACT, mod.address);
+      await PookyBall.connect(mod).mint(player.address, BallRarity.Common, 0);
       tokenId = await PookyBall.lastTokenId();
     });
 
     it('should allow player to level up a ball', async () => {
       const currentLevel = 5;
-      await waitTx(PookyBall.connect(mod).changeLevel(tokenId, currentLevel));
-      await waitTx(PookyBall.connect(mod).changePXP(tokenId, parseEther(100)));
-      await waitTx(POK.connect(mod).mint(player.address, parseEther(10000)));
+      await PookyBall.connect(mod).changeLevel(tokenId, currentLevel);
+      await PookyBall.connect(mod).changePXP(tokenId, parseEther(100));
+      await POK.connect(mod).mint(player.address, parseEther(10000));
 
       await expect(PookyGame.connect(player).levelUp(tokenId)).to.not.be.reverted;
       const { level: newLevel } = await PookyBall.getBallInfo(tokenId);
@@ -75,8 +74,8 @@ describe('PookyGame', () => {
 
     it('should allow player to level up a ball by exchanging POK to fill missing PXP', async () => {
       const currentLevel = 5;
-      await waitTx(PookyBall.connect(mod).changeLevel(tokenId, currentLevel));
-      await waitTx(POK.connect(mod).mint(player.address, parseEther(100000)));
+      await PookyBall.connect(mod).changeLevel(tokenId, currentLevel);
+      await POK.connect(mod).mint(player.address, parseEther(100000));
 
       await expect(PookyGame.connect(player).levelUp(tokenId)).to.not.be.reverted;
       const { level: newLevel } = await PookyBall.getBallInfo(tokenId);
@@ -85,10 +84,10 @@ describe('PookyGame', () => {
 
     it('should revert if the player is not the owner of the ball', async () => {
       const currentLevel = 5;
-      await waitTx(PookyBall.connect(player).transferFrom(player.address, mod.address, tokenId));
-      await waitTx(PookyBall.connect(mod).changeLevel(tokenId, currentLevel));
-      await waitTx(PookyBall.connect(mod).changePXP(tokenId, parseEther(100)));
-      await waitTx(POK.connect(mod).mint(mod.address, parseEther(10000)));
+      await PookyBall.connect(player).transferFrom(player.address, mod.address, tokenId);
+      await PookyBall.connect(mod).changeLevel(tokenId, currentLevel);
+      await PookyBall.connect(mod).changePXP(tokenId, parseEther(100));
+      await POK.connect(mod).mint(mod.address, parseEther(10000));
 
       await expect(PookyGame.connect(player).levelUp(tokenId))
         .to.be.revertedWithCustomError(PookyGame, 'OwnershipRequired')
@@ -97,9 +96,9 @@ describe('PookyGame', () => {
 
     it('should revert if the ball has reached the maximum level', async () => {
       const currentLevel = 40;
-      await waitTx(PookyBall.connect(mod).changeLevel(tokenId, currentLevel));
-      await waitTx(PookyBall.connect(mod).changePXP(tokenId, parseEther(100000)));
-      await waitTx(POK.connect(mod).mint(player.address, parseEther(100000)));
+      await PookyBall.connect(mod).changeLevel(tokenId, currentLevel);
+      await PookyBall.connect(mod).changePXP(tokenId, parseEther(100000));
+      await POK.connect(mod).mint(player.address, parseEther(100000));
 
       await expect(PookyGame.connect(player).levelUp(tokenId))
         .to.be.revertedWithCustomError(PookyGame, 'MaximumLevelReached')
@@ -109,11 +108,11 @@ describe('PookyGame', () => {
     it('should revert if the ball the user does not own enough POK', async () => {
       const currentLevel = 5;
 
-      await waitTx(PookyBall.connect(mod).changeLevel(tokenId, currentLevel));
-      await waitTx(PookyBall.connect(mod).changePXP(tokenId, parseEther(100000)));
+      await PookyBall.connect(mod).changeLevel(tokenId, currentLevel);
+      await PookyBall.connect(mod).changePXP(tokenId, parseEther(100000));
       const requiredPOK = await PookyGame.levelPOKCost(tokenId);
       const mintedPOK = requiredPOK.sub(1);
-      await waitTx(POK.connect(mod).mint(player.address, mintedPOK));
+      await POK.connect(mod).mint(player.address, mintedPOK);
 
       await expect(PookyGame.connect(player).levelUp(tokenId))
         .to.be.revertedWithCustomError(PookyGame, 'InsufficientPOKBalance')
@@ -138,8 +137,8 @@ describe('PookyGame', () => {
       amount = ethers.utils.parseEther(randInt(HUNDRED).toString());
       ttl = currentTimestamp + 3600 + randInt(HUNDRED); // at least 1 minute
 
-      await waitTx(PookyBall.grantRole(POOKY_CONTRACT, mod.address));
-      await waitTx(PookyBall.connect(mod).mint(player.address, BallRarity.Common, 0));
+      await PookyBall.grantRole(POOKY_CONTRACT, mod.address);
+      await PookyBall.connect(mod).mint(player.address, BallRarity.Common, 0);
 
       tokenId = await PookyBall.lastTokenId();
       ballLevel = (await PookyBall.getBallInfo(tokenId)).level.toNumber();

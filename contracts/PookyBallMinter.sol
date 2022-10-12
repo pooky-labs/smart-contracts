@@ -9,10 +9,6 @@ import './interfaces/IPookyBall.sol';
 import { BallRarity, MintTemplate, MintRandomRequest } from './types/DataTypes.sol';
 import './vendor/VRFConsumerBaseV2.sol';
 
-error MintDisabled(uint256 templateId);
-error MaximumMintsReached(uint256 templateId, uint256 maximumMints);
-error OnlyVRFCoordinator(address coordinator, address actual);
-
 /**
  * @title PookyBallMinter
  * @author Pooky Engineering Team
@@ -53,6 +49,10 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
   // Chainlink VRF events
   event RandomnessRequested(uint256 indexed requestId, address indexed user, uint256 indexed tokenId);
   event RandomnessFulfilled(uint256 indexed requestId, uint256 indexed tokenId, uint256 randomEntropy);
+
+  error MintDisabled(uint256 templateId);
+  error MaximumMintsReached(uint256 templateId, uint256 maximumMints);
+  error OnlyVRFCoordinator(address coordinator, address actual);
 
   /**
    * Initialization function that sets Chainlink VRF parameters.
