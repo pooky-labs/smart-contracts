@@ -11,6 +11,11 @@ enum BallRarity {
   Mythic
 }
 
+enum BallLuxury {
+  Common,
+  Alpha
+}
+
 /**
  * @notice BallInfo represents all ball parameters which is stored in the on-chain storage.
  * @param rarity Rarity of the ball.
@@ -21,6 +26,7 @@ enum BallRarity {
  */
 struct BallInfo {
   BallRarity rarity;
+  BallLuxury luxury;
   uint256 randomEntropy;
   uint256 level;
   uint256 pxp;
@@ -39,6 +45,7 @@ struct BallInfo {
 struct MintTemplate {
   bool enabled;
   BallRarity rarity;
+  BallLuxury luxury;
   uint256 maxMints;
   uint256 currentMints;
   uint256 price;

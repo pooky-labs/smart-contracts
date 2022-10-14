@@ -158,7 +158,7 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
     }
 
     template.currentMints++;
-    uint256 newTokenId = pookyBall.mint(address(this), template.rarity, revocableUntil);
+    uint256 newTokenId = pookyBall.mint(address(this), template.rarity, template.luxury, revocableUntil);
 
     emit RequestMintFromTemplate(templateId, recipient);
     _requestRandomEntropyForMint(recipient, newTokenId);

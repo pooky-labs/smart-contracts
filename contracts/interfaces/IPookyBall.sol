@@ -2,7 +2,7 @@
 pragma solidity ^0.8.9;
 
 import '@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol';
-import { BallRarity, BallInfo } from '../types/DataTypes.sol';
+import { BallRarity, BallLuxury, BallInfo } from '../types/DataTypes.sol';
 
 interface IPookyBall is IERC721Upgradeable {
   function getBallInfo(uint256 tokenId) external view returns (BallInfo memory);
@@ -10,6 +10,7 @@ interface IPookyBall is IERC721Upgradeable {
   function mint(
     address to,
     BallRarity rarity,
+    BallLuxury luxury,
     uint256 revocableUntil
   ) external returns (uint256);
 

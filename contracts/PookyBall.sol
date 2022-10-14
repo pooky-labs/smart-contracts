@@ -7,7 +7,7 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
 import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol';
 import './interfaces/IPookyBall.sol';
-import { BallInfo, BallRarity } from './types/DataTypes.sol';
+import { BallRarity, BallRarity, BallInfo } from './types/DataTypes.sol';
 
 /**
  * @title PookyBall
@@ -190,10 +190,14 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   function mint(
     address to,
     BallRarity rarity,
+    BallLuxury luxury,
     uint256 revocableUntil
   ) external onlyRole(POOKY_CONTRACT) returns (uint256) {
     return
-      _mintBall(to, BallInfo({ rarity: rarity, randomEntropy: 0, level: 0, pxp: 0, revocableUntil: revocableUntil }));
+      _mintBall(
+        to,
+        BallInfo({ rarity: rarity, luxury: luxury, randomEntropy: 0, level: 0, pxp: 0, revocableUntil: revocableUntil })
+      );
   }
 
   /**

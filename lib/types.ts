@@ -6,6 +6,12 @@ export enum BallRarity {
   Rare,
   Epic,
   Legendary,
+  Mythic,
+}
+
+export enum BallLuxury {
+  Common,
+  Alpha,
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
