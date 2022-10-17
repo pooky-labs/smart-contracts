@@ -1,10 +1,10 @@
 import { DEFAULT_ADMIN_ROLE, GAS_LIMIT, HUNDRED, ONE, ZERO } from '../lib/constants';
-import getSigners from '../lib/getSigners';
 import { randInt } from '../lib/rand';
-import { BE, MOD, POOKY_CONTRACT } from '../lib/roles';
+import { BACKEND, POOKY, TECH } from '../lib/roles';
+import getTestAccounts from '../lib/testing/getTestAccounts';
 import { expectHasRole, expectMissingRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
-import { BallRarity } from '../lib/types';
+import { BallLuxury, BallRarity } from '../lib/types';
 import {
   POK,
   PookyBall,
@@ -19,10 +19,10 @@ import { ethers } from 'hardhat';
 
 describe('PookyBallGenesisMinter', () => {
   let deployer: SignerWithAddress;
-  let backendSigner: SignerWithAddress;
-  let mod: SignerWithAddress;
+  let backend: SignerWithAddress;
+  let tech: SignerWithAddress;
   let treasury: SignerWithAddress;
-  let player: SignerWithAddress;
+  let player1: SignerWithAddress;
 
   let PookyBallGenesisMinter: PookyBallGenesisMinter;
   let POK: POK;
@@ -30,13 +30,14 @@ describe('PookyBallGenesisMinter', () => {
   let VRFCoordinatorV2: VRFCoordinatorV2Mock;
 
   beforeEach(async () => {
-    ({ deployer, backendSigner, mod, treasury, player } = await getSigners());
+    ({ deployer, backend, tech, treasury, player1 } = await getTestAccounts());
     ({ PookyBallGenesisMinter, POK, PookyBall } = await loadFixture(stackFixture));
 
     // Create a default template
-    await PookyBallGenesisMinter.connect(mod).createMintTemplate({
+    await PookyBallGenesisMinter.connect(tech).createMintTemplate({
       enabled: true,
       rarity: BallRarity.Common,
+      luxury: BallLuxury.Common,
       maxMints: HUNDRED.toString(),
       currentMints: ZERO.toString(),
       price: ethers.utils.parseEther(ONE.toString()),
@@ -49,7 +50,7 @@ describe('PookyBallGenesisMinter', () => {
     await VRFCoordinatorV2.createSubscription();
     const subId = await VRFCoordinatorV2.s_currentSubId();
     await VRFCoordinatorV2.addConsumer(subId, PookyBallGenesisMinter.address);
-    await PookyBallGenesisMinter.connect(mod).setVrfParameters(
+    await PookyBallGenesisMinter.connect(tech).setVrfParameters(
       VRFCoordinatorV2.address,
       subId,
       1000000,
@@ -60,8 +61,8 @@ describe('PookyBallGenesisMinter', () => {
 
   describe('configuration', () => {
     it('should have roles configured properly', async () => {
-      await expectHasRole(PookyBallGenesisMinter, mod, MOD);
-      await expectHasRole(PookyBallGenesisMinter, backendSigner, BE);
+      await expectHasRole(PookyBallGenesisMinter, tech, TECH);
+      await expectHasRole(PookyBallGenesisMinter, backend, BACKEND);
     });
 
     it('should have contracts configured properly', async () => {
@@ -76,9 +77,9 @@ describe('PookyBallGenesisMinter', () => {
     it('should revert if non-MOD account tries to set address tier', async () => {
       const randomTier = randInt(HUNDRED);
       await expectMissingRole(
-        PookyBallGenesisMinter.connect(player).setTierBatch([player.address], [randomTier]),
-        player,
-        MOD,
+        PookyBallGenesisMinter.connect(player1).setTierBatch([player1.address], [randomTier]),
+        player1,
+        TECH,
       );
     });
   });
@@ -86,7 +87,11 @@ describe('PookyBallGenesisMinter', () => {
   describe('setMinTierToBuy', () => {
     it('should revert if non-MOD account tries to set minimum tier to buy', async () => {
       const randomMinimumTier = randInt(HUNDRED);
-      await expectMissingRole(PookyBallGenesisMinter.connect(player).setMinTierToBuy(randomMinimumTier), player, MOD);
+      await expectMissingRole(
+        PookyBallGenesisMinter.connect(player1).setMinTierToBuy(randomMinimumTier),
+        player1,
+        TECH,
+      );
     });
   });
 
@@ -94,9 +99,9 @@ describe('PookyBallGenesisMinter', () => {
     it('should revert if non-MOD account tries to set maximum balls per user', async () => {
       const randomMaximumBallsPerUser = randInt(HUNDRED);
       await expectMissingRole(
-        PookyBallGenesisMinter.connect(player).setMaxBallsPerUser(randomMaximumBallsPerUser),
-        player,
-        MOD,
+        PookyBallGenesisMinter.connect(player1).setMaxBallsPerUser(randomMaximumBallsPerUser),
+        player1,
+        TECH,
       );
     });
   });
@@ -104,22 +109,26 @@ describe('PookyBallGenesisMinter', () => {
   describe('setRevokePeriod', () => {
     it('should revert if non-MOD account tries to set revoke period', async () => {
       const randomRevokePeriod = randInt(HUNDRED);
-      await expectMissingRole(PookyBallGenesisMinter.connect(player).setRevokePeriod(randomRevokePeriod), player, MOD);
+      await expectMissingRole(
+        PookyBallGenesisMinter.connect(player1).setRevokePeriod(randomRevokePeriod),
+        player1,
+        TECH,
+      );
     });
   });
 
   describe('setVrfParameters', () => {
     it('should revert if non-MOD account tries to set Vrf parameters', async () => {
       await expectMissingRole(
-        PookyBallGenesisMinter.connect(player).setVrfParameters(
-          player.address,
+        PookyBallGenesisMinter.connect(player1).setVrfParameters(
+          player1.address,
           0,
           0,
           0,
           ethers.utils.solidityKeccak256(['string'], ['RANDOM_KEY_HASH']),
         ),
-        player,
-        MOD,
+        player1,
+        TECH,
       );
     });
 
@@ -134,7 +143,7 @@ describe('PookyBallGenesisMinter', () => {
 
       const randomKeyHash = ethers.utils.solidityKeccak256(['string'], ['RANDOM_KEY_HASH']);
 
-      await PookyBallGenesisMinter.connect(mod).setVrfParameters(
+      await PookyBallGenesisMinter.connect(tech).setVrfParameters(
         VRFCoordinatorV2.address,
         ONE,
         newCallbackGasLimit,
@@ -168,16 +177,17 @@ describe('PookyBallGenesisMinter', () => {
   describe('createMintTemplate', () => {
     it('should revert if non-MOD account tries to create mint template', async () => {
       await expectMissingRole(
-        PookyBallGenesisMinter.connect(player).createMintTemplate({
+        PookyBallGenesisMinter.connect(player1).createMintTemplate({
           enabled: true,
           rarity: ZERO,
+          luxury: BallLuxury.Common,
           maxMints: HUNDRED,
           currentMints: ZERO,
           price: ethers.utils.parseEther(ONE.toString()),
           payingToken: POK.address,
         }),
-        player,
-        MOD,
+        player1,
+        TECH,
       );
     });
   });
@@ -186,14 +196,14 @@ describe('PookyBallGenesisMinter', () => {
     it('should revert if non-MOD account tries to change mint template', async () => {
       const randomTemplateId = randInt(HUNDRED);
       await expectMissingRole(
-        PookyBallGenesisMinter.connect(player).enableMintTemplate(randomTemplateId, true),
-        player,
-        MOD,
+        PookyBallGenesisMinter.connect(player1).enableMintTemplate(randomTemplateId, true),
+        player1,
+        TECH,
       );
       await expectMissingRole(
-        PookyBallGenesisMinter.connect(player).enableMintTemplate(randomTemplateId, false),
-        player,
-        MOD,
+        PookyBallGenesisMinter.connect(player1).enableMintTemplate(randomTemplateId, false),
+        player1,
+        TECH,
       );
     });
   });
@@ -201,8 +211,8 @@ describe('PookyBallGenesisMinter', () => {
   describe('setPookyBallContract', () => {
     it('should revert if non-DEFAULT_ADMIN_ROLE account tries to set PookyBall contract address', async () => {
       await expectMissingRole(
-        PookyBallGenesisMinter.connect(player).setPookyBallContract(player.address),
-        player,
+        PookyBallGenesisMinter.connect(player1).setPookyBallContract(player1.address),
+        player1,
         DEFAULT_ADMIN_ROLE,
       );
     });
@@ -213,9 +223,13 @@ describe('PookyBallGenesisMinter', () => {
       const randomMintTemplate = randInt(HUNDRED);
       const randomNumberOfBalls = randInt(HUNDRED);
       await expectMissingRole(
-        PookyBallGenesisMinter.connect(player).mintAuthorized(player.address, randomMintTemplate, randomNumberOfBalls),
-        player,
-        BE,
+        PookyBallGenesisMinter.connect(player1).mintAuthorized(
+          player1.address,
+          randomMintTemplate,
+          randomNumberOfBalls,
+        ),
+        player1,
+        BACKEND,
       );
     });
   });
@@ -223,14 +237,14 @@ describe('PookyBallGenesisMinter', () => {
   describe('revokeAuthorized', () => {
     it('should revert if non-BE account tries to revoke ball authorized', async () => {
       const randomBallId = randInt(HUNDRED);
-      await expectMissingRole(PookyBallGenesisMinter.connect(player).revokeAuthorized(randomBallId), player, BE);
+      await expectMissingRole(PookyBallGenesisMinter.connect(player1).revokeAuthorized(randomBallId), player1, BACKEND);
     });
   });
 
   describe('minTierToBuy', () => {
     it('should let MOD account sets minimum tier to buy', async () => {
       const randomMinimumTierToBuy = randInt(HUNDRED);
-      await PookyBallGenesisMinter.connect(mod).setMinTierToBuy(randomMinimumTierToBuy);
+      await PookyBallGenesisMinter.connect(tech).setMinTierToBuy(randomMinimumTierToBuy);
 
       const minTierToBuy = await PookyBallGenesisMinter.minTierToBuy();
       expect(minTierToBuy).to.be.equal(randomMinimumTierToBuy, 'Minimum tier to buy is not set successfully');
@@ -240,7 +254,7 @@ describe('PookyBallGenesisMinter', () => {
   describe('setMaxBallsPerUser', () => {
     it('should let MOD account sets maximum balls per user', async () => {
       const randomMaximumBallsPerUser = randInt(HUNDRED);
-      await PookyBallGenesisMinter.connect(mod).setMaxBallsPerUser(randomMaximumBallsPerUser);
+      await PookyBallGenesisMinter.connect(tech).setMaxBallsPerUser(randomMaximumBallsPerUser);
 
       const maximumBallsPerUser = await PookyBallGenesisMinter.maxBallsPerUser();
 
@@ -256,7 +270,7 @@ describe('PookyBallGenesisMinter', () => {
       const randomRevokePeriod = randInt(HUNDRED);
 
       // Revoke period need to be a little bigger
-      await PookyBallGenesisMinter.connect(mod).setRevokePeriod(randomRevokePeriod * HUNDRED);
+      await PookyBallGenesisMinter.connect(tech).setRevokePeriod(randomRevokePeriod * HUNDRED);
 
       const revokePeriod = await PookyBallGenesisMinter.revokePeriod();
       expect(revokePeriod).to.be.equal(randomRevokePeriod * HUNDRED, 'Revoke period is not set successfully');
@@ -269,8 +283,8 @@ describe('PookyBallGenesisMinter', () => {
       const minTierToBuy = await PookyBallGenesisMinter.minTierToBuy();
       const newAddressTier = minTierToBuy.toNumber() + randomAddressTierIncrement;
 
-      await PookyBallGenesisMinter.connect(mod).setTierBatch([player.address], [newAddressTier]);
-      const addressTierAfter = await PookyBallGenesisMinter.userTiers(player.address);
+      await PookyBallGenesisMinter.connect(tech).setTierBatch([player1.address], [newAddressTier]);
+      const addressTierAfter = await PookyBallGenesisMinter.userTiers(player1.address);
 
       expect(addressTierAfter).to.be.equal(newAddressTier, 'Address tier is not set successfully');
     });
@@ -280,9 +294,10 @@ describe('PookyBallGenesisMinter', () => {
     it('should let MOD account creates mint template', async () => {
       const templateNumberBefore = await PookyBallGenesisMinter.lastMintTemplateId();
 
-      await PookyBallGenesisMinter.connect(mod).createMintTemplate({
+      await PookyBallGenesisMinter.connect(tech).createMintTemplate({
         enabled: true,
         rarity: ZERO.toString(),
+        luxury: BallLuxury.Common,
         maxMints: HUNDRED.toString(),
         currentMints: ZERO.toString(),
         price: ethers.utils.parseEther(ONE.toString()),
@@ -298,14 +313,14 @@ describe('PookyBallGenesisMinter', () => {
   describe('mint', () => {
     it('should revert if user tier is too small', async () => {
       // Ensure that tier 1 is required to mint (tier 0 means that mint is public)
-      await PookyBallGenesisMinter.connect(mod).setMinTierToBuy(1);
+      await PookyBallGenesisMinter.connect(tech).setMinTierToBuy(1);
 
       const numberOfBalls = ONE;
       const lastMintTemplateId = await PookyBallGenesisMinter.lastMintTemplateId();
       const ballPrice = (await PookyBallGenesisMinter.mintTemplates(lastMintTemplateId)).price;
 
       await expect(
-        PookyBallGenesisMinter.connect(player).mint(numberOfBalls, lastMintTemplateId, {
+        PookyBallGenesisMinter.connect(player1).mint(numberOfBalls, lastMintTemplateId, {
           value: ballPrice.mul(numberOfBalls),
         }),
       ).to.be.reverted;
@@ -313,15 +328,15 @@ describe('PookyBallGenesisMinter', () => {
 
     it('should revert if user tries to mint too much balls', async () => {
       const minTierToBuy = await PookyBallGenesisMinter.minTierToBuy();
-      const mintsLeft = await PookyBallGenesisMinter.mintsLeft(player.address);
+      const mintsLeft = await PookyBallGenesisMinter.mintsLeft(player1.address);
       const numberOfBalls = mintsLeft.add(ONE);
       const lastMintTemplateId = await PookyBallGenesisMinter.lastMintTemplateId();
       const ballPrice = (await PookyBallGenesisMinter.mintTemplates(lastMintTemplateId)).price;
 
-      await PookyBallGenesisMinter.connect(mod).setTierBatch([player.address], [minTierToBuy.add(ONE)]);
+      await PookyBallGenesisMinter.connect(tech).setTierBatch([player1.address], [minTierToBuy.add(ONE)]);
 
       await expect(
-        PookyBallGenesisMinter.connect(player).mint(numberOfBalls, lastMintTemplateId, {
+        PookyBallGenesisMinter.connect(player1).mint(numberOfBalls, lastMintTemplateId, {
           value: ballPrice.mul(numberOfBalls),
         }),
       ).to.be.reverted;
@@ -334,10 +349,10 @@ describe('PookyBallGenesisMinter', () => {
       const lastMintTemplateId = await PookyBallGenesisMinter.lastMintTemplateId();
       const ballPrice = (await PookyBallGenesisMinter.mintTemplates(lastMintTemplateId)).price;
 
-      await PookyBallGenesisMinter.connect(mod).setTierBatch([player.address], [minTierToBuy.add(ONE)]);
+      await PookyBallGenesisMinter.connect(tech).setTierBatch([player1.address], [minTierToBuy.add(ONE)]);
 
       await expect(
-        PookyBallGenesisMinter.connect(player).mint(numberOfBalls, lastMintTemplateId, {
+        PookyBallGenesisMinter.connect(player1).mint(numberOfBalls, lastMintTemplateId, {
           value: ballPrice.mul(numberOfBalls),
         }),
       ).to.be.reverted;
@@ -348,10 +363,10 @@ describe('PookyBallGenesisMinter', () => {
       const numberOfBalls = ONE;
       const lastMintTemplateId = await PookyBallGenesisMinter.lastMintTemplateId();
 
-      await PookyBallGenesisMinter.connect(mod).setTierBatch([player.address], [minTierToBuy.add(ONE)]);
+      await PookyBallGenesisMinter.connect(tech).setTierBatch([player1.address], [minTierToBuy.add(ONE)]);
 
       await expect(
-        PookyBallGenesisMinter.connect(player).mint(numberOfBalls, lastMintTemplateId, {
+        PookyBallGenesisMinter.connect(player1).mint(numberOfBalls, lastMintTemplateId, {
           value: ethers.utils.parseEther(ZERO.toString()),
         }),
       ).to.be.reverted;
@@ -365,11 +380,11 @@ describe('PookyBallGenesisMinter', () => {
       const txValue = ballPrice.mul(numberOfBalls);
 
       await expect(
-        PookyBallGenesisMinter.connect(player).mint(numberOfBalls, lastMintTemplateId, {
+        PookyBallGenesisMinter.connect(player1).mint(numberOfBalls, lastMintTemplateId, {
           value: txValue,
         }),
       )
-        .changeEtherBalances([player.address, treasury.address], [`-${txValue.toString()}`, txValue])
+        .changeEtherBalances([player1.address, treasury.address], [`-${txValue.toString()}`, txValue])
         .changeTokenBalance(PookyBall, PookyBallGenesisMinter.address, 1);
 
       // Until the contract receives the random words, the NFT is owned by the PookyBallGenesisMinter contract
@@ -379,19 +394,19 @@ describe('PookyBallGenesisMinter', () => {
       const randomEntropy = randInt(HUNDRED);
       await expect(
         VRFCoordinatorV2.fulfillRandomWordsWithOverride(1, PookyBallGenesisMinter.address, [randomEntropy]),
-      ).changeTokenBalance(PookyBall, player, 1);
+      ).changeTokenBalance(PookyBall, player1, 1);
 
       const ball = await PookyBall.getBallInfo(tokenId);
       expect(ball.randomEntropy).to.be.equal(randomEntropy); // Entropy has been applied
-      expect(await PookyBall.ownerOf(tokenId)).to.be.equal(player.address); // Player is now the owner of the NFT
+      expect(await PookyBall.ownerOf(tokenId)).to.be.equal(player1.address); // Player is now the owner of the NFT
     });
   });
 
   describe('tokenURI', () => {
     it('should expose the ball information', async () => {
       // Allow the mod account to mint a ball
-      await PookyBall.grantRole(POOKY_CONTRACT, mod.address);
-      await PookyBall.connect(mod).mint(player.address, BallRarity.Common, 0);
+      await PookyBall.grantRole(POOKY, tech.address);
+      await PookyBall.connect(tech).mint(player1.address, BallRarity.Common, BallLuxury.Common, 0);
 
       const ballId = await PookyBall.lastTokenId();
       expect((await PookyBall.getBallInfo(ballId)).pxp).to.be.equal(0);
@@ -405,26 +420,28 @@ describe('PookyBallGenesisMinter', () => {
       const lastMintTemplateId = await PookyBallGenesisMinter.lastMintTemplateId();
 
       await expect(
-        PookyBallGenesisMinter.connect(backendSigner).mintAuthorized(player.address, numberOfBalls, lastMintTemplateId),
+        PookyBallGenesisMinter.connect(backend).mintAuthorized(player1.address, numberOfBalls, lastMintTemplateId),
       ).to.changeTokenBalance(PookyBall, PookyBallGenesisMinter, 1);
 
       const randomEntropy = randInt(HUNDRED);
       await expect(
         VRFCoordinatorV2.fulfillRandomWordsWithOverride(1, PookyBallGenesisMinter.address, [randomEntropy]),
-      ).to.changeTokenBalances(PookyBall, [PookyBallGenesisMinter, player], [-1, 1]);
+      ).to.changeTokenBalances(PookyBall, [PookyBallGenesisMinter, player1], [-1, 1]);
     });
   });
 
   describe('transfer', async () => {
     const ballId = await PookyBallGenesisMinter.ballsMinted();
-    await expect(PookyBall.connect(player).transferFrom(player.address, mod.address, ballId)).to.be.revertedWith('13');
+    await expect(PookyBall.connect(player1).transferFrom(player1.address, tech.address, ballId)).to.be.revertedWith(
+      '13',
+    );
   });
 
   describe('revokeAuthorized', () => {
     beforeEach(async () => {
       const lastMintTemplateId = await PookyBallGenesisMinter.lastMintTemplateId();
-      await PookyBallGenesisMinter.connect(mod).setRevokePeriod(3600);
-      await PookyBallGenesisMinter.connect(backendSigner).mintAuthorized(player.address, ONE, lastMintTemplateId);
+      await PookyBallGenesisMinter.connect(tech).setRevokePeriod(3600);
+      await PookyBallGenesisMinter.connect(backend).mintAuthorized(player1.address, ONE, lastMintTemplateId);
 
       const randomEntropy = randInt(HUNDRED);
       await VRFCoordinatorV2.fulfillRandomWordsWithOverride(1, PookyBallGenesisMinter.address, [randomEntropy]);
@@ -432,9 +449,9 @@ describe('PookyBallGenesisMinter', () => {
 
     it('should allow BE account to revoke authorized ball', async () => {
       const ballId = await PookyBallGenesisMinter.ballsMinted();
-      await expect(PookyBallGenesisMinter.connect(backendSigner).revokeAuthorized(ballId)).to.changeTokenBalance(
+      await expect(PookyBallGenesisMinter.connect(backend).revokeAuthorized(ballId)).to.changeTokenBalance(
         PookyBall,
-        player,
+        player1,
         -1,
       );
     });

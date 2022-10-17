@@ -24,6 +24,7 @@ PookyBall is ERC721 token representing Pooky Ball NFTs. Balls are mintable by ot
 This contract does not hold any aspect of the Pooky gameplay and only serves as Pooky Ball information storage.
 
 Pooky Balls NFT have the following features (see {BallInfo}):
+
 - `rarity`
 - `randomEntropy` the ball random entropy (provided by Chainlink VRF v2) which is used to generate the ball image and
   in-game boosts.
@@ -41,22 +42,23 @@ purchased with credit card are kept _revocable_ for a certain period of time.
 Revocable balls cannot be transferred and can be burned in case of a refund.
 
 Roles:
-- DEFAULT_ADMIN_ROLE can add/remove roles
-- POOKY_CONTRACT role can mint new tokens
 
-### POOKY_CONTRACT
+- DEFAULT_ADMIN_ROLE can add/remove roles
+- POOKY role can mint new tokens
+
+### POOKY
 
 ```solidity
-bytes32 POOKY_CONTRACT
+bytes32 POOKY
 ```
 
-### baseURI_
+### baseURI\_
 
 ```solidity
 string baseURI_
 ```
 
-### _contractURI
+### \_contractURI
 
 ```solidity
 string _contractURI
@@ -115,8 +117,9 @@ function setContractURI(string contractURI_) external
 
 Set the URI of the contract-level metadata.
 
-_Requirements:
-- Only DEFAULT_ADMIN_ROLE role can set the contract URI._
+\_Requirements:
+
+- Only DEFAULT*ADMIN_ROLE role can set the contract URI.*
 
 ### tokenURI
 
@@ -126,9 +129,10 @@ function tokenURI(uint256 tokenId) public view virtual returns (string)
 
 Metadata URI of the token {tokenId}.
 
-_See {IERC721Metadata-tokenURI}.
+\_See {IERC721Metadata-tokenURI}.
 Requirements:
-- Ball {tokenId} should exist (minted and not burned)._
+
+- Ball {tokenId} should exist (minted and not burned).\_
 
 ### getBallInfo
 
@@ -138,8 +142,9 @@ function getBallInfo(uint256 tokenId) external view returns (struct BallInfo)
 
 Ball information of a particular Pooky Ball.
 
-_Requirements:
-- Ball {tokenId} should exist (minted and not burned)._
+\_Requirements:
+
+- Ball {tokenId} should exist (minted and not burned).\_
 
 ### isRevocable
 
@@ -157,10 +162,11 @@ function setRandomEntropy(uint256 tokenId, uint256 _randomEntropy) external
 
 Sets the random entropy of the Pooky Ball with id {tokenId}.
 
-_Requirements:
-- Only POOKY_CONTRACT role can increase Pooky Balls levels.
+\_Requirements:
+
+- Only POOKY role can increase Pooky Balls levels.
 - Ball {tokenId} should exist (minted and not burned).
-- Previous entropy should be zero._
+- Previous entropy should be zero.\_
 
 ### changePXP
 
@@ -170,16 +176,17 @@ function changePXP(uint256 tokenId, uint256 amount) external
 
 Change the PXP (Experience points) of the Pooky Ball with id {tokenId}.
 
-_Requirements:
-- Only POOKY_CONTRACT role can increase Pooky Balls PXP.
-- Ball {tokenId} should exist (minted and not burned)._
+\_Requirements:
+
+- Only POOKY role can increase Pooky Balls PXP.
+- Ball {tokenId} should exist (minted and not burned).\_
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| tokenId | uint256 | The Pooky Ball NFT id. |
-| amount | uint256 | The PXP amount to add the to Pooky Ball. |
+| Name    | Type    | Description                              |
+| ------- | ------- | ---------------------------------------- |
+| tokenId | uint256 | The Pooky Ball NFT id.                   |
+| amount  | uint256 | The PXP amount to add the to Pooky Ball. |
 
 ### changeLevel
 
@@ -189,18 +196,19 @@ function changeLevel(uint256 tokenId, uint256 newLevel) external
 
 Change the level of the Pooky Ball with id {tokenId} to the {newLevel}
 
-_Requirements:
-- Only POOKY_CONTRACT role can increase Pooky Balls levels.
-- Ball {tokenId} should exist (minted and not burned)._
+\_Requirements:
+
+- Only POOKY role can increase Pooky Balls levels.
+- Ball {tokenId} should exist (minted and not burned).\_
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| tokenId | uint256 | The Pooky Ball NFT id. |
-| newLevel | uint256 | The new Ball level. |
+| Name     | Type    | Description            |
+| -------- | ------- | ---------------------- |
+| tokenId  | uint256 | The Pooky Ball NFT id. |
+| newLevel | uint256 | The new Ball level.    |
 
-### _mintBall
+### \_mintBall
 
 ```solidity
 function _mintBall(address to, struct BallInfo ballInfo) internal returns (uint256)
@@ -217,16 +225,17 @@ function mint(address to, enum BallRarity rarity, uint256 revocableUntil) extern
 Mint a ball with a specific {BallRarity} and with a specific revocation date/time, with all other Ball
 parameters set to default.
 
-_Requirements:
-- Only POOKY_CONTRACT role can mint Pooky Balls._
+\_Requirements:
+
+- Only POOKY role can mint Pooky Balls.\_
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| to | address | The address which will own the minted Pooky Ball. |
-| rarity | enum BallRarity | The address which will own the minted Pooky Ball. |
-| revocableUntil | uint256 | The UNIX timestamp until the ball can be revoked. |
+| Name           | Type            | Description                                       |
+| -------------- | --------------- | ------------------------------------------------- |
+| to             | address         | The address which will own the minted Pooky Ball. |
+| rarity         | enum BallRarity | The address which will own the minted Pooky Ball. |
+| revocableUntil | uint256         | The UNIX timestamp until the ball can be revoked. |
 
 ### revoke
 
@@ -236,18 +245,19 @@ function revoke(uint256 tokenId) external
 
 Revoke and burn the Pooky Ball with id {tokenId}.
 
-_Requirements:
-- Only POOKY_CONTRACT role can mint Pooky Balls.
-- Ball is revocable only if current timestamp is less then `ball.revocableUntil`_
+\_Requirements:
 
-### _beforeTokenTransfer
+- Only POOKY role can mint Pooky Balls.
+- Ball is revocable only if current timestamp is less then `ball.revocableUntil`\_
+
+### \_beforeTokenTransfer
 
 ```solidity
 function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal view
 ```
 
 _Restrict revocable Pooky Balls transfers.
-Mints and burns are always allowed, as transfers from POOKY_CONTRACT role._
+Mints and burns are always allowed, as transfers from POOKY role._
 
 ### supportsInterface
 
@@ -256,4 +266,3 @@ function supportsInterface(bytes4 interfaceId) public view virtual returns (bool
 ```
 
 IERC165 declaration.
-

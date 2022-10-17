@@ -6,11 +6,11 @@ import { ContractTransaction } from 'ethers';
  * @param tx The {@see ContractTransaction} to wait for.
  * @param confirmations The number of blocks to wait.
  * @example
- *   const tx = await POK.grantRole(POOKY_CONTRACT, PookyMintEvent.address);
+ *   const tx = await POK.grantRole(POOKY, PookyMintEvent.address);
  *   await tx.wait();
  *
  *   Can be replaced by:
- *   await waitTx(POK.grantRole(POOKY_CONTRACT, PookyMintEvent.address));
+ *   await waitTx(POK.grantRole(POOKY, PookyMintEvent.address));
  */
 export default async function waitTx(
   tx: ContractTransaction | Promise<ContractTransaction>,

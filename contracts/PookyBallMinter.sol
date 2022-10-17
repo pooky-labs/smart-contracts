@@ -25,7 +25,7 @@ import './vendor/VRFConsumerBaseV2.sol';
  */
 abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
   // Roles
-  bytes32 public constant MOD = keccak256('MOD');
+  bytes32 public constant TECH = keccak256('TECH');
 
   // Contracts
   IPookyBall public pookyBall;
@@ -90,7 +90,7 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
     uint32 callbackGasLimit,
     uint16 requestConfirmation,
     bytes32 keyHash
-  ) external onlyRole(MOD) {
+  ) external onlyRole(TECH) {
     vrf_coordinator = VRFCoordinatorV2Interface(_coordinator);
     vrf_subscriptionId = subscriptionId;
     vrf_callbackGasLimit = callbackGasLimit;
@@ -113,7 +113,7 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
    * - only MOD role can create MintTemplates.
    * Emits a CreateMintTemplate event.
    */
-  function createMintTemplate(MintTemplate memory newMintTemplate) external onlyRole(MOD) returns (uint256) {
+  function createMintTemplate(MintTemplate memory newMintTemplate) external onlyRole(TECH) returns (uint256) {
     lastMintTemplateId++;
     mintTemplates[lastMintTemplateId] = newMintTemplate;
     emit CreateMintTemplate(lastMintTemplateId);
@@ -126,7 +126,7 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
    * - only MOD role can create MintTemplates.
    * Emits a MintTemplateEnabled event.
    */
-  function enableMintTemplate(uint256 mintTemplateId, bool _enabled) external onlyRole(MOD) {
+  function enableMintTemplate(uint256 mintTemplateId, bool _enabled) external onlyRole(TECH) {
     mintTemplates[mintTemplateId].enabled = _enabled;
     emit MintTemplateEnabled(mintTemplateId, _enabled);
   }

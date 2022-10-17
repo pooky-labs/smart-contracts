@@ -47,6 +47,7 @@ contract PookyGame is AccessControlUpgradeable {
   error InvalidSignature();
   error ExpiredSignature(uint256 expiration);
   error NonceUsed();
+  error RewardTransferFailed(uint256 amount, address recipient);
 
   function initialize(address _admin) public initializer {
     __AccessControl_init();
@@ -172,6 +173,7 @@ contract PookyGame is AccessControlUpgradeable {
 
   /**
    * @notice Claim prediction rewards ($POK tokens and Ball PXP).
+   * @param amountNAT The amount of native currency to transfer.
    * @param amountPOK The $POK token amount.
    * @param ballUpdates The updated to apply to the Pooky Balls (PXP and optional level up).
    * @param ttl UNIX timestamp until signature is valid.
@@ -179,13 +181,14 @@ contract PookyGame is AccessControlUpgradeable {
    * @param signature The signature of the previous parameters generated using the eth_personalSign RPC call.
    */
   function claimRewards(
+    uint256 amountNAT,
     uint256 amountPOK,
     BallUpdates[] calldata ballUpdates,
     uint256 ttl,
     uint256 nonce,
     bytes memory signature
   ) external {
-    if (!verifySignature(abi.encode(amountPOK, ballUpdates, ttl, nonce), signature)) {
+    if (!verifySignature(abi.encode(amountNAT, amountPOK, ballUpdates, ttl, nonce), signature)) {
       revert InvalidSignature();
     }
 
@@ -198,6 +201,11 @@ contract PookyGame is AccessControlUpgradeable {
     }
 
     nonces[nonce] = true;
+
+    (bool sent, ) = address(msg.sender).call{ value: amountNAT }('');
+    if (!sent) {
+      revert RewardTransferFailed(amountNAT, msg.sender);
+    }
 
     pok.mint(msg.sender, amountPOK);
 

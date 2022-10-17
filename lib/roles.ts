@@ -8,7 +8,7 @@ export default function hashRole(role: string): string {
   return ethers.utils.solidityKeccak256(['string'], [role]);
 }
 
-export const POOKY_CONTRACT = hashRole('POOKY_CONTRACT');
+export const POOKY = hashRole('POOKY');
 export const REWARD_SIGNER = hashRole('REWARD_SIGNER');
-export const BE = hashRole('BE');
-export const MOD = hashRole('MOD');
+export const TECH = hashRole('TECH');
+export const BACKEND = hashRole('BACKEND');

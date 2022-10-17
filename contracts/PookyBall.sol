@@ -35,13 +35,13 @@ import { BallRarity, BallRarity, BallInfo } from './types/DataTypes.sol';
  *
  * Roles:
  * - DEFAULT_ADMIN_ROLE can add/remove roles
- * - POOKY_CONTRACT role can mint new tokens
+ * - POOKY role can mint new tokens
  */
 contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   using StringsUpgradeable for uint256;
 
   // Roles
-  bytes32 public constant POOKY_CONTRACT = keccak256('POOKY_CONTRACT');
+  bytes32 public constant POOKY = keccak256('POOKY');
 
   string public baseURI_;
   string public _contractURI;
@@ -49,9 +49,9 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
 
   mapping(uint256 => BallInfo) public balls;
 
-  event BallSetRandomEntropy(uint256 indexed tokenId, uint256 randomEntropy);
-  event BallLevelChange(uint256 indexed tokenId, uint256 level);
-  event ChangeBallPXP(uint256 indexed tokenId, uint256 amount);
+  event BallRandomEntropySet(uint256 indexed tokenId, uint256 randomEntropy);
+  event BallLevelUpdated(uint256 indexed tokenId, uint256 level);
+  event BallPXPUpdated(uint256 indexed tokenId, uint256 amount);
 
   error EntropyAlreadySet(uint256 tokenId);
   error NotRevocableAnymore(uint256 tokenId, uint256 now);
@@ -121,11 +121,11 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   /**
    * @notice Sets the random entropy of the Pooky Ball with id {tokenId}.
    * @dev Requirements:
-   * - Only POOKY_CONTRACT role can increase Pooky Balls levels.
+   * - Only POOKY role can increase Pooky Balls levels.
    * - Ball {tokenId} should exist (minted and not burned).
    * - Previous entropy should be zero.
    */
-  function setRandomEntropy(uint256 tokenId, uint256 _randomEntropy) external onlyRole(POOKY_CONTRACT) {
+  function setRandomEntropy(uint256 tokenId, uint256 _randomEntropy) external onlyRole(POOKY) {
     _requireMinted(tokenId);
 
     if (balls[tokenId].randomEntropy != 0) {
@@ -133,37 +133,37 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
     }
 
     balls[tokenId].randomEntropy = _randomEntropy;
-    emit BallSetRandomEntropy(tokenId, _randomEntropy);
+    emit BallRandomEntropySet(tokenId, _randomEntropy);
   }
 
   /**
    * @notice Change the PXP (Experience points) of the Pooky Ball with id {tokenId}.
    * @dev Requirements:
-   * - Only POOKY_CONTRACT role can increase Pooky Balls PXP.
+   * - Only POOKY role can increase Pooky Balls PXP.
    * - Ball {tokenId} should exist (minted and not burned).
    * @param tokenId The Pooky Ball NFT id.
    * @param amount The PXP amount to add the to Pooky Ball.
    */
-  function changePXP(uint256 tokenId, uint256 amount) external onlyRole(POOKY_CONTRACT) {
+  function changePXP(uint256 tokenId, uint256 amount) external onlyRole(POOKY) {
     _requireMinted(tokenId);
 
     balls[tokenId].pxp = amount;
-    emit ChangeBallPXP(tokenId, amount);
+    emit BallPXPUpdated(tokenId, amount);
   }
 
   /**
    * @notice Change the level of the Pooky Ball with id {tokenId} to the {newLevel}
    * @dev Requirements:
-   * - Only POOKY_CONTRACT role can increase Pooky Balls levels.
+   * - Only POOKY role can increase Pooky Balls levels.
    * - Ball {tokenId} should exist (minted and not burned).
    * @param tokenId The Pooky Ball NFT id.
    * @param newLevel The new Ball level.
    */
-  function changeLevel(uint256 tokenId, uint256 newLevel) external onlyRole(POOKY_CONTRACT) {
+  function changeLevel(uint256 tokenId, uint256 newLevel) external onlyRole(POOKY) {
     _requireMinted(tokenId);
 
     balls[tokenId].level = newLevel;
-    emit BallLevelChange(tokenId, newLevel);
+    emit BallLevelUpdated(tokenId, newLevel);
   }
 
   /**
@@ -182,9 +182,10 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
    * @notice Mint a ball with a specific {BallRarity} and with a specific revocation date/time, with all other Ball
    * parameters set to default.
    * @dev Requirements:
-   * - Only POOKY_CONTRACT role can mint Pooky Balls.
+   * - Only POOKY role can mint Pooky Balls.
    * @param to The address which will own the minted Pooky Ball.
-   * @param rarity The address which will own the minted Pooky Ball.
+   * @param rarity The Pooky Ball rarity.
+   * @param luxury The Pooky Ball luxury.
    * @param revocableUntil The UNIX timestamp until the ball can be revoked.
    */
   function mint(
@@ -192,7 +193,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
     BallRarity rarity,
     BallLuxury luxury,
     uint256 revocableUntil
-  ) external onlyRole(POOKY_CONTRACT) returns (uint256) {
+  ) external onlyRole(POOKY) returns (uint256) {
     return
       _mintBall(
         to,
@@ -203,10 +204,10 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   /**
    * @notice Revoke and burn the Pooky Ball with id {tokenId}.
    * @dev Requirements:
-   * - Only POOKY_CONTRACT role can mint Pooky Balls.
+   * - Only POOKY role can mint Pooky Balls.
    * - Ball is revocable only if current timestamp is less then `ball.revocableUntil`
    */
-  function revoke(uint256 tokenId) external onlyRole(POOKY_CONTRACT) {
+  function revoke(uint256 tokenId) external onlyRole(POOKY) {
     if (!isRevocable(tokenId)) {
       revert NotRevocableAnymore(tokenId, block.timestamp);
     }
@@ -216,7 +217,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
 
   /**
    * @dev Restrict revocable Pooky Balls transfers.
-   * Mints and burns are always allowed, as transfers from POOKY_CONTRACT role.
+   * Mints and burns are always allowed, as transfers from POOKY role.
    */
   function _beforeTokenTransfer(
     address from,
@@ -224,7 +225,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
     uint256 tokenId
   ) internal view override {
     if (from == address(0) || to == address(0)) return;
-    if (hasRole(POOKY_CONTRACT, from)) return;
+    if (hasRole(POOKY, from)) return;
 
     if (isRevocable(tokenId)) {
       revert TransferLockedWhileRevocable(tokenId);

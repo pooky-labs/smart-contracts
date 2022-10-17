@@ -4,10 +4,10 @@
 
 Errors used in require statements.
 
-### ONLY_POOKY_CONTRACTS
+### ONLY_POOKYS
 
 ```solidity
-string ONLY_POOKY_CONTRACTS
+string ONLY_POOKYS
 ```
 
 ### TOKEN_NOT_FOUND
@@ -129,4 +129,3 @@ string ONLY_VRF_COORDINATOR
 ```solidity
 string BALL_ENTROPY_ALREADY_SET
 ```
-

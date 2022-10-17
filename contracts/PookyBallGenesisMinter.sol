@@ -18,12 +18,9 @@ import { BallRarity, MintTemplate, MintRandomRequest } from './types/DataTypes.s
  *
  * Roles:
  *   DEFAULT_ADMIN_ROLE can add/remove roles
- *   BE role represents backend which can mint to the user address
+ *   TECH role represents backend which can mint to the user address
  */
 contract PookyBallGenesisMinter is PookyBallMinter {
-  // Roles
-  bytes32 public constant BE = keccak256('BE');
-
   // Allowlist state
   uint256 public minTierToBuy;
   mapping(address => uint256) public userTiers;
@@ -87,7 +84,7 @@ contract PookyBallGenesisMinter is PookyBallMinter {
    * @dev Requirements:
    * - only MOD role can manage the allowlist.
    */
-  function setMinTierToBuy(uint256 _minTierToBuy) external onlyRole(MOD) {
+  function setMinTierToBuy(uint256 _minTierToBuy) external onlyRole(TECH) {
     minTierToBuy = _minTierToBuy;
   }
 
@@ -99,7 +96,7 @@ contract PookyBallGenesisMinter is PookyBallMinter {
    * Requirements:
    * - only MOD role can manage the allowlist.
    */
-  function setMaxBallsPerUser(uint256 _maxBallsPerUser) external onlyRole(MOD) {
+  function setMaxBallsPerUser(uint256 _maxBallsPerUser) external onlyRole(TECH) {
     maxBallsPerUser = _maxBallsPerUser;
   }
 
@@ -108,7 +105,7 @@ contract PookyBallGenesisMinter is PookyBallMinter {
    * @dev Requirements:
    * - only MOD role can manage the allowlist.
    */
-  function setRevokePeriod(uint256 _revokePeriod) external onlyRole(MOD) {
+  function setRevokePeriod(uint256 _revokePeriod) external onlyRole(TECH) {
     revokePeriod = _revokePeriod;
   }
 
@@ -117,7 +114,7 @@ contract PookyBallGenesisMinter is PookyBallMinter {
    * @dev Requirements:
    * - only MOD role can manage the allowlist.
    */
-  function setTierBatch(address[] memory accounts, uint256[] memory tiers) external onlyRole(MOD) {
+  function setTierBatch(address[] memory accounts, uint256[] memory tiers) external onlyRole(TECH) {
     if (accounts.length != tiers.length) {
       revert ArgumentSizeMismatch(accounts.length, tiers.length);
     }
@@ -187,7 +184,7 @@ contract PookyBallGenesisMinter is PookyBallMinter {
    * @notice Mint Pooky Balls from the back-end, following an off-chain payment (e.g. credit card).
    * Revoke period is set if there is dispute in the payment during this period.
    * @dev Requirements:
-   * - only BE role can manage the mint balls freely.
+   * - only TECH role can manage the mint balls freely.
    * @param recipient The account address that will receive the Pooky Balls NFTs.
    * @param amount The number of balls minted by the user.
    * @param templateId The selected MintTemplate id.
@@ -196,16 +193,16 @@ contract PookyBallGenesisMinter is PookyBallMinter {
     address recipient,
     uint256 templateId,
     uint256 amount
-  ) external onlyRole(BE) {
+  ) external onlyRole(TECH) {
     _mint(recipient, templateId, amount, block.timestamp + revokePeriod);
   }
 
   /**
    * @notice function called by backend to revoke the ball.
    * @notice This function is used when there is dispute in the payment.
-   * @notice only BE role can call this function
+   * @notice only TECH role can call this function
    */
-  function revokeAuthorized(uint256 tokenId) external onlyRole(BE) {
+  function revokeAuthorized(uint256 tokenId) external onlyRole(TECH) {
     pookyBall.revoke(tokenId);
   }
 }

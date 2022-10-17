@@ -13,14 +13,15 @@ Mintable by other Pooky game contracts.
 $POK is soul-bounded during first gaming phase, where the Pooky team will balance the rewards.
 Transfers will later be enabled by the Pooky team.
 
-_Roles:
-- DEFAULT_ADMIN_ROLE can add/remove roles, can enable/disable token transfers.
-- POOKY_CONTRACT role can mint new tokens, can receive/send tokens while transfers are disabled._
+\_Roles:
 
-### POOKY_CONTRACT
+- DEFAULT_ADMIN_ROLE can add/remove roles, can enable/disable token transfers.
+- POOKY role can mint new tokens, can receive/send tokens while transfers are disabled.\_
+
+### POOKY
 
 ```solidity
-bytes32 POOKY_CONTRACT
+bytes32 POOKY
 ```
 
 ### transferEnabled
@@ -49,8 +50,9 @@ function mint(address to, uint256 amount) external
 
 Mint an arbitrary amount of $POK to an account.
 
-_Requirements:
-- only POOKY_CONTRACT role can mint $POK tokens_
+\_Requirements:
+
+- only POOKY role can mint $POK tokens\_
 
 ### burn
 
@@ -60,8 +62,9 @@ function burn(address from, uint256 amount) external
 
 Burn an arbitrary amount of $POK of an account.
 
-_Requirements:
-- only POOKY_CONTRACT role can mint $POK tokens_
+\_Requirements:
+
+- only POOKY role can mint $POK tokens\_
 
 ### setTransferEnabled
 
@@ -71,17 +74,18 @@ function setTransferEnabled(bool _transferEnabled) external
 
 Enable/disable transfers of $POK tokens between users.
 
-_Requirements:
-- only POOKY_CONTRACT role can mint $POK tokens_
+\_Requirements:
 
-### _beforeTokenTransfer
+- only POOKY role can mint $POK tokens\_
+
+### \_beforeTokenTransfer
 
 ```solidity
 function _beforeTokenTransfer(address from, address to, uint256) internal view
 ```
 
-_Restrict the $POK transfers between accounts.
+\_Restrict the $POK transfers between accounts.
+
 - Do not allow transfer between users if they are disabled, see {POK-setTransferEnabled}.
 - Mints and burns are always allowed.
-- POOKY_CONTRACT can always send and receive tokens._
-
+- POOKY can always send and receive tokens.\_

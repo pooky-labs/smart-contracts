@@ -1,5 +1,5 @@
-import { getContractFromJsonDb } from '../lib/helpers/DbHelper';
-import { signRewardsClaim } from '../lib/helpers/signRewardsClaim';
+import { getContractFromJsonDb } from '../lib/utils/DbHelper';
+import { signRewardsClaim } from '../lib/utils/signRewardsClaim';
 import waitTx from '../lib/waitTx';
 import { POK, POKMock, PookyBallGenesisMinter, PookyGame } from '../typings';
 import { MintTemplateStruct } from '../typings/contracts/PookyBallGenesisMinter';

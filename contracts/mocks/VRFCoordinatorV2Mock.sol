@@ -37,10 +37,12 @@ contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
   uint64 public s_currentSubId;
   uint256 s_nextRequestId = 1;
   uint256 s_nextPreSeed = 100;
+
   struct Subscription {
     address owner;
     uint96 balance;
   }
+
   mapping(uint64 => Subscription) s_subscriptions; /* subId */ /* subscription */
   mapping(uint64 => address[]) s_consumers; /* subId */ /* consumers */
 
@@ -49,6 +51,7 @@ contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
     uint32 callbackGasLimit;
     uint32 numWords;
   }
+
   mapping(uint256 => Request) s_requests; /* requestId */ /* request */
 
   constructor(uint96 _baseFee, uint96 _gasPriceLink) {
@@ -301,7 +304,8 @@ contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
   }
 
   function getFallbackWeiPerUnitLink() external view returns (int256) {
-    return 4000000000000000; // 0.004 Ether
+    return 4000000000000000;
+    // 0.004 Ether
   }
 
   function requestSubscriptionOwnerTransfer(uint64 _subId, address _newOwner) external pure override {
