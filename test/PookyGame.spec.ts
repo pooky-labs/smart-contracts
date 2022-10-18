@@ -115,7 +115,7 @@ describe('PookyGame', () => {
     let requiredPXP: BigNumber;
 
     beforeEach(async () => {
-      newLevel = faker.datatype.number(10);
+      newLevel = faker.datatype.number(10) + 1;
       requiredPXP = await PookyGame.levelPXP(newLevel);
     });
 

@@ -1,4 +1,5 @@
 import { HUNDRED, ZERO_ADDRESS } from '../lib/constants';
+import parseEther from '../lib/parseEther';
 import { BACKEND, TECH } from '../lib/roles';
 import getTestAccounts from '../lib/testing/getTestAccounts';
 import { randAccount, randInt } from '../lib/testing/rand';
@@ -220,6 +221,29 @@ describe('PookyBallGenesisMinter', () => {
       )
         .to.be.revertedWithCustomError(PookyBallGenesisMinter, 'MintDisabled')
         .withArgs(lastMintTemplateId);
+    });
+
+    it('should revert if template mint limit has been reached', async () => {
+      const currentMints = faker.datatype.number(100);
+      const price = parseEther(faker.datatype.number(100));
+      await PookyBallGenesisMinter.connect(tech).createMintTemplate({
+        enabled: true,
+        rarity: BallRarity.Common,
+        luxury: BallLuxury.Common,
+        maxMints: currentMints,
+        currentMints,
+        payingToken: ZERO_ADDRESS,
+        price,
+      });
+      lastMintTemplateId = (await PookyBallGenesisMinter.lastMintTemplateId()).toNumber();
+
+      await expect(
+        PookyBallGenesisMinter.connect(player1).mint(lastMintTemplateId, 1, {
+          value: price,
+        }),
+      )
+        .to.be.revertedWithCustomError(PookyBallGenesisMinter, 'MaximumMintsReached')
+        .withArgs(lastMintTemplateId, currentMints);
     });
 
     it('should revert if user tries to mint too much balls', async () => {
