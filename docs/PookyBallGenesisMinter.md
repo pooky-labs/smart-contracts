@@ -41,11 +41,11 @@ error MaxSupplyReached(uint256 remaining, uint256 requested)
 Extension of PookyBallMinter that will only be used for the initial minting event.
 This particular Minter also includes a basic tiered allowlist.
 
-_The zero tier means that the mint is public.
+\_The zero tier means that the mint is public.
 
 Roles:
-  DEFAULT_ADMIN_ROLE can add/remove roles
-  BE role represents backend which can mint to the user address_
+DEFAULT*ADMIN_ROLE can add/remove roles
+BE role represents backend which can mint to the user address*
 
 ### BE
 
@@ -129,8 +129,9 @@ function setMinTierToBuy(uint256 _minTierToBuy) external
 
 Set the minimum allow list tier allowed to mint.
 
-_Requirements:
-- only MOD role can manage the allowlist._
+\_Requirements:
+
+- only MOD role can manage the allowlist.\_
 
 ### setMaxBallsPerUser
 
@@ -140,11 +141,12 @@ function setMaxBallsPerUser(uint256 _maxBallsPerUser) external
 
 Set the maximum number of mintable balls per account.
 
-_Pooky Balls balance might exceed this limit as Ball transfers are permitted.
+\_Pooky Balls balance might exceed this limit as Ball transfers are permitted.
 Mints are tracked by {userBallsMinted}.
 
 Requirements:
-- only MOD role can manage the allowlist._
+
+- only MOD role can manage the allowlist.\_
 
 ### setRevokePeriod
 
@@ -154,8 +156,9 @@ function setRevokePeriod(uint256 _revokePeriod) external
 
 Set the revocable period duration in seconds.
 
-_Requirements:
-- only MOD role can manage the allowlist._
+\_Requirements:
+
+- only MOD role can manage the allowlist.\_
 
 ### setTierBatch
 
@@ -165,10 +168,11 @@ function setTierBatch(address[] accounts, uint256[] tiers) external
 
 Set the allowlist tier of multiple addresses.
 
-_Requirements:
-- only MOD role can manage the allowlist._
+\_Requirements:
 
-### _mint
+- only MOD role can manage the allowlist.\_
+
+### \_mint
 
 ```solidity
 function _mint(address recipient, uint256 templateId, uint256 amount, uint256 revokeUntil) internal
@@ -178,12 +182,12 @@ _Internal function that mints multiple balls at once._
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| recipient | address | The account address that will receive the Pooky Balls NFTs. |
-| templateId | uint256 | The selected MintTemplate id. |
-| amount | uint256 | The number of balls minted by the user. |
-| revokeUntil | uint256 | The UNIX timestamp until the Pooky Ball are revocable. |
+| Name        | Type    | Description                                                 |
+| ----------- | ------- | ----------------------------------------------------------- |
+| recipient   | address | The account address that will receive the Pooky Balls NFTs. |
+| templateId  | uint256 | The selected MintTemplate id.                               |
+| amount      | uint256 | The number of balls minted by the user.                     |
+| revokeUntil | uint256 | The UNIX timestamp until the Pooky Ball are revocable.      |
 
 ### mint
 
@@ -193,9 +197,10 @@ function mint(uint256 templateId, uint256 amount) external payable
 
 Public mint function that is callable by the users.
 
-_Since crypto payments cannot be disputed, revokeUntil parameter is zero.
+\_Since crypto payments cannot be disputed, revokeUntil parameter is zero.
 Requirements:
-- Transaction value must be equal to the ball price * amount._
+
+- Transaction value must be equal to the ball price \* amount.\_
 
 ### mintAuthorized
 
@@ -206,16 +211,17 @@ function mintAuthorized(address recipient, uint256 templateId, uint256 amount) e
 Mint Pooky Balls from the back-end, following an off-chain payment (e.g. credit card).
 Revoke period is set if there is dispute in the payment during this period.
 
-_Requirements:
-- only BE role can manage the mint balls freely._
+\_Requirements:
+
+- only BE role can manage the mint balls freely.\_
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| recipient | address | The account address that will receive the Pooky Balls NFTs. |
-| templateId | uint256 | The selected MintTemplate id. |
-| amount | uint256 | The number of balls minted by the user. |
+| Name       | Type    | Description                                                 |
+| ---------- | ------- | ----------------------------------------------------------- |
+| recipient  | address | The account address that will receive the Pooky Balls NFTs. |
+| templateId | uint256 | The selected MintTemplate id.                               |
+| amount     | uint256 | The number of balls minted by the user.                     |
 
 ### revokeAuthorized
 
@@ -226,4 +232,3 @@ function revokeAuthorized(uint256 tokenId) external
 function called by backend to revoke the ball.
 This function is used when there is dispute in the payment.
 only BE role can call this function
-

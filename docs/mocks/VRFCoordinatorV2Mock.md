@@ -123,6 +123,7 @@ struct Subscription {
   address owner;
   uint96 balance;
 }
+
 ```
 
 ### s_subscriptions
@@ -145,6 +146,7 @@ struct Request {
   uint32 callbackGasLimit;
   uint32 numWords;
 }
+
 ```
 
 ### s_requests
@@ -186,10 +188,10 @@ against the real coordinator a small amount of additional LINK is required._
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| _requestId | uint256 | the request to fulfill |
-| _consumer | address | the VRF randomness consumer to send the result to |
+| Name        | Type    | Description                                       |
+| ----------- | ------- | ------------------------------------------------- |
+| \_requestId | uint256 | the request to fulfill                            |
+| \_consumer  | address | the VRF randomness consumer to send the result to |
 
 ### fulfillRandomWordsWithOverride
 
@@ -201,11 +203,11 @@ fulfillRandomWordsWithOverride allows the user to pass in their own random words
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| _requestId | uint256 | the request to fulfill |
-| _consumer | address | the VRF randomness consumer to send the result to |
-| _words | uint256[] | user-provided random words |
+| Name        | Type      | Description                                       |
+| ----------- | --------- | ------------------------------------------------- |
+| \_requestId | uint256   | the request to fulfill                            |
+| \_consumer  | address   | the VRF randomness consumer to send the result to |
+| \_words     | uint256[] | user-provided random words                        |
 
 ### fundSubscription
 
@@ -217,10 +219,10 @@ fundSubscription allows funding a subscription with an arbitrary amount for test
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| _subId | uint64 | the subscription to fund |
-| _amount | uint96 | the amount to fund |
+| Name     | Type   | Description              |
+| -------- | ------ | ------------------------ |
+| \_subId  | uint64 | the subscription to fund |
+| \_amount | uint96 | the amount to fund       |
 
 ### requestRandomWords
 
@@ -238,16 +240,16 @@ Create a VRF subscription.
 
 _You can manage the consumer set dynamically with addConsumer/removeConsumer.
 Note to fund the subscription, use transferAndCall. For example
- LINKTOKEN.transferAndCall(
-   address(COORDINATOR),
-   amount,
-   abi.encode(subId));_
+LINKTOKEN.transferAndCall(
+address(COORDINATOR),
+amount,
+abi.encode(subId));_
 
 #### Return Values
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| _subId | uint64 |  |
+| Name    | Type   | Description |
+| ------- | ------ | ----------- |
+| \_subId | uint64 |             |
 
 ### getSubscription
 
@@ -277,11 +279,11 @@ Get configuration relevant for making requests
 
 #### Return Values
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| [0] | uint16 | minimumRequestConfirmations global min for request confirmations |
-| [1] | uint32 | maxGasLimit global max for request gas limit |
-| [2] | bytes32[] | s_provingKeyHashes list of registered key hashes |
+| Name | Type      | Description                                                      |
+| ---- | --------- | ---------------------------------------------------------------- |
+| [0]  | uint16    | minimumRequestConfirmations global min for request confirmations |
+| [1]  | uint32    | maxGasLimit global max for request gas limit                     |
+| [2]  | bytes32[] | s_provingKeyHashes list of registered key hashes                 |
 
 ### addConsumer
 
@@ -330,4 +332,3 @@ function acceptSubscriptionOwnerTransfer(uint64 _subId) external pure
 ```solidity
 function pendingRequestExists(uint64 subId) public view returns (bool)
 ```
-

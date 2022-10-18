@@ -37,4 +37,3 @@ function changeLevel(uint256 tokenId, uint256 newLevel) external
 ```solidity
 function revoke(uint256 tokenId) external
 ```
-

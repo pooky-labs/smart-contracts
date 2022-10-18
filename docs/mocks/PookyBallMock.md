@@ -2,7 +2,7 @@
 
 ## PookyBallMock
 
-PookyBallMock is used for testing: everybody is allowed mint new Pooky Balls  tokens.
+PookyBallMock is used for testing: everybody is allowed mint new Pooky Balls tokens.
 
 ### mock_mintBall
 
@@ -15,4 +15,3 @@ function mock_mintBall(address to, struct BallInfo ballInfo) external returns (u
 ```solidity
 function mock_setBallInfo(uint256 tokenId, struct BallInfo ballInfo) external
 ```
-

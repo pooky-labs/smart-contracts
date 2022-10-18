@@ -40,10 +40,12 @@ error NonceUsed()
 
 The contract controls the on-chain features of the Pooky game.
 Notable features:
+
 - Claim prediction rewards (Pooky Ball PXP + $POK tokens) using a signature from the Pooky back-end.
 - Level up Pooky Balls by spending $POK token.
 
 Roles:
+
 - DEFAULT_ADMIN_ROLE can add/remove roles.
 - REWARD_SIGNER can sign rewards claims.
 
@@ -113,7 +115,7 @@ mapping(uint256 => bool) nonces
 function initialize(address _admin) public
 ```
 
-### _setMaxBallLevel
+### \_setMaxBallLevel
 
 ```solidity
 function _setMaxBallLevel() external
@@ -131,8 +133,8 @@ Get the PXP required to level up a ball to {level}.
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
+| Name  | Type    | Description         |
+| ----- | ------- | ------------------- |
 | level | uint256 | The targeted level. |
 
 ### levelPOK
@@ -145,8 +147,8 @@ Get the $POK tokens required to level up a ball to {level}. This does not take t
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
+| Name  | Type    | Description         |
+| ----- | ------- | ------------------- |
 | level | uint256 | The targeted level. |
 
 ### levelPOKCost
@@ -160,8 +162,8 @@ This computation the ball PXP into account and add an additional POK fee if ball
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
+| Name    | Type    | Description         |
+| ------- | ------- | ------------------- |
 | tokenId | uint256 | The targeted level. |
 
 ### setPookyBallContract
@@ -172,8 +174,9 @@ function setPookyBallContract(address _pookyBall) external
 
 Sets the address of the PookyBall contract.
 
-_Requirements:
-- only DEFAULT_ADMIN_ROLE role can call this function._
+\_Requirements:
+
+- only DEFAULT*ADMIN_ROLE role can call this function.*
 
 ### setPOKContract
 
@@ -183,8 +186,9 @@ function setPOKContract(address _pok) external
 
 Sets the address of the POK contract.
 
-_Requirements:
-- only DEFAULT_ADMIN_ROLE role can call this function._
+\_Requirements:
+
+- only DEFAULT*ADMIN_ROLE role can call this function.*
 
 ### levelUp
 
@@ -194,10 +198,11 @@ function levelUp(uint256 tokenId) public
 
 Level up a Pooky Ball in exchange of a certain amount of $POK token.
 
-_Requirements
+\_Requirements
+
 - msg.sender must be the owner of Pooky Ball tokenId.
 - Pooky Ball level should be strictly less than the maximum allowed level for its rarity.
-- msg.sender must own enough $POK tokens to pay the level up fee._
+- msg.sender must own enough $POK tokens to pay the level up fee.\_
 
 ### verifySignature
 
@@ -217,11 +222,10 @@ Claim prediction rewards ($POK tokens and Ball PXP).
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| amountPOK | uint256 | The $POK token amount. |
-| ballUpdates | struct BallUpdates[] | The updated to apply to the Pooky Balls (PXP and optional level up). |
-| ttl | uint256 | UNIX timestamp until signature is valid. |
-| nonce | uint256 | Unique word that prevents the usage the same signature twice. |
-| signature | bytes | The signature of the previous parameters generated using the eth_personalSign RPC call. |
-
+| Name        | Type                 | Description                                                                             |
+| ----------- | -------------------- | --------------------------------------------------------------------------------------- |
+| amountPOK   | uint256              | The $POK token amount.                                                                  |
+| ballUpdates | struct BallUpdates[] | The updated to apply to the Pooky Balls (PXP and optional level up).                    |
+| ttl         | uint256              | UNIX timestamp until signature is valid.                                                |
+| nonce       | uint256              | Unique word that prevents the usage the same signature twice.                           |
+| signature   | bytes                | The signature of the previous parameters generated using the eth_personalSign RPC call. |

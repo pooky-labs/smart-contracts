@@ -9,4 +9,3 @@ POKMock is used for testing: everybody is allowed mint new $POK tokens.
 ```solidity
 function mock_mint(address to, uint256 amount) external
 ```
-

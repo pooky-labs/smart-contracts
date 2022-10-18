@@ -77,6 +77,5 @@
   "engines": {
     "node": "^16",
     "npm": ">=8"
-  },
-  "prettier": "@pooky-labs/prettier-config"
+  }
 }

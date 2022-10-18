@@ -27,6 +27,7 @@ This contract is the base contract for {PookyMintEvent}, and will be used for th
 Chainlink VRF requests are used to obtain randomEntropy for the Pooky Balls.
 
 Roles:
+
 - DEFAULT_ADMIN_ROLE can add/remove roles
 - MOD role can create/change mint templates
 
@@ -120,7 +121,7 @@ event RandomnessRequested(uint256 requestId, address user, uint256 tokenId)
 event RandomnessFulfilled(uint256 requestId, uint256 tokenId, uint256 randomEntropy)
 ```
 
-### __PookyBallMinter_init
+### \_\_PookyBallMinter_init
 
 ```solidity
 function __PookyBallMinter_init(uint256 _startFromId, address _admin, address _vrfCoordinator, uint32 _callbackGasLimit, uint16 _requestConfirmations, bytes32 _keyHash, uint64 _subscriptionId) public
@@ -136,8 +137,9 @@ function setVrfParameters(address _coordinator, uint64 subscriptionId, uint32 ca
 
 Change the Chainlink VRF parameters.
 
-_Requirements:
-- only MOD role can change the Chainlink VRF parameters._
+\_Requirements:
+
+- only MOD role can change the Chainlink VRF parameters.\_
 
 ### setPookyBallContract
 
@@ -147,8 +149,9 @@ function setPookyBallContract(address _pookyBall) external
 
 Sets the address of the PookyBall contract.
 
-_Requirements:
-- only DEFAULT_ADMIN_ROLE role can call this function._
+\_Requirements:
+
+- only DEFAULT*ADMIN_ROLE role can call this function.*
 
 ### createMintTemplate
 
@@ -158,9 +161,10 @@ function createMintTemplate(struct MintTemplate newMintTemplate) external return
 
 Create a new MintTemplate.
 
-_Requirements:
+\_Requirements:
+
 - only MOD role can create MintTemplates.
-Emits a CreateMintTemplate event._
+  Emits a CreateMintTemplate event.\_
 
 ### enableMintTemplate
 
@@ -170,32 +174,34 @@ function enableMintTemplate(uint256 mintTemplateId, bool _enabled) external
 
 Enable/disable mint for MintTemplate with id `templateId`.
 
-_Requirements:
-- only MOD role can create MintTemplates.
-Emits a MintTemplateEnabled event._
+\_Requirements:
 
-### _requestMintFromTemplate
+- only MOD role can create MintTemplates.
+  Emits a MintTemplateEnabled event.\_
+
+### \_requestMintFromTemplate
 
 ```solidity
 function _requestMintFromTemplate(address recipient, uint256 templateId, uint256 revocableUntil) internal
 ```
 
-_Internal function that mints a ball to the current contract and that will later be forwarded to {recipient}.
+\_Internal function that mints a ball to the current contract and that will later be forwarded to {recipient}.
 After checking all requirements:
+
 - MintTemplate is enabled.
 - MintTemplate maximum mints has not been reached.
-The random entropy is made to Chainlink VRF platform.
-Emits a RequestMintFromTemplate event._
+  The random entropy is made to Chainlink VRF platform.
+  Emits a RequestMintFromTemplate event.\_
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| recipient | address | The final recipient of the newly linted Pooky Ball. |
-| templateId | uint256 | The MintTemplate id. |
-| revocableUntil | uint256 | The UNIX timestamp until the ball can be revoked. |
+| Name           | Type    | Description                                         |
+| -------------- | ------- | --------------------------------------------------- |
+| recipient      | address | The final recipient of the newly linted Pooky Ball. |
+| templateId     | uint256 | The MintTemplate id.                                |
+| revocableUntil | uint256 | The UNIX timestamp until the ball can be revoked.   |
 
-### _requestRandomEntropyForMint
+### \_requestRandomEntropyForMint
 
 ```solidity
 function _requestRandomEntropyForMint(address recipient, uint256 tokenId) internal
@@ -211,7 +217,7 @@ function fulfillRandomWords(uint256 requestId, uint256[] randomWords) internal
 ```
 
 _Handle randomness response from Chainlink VRF coordinator.
-Since only 1 word is requested in {_requestRandomEntropyForMint}, only first received number is used to set the
+Since only 1 word is requested in {\_requestRandomEntropyForMint}, only first received number is used to set the
 Pooky Ball random entropy.
 Emits a RandomnessFulfilled event._
 
@@ -223,6 +229,6 @@ function rawFulfillRandomWords(uint256 requestId, uint256[] randomWords) externa
 
 Called by the Chainlink VRF coordinator when fulfilling random words.
 
-_Requirements:
-- Only vrf_coordinator can call this function._
+\_Requirements:
 
+- Only vrf*coordinator can call this function.*

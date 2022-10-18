@@ -12,11 +12,11 @@ Get configuration relevant for making requests
 
 #### Return Values
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| [0] | uint16 | minimumRequestConfirmations global min for request confirmations |
-| [1] | uint32 | maxGasLimit global max for request gas limit |
-| [2] | bytes32[] | s_provingKeyHashes list of registered key hashes |
+| Name | Type      | Description                                                      |
+| ---- | --------- | ---------------------------------------------------------------- |
+| [0]  | uint16    | minimumRequestConfirmations global min for request confirmations |
+| [1]  | uint32    | maxGasLimit global max for request gas limit                     |
+| [2]  | bytes32[] | s_provingKeyHashes list of registered key hashes                 |
 
 ### requestRandomWords
 
@@ -28,18 +28,18 @@ Request a set of random words.
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| keyHash | bytes32 | - Corresponds to a particular oracle job which uses that key for generating the VRF proof. Different keyHash's have different gas price ceilings, so you can select a specific one to bound your maximum per request cost. |
-| subId | uint64 | - The ID of the VRF subscription. Must be funded with the minimum subscription balance required for the selected keyHash. |
-| minimumRequestConfirmations | uint16 | - How many blocks you'd like the oracle to wait before responding to the request. See SECURITY CONSIDERATIONS for why you may want to request more. The acceptable range is [minimumRequestBlockConfirmations, 200]. |
-| callbackGasLimit | uint32 | - How much gas you'd like to receive in your fulfillRandomWords callback. Note that gasleft() inside fulfillRandomWords may be slightly less than this amount because of gas used calling the function (argument decoding etc.), so you may need to request slightly more than you expect to have inside fulfillRandomWords. The acceptable range is [0, maxGasLimit] |
-| numWords | uint32 | - The number of uint256 random values you'd like to receive in your fulfillRandomWords callback. Note these numbers are expanded in a secure way by the VRFCoordinator from a single random value supplied by the oracle. |
+| Name                        | Type    | Description                                                                                                                                                                                                                                                                                                                                                           |
+| --------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| keyHash                     | bytes32 | - Corresponds to a particular oracle job which uses that key for generating the VRF proof. Different keyHash's have different gas price ceilings, so you can select a specific one to bound your maximum per request cost.                                                                                                                                            |
+| subId                       | uint64  | - The ID of the VRF subscription. Must be funded with the minimum subscription balance required for the selected keyHash.                                                                                                                                                                                                                                             |
+| minimumRequestConfirmations | uint16  | - How many blocks you'd like the oracle to wait before responding to the request. See SECURITY CONSIDERATIONS for why you may want to request more. The acceptable range is [minimumRequestBlockConfirmations, 200].                                                                                                                                                  |
+| callbackGasLimit            | uint32  | - How much gas you'd like to receive in your fulfillRandomWords callback. Note that gasleft() inside fulfillRandomWords may be slightly less than this amount because of gas used calling the function (argument decoding etc.), so you may need to request slightly more than you expect to have inside fulfillRandomWords. The acceptable range is [0, maxGasLimit] |
+| numWords                    | uint32  | - The number of uint256 random values you'd like to receive in your fulfillRandomWords callback. Note these numbers are expanded in a secure way by the VRFCoordinator from a single random value supplied by the oracle.                                                                                                                                             |
 
 #### Return Values
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
+| Name      | Type    | Description                                                                                               |
+| --------- | ------- | --------------------------------------------------------------------------------------------------------- |
 | requestId | uint256 | - A unique identifier of the request. Can be used to match a request to a response in fulfillRandomWords. |
 
 ### createSubscription
@@ -52,15 +52,15 @@ Create a VRF subscription.
 
 _You can manage the consumer set dynamically with addConsumer/removeConsumer.
 Note to fund the subscription, use transferAndCall. For example
- LINKTOKEN.transferAndCall(
-   address(COORDINATOR),
-   amount,
-   abi.encode(subId));_
+LINKTOKEN.transferAndCall(
+address(COORDINATOR),
+amount,
+abi.encode(subId));_
 
 #### Return Values
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
+| Name  | Type   | Description                 |
+| ----- | ------ | --------------------------- |
 | subId | uint64 | - A unique subscription id. |
 
 ### getSubscription
@@ -73,17 +73,17 @@ Get a VRF subscription.
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
+| Name  | Type   | Description              |
+| ----- | ------ | ------------------------ |
 | subId | uint64 | - ID of the subscription |
 
 #### Return Values
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| balance | uint96 | - LINK balance of the subscription in juels. |
-| reqCount | uint64 | - number of requests for this subscription, determines fee tier. |
-| owner | address | - owner of the subscription. |
+| Name      | Type      | Description                                                         |
+| --------- | --------- | ------------------------------------------------------------------- |
+| balance   | uint96    | - LINK balance of the subscription in juels.                        |
+| reqCount  | uint64    | - number of requests for this subscription, determines fee tier.    |
+| owner     | address   | - owner of the subscription.                                        |
 | consumers | address[] | - list of consumer address which are able to use this subscription. |
 
 ### requestSubscriptionOwnerTransfer
@@ -96,9 +96,9 @@ Request subscription owner transfer.
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| subId | uint64 | - ID of the subscription |
+| Name     | Type    | Description                              |
+| -------- | ------- | ---------------------------------------- |
+| subId    | uint64  | - ID of the subscription                 |
 | newOwner | address | - proposed new owner of the subscription |
 
 ### acceptSubscriptionOwnerTransfer
@@ -114,8 +114,8 @@ not requested that msg.sender become the new owner._
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
+| Name  | Type   | Description              |
+| ----- | ------ | ------------------------ |
 | subId | uint64 | - ID of the subscription |
 
 ### addConsumer
@@ -128,9 +128,9 @@ Add a consumer to a VRF subscription.
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| subId | uint64 | - ID of the subscription |
+| Name     | Type    | Description                                   |
+| -------- | ------- | --------------------------------------------- |
+| subId    | uint64  | - ID of the subscription                      |
 | consumer | address | - New consumer which can use the subscription |
 
 ### removeConsumer
@@ -143,9 +143,9 @@ Remove a consumer from a VRF subscription.
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| subId | uint64 | - ID of the subscription |
+| Name     | Type    | Description                                |
+| -------- | ------- | ------------------------------------------ |
+| subId    | uint64  | - ID of the subscription                   |
 | consumer | address | - Consumer to remove from the subscription |
 
 ### cancelSubscription
@@ -158,14 +158,13 @@ Cancel a subscription
 
 #### Parameters
 
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| subId | uint64 | - ID of the subscription |
-| to | address | - Where to send the remaining LINK to |
+| Name  | Type    | Description                           |
+| ----- | ------- | ------------------------------------- |
+| subId | uint64  | - ID of the subscription              |
+| to    | address | - Where to send the remaining LINK to |
 
 ### pendingRequestExists
 
 ```solidity
 function pendingRequestExists(uint64 subId) external view returns (bool)
 ```
-
