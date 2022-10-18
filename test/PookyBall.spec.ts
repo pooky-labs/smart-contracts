@@ -1,9 +1,9 @@
 import { DEFAULT_ADMIN_ROLE, ZERO_ADDRESS } from '../lib/constants';
 import parseEther from '../lib/parseEther';
-import { randUint256 } from '../lib/rand';
 import { POOKY } from '../lib/roles';
 import getTestAccounts from '../lib/testing/getTestAccounts';
 import nowUNIX from '../lib/testing/nowUNIX';
+import { randUint256 } from '../lib/testing/rand';
 import { expectHasRole, expectMissingRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
 import { BallLuxury, BallRarity } from '../lib/types';

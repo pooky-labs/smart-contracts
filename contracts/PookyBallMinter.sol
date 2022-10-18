@@ -21,7 +21,7 @@ import './vendor/VRFConsumerBaseV2.sol';
 
  * Roles:
  * - DEFAULT_ADMIN_ROLE can add/remove roles
- * - MOD role can create/change mint templates
+ * - TECH role can create/change mint templates
  */
 abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
   // Roles
@@ -42,7 +42,7 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
   mapping(uint256 => MintRandomRequest) public mintRandomRequests;
 
   // MintTemplate events
-  event CreateMintTemplate(uint256 indexed templateId);
+  event MintTemplateCreated(uint256 indexed templateId);
   event MintTemplateEnabled(uint256 indexed templateId, bool enabled);
   event RequestMintFromTemplate(uint256 indexed templateId, address indexed user);
 
@@ -72,6 +72,7 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
 
     __VRFConsumerBaseV2_init(_vrfCoordinator);
 
+    // We have to initialize the VRF parameters without the setter as it requires the deployer to have the TECH role
     vrf_coordinator = VRFCoordinatorV2Interface(_vrfCoordinator);
     vrf_callbackGasLimit = _callbackGasLimit;
     vrf_requestConfirmations = _requestConfirmations;
@@ -82,19 +83,19 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
   /**
    * @notice Change the Chainlink VRF parameters.
    * @dev Requirements:
-   * - only MOD role can change the Chainlink VRF parameters.
+   * - only TECH role can change the Chainlink VRF parameters.
    */
   function setVrfParameters(
     address _coordinator,
     uint64 subscriptionId,
     uint32 callbackGasLimit,
-    uint16 requestConfirmation,
+    uint16 requestConfirmations,
     bytes32 keyHash
   ) external onlyRole(TECH) {
     vrf_coordinator = VRFCoordinatorV2Interface(_coordinator);
     vrf_subscriptionId = subscriptionId;
     vrf_callbackGasLimit = callbackGasLimit;
-    vrf_requestConfirmations = requestConfirmation;
+    vrf_requestConfirmations = requestConfirmations;
     vrf_keyHash = keyHash;
   }
 
@@ -110,20 +111,20 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
   /**
    * @notice Create a new MintTemplate.
    * @dev Requirements:
-   * - only MOD role can create MintTemplates.
-   * Emits a CreateMintTemplate event.
+   * - only TECH role can create MintTemplates.
+   * Emits a MintTemplateCreated event.
    */
   function createMintTemplate(MintTemplate memory newMintTemplate) external onlyRole(TECH) returns (uint256) {
     lastMintTemplateId++;
     mintTemplates[lastMintTemplateId] = newMintTemplate;
-    emit CreateMintTemplate(lastMintTemplateId);
+    emit MintTemplateCreated(lastMintTemplateId);
     return lastMintTemplateId;
   }
 
   /**
    * @notice Enable/disable mint for MintTemplate with id `templateId`.
    * @dev Requirements:
-   * - only MOD role can create MintTemplates.
+   * - only TECH role can create MintTemplates.
    * Emits a MintTemplateEnabled event.
    */
   function enableMintTemplate(uint256 mintTemplateId, bool _enabled) external onlyRole(TECH) {

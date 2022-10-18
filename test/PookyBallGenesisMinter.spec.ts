@@ -1,7 +1,7 @@
-import { DEFAULT_ADMIN_ROLE, GAS_LIMIT, HUNDRED, ONE, ZERO } from '../lib/constants';
-import { randInt } from '../lib/rand';
+import { HUNDRED, ONE, ZERO } from '../lib/constants';
 import { BACKEND, POOKY, TECH } from '../lib/roles';
 import getTestAccounts from '../lib/testing/getTestAccounts';
+import { randInt } from '../lib/testing/rand';
 import { expectHasRole, expectMissingRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
 import { BallLuxury, BallRarity } from '../lib/types';
@@ -113,107 +113,6 @@ describe('PookyBallGenesisMinter', () => {
         PookyBallGenesisMinter.connect(player1).setRevokePeriod(randomRevokePeriod),
         player1,
         TECH,
-      );
-    });
-  });
-
-  describe('setVrfParameters', () => {
-    it('should revert if non-MOD account tries to set Vrf parameters', async () => {
-      await expectMissingRole(
-        PookyBallGenesisMinter.connect(player1).setVrfParameters(
-          player1.address,
-          0,
-          0,
-          0,
-          ethers.utils.solidityKeccak256(['string'], ['RANDOM_KEY_HASH']),
-        ),
-        player1,
-        TECH,
-      );
-    });
-
-    it('should let MOD account set VRF parameters', async () => {
-      await VRFCoordinatorV2.createSubscription();
-      await VRFCoordinatorV2.addConsumer(ONE, PookyBallGenesisMinter.address);
-
-      const randomGasLimitIncrement = randInt(HUNDRED);
-      const newCallbackGasLimit = GAS_LIMIT + randomGasLimitIncrement;
-
-      const randomRequestConfirmations = randInt(HUNDRED);
-
-      const randomKeyHash = ethers.utils.solidityKeccak256(['string'], ['RANDOM_KEY_HASH']);
-
-      await PookyBallGenesisMinter.connect(tech).setVrfParameters(
-        VRFCoordinatorV2.address,
-        ONE,
-        newCallbackGasLimit,
-        randomRequestConfirmations,
-        randomKeyHash,
-      );
-
-      expect(await PookyBallGenesisMinter.vrf_coordinator()).to.be.equal(
-        VRFCoordinatorV2.address,
-        'VRF Coordinator is not set successfully',
-      );
-      expect(await PookyBallGenesisMinter.vrf_subscriptionId()).to.be.equal(
-        ONE,
-        'VRF Subscription Id is not set successfully',
-      );
-      expect(await PookyBallGenesisMinter.vrf_callbackGasLimit()).to.be.equal(
-        newCallbackGasLimit,
-        'VRF Callback gas limit is not set successfully',
-      );
-      expect(await PookyBallGenesisMinter.vrf_requestConfirmations()).to.be.equal(
-        randomRequestConfirmations,
-        'VRF request confirmations is not set successfully',
-      );
-      expect(await PookyBallGenesisMinter.vrf_keyHash()).to.be.equal(
-        randomKeyHash,
-        'VRF key hash is not set successfully',
-      );
-    });
-  });
-
-  describe('createMintTemplate', () => {
-    it('should revert if non-MOD account tries to create mint template', async () => {
-      await expectMissingRole(
-        PookyBallGenesisMinter.connect(player1).createMintTemplate({
-          enabled: true,
-          rarity: ZERO,
-          luxury: BallLuxury.Common,
-          maxMints: HUNDRED,
-          currentMints: ZERO,
-          price: ethers.utils.parseEther(ONE.toString()),
-          payingToken: POK.address,
-        }),
-        player1,
-        TECH,
-      );
-    });
-  });
-
-  describe('changeMintTemplateCanMint', () => {
-    it('should revert if non-MOD account tries to change mint template', async () => {
-      const randomTemplateId = randInt(HUNDRED);
-      await expectMissingRole(
-        PookyBallGenesisMinter.connect(player1).enableMintTemplate(randomTemplateId, true),
-        player1,
-        TECH,
-      );
-      await expectMissingRole(
-        PookyBallGenesisMinter.connect(player1).enableMintTemplate(randomTemplateId, false),
-        player1,
-        TECH,
-      );
-    });
-  });
-
-  describe('setPookyBallContract', () => {
-    it('should revert if non-DEFAULT_ADMIN_ROLE account tries to set PookyBall contract address', async () => {
-      await expectMissingRole(
-        PookyBallGenesisMinter.connect(player1).setPookyBallContract(player1.address),
-        player1,
-        DEFAULT_ADMIN_ROLE,
       );
     });
   });

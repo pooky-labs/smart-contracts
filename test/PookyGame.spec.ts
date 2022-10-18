@@ -1,8 +1,8 @@
 import { HUNDRED, ONE } from '../lib/constants';
 import parseEther from '../lib/parseEther';
-import { randInt, randUint256 } from '../lib/rand';
 import { POOKY, REWARD_SIGNER } from '../lib/roles';
 import getTestAccounts from '../lib/testing/getTestAccounts';
+import { randInt, randUint256 } from '../lib/testing/rand';
 import { expectHasRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
 import { BallLuxury, BallRarity } from '../lib/types';
@@ -16,7 +16,6 @@ import { BigNumber } from 'ethers';
 import { ethers } from 'hardhat';
 
 describe('PookyGame', () => {
-  let deployer: SignerWithAddress;
   let backend: SignerWithAddress;
   let player1: SignerWithAddress;
   let tech: SignerWithAddress;
@@ -26,7 +25,7 @@ describe('PookyGame', () => {
   let PookyBall: PookyBall;
 
   beforeEach(async () => {
-    ({ deployer, backend, tech, player1 } = await getTestAccounts());
+    ({ backend, tech, player1 } = await getTestAccounts());
     ({ PookyGame, PookyBall, POK } = await loadFixture(stackFixture));
   });
 

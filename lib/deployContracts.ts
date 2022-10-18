@@ -17,6 +17,9 @@ import waitTx from './waitTx';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers } from 'ethers';
 
+/**
+ * The accounts that will be linked to the deployed contracts.
+ */
 interface DeployStackAccounts {
   treasury: string;
   tech: string;
