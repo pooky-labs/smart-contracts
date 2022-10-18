@@ -210,6 +210,18 @@ describe('PookyBallGenesisMinter', () => {
         .withArgs(1, 0);
     });
 
+    it('should revert if template mint is disabled', async () => {
+      await PookyBallGenesisMinter.connect(tech).enableMintTemplate(lastMintTemplateId, false);
+
+      await expect(
+        PookyBallGenesisMinter.connect(player1).mint(lastMintTemplateId, 1, {
+          value: template.price,
+        }),
+      )
+        .to.be.revertedWithCustomError(PookyBallGenesisMinter, 'MintDisabled')
+        .withArgs(lastMintTemplateId);
+    });
+
     it('should revert if user tries to mint too much balls', async () => {
       const numberOfBalls = mintsLeft1 + 1; // Will overflow the maximum balls
 

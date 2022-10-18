@@ -211,16 +211,16 @@ describe('PookyBall', () => {
       revocableTokenId = await PookyBall.lastTokenId();
     });
 
-    it('should revert if token is still revocable', async () => {
-      expect(PookyBall.connect(player1).transferFrom(player1.address, player2.address, revocableTokenId))
-        .to.be.revertedWithCustomError(PookyBall, 'TransferLockedWhileRevocable')
-        .withArgs(tokenId);
-    });
-
     it('should allow player to burn revocable token', async () => {
       expect(PookyBall.connect(player1).transferFrom(player1.address, ZERO_ADDRESS, revocableTokenId))
         .to.changeTokenBalance(PookyBall, player1.address, -1)
         .and.changeTokenBalance(PookyBall, ZERO_ADDRESS, 1);
+    });
+
+    it('should revert if token is still revocable', async () => {
+      expect(PookyBall.connect(player1).transferFrom(player1.address, player2.address, revocableTokenId))
+        .to.be.revertedWithCustomError(PookyBall, 'TransferLockedWhileRevocable')
+        .withArgs(tokenId);
     });
 
     it('should allow POOKY contracts to transfer freely', async () => {

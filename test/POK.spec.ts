@@ -85,12 +85,38 @@ describe('POK', async () => {
       );
     });
 
+    it('should allow transfers from POOKY contracts', async () => {
+      // 1. Mint 30 POK to pooky
+      await POK.connect(pooky).mint(pooky.address, parseEther(30));
+
+      // 2. Transfer 1 POK to player1
+      const amount = parseEther(1).toString();
+      await expect(POK.connect(pooky).transfer(player1.address, amount)).to.changeTokenBalances(
+        POK,
+        [pooky, player1],
+        [`-${amount}`, amount],
+      );
+    });
+
+    it('should allow transfers to POOKY contracts', async () => {
+      // 1. Mint 30 POK to pooky
+      await POK.connect(pooky).mint(player1.address, parseEther(30));
+
+      // 2. Transfer 1 POK to player1
+      const amount = parseEther(1).toString();
+      await expect(POK.connect(player1).transfer(pooky.address, amount)).to.changeTokenBalances(
+        POK,
+        [player1, pooky],
+        [`-${amount}`, amount],
+      );
+    });
+
     it('should revert if POK is soul-bounded', async () => {
       // 1. Mint 30 POK to player
       await POK.connect(pooky).mint(player1.address, parseEther(30));
 
       // 2. Attempt to transfer 1 POK to mod
-      await expect(POK.connect(player1).transfer(player1.address, parseEther(1)))
+      await expect(POK.connect(player1).transfer(player2.address, parseEther(1)))
         .to.be.revertedWithCustomError(POK, 'TransfersDisabled')
         .withArgs();
     });

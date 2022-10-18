@@ -38,7 +38,7 @@ contract PookyGame is AccessControlUpgradeable {
     uint256 public constant RATIO_PXP = 1085; // =1.085: each level costs 1.085 more than the previous one.
     uint256 public constant RATIO_POK = 90; // =0.090: 9% of PXP cost is required in $POK tokens to confirm level up.
 
-    mapping(BallRarity => uint256) maxBallLevelPerRarity;
+    mapping(BallRarity => uint256) public maxBallLevelPerRarity;
     mapping(uint256 => bool) nonces;
 
     error OwnershipRequired(uint256 tokenId);
@@ -63,6 +63,24 @@ contract PookyGame is AccessControlUpgradeable {
         maxBallLevelPerRarity[BallRarity.Epic] = 80;
         maxBallLevelPerRarity[BallRarity.Legendary] = 100;
         maxBallLevelPerRarity[BallRarity.Mythic] = 100;
+    }
+
+    /**
+     * @notice Sets the address of the PookyBall contract.
+     * @dev Requirements:
+     * - only DEFAULT_ADMIN_ROLE role can call this function.
+     */
+    function setPookyBallContract(address _pookyBall) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        pookyBall = IPookyBall(_pookyBall);
+    }
+
+    /**
+     * @notice Sets the address of the POK contract.
+     * @dev Requirements:
+     * - only DEFAULT_ADMIN_ROLE role can call this function.
+     */
+    function setPOKContract(address _pok) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        pok = IPOK(_pok);
     }
 
     /**
@@ -106,24 +124,6 @@ contract PookyGame is AccessControlUpgradeable {
             // If the ball has not enough PXP, missing PXP can be covered with $POK tokens at {POK_FACTOR} ratio
             return requiredPOK + ((requiredPXP - ball.pxp) * RATIO_POK) / 10**RATIO_DECIMALS;
         }
-    }
-
-    /**
-     * @notice Sets the address of the PookyBall contract.
-     * @dev Requirements:
-     * - only DEFAULT_ADMIN_ROLE role can call this function.
-     */
-    function setPookyBallContract(address _pookyBall) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        pookyBall = IPookyBall(_pookyBall);
-    }
-
-    /**
-     * @notice Sets the address of the POK contract.
-     * @dev Requirements:
-     * - only DEFAULT_ADMIN_ROLE role can call this function.
-     */
-    function setPOKContract(address _pok) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        pok = IPOK(_pok);
     }
 
     /**
