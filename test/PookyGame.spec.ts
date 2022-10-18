@@ -247,7 +247,7 @@ describe('PookyGame', () => {
       ];
 
       // Ensure that the PookyGame contract has enough native currency
-      await setBalance(PookyGame.address, rewardNAT.mul(100));
+      await setBalance(PookyGame.address, rewardNAT.mul(100).toHexString().replace(/0x0+/, '0x'));
     });
 
     it('should allow players to claim POK', async () => {
