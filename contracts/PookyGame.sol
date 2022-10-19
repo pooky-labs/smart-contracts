@@ -173,6 +173,7 @@ contract PookyGame is AccessControlUpgradeable {
 
   /**
    * @notice Claim prediction rewards ($POK tokens and Ball PXP).
+   * @dev No explicit re-entrancy guard is present as this function is nonce-based.
    * @param amountNative The amount of native currency to transfer.
    * @param amountPOK The $POK token amount.
    * @param ballUpdates The updated to apply to the Pooky Balls (PXP and optional level up).
@@ -202,11 +203,6 @@ contract PookyGame is AccessControlUpgradeable {
 
     nonces[nonce] = true;
 
-    (bool sent, ) = address(msg.sender).call{ value: amountNative }("");
-    if (!sent) {
-      revert RewardTransferFailed(amountNative, msg.sender);
-    }
-
     pok.mint(msg.sender, amountPOK);
 
     for (uint256 i = 0; i < ballUpdates.length; i++) {
@@ -216,6 +212,11 @@ contract PookyGame is AccessControlUpgradeable {
       if (ballUpdates[i].shouldLevelUp) {
         levelUp(ballUpdates[i].tokenId);
       }
+    }
+
+    (bool sent, ) = address(msg.sender).call{ value: amountNative }("");
+    if (!sent) {
+      revert RewardTransferFailed(amountNative, msg.sender);
     }
   }
 }

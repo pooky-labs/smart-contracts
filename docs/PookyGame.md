@@ -221,6 +221,8 @@ function claimRewards(uint256 amountNative, uint256 amountPOK, struct BallUpdate
 
 Claim prediction rewards ($POK tokens and Ball PXP).
 
+_No explicit re-entrancy guard is present as this function is nonce-based._
+
 #### Parameters
 
 | Name | Type | Description |
