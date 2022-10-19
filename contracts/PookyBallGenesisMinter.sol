@@ -26,7 +26,7 @@ contract PookyBallGenesisMinter is PookyBallMinter {
   bytes32 public constant BACKEND = keccak256("BACKEND");
 
   // The minimum required tier (inclusive) to mint a Pooky Ball token.
-  uint256 public requiredTier;
+  uint256 public minTierToMint;
   // The allowlist account => tier mapping.
   mapping(address => uint256) public accountTiers;
   // The maximum mints allowed per account.
@@ -91,8 +91,8 @@ contract PookyBallGenesisMinter is PookyBallMinter {
    * @dev Requirements:
    * - only TECH role can manage the allowlist.
    */
-  function setRequiredTier(uint256 _requiredTier) external onlyRole(TECH) {
-    requiredTier = _requiredTier;
+  function setMinTierToMint(uint256 _minTierToMint) external onlyRole(TECH) {
+    minTierToMint = _minTierToMint;
   }
 
   /**
@@ -145,8 +145,8 @@ contract PookyBallGenesisMinter is PookyBallMinter {
     uint256 amount,
     uint256 revokeUntil
   ) internal {
-    if (accountTiers[recipient] < requiredTier) {
-      revert TierTooLow(requiredTier, accountTiers[recipient]);
+    if (accountTiers[recipient] < minTierToMint) {
+      revert TierTooLow(minTierToMint, accountTiers[recipient]);
     }
 
     if (amount > mintsLeft(recipient)) {

@@ -27,7 +27,7 @@ describe('PookyBallGenesisMinter', () => {
   let PookyBall: PookyBall;
   let VRFCoordinatorV2: VRFCoordinatorV2Mock;
 
-  let requiredTier: number;
+  let minTierToMint: number;
   let lastMintTemplateId: number;
   let template: Awaited<ReturnType<PookyBallGenesisMinter['mintTemplates']>>;
   let mintsLeft1: number;
@@ -36,12 +36,12 @@ describe('PookyBallGenesisMinter', () => {
     ({ backend, tech, treasury, player1, player2 } = await getTestAccounts());
     ({ PookyBallGenesisMinter, PookyBall, VRFCoordinatorV2 } = await loadFixture(stackFixture));
 
-    requiredTier = (await PookyBallGenesisMinter.requiredTier()).toNumber();
+    minTierToMint = (await PookyBallGenesisMinter.minTierToMint()).toNumber();
     lastMintTemplateId = (await PookyBallGenesisMinter.lastMintTemplateId()).toNumber();
     template = await PookyBallGenesisMinter.mintTemplates(lastMintTemplateId);
     mintsLeft1 = (await PookyBallGenesisMinter.mintsLeft(player1.address)).toNumber();
 
-    await PookyBallGenesisMinter.connect(tech).setTierBatch([player1.address], [requiredTier]);
+    await PookyBallGenesisMinter.connect(tech).setTierBatch([player1.address], [minTierToMint]);
   });
 
   describe('configuration', () => {
@@ -55,20 +55,24 @@ describe('PookyBallGenesisMinter', () => {
     });
   });
 
-  describe('setRequiredTier', () => {
-    let newRequiredTier: number;
+  describe('setMinTierToMint', () => {
+    let newMinTierToMint: number;
 
     beforeEach(() => {
-      newRequiredTier = faker.datatype.number(4);
+      newMinTierToMint = faker.datatype.number(4);
     });
 
     it('should allow TECH account to change the required tier for mint', async () => {
-      await PookyBallGenesisMinter.connect(tech).setRequiredTier(newRequiredTier);
-      expect(await PookyBallGenesisMinter.requiredTier()).to.equals(newRequiredTier);
+      await PookyBallGenesisMinter.connect(tech).setMinTierToMint(newMinTierToMint);
+      expect(await PookyBallGenesisMinter.minTierToMint()).to.equals(newMinTierToMint);
     });
 
     it('should revert if non-TECH account tries to set minimum tier to buy', async () => {
-      await expectMissingRole(PookyBallGenesisMinter.connect(player1).setRequiredTier(newRequiredTier), player1, TECH);
+      await expectMissingRole(
+        PookyBallGenesisMinter.connect(player1).setMinTierToMint(newMinTierToMint),
+        player1,
+        TECH,
+      );
     });
   });
 
@@ -147,13 +151,13 @@ describe('PookyBallGenesisMinter', () => {
     });
   });
 
-  describe('requiredTier', () => {
+  describe('minTierToMint', () => {
     it('should let TECH account sets minimum tier to buy', async () => {
       const randomMinimumTierToBuy = randInt(HUNDRED);
-      await PookyBallGenesisMinter.connect(tech).setRequiredTier(randomMinimumTierToBuy);
+      await PookyBallGenesisMinter.connect(tech).setMinTierToMint(randomMinimumTierToBuy);
 
-      const requiredTier = await PookyBallGenesisMinter.requiredTier();
-      expect(requiredTier).to.be.equal(randomMinimumTierToBuy, 'Minimum tier to buy is not set successfully');
+      const minTierToMint = await PookyBallGenesisMinter.minTierToMint();
+      expect(minTierToMint).to.be.equal(randomMinimumTierToBuy, 'Minimum tier to buy is not set successfully');
     });
   });
 
@@ -200,7 +204,7 @@ describe('PookyBallGenesisMinter', () => {
 
     it('should revert if user tier is too small', async () => {
       // Ensure that tier 1 is required to mint (tier 0 means that mint is public)
-      await PookyBallGenesisMinter.connect(tech).setRequiredTier(1);
+      await PookyBallGenesisMinter.connect(tech).setMinTierToMint(1);
 
       await expect(
         PookyBallGenesisMinter.connect(player2).mint(lastMintTemplateId, 1, {

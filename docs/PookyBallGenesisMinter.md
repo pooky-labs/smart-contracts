@@ -18,10 +18,10 @@ Roles:
 bytes32 BACKEND
 ```
 
-### requiredTier
+### minTierToMint
 
 ```solidity
-uint256 requiredTier
+uint256 minTierToMint
 ```
 
 ### accountTiers
@@ -122,10 +122,10 @@ function mintsLeft(address account) public view returns (uint256)
 
 The allowed remaining mints for a given {account}.
 
-### setRequiredTier
+### setMinTierToMint
 
 ```solidity
-function setRequiredTier(uint256 _requiredTier) external
+function setMinTierToMint(uint256 _minTierToMint) external
 ```
 
 Set the minimum allow list tier allowed to mint.
