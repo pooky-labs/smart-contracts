@@ -1,6 +1,6 @@
-import { DEFAULT_ADMIN_ROLE, ONE } from '../lib/constants';
+import { ONE } from '../lib/constants';
 import parseEther from '../lib/parseEther';
-import { REWARD_SIGNER } from '../lib/roles';
+import { DEFAULT_ADMIN_ROLE, REWARD_SIGNER } from '../lib/roles';
 import getTestAccounts from '../lib/testing/getTestAccounts';
 import { randAccount, randUint256 } from '../lib/testing/rand';
 import { expectHasRole, expectMissingRole } from '../lib/testing/roles';

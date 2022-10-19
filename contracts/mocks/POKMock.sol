@@ -12,7 +12,7 @@ import "../POK.sol";
  * @notice POKMock is used for testing: everybody is allowed mint new $POK tokens.
  */
 contract POKMock is POK {
-    function mock_mint(address to, uint256 amount) external {
-        _mint(to, amount);
-    }
+  function mock_mint(address to, uint256 amount) external {
+    _mint(to, amount);
+  }
 }

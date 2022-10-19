@@ -1,6 +1,5 @@
-import { DEFAULT_ADMIN_ROLE } from '../lib/constants';
 import parseEther from '../lib/parseEther';
-import { POOKY } from '../lib/roles';
+import { DEFAULT_ADMIN_ROLE, POOKY } from '../lib/roles';
 import getTestAccounts from '../lib/testing/getTestAccounts';
 import { expectHasRole, expectMissingRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';

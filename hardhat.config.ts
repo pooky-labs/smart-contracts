@@ -39,13 +39,7 @@ const config: HardhatUserConfig = {
 if (process.env.MUMBAI_RPC) {
   set(config, 'networks.mumbai', {
     url: process.env.MUMBAI_RPC,
-    accounts: [
-      process.env.PK_DEPLOYER as string,
-      process.env.PK_BESIGNER as string,
-      process.env.PK_TREASURY as string,
-      process.env.PK_MOD as string,
-      process.env.PK_PLAYER1 as string,
-    ],
+    accounts: [process.env.PK_DEPLOYER as string],
   });
 }
 

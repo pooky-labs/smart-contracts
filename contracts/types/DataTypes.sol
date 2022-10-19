@@ -4,16 +4,16 @@
 pragma solidity ^0.8.9;
 
 enum BallRarity {
-    Common,
-    Rare,
-    Epic,
-    Legendary,
-    Mythic
+  Common,
+  Rare,
+  Epic,
+  Legendary,
+  Mythic
 }
 
 enum BallLuxury {
-    Common,
-    Alpha
+  Common,
+  Alpha
 }
 
 /**
@@ -25,12 +25,12 @@ enum BallLuxury {
  * @param pxp PXP (experience points) of the ball.
  */
 struct BallInfo {
-    BallRarity rarity;
-    BallLuxury luxury;
-    uint256 randomEntropy;
-    uint256 level;
-    uint256 pxp;
-    uint256 revocableUntil;
+  BallRarity rarity;
+  BallLuxury luxury;
+  uint256 randomEntropy;
+  uint256 level;
+  uint256 pxp;
+  uint256 revocableUntil;
 }
 
 /**
@@ -43,13 +43,13 @@ struct BallInfo {
  * @param payingToken Address of the token with which user pays. If the native token is used 0x0 should be set.
  */
 struct MintTemplate {
-    bool enabled;
-    BallRarity rarity;
-    BallLuxury luxury;
-    uint256 maxMints;
-    uint256 currentMints;
-    uint256 price;
-    address payingToken; // 0x0 for native
+  bool enabled;
+  BallRarity rarity;
+  BallLuxury luxury;
+  uint256 maxMints;
+  uint256 currentMints;
+  uint256 price;
+  address payingToken; // 0x0 for native
 }
 
 /**
@@ -58,8 +58,8 @@ struct MintTemplate {
  * @param tokenId id of the ball
  */
 struct MintRandomRequest {
-    address recipient;
-    uint256 tokenId;
+  address recipient;
+  uint256 tokenId;
 }
 
 /**
@@ -69,7 +69,7 @@ struct MintRandomRequest {
  * @param shouldLevelUp If Pooky Ball should be leveled up.
  */
 struct BallUpdates {
-    uint256 tokenId;
-    uint256 addPXP;
-    bool shouldLevelUp;
+  uint256 tokenId;
+  uint256 addPXP;
+  bool shouldLevelUp;
 }

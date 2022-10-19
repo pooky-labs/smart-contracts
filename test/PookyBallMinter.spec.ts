@@ -1,6 +1,6 @@
-import { DEFAULT_ADMIN_ROLE, ZERO_ADDRESS } from '../lib/constants';
+import { ZERO_ADDRESS } from '../lib/constants';
 import parseEther from '../lib/parseEther';
-import { TECH } from '../lib/roles';
+import { DEFAULT_ADMIN_ROLE, TECH } from '../lib/roles';
 import getTestAccounts from '../lib/testing/getTestAccounts';
 import { randAccount } from '../lib/testing/rand';
 import { expectMissingRole } from '../lib/testing/roles';

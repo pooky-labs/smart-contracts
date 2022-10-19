@@ -20,68 +20,68 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
  * - POOKY role can mint new tokens, can receive/send tokens while transfers are disabled.
  */
 contract POK is ERC20Upgradeable, AccessControlUpgradeable {
-    // Roles
-    bytes32 public constant POOKY = keccak256("POOKY");
+  // Roles
+  bytes32 public constant POOKY = keccak256("POOKY");
 
-    bool public transferEnabled;
+  bool public transferEnabled;
 
-    event SetTransferEnabled(bool transferEnabled);
+  event SetTransferEnabled(bool transferEnabled);
 
-    error TransfersDisabled();
+  error TransfersDisabled();
 
-    function initialize(
-        string memory _name,
-        string memory _symbol,
-        address _admin
-    ) public initializer {
-        __ERC20_init(_name, _symbol);
-        __AccessControl_init();
-        _setupRole(DEFAULT_ADMIN_ROLE, _admin);
-    }
+  function initialize(
+    string memory _name,
+    string memory _symbol,
+    address _admin
+  ) public initializer {
+    __ERC20_init(_name, _symbol);
+    __AccessControl_init();
+    _setupRole(DEFAULT_ADMIN_ROLE, _admin);
+  }
 
-    /**
-     * @notice Mint an arbitrary amount of $POK to an account.
-     * @dev Requirements:
-     * - only POOKY role can mint $POK tokens
-     */
-    function mint(address to, uint256 amount) external onlyRole(POOKY) {
-        _mint(to, amount);
-    }
+  /**
+   * @notice Mint an arbitrary amount of $POK to an account.
+   * @dev Requirements:
+   * - only POOKY role can mint $POK tokens
+   */
+  function mint(address to, uint256 amount) external onlyRole(POOKY) {
+    _mint(to, amount);
+  }
 
-    /**
-     * @notice Burn an arbitrary amount of $POK of an account.
-     * @dev Requirements:
-     * - only POOKY role can mint $POK tokens
-     */
-    function burn(address from, uint256 amount) external onlyRole(POOKY) {
-        _burn(from, amount);
-    }
+  /**
+   * @notice Burn an arbitrary amount of $POK of an account.
+   * @dev Requirements:
+   * - only POOKY role can mint $POK tokens
+   */
+  function burn(address from, uint256 amount) external onlyRole(POOKY) {
+    _burn(from, amount);
+  }
 
-    /**
-     * @notice Enable/disable transfers of $POK tokens between users.
-     * @dev Requirements:
-     * - only POOKY role can mint $POK tokens
-     */
-    function setTransferEnabled(bool _transferEnabled) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        transferEnabled = _transferEnabled;
-        emit SetTransferEnabled(_transferEnabled);
-    }
+  /**
+   * @notice Enable/disable transfers of $POK tokens between users.
+   * @dev Requirements:
+   * - only POOKY role can mint $POK tokens
+   */
+  function setTransferEnabled(bool _transferEnabled) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    transferEnabled = _transferEnabled;
+    emit SetTransferEnabled(_transferEnabled);
+  }
 
-    /**
-     * @dev Restrict the $POK transfers between accounts.
-     * - Do not allow transfer between users if they are disabled, see {POK-setTransferEnabled}.
-     * - Mints and burns are always allowed.
-     * - POOKY can always send and receive tokens.
-     */
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256
-    ) internal view override {
-        if (transferEnabled) return;
-        if (from == address(0) || to == address(0)) return;
-        if (hasRole(POOKY, from) || hasRole(POOKY, to)) return;
+  /**
+   * @dev Restrict the $POK transfers between accounts.
+   * - Do not allow transfer between users if they are disabled, see {POK-setTransferEnabled}.
+   * - Mints and burns are always allowed.
+   * - POOKY can always send and receive tokens.
+   */
+  function _beforeTokenTransfer(
+    address from,
+    address to,
+    uint256
+  ) internal view override {
+    if (transferEnabled) return;
+    if (from == address(0) || to == address(0)) return;
+    if (hasRole(POOKY, from) || hasRole(POOKY, to)) return;
 
-        revert TransfersDisabled();
-    }
+    revert TransfersDisabled();
+  }
 }

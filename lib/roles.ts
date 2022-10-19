@@ -8,6 +8,7 @@ export default function hashRole(role: string): string {
   return ethers.utils.solidityKeccak256(['string'], [role]);
 }
 
+export const DEFAULT_ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 export const POOKY = hashRole('POOKY');
 export const REWARD_SIGNER = hashRole('REWARD_SIGNER');
 export const TECH = hashRole('TECH');

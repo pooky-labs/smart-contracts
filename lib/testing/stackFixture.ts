@@ -1,5 +1,4 @@
 import { InvalidReceiver__factory, VRFCoordinatorV2Mock__factory } from '../../typings';
-import { ZERO } from '../constants';
 import { deployContracts } from '../deployContracts';
 import { POOKY } from '../roles';
 import getTestAccounts from './getTestAccounts';
@@ -23,7 +22,7 @@ export default async function stackFixture() {
   await stack.PookyGame.grantRole(POOKY, pooky.address);
 
   // Set up the VRF coordinator
-  const VRFCoordinatorV2 = await new VRFCoordinatorV2Mock__factory().connect(deployer).deploy(ZERO, ZERO);
+  const VRFCoordinatorV2 = await new VRFCoordinatorV2Mock__factory().connect(deployer).deploy(0, 0);
   await VRFCoordinatorV2.deployed();
   await VRFCoordinatorV2.createSubscription();
   const subId = await VRFCoordinatorV2.s_currentSubId();
