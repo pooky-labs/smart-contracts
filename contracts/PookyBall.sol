@@ -35,7 +35,7 @@ import { BallRarity, BallRarity, BallInfo } from "./types/DataTypes.sol";
  *
  * Roles:
  * - DEFAULT_ADMIN_ROLE can add/remove roles
- * - POOKY role can mint new tokens
+ * - POOKY role can mint/revoke new tokens
  */
 contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   using StringsUpgradeable for uint256;
@@ -204,7 +204,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   /**
    * @notice Revoke and burn the Pooky Ball with id {tokenId}.
    * @dev Requirements:
-   * - Only POOKY role can mint Pooky Balls.
+   * - Only POOKY role can revoke Pooky Balls.
    * - Ball is revocable only if current timestamp is less then `ball.revocableUntil`
    */
   function revoke(uint256 tokenId) external onlyRole(POOKY) {
