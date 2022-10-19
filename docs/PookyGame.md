@@ -216,7 +216,7 @@ _Internal function that checks if a {message} has be signed by a REWARD_SIGNER._
 ### claimRewards
 
 ```solidity
-function claimRewards(uint256 amountNAT, uint256 amountPOK, struct BallUpdates[] ballUpdates, uint256 ttl, uint256 nonce, bytes signature) external
+function claimRewards(uint256 amountNative, uint256 amountPOK, struct BallUpdates[] ballUpdates, uint256 ttl, uint256 nonce, bytes signature) external
 ```
 
 Claim prediction rewards ($POK tokens and Ball PXP).
@@ -225,7 +225,7 @@ Claim prediction rewards ($POK tokens and Ball PXP).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| amountNAT | uint256 | The amount of native currency to transfer. |
+| amountNative | uint256 | The amount of native currency to transfer. |
 | amountPOK | uint256 | The $POK token amount. |
 | ballUpdates | struct BallUpdates[] | The updated to apply to the Pooky Balls (PXP and optional level up). |
 | ttl | uint256 | UNIX timestamp until signature is valid. |
