@@ -2,5 +2,6 @@
 /artifacts
 /cache
 /coverage*
+/docs
 /node_modules
 /package-lock.json
