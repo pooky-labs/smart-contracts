@@ -1,6 +1,6 @@
 import { ZERO_ADDRESS } from '../lib/constants';
 import parseEther from '../lib/parseEther';
-import { DEFAULT_ADMIN_ROLE, POOKY } from '../lib/roles';
+import { DEFAULT_ADMIN_ROLE, POOKY_CONTRACT } from '../lib/roles';
 import getTestAccounts from '../lib/testing/getTestAccounts';
 import nowUNIX from '../lib/testing/nowUNIX';
 import { randUint256 } from '../lib/testing/rand';
@@ -35,7 +35,7 @@ describe('PookyBall', () => {
 
   describe('configuration', () => {
     it('should have roles configured properly', async () => {
-      await expectHasRole(PookyBall, PookyBallGenesisMinter, POOKY);
+      await expectHasRole(PookyBall, PookyBallGenesisMinter, POOKY_CONTRACT);
     });
   });
 
@@ -109,8 +109,8 @@ describe('PookyBall', () => {
       entropy = randUint256();
     });
 
-    it('should revert if non-POOKY account tries to set ball entropy', async () => {
-      await expectMissingRole(PookyBall.connect(player1).setRandomEntropy(tokenId, entropy), player1, POOKY);
+    it('should revert if non-POOKY_CONTRACT account tries to set ball entropy', async () => {
+      await expectMissingRole(PookyBall.connect(player1).setRandomEntropy(tokenId, entropy), player1, POOKY_CONTRACT);
     });
 
     it('should revert if entropy is set twice', async () => {
@@ -131,11 +131,11 @@ describe('PookyBall', () => {
       expect(info.pxp).to.equals(newPXP);
     });
 
-    it('should revert if non-POOKY account tries to add ball pxp', async () => {
+    it('should revert if non-POOKY_CONTRACT account tries to add ball pxp', async () => {
       await expectMissingRole(
         PookyBall.connect(player1).changePXP(tokenId, parseEther(faker.datatype.number(100))),
         player1,
-        POOKY,
+        POOKY_CONTRACT,
       );
     });
 
@@ -154,11 +154,11 @@ describe('PookyBall', () => {
       expect(info.level).to.equals(newLevel);
     });
 
-    it('should revert if non-POOKY role tries to change ball level', async () => {
+    it('should revert if non-POOKY_CONTRACT role tries to change ball level', async () => {
       await expectMissingRole(
         PookyBall.connect(player1).changeLevel(tokenId, faker.datatype.number(20)),
         player1,
-        POOKY,
+        POOKY_CONTRACT,
       );
     });
 
@@ -170,17 +170,17 @@ describe('PookyBall', () => {
   });
 
   describe('mint', () => {
-    it('should allow POOKY contracts to mint a new token', async () => {
+    it('should allow POOKY_CONTRACT contracts to mint a new token', async () => {
       await expect(
         PookyBall.connect(pooky).mint(player1.address, BallRarity.Common, BallLuxury.Common, 0),
       ).to.changeTokenBalance(PookyBall, player1.address, 1);
     });
 
-    it('should revert if non-POOKY account tries to mint ball with random rarity and random revocable timestamp', async () => {
+    it('should revert if non-POOKY_CONTRACT account tries to mint ball with random rarity and random revocable timestamp', async () => {
       await expectMissingRole(
         PookyBall.connect(player1).mint(player1.address, BallRarity.Common, BallLuxury.Common, 0),
         player1,
-        POOKY,
+        POOKY_CONTRACT,
       );
     });
   });
@@ -223,7 +223,7 @@ describe('PookyBall', () => {
         .withArgs(tokenId);
     });
 
-    it('should allow POOKY contracts to transfer freely', async () => {
+    it('should allow POOKY_CONTRACT contracts to transfer freely', async () => {
       await PookyBall.connect(pooky).mint(pooky.address, BallRarity.Common, BallLuxury.Common, nowUNIX() + 3600);
       revocableTokenId = await PookyBall.lastTokenId();
       expect(PookyBall.connect(pooky).transferFrom(pooky.address, player1.address, revocableTokenId))

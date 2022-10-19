@@ -1,6 +1,6 @@
 import { InvalidReceiver__factory, VRFCoordinatorV2Mock__factory } from '../../typings';
 import { deployContracts } from '../deployContracts';
-import { POOKY } from '../roles';
+import { POOKY_CONTRACT } from '../roles';
 import getTestAccounts from './getTestAccounts';
 import { ethers } from 'hardhat';
 
@@ -16,10 +16,10 @@ export default async function stackFixture() {
     { log: false, writeInDB: false },
   );
 
-  await stack.POK.grantRole(POOKY, pooky.address);
-  await stack.PookyBall.grantRole(POOKY, pooky.address);
-  await stack.PookyBallGenesisMinter.grantRole(POOKY, pooky.address);
-  await stack.PookyGame.grantRole(POOKY, pooky.address);
+  await stack.POK.grantRole(POOKY_CONTRACT, pooky.address);
+  await stack.PookyBall.grantRole(POOKY_CONTRACT, pooky.address);
+  await stack.PookyBallGenesisMinter.grantRole(POOKY_CONTRACT, pooky.address);
+  await stack.PookyGame.grantRole(POOKY_CONTRACT, pooky.address);
 
   // Set up the VRF coordinator
   const VRFCoordinatorV2 = await new VRFCoordinatorV2Mock__factory().connect(deployer).deploy(0, 0);

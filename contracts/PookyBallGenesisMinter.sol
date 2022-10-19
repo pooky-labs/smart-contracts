@@ -18,7 +18,8 @@ import { BallRarity, MintTemplate, MintRandomRequest } from "./types/DataTypes.s
  *
  * Roles:
  *   DEFAULT_ADMIN_ROLE can add/remove roles
- *   TECH role represents backend which can mint to the user address
+ *   TECH role represents the Pooky Engineering team
+ *   BACKEND role represents backend which can mint to the user address
  */
 contract PookyBallGenesisMinter is PookyBallMinter {
   // Roles
@@ -190,7 +191,7 @@ contract PookyBallGenesisMinter is PookyBallMinter {
    * @notice Mint Pooky Balls from the back-end, following an off-chain payment (e.g. credit card).
    * Revoke period is set if there is dispute in the payment during this period.
    * @dev Requirements:
-   * - only TECH role can manage the mint balls freely.
+   * - only BACKEND role can manage the mint balls freely.
    * @param recipient The account address that will receive the Pooky Balls NFTs.
    * @param amount The number of balls minted by the user.
    * @param templateId The selected MintTemplate id.
@@ -206,7 +207,7 @@ contract PookyBallGenesisMinter is PookyBallMinter {
   /**
    * @notice function called by backend to revoke the ball.
    * @notice This function is used when there is dispute in the payment.
-   * @notice only TECH role can call this function
+   * @notice only BACKEND role can call this function
    */
   function revokeAuthorized(uint256 tokenId) external onlyRole(BACKEND) {
     pookyBall.revoke(tokenId);

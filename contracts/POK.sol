@@ -17,11 +17,11 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
  *
  * @dev Roles:
  * - DEFAULT_ADMIN_ROLE can add/remove roles, can enable/disable token transfers.
- * - POOKY role can mint new tokens, can receive/send tokens while transfers are disabled.
+ * - POOKY_CONTRACT role can mint new tokens, can receive/send tokens while transfers are disabled.
  */
 contract POK is ERC20Upgradeable, AccessControlUpgradeable {
   // Roles
-  bytes32 public constant POOKY = keccak256("POOKY");
+  bytes32 public constant POOKY_CONTRACT = keccak256("POOKY_CONTRACT");
 
   bool public transferEnabled;
 
@@ -42,25 +42,25 @@ contract POK is ERC20Upgradeable, AccessControlUpgradeable {
   /**
    * @notice Mint an arbitrary amount of $POK to an account.
    * @dev Requirements:
-   * - only POOKY role can mint $POK tokens
+   * - only POOKY_CONTRACT role can mint $POK tokens
    */
-  function mint(address to, uint256 amount) external onlyRole(POOKY) {
+  function mint(address to, uint256 amount) external onlyRole(POOKY_CONTRACT) {
     _mint(to, amount);
   }
 
   /**
    * @notice Burn an arbitrary amount of $POK of an account.
    * @dev Requirements:
-   * - only POOKY role can mint $POK tokens
+   * - only POOKY_CONTRACT role can mint $POK tokens
    */
-  function burn(address from, uint256 amount) external onlyRole(POOKY) {
+  function burn(address from, uint256 amount) external onlyRole(POOKY_CONTRACT) {
     _burn(from, amount);
   }
 
   /**
    * @notice Enable/disable transfers of $POK tokens between users.
    * @dev Requirements:
-   * - only POOKY role can mint $POK tokens
+   * - only POOKY_CONTRACT role can mint $POK tokens
    */
   function setTransferEnabled(bool _transferEnabled) external onlyRole(DEFAULT_ADMIN_ROLE) {
     transferEnabled = _transferEnabled;
@@ -71,7 +71,7 @@ contract POK is ERC20Upgradeable, AccessControlUpgradeable {
    * @dev Restrict the $POK transfers between accounts.
    * - Do not allow transfer between users if they are disabled, see {POK-setTransferEnabled}.
    * - Mints and burns are always allowed.
-   * - POOKY can always send and receive tokens.
+   * - POOKY_CONTRACT can always send and receive tokens.
    */
   function _beforeTokenTransfer(
     address from,
@@ -80,7 +80,7 @@ contract POK is ERC20Upgradeable, AccessControlUpgradeable {
   ) internal view override {
     if (transferEnabled) return;
     if (from == address(0) || to == address(0)) return;
-    if (hasRole(POOKY, from) || hasRole(POOKY, to)) return;
+    if (hasRole(POOKY_CONTRACT, from) || hasRole(POOKY_CONTRACT, to)) return;
 
     revert TransfersDisabled();
   }

@@ -35,13 +35,13 @@ import { BallRarity, BallRarity, BallInfo } from "./types/DataTypes.sol";
  *
  * Roles:
  * - DEFAULT_ADMIN_ROLE can add/remove roles
- * - POOKY role can mint/revoke new tokens
+ * - POOKY_CONTRACT role can mint/revoke new tokens
  */
 contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   using StringsUpgradeable for uint256;
 
   // Roles
-  bytes32 public constant POOKY = keccak256("POOKY");
+  bytes32 public constant POOKY_CONTRACT = keccak256("POOKY_CONTRACT");
 
   string public baseURI_;
   string public _contractURI;
@@ -121,11 +121,11 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   /**
    * @notice Sets the random entropy of the Pooky Ball with id {tokenId}.
    * @dev Requirements:
-   * - Only POOKY role can increase Pooky Balls levels.
+   * - Only POOKY_CONTRACT role can increase Pooky Balls levels.
    * - Ball {tokenId} should exist (minted and not burned).
    * - Previous entropy should be zero.
    */
-  function setRandomEntropy(uint256 tokenId, uint256 _randomEntropy) external onlyRole(POOKY) {
+  function setRandomEntropy(uint256 tokenId, uint256 _randomEntropy) external onlyRole(POOKY_CONTRACT) {
     _requireMinted(tokenId);
 
     if (balls[tokenId].randomEntropy != 0) {
@@ -139,12 +139,12 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   /**
    * @notice Change the PXP (Experience points) of the Pooky Ball with id {tokenId}.
    * @dev Requirements:
-   * - Only POOKY role can increase Pooky Balls PXP.
+   * - Only POOKY_CONTRACT role can increase Pooky Balls PXP.
    * - Ball {tokenId} should exist (minted and not burned).
    * @param tokenId The Pooky Ball NFT id.
    * @param amount The PXP amount to add the to Pooky Ball.
    */
-  function changePXP(uint256 tokenId, uint256 amount) external onlyRole(POOKY) {
+  function changePXP(uint256 tokenId, uint256 amount) external onlyRole(POOKY_CONTRACT) {
     _requireMinted(tokenId);
 
     balls[tokenId].pxp = amount;
@@ -154,12 +154,12 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   /**
    * @notice Change the level of the Pooky Ball with id {tokenId} to the {newLevel}
    * @dev Requirements:
-   * - Only POOKY role can increase Pooky Balls levels.
+   * - Only POOKY_CONTRACT role can increase Pooky Balls levels.
    * - Ball {tokenId} should exist (minted and not burned).
    * @param tokenId The Pooky Ball NFT id.
    * @param newLevel The new Ball level.
    */
-  function changeLevel(uint256 tokenId, uint256 newLevel) external onlyRole(POOKY) {
+  function changeLevel(uint256 tokenId, uint256 newLevel) external onlyRole(POOKY_CONTRACT) {
     _requireMinted(tokenId);
 
     balls[tokenId].level = newLevel;
@@ -182,7 +182,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
    * @notice Mint a ball with a specific {BallRarity} and with a specific revocation date/time, with all other Ball
    * parameters set to default.
    * @dev Requirements:
-   * - Only POOKY role can mint Pooky Balls.
+   * - Only POOKY_CONTRACT role can mint Pooky Balls.
    * @param to The address which will own the minted Pooky Ball.
    * @param rarity The Pooky Ball rarity.
    * @param luxury The Pooky Ball luxury.
@@ -193,7 +193,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
     BallRarity rarity,
     BallLuxury luxury,
     uint256 revocableUntil
-  ) external onlyRole(POOKY) returns (uint256) {
+  ) external onlyRole(POOKY_CONTRACT) returns (uint256) {
     return
       _mintBall(
         to,
@@ -204,10 +204,10 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   /**
    * @notice Revoke and burn the Pooky Ball with id {tokenId}.
    * @dev Requirements:
-   * - Only POOKY role can revoke Pooky Balls.
+   * - Only POOKY_CONTRACT role can revoke Pooky Balls.
    * - Ball is revocable only if current timestamp is less then `ball.revocableUntil`
    */
-  function revoke(uint256 tokenId) external onlyRole(POOKY) {
+  function revoke(uint256 tokenId) external onlyRole(POOKY_CONTRACT) {
     if (!isRevocable(tokenId)) {
       revert NotRevocableAnymore(tokenId, block.timestamp);
     }
@@ -217,7 +217,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
 
   /**
    * @dev Restrict revocable Pooky Balls transfers.
-   * Mints and burns are always allowed, as transfers from POOKY role.
+   * Mints and burns are always allowed, as transfers from POOKY_CONTRACT role.
    */
   function _beforeTokenTransfer(
     address from,
@@ -225,7 +225,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
     uint256 tokenId
   ) internal view override {
     if (from == address(0) || to == address(0)) return;
-    if (hasRole(POOKY, from)) return;
+    if (hasRole(POOKY_CONTRACT, from)) return;
 
     if (isRevocable(tokenId)) {
       revert TransferLockedWhileRevocable(tokenId);

@@ -10,7 +10,7 @@ import * as Params from './constants';
 import { deployWithProxy } from './deployWithProxy';
 import logger from './logger';
 import parseEther from './parseEther';
-import { BACKEND, POOKY, REWARD_SIGNER, TECH } from './roles';
+import { BACKEND, POOKY_CONTRACT, REWARD_SIGNER, TECH } from './roles';
 import { BallLuxury, BallRarity, ContractStack } from './types';
 import { registerContractInJsonDb } from './utils/DbHelper';
 import waitTx from './waitTx';
@@ -113,7 +113,7 @@ export async function deployContracts(
   const PookyBallFactory = mock ? new PookyBallMock__factory() : new PookyBall__factory();
   const PookyBall = await deployWithProxy(PookyBallFactory.connect(deployer), [
     'Pooky Ball',
-    'POOKY BALL',
+    'POOKY_CONTRACT BALL',
     baseURI,
     contractURI,
     deployer.address,
@@ -151,11 +151,11 @@ export async function deployContracts(
     await registerContractInJsonDb('PookyGame', PookyGame);
   }
 
-  await waitTx(POK.grantRole(POOKY, PookyBallGenesisMinter.address));
-  await waitTx(POK.grantRole(POOKY, PookyGame.address));
+  await waitTx(POK.grantRole(POOKY_CONTRACT, PookyBallGenesisMinter.address));
+  await waitTx(POK.grantRole(POOKY_CONTRACT, PookyGame.address));
 
-  await waitTx(PookyBall.grantRole(POOKY, PookyBallGenesisMinter.address));
-  await waitTx(PookyBall.grantRole(POOKY, PookyGame.address));
+  await waitTx(PookyBall.grantRole(POOKY_CONTRACT, PookyBallGenesisMinter.address));
+  await waitTx(PookyBall.grantRole(POOKY_CONTRACT, PookyGame.address));
 
   await waitTx(PookyBallGenesisMinter.grantRole(BACKEND, accounts.backend));
   await waitTx(PookyBallGenesisMinter.grantRole(TECH, accounts.tech));

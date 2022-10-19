@@ -1,5 +1,5 @@
 import parseEther from '../lib/parseEther';
-import { DEFAULT_ADMIN_ROLE, POOKY } from '../lib/roles';
+import { DEFAULT_ADMIN_ROLE, POOKY_CONTRACT } from '../lib/roles';
 import getTestAccounts from '../lib/testing/getTestAccounts';
 import { expectHasRole, expectMissingRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
@@ -24,24 +24,24 @@ describe('POK', async () => {
 
   describe('configuration', () => {
     it('should have roles configured', async () => {
-      await expectHasRole(POK, PookyBallGenesisMinter, POOKY);
-      await expectHasRole(POK, PookyGame, POOKY);
+      await expectHasRole(POK, PookyBallGenesisMinter, POOKY_CONTRACT);
+      await expectHasRole(POK, PookyGame, POOKY_CONTRACT);
     });
   });
 
   describe('mint', () => {
-    it('should allow POOKY to mint POK freely', async () => {
+    it('should allow POOKY_CONTRACT to mint POK freely', async () => {
       const amount = parseEther(30);
       expect(() => POK.connect(pooky).mint(player1.address, amount)).to.changeTokenBalance(POK, player1, amount);
     });
 
-    it('should revert if non-POOKY account tries to mint random amount of POK tokens', async () => {
-      await expectMissingRole(POK.connect(player1).mint(player1.address, parseEther(10)), player1, POOKY);
+    it('should revert if non-POOKY_CONTRACT account tries to mint random amount of POK tokens', async () => {
+      await expectMissingRole(POK.connect(player1).mint(player1.address, parseEther(10)), player1, POOKY_CONTRACT);
     });
   });
 
   describe('burn', () => {
-    it('should allow POOKY to burn POK freely', async () => {
+    it('should allow POOKY_CONTRACT to burn POK freely', async () => {
       await POK.connect(pooky).mint(player1.address, parseEther(30));
       expect(() => POK.connect(pooky).burn(player1.address, parseEther(20))).to.changeTokenBalance(
         POK,
@@ -50,8 +50,8 @@ describe('POK', async () => {
       );
     });
 
-    it('should revert if non-POOKY account tries to mint random amount of POK tokens', async () => {
-      await expectMissingRole(POK.connect(player1).burn(player1.address, parseEther(10)), player1, POOKY);
+    it('should revert if non-POOKY_CONTRACT account tries to mint random amount of POK tokens', async () => {
+      await expectMissingRole(POK.connect(player1).burn(player1.address, parseEther(10)), player1, POOKY_CONTRACT);
     });
   });
 
@@ -84,7 +84,7 @@ describe('POK', async () => {
       );
     });
 
-    it('should allow transfers from POOKY contracts', async () => {
+    it('should allow transfers from POOKY_CONTRACT contracts', async () => {
       // 1. Mint 30 POK to pooky
       await POK.connect(pooky).mint(pooky.address, parseEther(30));
 
@@ -97,7 +97,7 @@ describe('POK', async () => {
       );
     });
 
-    it('should allow transfers to POOKY contracts', async () => {
+    it('should allow transfers to POOKY_CONTRACT contracts', async () => {
       // 1. Mint 30 POK to pooky
       await POK.connect(pooky).mint(player1.address, parseEther(30));
 

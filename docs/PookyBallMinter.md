@@ -1,23 +1,5 @@
 # Solidity API
 
-## MintDisabled
-
-```solidity
-error MintDisabled(uint256 templateId)
-```
-
-## MaximumMintsReached
-
-```solidity
-error MaximumMintsReached(uint256 templateId, uint256 maximumMints)
-```
-
-## OnlyVRFCoordinator
-
-```solidity
-error OnlyVRFCoordinator(address coordinator, address actual)
-```
-
 ## PookyBallMinter
 
 PookyBallMinter contains the game logic related to Pooky Ball mint.
@@ -27,14 +9,13 @@ This contract is the base contract for {PookyMintEvent}, and will be used for th
 Chainlink VRF requests are used to obtain randomEntropy for the Pooky Balls.
 
 Roles:
-
 - DEFAULT_ADMIN_ROLE can add/remove roles
-- MOD role can create/change mint templates
+- TECH role can create/change mint templates
 
-### MOD
+### TECH
 
 ```solidity
-bytes32 MOD
+bytes32 TECH
 ```
 
 ### pookyBall
@@ -91,10 +72,10 @@ mapping(uint256 => struct MintTemplate) mintTemplates
 mapping(uint256 => struct MintRandomRequest) mintRandomRequests
 ```
 
-### CreateMintTemplate
+### MintTemplateCreated
 
 ```solidity
-event CreateMintTemplate(uint256 templateId)
+event MintTemplateCreated(uint256 templateId)
 ```
 
 ### MintTemplateEnabled
@@ -121,7 +102,25 @@ event RandomnessRequested(uint256 requestId, address user, uint256 tokenId)
 event RandomnessFulfilled(uint256 requestId, uint256 tokenId, uint256 randomEntropy)
 ```
 
-### \_\_PookyBallMinter_init
+### MintDisabled
+
+```solidity
+error MintDisabled(uint256 templateId)
+```
+
+### MaximumMintsReached
+
+```solidity
+error MaximumMintsReached(uint256 templateId, uint256 maximumMints)
+```
+
+### OnlyVRFCoordinator
+
+```solidity
+error OnlyVRFCoordinator(address coordinator, address actual)
+```
+
+### __PookyBallMinter_init
 
 ```solidity
 function __PookyBallMinter_init(uint256 _startFromId, address _admin, address _vrfCoordinator, uint32 _callbackGasLimit, uint16 _requestConfirmations, bytes32 _keyHash, uint64 _subscriptionId) public
@@ -132,14 +131,13 @@ Initialization function that sets Chainlink VRF parameters.
 ### setVrfParameters
 
 ```solidity
-function setVrfParameters(address _coordinator, uint64 subscriptionId, uint32 callbackGasLimit, uint16 requestConfirmation, bytes32 keyHash) external
+function setVrfParameters(address _coordinator, uint64 subscriptionId, uint32 callbackGasLimit, uint16 requestConfirmations, bytes32 keyHash) external
 ```
 
 Change the Chainlink VRF parameters.
 
-\_Requirements:
-
-- only MOD role can change the Chainlink VRF parameters.\_
+_Requirements:
+- only TECH role can change the Chainlink VRF parameters._
 
 ### setPookyBallContract
 
@@ -149,9 +147,8 @@ function setPookyBallContract(address _pookyBall) external
 
 Sets the address of the PookyBall contract.
 
-\_Requirements:
-
-- only DEFAULT*ADMIN_ROLE role can call this function.*
+_Requirements:
+- only DEFAULT_ADMIN_ROLE role can call this function._
 
 ### createMintTemplate
 
@@ -161,10 +158,9 @@ function createMintTemplate(struct MintTemplate newMintTemplate) external return
 
 Create a new MintTemplate.
 
-\_Requirements:
-
-- only MOD role can create MintTemplates.
-  Emits a CreateMintTemplate event.\_
+_Requirements:
+- only TECH role can create MintTemplates.
+Emits a MintTemplateCreated event._
 
 ### enableMintTemplate
 
@@ -174,34 +170,32 @@ function enableMintTemplate(uint256 mintTemplateId, bool _enabled) external
 
 Enable/disable mint for MintTemplate with id `templateId`.
 
-\_Requirements:
+_Requirements:
+- only TECH role can create MintTemplates.
+Emits a MintTemplateEnabled event._
 
-- only MOD role can create MintTemplates.
-  Emits a MintTemplateEnabled event.\_
-
-### \_requestMintFromTemplate
+### _requestMintFromTemplate
 
 ```solidity
 function _requestMintFromTemplate(address recipient, uint256 templateId, uint256 revocableUntil) internal
 ```
 
-\_Internal function that mints a ball to the current contract and that will later be forwarded to {recipient}.
+_Internal function that mints a ball to the current contract and that will later be forwarded to {recipient}.
 After checking all requirements:
-
 - MintTemplate is enabled.
 - MintTemplate maximum mints has not been reached.
-  The random entropy is made to Chainlink VRF platform.
-  Emits a RequestMintFromTemplate event.\_
+The random entropy is made to Chainlink VRF platform.
+Emits a RequestMintFromTemplate event._
 
 #### Parameters
 
-| Name           | Type    | Description                                         |
-| -------------- | ------- | --------------------------------------------------- |
-| recipient      | address | The final recipient of the newly linted Pooky Ball. |
-| templateId     | uint256 | The MintTemplate id.                                |
-| revocableUntil | uint256 | The UNIX timestamp until the ball can be revoked.   |
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| recipient | address | The final recipient of the newly linted Pooky Ball. |
+| templateId | uint256 | The MintTemplate id. |
+| revocableUntil | uint256 | The UNIX timestamp until the ball can be revoked. |
 
-### \_requestRandomEntropyForMint
+### _requestRandomEntropyForMint
 
 ```solidity
 function _requestRandomEntropyForMint(address recipient, uint256 tokenId) internal
@@ -217,7 +211,7 @@ function fulfillRandomWords(uint256 requestId, uint256[] randomWords) internal
 ```
 
 _Handle randomness response from Chainlink VRF coordinator.
-Since only 1 word is requested in {\_requestRandomEntropyForMint}, only first received number is used to set the
+Since only 1 word is requested in {_requestRandomEntropyForMint}, only first received number is used to set the
 Pooky Ball random entropy.
 Emits a RandomnessFulfilled event._
 
@@ -229,6 +223,6 @@ function rawFulfillRandomWords(uint256 requestId, uint256[] randomWords) externa
 
 Called by the Chainlink VRF coordinator when fulfilling random words.
 
-\_Requirements:
+_Requirements:
+- Only vrf_coordinator can call this function._
 
-- Only vrf*coordinator can call this function.*

@@ -10,7 +10,15 @@ enum BallRarity {
   Legendary,
   Mythic
 }
+```
 
+## BallLuxury
+
+```solidity
+enum BallLuxury {
+  Common,
+  Alpha
+}
 ```
 
 ## BallInfo
@@ -18,6 +26,7 @@ enum BallRarity {
 ```solidity
 struct BallInfo {
   enum BallRarity rarity;
+  enum BallLuxury luxury;
   uint256 randomEntropy;
   uint256 level;
   uint256 pxp;
@@ -31,6 +40,7 @@ struct BallInfo {
 struct MintTemplate {
   bool enabled;
   enum BallRarity rarity;
+  enum BallLuxury luxury;
   uint256 maxMints;
   uint256 currentMints;
   uint256 price;
@@ -45,7 +55,6 @@ struct MintRandomRequest {
   address recipient;
   uint256 tokenId;
 }
-
 ```
 
 ## BallUpdates
@@ -56,5 +65,5 @@ struct BallUpdates {
   uint256 addPXP;
   bool shouldLevelUp;
 }
-
 ```
+
