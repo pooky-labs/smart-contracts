@@ -1,23 +1,5 @@
 # Solidity API
 
-## EntropyAlreadySet
-
-```solidity
-error EntropyAlreadySet(uint256 tokenId)
-```
-
-## NotRevocableAnymore
-
-```solidity
-error NotRevocableAnymore(uint256 tokenId, uint256 now)
-```
-
-## TransferLockedWhileRevocable
-
-```solidity
-error TransferLockedWhileRevocable(uint256 tokenId)
-```
-
 ## PookyBall
 
 PookyBall is ERC721 token representing Pooky Ball NFTs. Balls are mintable by other Pooky game contracts.
@@ -42,7 +24,7 @@ Revocable balls cannot be transferred and can be burned in case of a refund.
 
 Roles:
 - DEFAULT_ADMIN_ROLE can add/remove roles
-- POOKY_CONTRACT role can mint new tokens
+- POOKY_CONTRACT role can mint/revoke new tokens
 
 ### POOKY_CONTRACT
 
@@ -74,22 +56,40 @@ uint256 lastTokenId
 mapping(uint256 => struct BallInfo) balls
 ```
 
-### BallSetRandomEntropy
+### BallRandomEntropySet
 
 ```solidity
-event BallSetRandomEntropy(uint256 tokenId, uint256 randomEntropy)
+event BallRandomEntropySet(uint256 tokenId, uint256 randomEntropy)
 ```
 
-### BallLevelChange
+### BallLevelUpdated
 
 ```solidity
-event BallLevelChange(uint256 tokenId, uint256 level)
+event BallLevelUpdated(uint256 tokenId, uint256 level)
 ```
 
-### ChangeBallPXP
+### BallPXPUpdated
 
 ```solidity
-event ChangeBallPXP(uint256 tokenId, uint256 amount)
+event BallPXPUpdated(uint256 tokenId, uint256 amount)
+```
+
+### EntropyAlreadySet
+
+```solidity
+error EntropyAlreadySet(uint256 tokenId)
+```
+
+### NotRevocableAnymore
+
+```solidity
+error NotRevocableAnymore(uint256 tokenId, uint256 now)
+```
+
+### TransferLockedWhileRevocable
+
+```solidity
+error TransferLockedWhileRevocable(uint256 tokenId)
 ```
 
 ### initialize
@@ -211,7 +211,7 @@ _Internal function that can mint any ball without any restriction; it keeps trac
 ### mint
 
 ```solidity
-function mint(address to, enum BallRarity rarity, uint256 revocableUntil) external returns (uint256)
+function mint(address to, enum BallRarity rarity, enum BallLuxury luxury, uint256 revocableUntil) external returns (uint256)
 ```
 
 Mint a ball with a specific {BallRarity} and with a specific revocation date/time, with all other Ball
@@ -225,7 +225,8 @@ _Requirements:
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | to | address | The address which will own the minted Pooky Ball. |
-| rarity | enum BallRarity | The address which will own the minted Pooky Ball. |
+| rarity | enum BallRarity | The Pooky Ball rarity. |
+| luxury | enum BallLuxury | The Pooky Ball luxury. |
 | revocableUntil | uint256 | The UNIX timestamp until the ball can be revoked. |
 
 ### revoke
@@ -237,7 +238,7 @@ function revoke(uint256 tokenId) external
 Revoke and burn the Pooky Ball with id {tokenId}.
 
 _Requirements:
-- Only POOKY_CONTRACT role can mint Pooky Balls.
+- Only POOKY_CONTRACT role can revoke Pooky Balls.
 - Ball is revocable only if current timestamp is less then `ball.revocableUntil`_
 
 ### _beforeTokenTransfer

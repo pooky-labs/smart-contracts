@@ -2,8 +2,8 @@
 // A mock for testing code that relies on VRFCoordinatorV2.
 pragma solidity ^0.8.4;
 
-import { VRFCoordinatorV2Interface } from '../interfaces/VRFCoordinatorV2Interface.sol';
-import '../vendor/VRFConsumerBaseV2.sol';
+import { VRFCoordinatorV2Interface } from "../interfaces/VRFCoordinatorV2Interface.sol";
+import "../vendor/VRFConsumerBaseV2.sol";
 
 contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
   uint96 public immutable BASE_FEE;
@@ -37,10 +37,12 @@ contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
   uint64 public s_currentSubId;
   uint256 s_nextRequestId = 1;
   uint256 s_nextPreSeed = 100;
+
   struct Subscription {
     address owner;
     uint96 balance;
   }
+
   mapping(uint64 => Subscription) s_subscriptions; /* subId */ /* subscription */
   mapping(uint64 => address[]) s_consumers; /* subId */ /* consumers */
 
@@ -49,6 +51,7 @@ contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
     uint32 callbackGasLimit;
     uint32 numWords;
   }
+
   mapping(uint256 => Request) s_requests; /* requestId */ /* request */
 
   constructor(uint96 _baseFee, uint96 _gasPriceLink) {
@@ -102,7 +105,7 @@ contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
   ) public {
     uint256 startGas = gasleft();
     if (s_requests[_requestId].subId == 0) {
-      revert('nonexistent request');
+      revert("nonexistent request");
     }
     Request memory req = s_requests[_requestId];
 
@@ -119,7 +122,7 @@ contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
     bytes memory callReq = abi.encodeWithSelector(v.rawFulfillRandomWords.selector, _requestId, _words);
     (bool success, ) = _consumer.call{ gas: req.callbackGasLimit }(callReq);
 
-    require(success, 'Consumer call not succesfull');
+    require(success, "Consumer call not succesfull");
 
     uint96 payment = uint96(BASE_FEE + ((startGas - gasleft()) * GAS_PRICE_LINK));
     if (s_subscriptions[req.subId].balance < payment) {
@@ -301,18 +304,19 @@ contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
   }
 
   function getFallbackWeiPerUnitLink() external view returns (int256) {
-    return 4000000000000000; // 0.004 Ether
+    return 4000000000000000;
+    // 0.004 Ether
   }
 
   function requestSubscriptionOwnerTransfer(uint64 _subId, address _newOwner) external pure override {
-    revert('not implemented');
+    revert("not implemented");
   }
 
   function acceptSubscriptionOwnerTransfer(uint64 _subId) external pure override {
-    revert('not implemented');
+    revert("not implemented");
   }
 
   function pendingRequestExists(uint64 subId) public view override returns (bool) {
-    revert('not implemented');
+    revert("not implemented");
   }
 }

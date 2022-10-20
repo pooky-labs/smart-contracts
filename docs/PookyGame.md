@@ -1,41 +1,5 @@
 # Solidity API
 
-## OwnershipRequired
-
-```solidity
-error OwnershipRequired(uint256 tokenId)
-```
-
-## MaximumLevelReached
-
-```solidity
-error MaximumLevelReached(uint256 tokenId, uint256 maxLevel)
-```
-
-## InsufficientPOKBalance
-
-```solidity
-error InsufficientPOKBalance(uint256 required, uint256 actual)
-```
-
-## InvalidSignature
-
-```solidity
-error InvalidSignature()
-```
-
-## ExpiredSignature
-
-```solidity
-error ExpiredSignature(uint256 expiration)
-```
-
-## NonceUsed
-
-```solidity
-error NonceUsed()
-```
-
 ## PookyGame
 
 The contract controls the on-chain features of the Pooky game.
@@ -107,6 +71,48 @@ mapping(enum BallRarity => uint256) maxBallLevelPerRarity
 mapping(uint256 => bool) nonces
 ```
 
+### OwnershipRequired
+
+```solidity
+error OwnershipRequired(uint256 tokenId)
+```
+
+### MaximumLevelReached
+
+```solidity
+error MaximumLevelReached(uint256 tokenId, uint256 maxLevel)
+```
+
+### InsufficientPOKBalance
+
+```solidity
+error InsufficientPOKBalance(uint256 required, uint256 actual)
+```
+
+### InvalidSignature
+
+```solidity
+error InvalidSignature()
+```
+
+### ExpiredSignature
+
+```solidity
+error ExpiredSignature(uint256 expiration)
+```
+
+### NonceUsed
+
+```solidity
+error NonceUsed()
+```
+
+### RewardTransferFailed
+
+```solidity
+error RewardTransferFailed(uint256 amount, address recipient)
+```
+
 ### initialize
 
 ```solidity
@@ -120,6 +126,28 @@ function _setMaxBallLevel() external
 ```
 
 _Initialization function that sets the Pooky Ball maximum level for a given rarity._
+
+### setPookyBallContract
+
+```solidity
+function setPookyBallContract(address _pookyBall) external
+```
+
+Sets the address of the PookyBall contract.
+
+_Requirements:
+- only DEFAULT_ADMIN_ROLE role can call this function._
+
+### setPOKContract
+
+```solidity
+function setPOKContract(address _pok) external
+```
+
+Sets the address of the POK contract.
+
+_Requirements:
+- only DEFAULT_ADMIN_ROLE role can call this function._
 
 ### levelPXP
 
@@ -164,28 +192,6 @@ This computation the ball PXP into account and add an additional POK fee if ball
 | ---- | ---- | ----------- |
 | tokenId | uint256 | The targeted level. |
 
-### setPookyBallContract
-
-```solidity
-function setPookyBallContract(address _pookyBall) external
-```
-
-Sets the address of the PookyBall contract.
-
-_Requirements:
-- only DEFAULT_ADMIN_ROLE role can call this function._
-
-### setPOKContract
-
-```solidity
-function setPOKContract(address _pok) external
-```
-
-Sets the address of the POK contract.
-
-_Requirements:
-- only DEFAULT_ADMIN_ROLE role can call this function._
-
 ### levelUp
 
 ```solidity
@@ -210,15 +216,18 @@ _Internal function that checks if a {message} has be signed by a REWARD_SIGNER._
 ### claimRewards
 
 ```solidity
-function claimRewards(uint256 amountPOK, struct BallUpdates[] ballUpdates, uint256 ttl, uint256 nonce, bytes signature) external
+function claimRewards(uint256 amountNative, uint256 amountPOK, struct BallUpdates[] ballUpdates, uint256 ttl, uint256 nonce, bytes signature) external
 ```
 
 Claim prediction rewards ($POK tokens and Ball PXP).
+
+_No explicit re-entrancy guard is present as this function is nonce-based._
 
 #### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| amountNative | uint256 | The amount of native currency to transfer. |
 | amountPOK | uint256 | The $POK token amount. |
 | ballUpdates | struct BallUpdates[] | The updated to apply to the Pooky Balls (PXP and optional level up). |
 | ttl | uint256 | UNIX timestamp until signature is valid. |

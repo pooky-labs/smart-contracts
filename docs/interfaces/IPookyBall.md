@@ -11,7 +11,7 @@ function getBallInfo(uint256 tokenId) external view returns (struct BallInfo)
 ### mint
 
 ```solidity
-function mint(address to, enum BallRarity rarity, uint256 revocableUntil) external returns (uint256)
+function mint(address to, enum BallRarity rarity, enum BallLuxury luxury, uint256 revocableUntil) external returns (uint256)
 ```
 
 ### setRandomEntropy

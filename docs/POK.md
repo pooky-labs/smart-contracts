@@ -1,11 +1,5 @@
 # Solidity API
 
-## TransfersDisabled
-
-```solidity
-error TransfersDisabled()
-```
-
 ## POK
 
 POK is ERC20 token used inside of the game.
@@ -33,6 +27,12 @@ bool transferEnabled
 
 ```solidity
 event SetTransferEnabled(bool transferEnabled)
+```
+
+### TransfersDisabled
+
+```solidity
+error TransfersDisabled()
 ```
 
 ### initialize

@@ -1,4 +1,4 @@
-import { getContractFromJsonDb } from '../lib/helpers/DbHelper';
+import { getContractFromJsonDb } from '../lib/utils/DbHelper';
 import waitTx from '../lib/waitTx';
 import { POK, PookyBall, PookyBallGenesisMinter, PookyGame } from '../typings';
 import { task } from 'hardhat/config';

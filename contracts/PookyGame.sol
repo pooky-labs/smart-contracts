@@ -3,11 +3,11 @@
 
 pragma solidity ^0.8.9;
 
-import './interfaces/IPookyBall.sol';
-import './interfaces/IPOK.sol';
-import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol';
-import { BallUpdates, BallInfo, BallRarity } from './types/DataTypes.sol';
+import "./interfaces/IPookyBall.sol";
+import "./interfaces/IPOK.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol";
+import { BallUpdates, BallInfo, BallRarity } from "./types/DataTypes.sol";
 
 /**
  * @title PookyBallMinter
@@ -26,7 +26,7 @@ contract PookyGame is AccessControlUpgradeable {
   using ECDSAUpgradeable for bytes32;
 
   // Roles
-  bytes32 public constant REWARD_SIGNER = keccak256('REWARD_SIGNER');
+  bytes32 public constant REWARD_SIGNER = keccak256("REWARD_SIGNER");
 
   // Contracts
   IPookyBall public pookyBall;
@@ -38,7 +38,7 @@ contract PookyGame is AccessControlUpgradeable {
   uint256 public constant RATIO_PXP = 1085; // =1.085: each level costs 1.085 more than the previous one.
   uint256 public constant RATIO_POK = 90; // =0.090: 9% of PXP cost is required in $POK tokens to confirm level up.
 
-  mapping(BallRarity => uint256) maxBallLevelPerRarity;
+  mapping(BallRarity => uint256) public maxBallLevelPerRarity;
   mapping(uint256 => bool) nonces;
 
   error OwnershipRequired(uint256 tokenId);
@@ -47,6 +47,7 @@ contract PookyGame is AccessControlUpgradeable {
   error InvalidSignature();
   error ExpiredSignature(uint256 expiration);
   error NonceUsed();
+  error RewardTransferFailed(uint256 amount, address recipient);
 
   function initialize(address _admin) public initializer {
     __AccessControl_init();
@@ -62,6 +63,24 @@ contract PookyGame is AccessControlUpgradeable {
     maxBallLevelPerRarity[BallRarity.Epic] = 80;
     maxBallLevelPerRarity[BallRarity.Legendary] = 100;
     maxBallLevelPerRarity[BallRarity.Mythic] = 100;
+  }
+
+  /**
+   * @notice Sets the address of the PookyBall contract.
+   * @dev Requirements:
+   * - only DEFAULT_ADMIN_ROLE role can call this function.
+   */
+  function setPookyBallContract(address _pookyBall) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    pookyBall = IPookyBall(_pookyBall);
+  }
+
+  /**
+   * @notice Sets the address of the POK contract.
+   * @dev Requirements:
+   * - only DEFAULT_ADMIN_ROLE role can call this function.
+   */
+  function setPOKContract(address _pok) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    pok = IPOK(_pok);
   }
 
   /**
@@ -105,24 +124,6 @@ contract PookyGame is AccessControlUpgradeable {
       // If the ball has not enough PXP, missing PXP can be covered with $POK tokens at {POK_FACTOR} ratio
       return requiredPOK + ((requiredPXP - ball.pxp) * RATIO_POK) / 10**RATIO_DECIMALS;
     }
-  }
-
-  /**
-   * @notice Sets the address of the PookyBall contract.
-   * @dev Requirements:
-   * - only DEFAULT_ADMIN_ROLE role can call this function.
-   */
-  function setPookyBallContract(address _pookyBall) external onlyRole(DEFAULT_ADMIN_ROLE) {
-    pookyBall = IPookyBall(_pookyBall);
-  }
-
-  /**
-   * @notice Sets the address of the POK contract.
-   * @dev Requirements:
-   * - only DEFAULT_ADMIN_ROLE role can call this function.
-   */
-  function setPOKContract(address _pok) external onlyRole(DEFAULT_ADMIN_ROLE) {
-    pok = IPOK(_pok);
   }
 
   /**
@@ -172,6 +173,8 @@ contract PookyGame is AccessControlUpgradeable {
 
   /**
    * @notice Claim prediction rewards ($POK tokens and Ball PXP).
+   * @dev No explicit re-entrancy guard is present as this function is nonce-based.
+   * @param amountNative The amount of native currency to transfer.
    * @param amountPOK The $POK token amount.
    * @param ballUpdates The updated to apply to the Pooky Balls (PXP and optional level up).
    * @param ttl UNIX timestamp until signature is valid.
@@ -179,13 +182,14 @@ contract PookyGame is AccessControlUpgradeable {
    * @param signature The signature of the previous parameters generated using the eth_personalSign RPC call.
    */
   function claimRewards(
+    uint256 amountNative,
     uint256 amountPOK,
     BallUpdates[] calldata ballUpdates,
     uint256 ttl,
     uint256 nonce,
     bytes memory signature
   ) external {
-    if (!verifySignature(abi.encode(amountPOK, ballUpdates, ttl, nonce), signature)) {
+    if (!verifySignature(abi.encode(amountNative, amountPOK, ballUpdates, ttl, nonce), signature)) {
       revert InvalidSignature();
     }
 
@@ -208,6 +212,11 @@ contract PookyGame is AccessControlUpgradeable {
       if (ballUpdates[i].shouldLevelUp) {
         levelUp(ballUpdates[i].tokenId);
       }
+    }
+
+    (bool sent, ) = address(msg.sender).call{ value: amountNative }("");
+    if (!sent) {
+      revert RewardTransferFailed(amountNative, msg.sender);
     }
   }
 }

@@ -1,23 +1,5 @@
 # Solidity API
 
-## MintDisabled
-
-```solidity
-error MintDisabled(uint256 templateId)
-```
-
-## MaximumMintsReached
-
-```solidity
-error MaximumMintsReached(uint256 templateId, uint256 maximumMints)
-```
-
-## OnlyVRFCoordinator
-
-```solidity
-error OnlyVRFCoordinator(address coordinator, address actual)
-```
-
 ## PookyBallMinter
 
 PookyBallMinter contains the game logic related to Pooky Ball mint.
@@ -28,12 +10,12 @@ Chainlink VRF requests are used to obtain randomEntropy for the Pooky Balls.
 
 Roles:
 - DEFAULT_ADMIN_ROLE can add/remove roles
-- MOD role can create/change mint templates
+- TECH role can create/change mint templates
 
-### MOD
+### TECH
 
 ```solidity
-bytes32 MOD
+bytes32 TECH
 ```
 
 ### pookyBall
@@ -90,10 +72,10 @@ mapping(uint256 => struct MintTemplate) mintTemplates
 mapping(uint256 => struct MintRandomRequest) mintRandomRequests
 ```
 
-### CreateMintTemplate
+### MintTemplateCreated
 
 ```solidity
-event CreateMintTemplate(uint256 templateId)
+event MintTemplateCreated(uint256 templateId)
 ```
 
 ### MintTemplateEnabled
@@ -120,6 +102,24 @@ event RandomnessRequested(uint256 requestId, address user, uint256 tokenId)
 event RandomnessFulfilled(uint256 requestId, uint256 tokenId, uint256 randomEntropy)
 ```
 
+### MintDisabled
+
+```solidity
+error MintDisabled(uint256 templateId)
+```
+
+### MaximumMintsReached
+
+```solidity
+error MaximumMintsReached(uint256 templateId, uint256 maximumMints)
+```
+
+### OnlyVRFCoordinator
+
+```solidity
+error OnlyVRFCoordinator(address coordinator, address actual)
+```
+
 ### __PookyBallMinter_init
 
 ```solidity
@@ -131,13 +131,13 @@ Initialization function that sets Chainlink VRF parameters.
 ### setVrfParameters
 
 ```solidity
-function setVrfParameters(address _coordinator, uint64 subscriptionId, uint32 callbackGasLimit, uint16 requestConfirmation, bytes32 keyHash) external
+function setVrfParameters(address _coordinator, uint64 subscriptionId, uint32 callbackGasLimit, uint16 requestConfirmations, bytes32 keyHash) external
 ```
 
 Change the Chainlink VRF parameters.
 
 _Requirements:
-- only MOD role can change the Chainlink VRF parameters._
+- only TECH role can change the Chainlink VRF parameters._
 
 ### setPookyBallContract
 
@@ -159,8 +159,8 @@ function createMintTemplate(struct MintTemplate newMintTemplate) external return
 Create a new MintTemplate.
 
 _Requirements:
-- only MOD role can create MintTemplates.
-Emits a CreateMintTemplate event._
+- only TECH role can create MintTemplates.
+Emits a MintTemplateCreated event._
 
 ### enableMintTemplate
 
@@ -171,7 +171,7 @@ function enableMintTemplate(uint256 mintTemplateId, bool _enabled) external
 Enable/disable mint for MintTemplate with id `templateId`.
 
 _Requirements:
-- only MOD role can create MintTemplates.
+- only TECH role can create MintTemplates.
 Emits a MintTemplateEnabled event._
 
 ### _requestMintFromTemplate

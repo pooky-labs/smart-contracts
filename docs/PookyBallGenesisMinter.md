@@ -1,41 +1,5 @@
 # Solidity API
 
-## ArgumentSizeMismatch
-
-```solidity
-error ArgumentSizeMismatch(uint256 x, uint256 y)
-```
-
-## InsufficientValue
-
-```solidity
-error InsufficientValue(uint256 required, uint256 actual)
-```
-
-## TransferFailed
-
-```solidity
-error TransferFailed(address from)
-```
-
-## TierTooLow
-
-```solidity
-error TierTooLow(uint256 required, uint256 actual)
-```
-
-## MaxMintsReached
-
-```solidity
-error MaxMintsReached(uint256 remaining, uint256 requested)
-```
-
-## MaxSupplyReached
-
-```solidity
-error MaxSupplyReached(uint256 remaining, uint256 requested)
-```
-
 ## PookyBallGenesisMinter
 
 Extension of PookyBallMinter that will only be used for the initial minting event.
@@ -45,36 +9,37 @@ _The zero tier means that the mint is public.
 
 Roles:
   DEFAULT_ADMIN_ROLE can add/remove roles
-  BE role represents backend which can mint to the user address_
+  TECH role represents the Pooky Engineering team
+  BACKEND role represents backend which can mint to the user address_
 
-### BE
+### BACKEND
 
 ```solidity
-bytes32 BE
+bytes32 BACKEND
 ```
 
-### minTierToBuy
+### minTierToMint
 
 ```solidity
-uint256 minTierToBuy
+uint256 minTierToMint
 ```
 
-### userTiers
+### accountTiers
 
 ```solidity
-mapping(address => uint256) userTiers
+mapping(address => uint256) accountTiers
 ```
 
-### maxBallsPerUser
+### maxAccountMints
 
 ```solidity
-uint256 maxBallsPerUser
+uint256 maxAccountMints
 ```
 
-### userBallsMinted
+### accountMints
 
 ```solidity
-mapping(address => uint256) userBallsMinted
+mapping(address => uint256) accountMints
 ```
 
 ### ballsMinted
@@ -107,6 +72,42 @@ address treasuryWallet
 event UserTierSet(address user, uint256 tier)
 ```
 
+### ArgumentSizeMismatch
+
+```solidity
+error ArgumentSizeMismatch(uint256 x, uint256 y)
+```
+
+### InsufficientValue
+
+```solidity
+error InsufficientValue(uint256 required, uint256 actual)
+```
+
+### TransferFailed
+
+```solidity
+error TransferFailed(address from)
+```
+
+### TierTooLow
+
+```solidity
+error TierTooLow(uint256 required, uint256 actual)
+```
+
+### MaxMintsReached
+
+```solidity
+error MaxMintsReached(uint256 remaining, uint256 requested)
+```
+
+### MaxSupplyReached
+
+```solidity
+error MaxSupplyReached(uint256 remaining, uint256 requested)
+```
+
 ### initialize
 
 ```solidity
@@ -121,41 +122,16 @@ function mintsLeft(address account) public view returns (uint256)
 
 The allowed remaining mints for a given {account}.
 
-### setMinTierToBuy
+### setMinTierToMint
 
 ```solidity
-function setMinTierToBuy(uint256 _minTierToBuy) external
+function setMinTierToMint(uint256 _minTierToMint) external
 ```
 
 Set the minimum allow list tier allowed to mint.
 
 _Requirements:
-- only MOD role can manage the allowlist._
-
-### setMaxBallsPerUser
-
-```solidity
-function setMaxBallsPerUser(uint256 _maxBallsPerUser) external
-```
-
-Set the maximum number of mintable balls per account.
-
-_Pooky Balls balance might exceed this limit as Ball transfers are permitted.
-Mints are tracked by {userBallsMinted}.
-
-Requirements:
-- only MOD role can manage the allowlist._
-
-### setRevokePeriod
-
-```solidity
-function setRevokePeriod(uint256 _revokePeriod) external
-```
-
-Set the revocable period duration in seconds.
-
-_Requirements:
-- only MOD role can manage the allowlist._
+- only TECH role can manage the allowlist._
 
 ### setTierBatch
 
@@ -166,7 +142,32 @@ function setTierBatch(address[] accounts, uint256[] tiers) external
 Set the allowlist tier of multiple addresses.
 
 _Requirements:
-- only MOD role can manage the allowlist._
+- only TECH role can manage the allowlist._
+
+### setMaxAccountMints
+
+```solidity
+function setMaxAccountMints(uint256 _maxAccountsMints) external
+```
+
+Set the maximum number of mintable balls per account.
+
+_Pooky Balls balance might exceed this limit as Ball transfers are permitted.
+Mints are tracked by {userBallsMinted}.
+
+Requirements:
+- only TECH role can change how many balls can be minted per account._
+
+### setRevokePeriod
+
+```solidity
+function setRevokePeriod(uint256 _revokePeriod) external
+```
+
+Set the revocable period duration in seconds.
+
+_Requirements:
+- only TECH role can manage the allowlist._
 
 ### _mint
 
@@ -207,7 +208,7 @@ Mint Pooky Balls from the back-end, following an off-chain payment (e.g. credit 
 Revoke period is set if there is dispute in the payment during this period.
 
 _Requirements:
-- only BE role can manage the mint balls freely._
+- only BACKEND role can manage the mint balls freely._
 
 #### Parameters
 
@@ -225,5 +226,5 @@ function revokeAuthorized(uint256 tokenId) external
 
 function called by backend to revoke the ball.
 This function is used when there is dispute in the payment.
-only BE role can call this function
+only BACKEND role can call this function
 

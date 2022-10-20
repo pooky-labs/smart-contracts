@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.9;
 
-import '../POK.sol';
+import "../POK.sol";
 
 /**
  * @title PookyBall

@@ -3,8 +3,8 @@
 
 pragma solidity ^0.8.9;
 
-import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 /**
  * @title PookyBall
@@ -21,7 +21,7 @@ import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol'
  */
 contract POK is ERC20Upgradeable, AccessControlUpgradeable {
   // Roles
-  bytes32 public constant POOKY_CONTRACT = keccak256('POOKY_CONTRACT');
+  bytes32 public constant POOKY_CONTRACT = keccak256("POOKY_CONTRACT");
 
   bool public transferEnabled;
 

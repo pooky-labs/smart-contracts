@@ -2,20 +2,12 @@ export const KEY_HASH = '0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248b
 export const VRF_COORDINATOR = '0x7a1bac17ccc5b313516c5e16fb24f7659aa5ebed';
 export const START_ID = 1;
 export const SUBSCRIPTION_ID = 1914;
-export const MAX_MINT_SUPPLY = 10;
 export const MAX_BALLS_PER_USER = 15;
 export const REVOKE_PERIOD = 1234567898765432;
 export const GAS_LIMIT = 100000000;
 export const MINIMUM_CONFIRMATIONS = 3;
-export const MAXIMUM_UNCOMMON_BALL_LEVEL = 40;
+export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
-//Constants for test script
-export const ZERO = 0;
+// Constants for test script
 export const ONE = 1;
 export const HUNDRED = 100;
-export const MAX_UINT = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
-export const DEFAULT_ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
-export const BALL_MAXIMUM_RARITY = 4;
-
-//To fix this hardcode
-export const TREASURY = '0xb8518c192c035192ea3d6addbc551ba691dfb564';

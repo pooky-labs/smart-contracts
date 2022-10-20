@@ -3,11 +3,11 @@
 
 pragma solidity ^0.8.9;
 
-import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol';
-import './interfaces/IPookyBall.sol';
-import { BallInfo, BallRarity } from './types/DataTypes.sol';
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
+import "./interfaces/IPookyBall.sol";
+import { BallRarity, BallRarity, BallInfo } from "./types/DataTypes.sol";
 
 /**
  * @title PookyBall
@@ -35,13 +35,13 @@ import { BallInfo, BallRarity } from './types/DataTypes.sol';
  *
  * Roles:
  * - DEFAULT_ADMIN_ROLE can add/remove roles
- * - POOKY_CONTRACT role can mint new tokens
+ * - POOKY_CONTRACT role can mint/revoke new tokens
  */
 contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   using StringsUpgradeable for uint256;
 
   // Roles
-  bytes32 public constant POOKY_CONTRACT = keccak256('POOKY_CONTRACT');
+  bytes32 public constant POOKY_CONTRACT = keccak256("POOKY_CONTRACT");
 
   string public baseURI_;
   string public _contractURI;
@@ -49,9 +49,9 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
 
   mapping(uint256 => BallInfo) public balls;
 
-  event BallSetRandomEntropy(uint256 indexed tokenId, uint256 randomEntropy);
-  event BallLevelChange(uint256 indexed tokenId, uint256 level);
-  event ChangeBallPXP(uint256 indexed tokenId, uint256 amount);
+  event BallRandomEntropySet(uint256 indexed tokenId, uint256 randomEntropy);
+  event BallLevelUpdated(uint256 indexed tokenId, uint256 level);
+  event BallPXPUpdated(uint256 indexed tokenId, uint256 amount);
 
   error EntropyAlreadySet(uint256 tokenId);
   error NotRevocableAnymore(uint256 tokenId, uint256 now);
@@ -97,7 +97,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
    */
   function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
     _requireMinted(tokenId);
-    return bytes(baseURI_).length > 0 ? string(abi.encodePacked(baseURI_, tokenId.toString(), '.json')) : '';
+    return bytes(baseURI_).length > 0 ? string(abi.encodePacked(baseURI_, tokenId.toString(), ".json")) : "";
   }
 
   /**
@@ -133,7 +133,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
     }
 
     balls[tokenId].randomEntropy = _randomEntropy;
-    emit BallSetRandomEntropy(tokenId, _randomEntropy);
+    emit BallRandomEntropySet(tokenId, _randomEntropy);
   }
 
   /**
@@ -148,7 +148,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
     _requireMinted(tokenId);
 
     balls[tokenId].pxp = amount;
-    emit ChangeBallPXP(tokenId, amount);
+    emit BallPXPUpdated(tokenId, amount);
   }
 
   /**
@@ -163,7 +163,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
     _requireMinted(tokenId);
 
     balls[tokenId].level = newLevel;
-    emit BallLevelChange(tokenId, newLevel);
+    emit BallLevelUpdated(tokenId, newLevel);
   }
 
   /**
@@ -184,22 +184,27 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
    * @dev Requirements:
    * - Only POOKY_CONTRACT role can mint Pooky Balls.
    * @param to The address which will own the minted Pooky Ball.
-   * @param rarity The address which will own the minted Pooky Ball.
+   * @param rarity The Pooky Ball rarity.
+   * @param luxury The Pooky Ball luxury.
    * @param revocableUntil The UNIX timestamp until the ball can be revoked.
    */
   function mint(
     address to,
     BallRarity rarity,
+    BallLuxury luxury,
     uint256 revocableUntil
   ) external onlyRole(POOKY_CONTRACT) returns (uint256) {
     return
-      _mintBall(to, BallInfo({ rarity: rarity, randomEntropy: 0, level: 0, pxp: 0, revocableUntil: revocableUntil }));
+      _mintBall(
+        to,
+        BallInfo({ rarity: rarity, luxury: luxury, randomEntropy: 0, level: 0, pxp: 0, revocableUntil: revocableUntil })
+      );
   }
 
   /**
    * @notice Revoke and burn the Pooky Ball with id {tokenId}.
    * @dev Requirements:
-   * - Only POOKY_CONTRACT role can mint Pooky Balls.
+   * - Only POOKY_CONTRACT role can revoke Pooky Balls.
    * - Ball is revocable only if current timestamp is less then `ball.revocableUntil`
    */
   function revoke(uint256 tokenId) external onlyRole(POOKY_CONTRACT) {
