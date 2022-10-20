@@ -251,7 +251,7 @@ describe('PookyGame', () => {
     });
 
     it('should allow players to claim POK', async () => {
-      const signature = await signRewardsClaim(rewardNAT, rewardPOK, [], ttl, nonce, backend);
+      const signature = await signRewardsClaim(player1.address, rewardNAT, rewardPOK, [], ttl, nonce, backend);
 
       await expect(
         PookyGame.connect(player1).claimRewards(rewardNAT, rewardPOK, [], ttl, nonce, signature),
@@ -259,7 +259,7 @@ describe('PookyGame', () => {
     });
 
     it('should allow players to claim POK and add PXP to an existing ball', async () => {
-      const signature = await signRewardsClaim(rewardNAT, rewardPOK, ballUpdates, ttl, nonce, backend);
+      const signature = await signRewardsClaim(player1.address, rewardNAT, rewardPOK, ballUpdates, ttl, nonce, backend);
 
       await expect(PookyGame.connect(player1).claimRewards(rewardNAT, rewardPOK, ballUpdates, ttl, nonce, signature)).to
         .not.be.reverted;
@@ -268,7 +268,7 @@ describe('PookyGame', () => {
     });
 
     it('should revert if user tries to claim rewards with an invalid signature', async () => {
-      const signature = await signRewardsClaim(rewardNAT, rewardPOK, ballUpdates, ttl, nonce, backend);
+      const signature = await signRewardsClaim(player1.address, rewardNAT, rewardPOK, ballUpdates, ttl, nonce, backend);
 
       await expect(
         PookyGame.connect(player1).claimRewards(
@@ -284,9 +284,25 @@ describe('PookyGame', () => {
         .withArgs();
     });
 
+    it('should revert if user tries to claim rewards with signature from another user', async () => {
+      const signature = await signRewardsClaim(player2.address, rewardNAT, rewardPOK, [], ttl, nonce, backend);
+
+      await expect(PookyGame.connect(player1).claimRewards(rewardNAT, rewardPOK, [], ttl, nonce, signature))
+        .to.be.revertedWithCustomError(PookyGame, 'InvalidSignature')
+        .withArgs();
+    });
+
     it('should revert if reward claim has expired', async () => {
       const expiredTimestamp = currentTimestamp - 100;
-      const signature = await signRewardsClaim(rewardNAT, rewardPOK, ballUpdates, expiredTimestamp, nonce, backend);
+      const signature = await signRewardsClaim(
+        player1.address,
+        rewardNAT,
+        rewardPOK,
+        ballUpdates,
+        expiredTimestamp,
+        nonce,
+        backend,
+      );
 
       await expect(
         PookyGame.connect(player1).claimRewards(rewardNAT, rewardPOK, ballUpdates, expiredTimestamp, nonce, signature),
@@ -296,7 +312,7 @@ describe('PookyGame', () => {
     });
 
     it('should revert if nonce has already been used', async () => {
-      const signature = await signRewardsClaim(rewardNAT, rewardPOK, ballUpdates, ttl, nonce, backend);
+      const signature = await signRewardsClaim(player1.address, rewardNAT, rewardPOK, ballUpdates, ttl, nonce, backend);
 
       // First call: success!
       await expect(PookyGame.connect(player1).claimRewards(rewardNAT, rewardPOK, ballUpdates, ttl, nonce, signature)).to
