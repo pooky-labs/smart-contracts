@@ -189,7 +189,17 @@ contract PookyGame is AccessControlUpgradeable {
     uint256 nonce,
     bytes memory signature
   ) external {
-    if (!verifySignature(abi.encode(amountNative, amountPOK, ballUpdates, ttl, nonce), signature)) {
+    if (!verifySignature(
+      abi.encode(
+        msg.sender, 
+        amountNative, 
+        amountPOK, 
+        ballUpdates, 
+        ttl, 
+        nonce
+      ), 
+      signature
+    )) {
       revert InvalidSignature();
     }
 
