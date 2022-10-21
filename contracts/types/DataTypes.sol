@@ -40,7 +40,7 @@ struct BallInfo {
  * @param maxMints Maximum number of mints with this template.
  * @param currentMints Current number of mints with this template.
  * @param price Price for the one ball.
- * @param payingToken Address of the token with which user pays. If the native token is used 0x0 should be set.
+ * @param payingToken Address of the token with which players pays. If the native token is used 0x0 should be set.
  */
 struct MintTemplate {
   bool enabled;
@@ -54,7 +54,7 @@ struct MintTemplate {
 
 /**
  * @notice Structure containing info for the request which is sent to Chainlink VRF
- * @param user address of the user to which ball will be sent
+ * @param recipient account to which ball will be sent
  * @param tokenId id of the ball
  */
 struct MintRandomRequest {

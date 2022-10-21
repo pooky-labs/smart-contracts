@@ -17,31 +17,34 @@ import { BallRarity, MintTemplate, MintRandomRequest } from "./types/DataTypes.s
  * @dev The zero tier means that the mint is public.
  *
  * Roles:
- *   DEFAULT_ADMIN_ROLE can add/remove roles
- *   TECH role represents the Pooky Engineering team
- *   BACKEND role represents backend which can mint to the user address
+ *   DEFAULT_ADMIN_ROLE can add/remove roles.
+ *   TECH role represents the Pooky Engineering team which is allowed to set account allowlist tier.
+ *   BACKEND role represents backend which can mint to the player address.
  */
 contract PookyBallGenesisMinter is PookyBallMinter {
   // Roles
   bytes32 public constant BACKEND = keccak256("BACKEND");
 
-  // The minimum required tier (inclusive) to mint a Pooky Ball token.
+  /// The minimum required tier (inclusive) to mint a Pooky Ball token.
   uint256 public minTierToMint;
-  // The allowlist account => tier mapping.
+  /// The allowlist account => tier mapping.
   mapping(address => uint256) public accountTiers;
-  // The maximum mints allowed per account.
+  /// The maximum mints allowed per account.
   uint256 public maxAccountMints;
-  // The account => number of minted balls
+  /// The account => number of minted balls
   mapping(address => uint256) accountMints;
 
-  // The total of balls with this contracts.
+  /// The total of balls with this contracts.
   uint256 public ballsMinted;
-  // The maximum mints that will be allowed in this contracts.
+  /// The maximum mints that will be allowed in this contracts.
   uint256 public maxMintSupply;
+  /// The revoke period in seconds.
   uint256 public revokePeriod;
+  /// The treasury wallet where all the mint funds will be forwarded.
   address public treasuryWallet;
 
-  event UserTierSet(address indexed user, uint256 tier);
+  /// Emitted when an account tier is set.
+  event TierSet(address indexed account, uint256 tier);
 
   error ArgumentSizeMismatch(uint256 x, uint256 y);
   error InsufficientValue(uint256 required, uint256 actual);
@@ -63,10 +66,10 @@ contract PookyBallGenesisMinter is PookyBallMinter {
     bytes32 _keyHash,
     uint64 _subscriptionId
   ) public initializer {
-    treasuryWallet = _treasuryWallet;
-    maxMintSupply = _maxMintSupply;
     maxAccountMints = _maxBallsPerUser;
+    maxMintSupply = _maxMintSupply;
     revokePeriod = _revokePeriod;
+    treasuryWallet = _treasuryWallet;
 
     __PookyBallMinter_init(
       _startFromId,
@@ -107,14 +110,14 @@ contract PookyBallGenesisMinter is PookyBallMinter {
 
     for (uint256 i = 0; i < accounts.length; i++) {
       accountTiers[accounts[i]] = tiers[i];
-      emit UserTierSet(accounts[i], tiers[i]);
+      emit TierSet(accounts[i], tiers[i]);
     }
   }
 
   /**
    * @notice Set the maximum number of mintable balls per account.
    * @dev Pooky Balls balance might exceed this limit as Ball transfers are permitted.
-   * Mints are tracked by {userBallsMinted}.
+   * Mints are tracked by {accountMints}.
    *
    * Requirements:
    * - only TECH role can change how many balls can be minted per account.
@@ -135,8 +138,8 @@ contract PookyBallGenesisMinter is PookyBallMinter {
   /**
    * @dev Internal function that mints multiple balls at once.
    * @param recipient The account address that will receive the Pooky Balls NFTs.
-   * @param amount The number of balls minted by the user.
    * @param templateId The selected MintTemplate id.
+   * @param amount The number of balls minted by the account.
    * @param revokeUntil The UNIX timestamp until the Pooky Ball are revocable.
    */
   function _mint(
@@ -166,10 +169,13 @@ contract PookyBallGenesisMinter is PookyBallMinter {
   }
 
   /**
-   * @notice Public mint function that is callable by the users.
+   * @notice Public mint function that is callable by the external accounts.
    * @dev Since crypto payments cannot be disputed, revokeUntil parameter is zero.
    * Requirements:
    * - Transaction value must be equal to the ball price * amount.
+   * - Native transfer to the {treasuryWallet} must succeed.
+   * @param templateId The {MintTemplate} id.
+   * @param amount The amount of balls to mint.
    */
   function mint(uint256 templateId, uint256 amount) external payable {
     uint256 totalPrice = mintTemplates[templateId].price * amount;
@@ -193,8 +199,8 @@ contract PookyBallGenesisMinter is PookyBallMinter {
    * @dev Requirements:
    * - only BACKEND role can manage the mint balls freely.
    * @param recipient The account address that will receive the Pooky Balls NFTs.
-   * @param amount The number of balls minted by the user.
-   * @param templateId The selected MintTemplate id.
+   * @param templateId The {MintTemplate} id.
+   * @param amount The number of balls minted by the recipient.
    */
   function mintAuthorized(
     address recipient,
@@ -205,9 +211,9 @@ contract PookyBallGenesisMinter is PookyBallMinter {
   }
 
   /**
-   * @notice function called by backend to revoke the ball.
-   * @notice This function is used when there is dispute in the payment.
-   * @notice only BACKEND role can call this function
+   * @notice Revoke a revocable Pookyball, in case of a payment dispute.
+   * @dev Requirements:
+   * - only BACKEND role can revoke balls
    */
   function revokeAuthorized(uint256 tokenId) external onlyRole(BACKEND) {
     pookyBall.revoke(tokenId);

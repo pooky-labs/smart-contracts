@@ -53,6 +53,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   event BallLevelUpdated(uint256 indexed tokenId, uint256 level);
   event BallPXPUpdated(uint256 indexed tokenId, uint256 amount);
 
+  /// Thrown when the entropy of a ball has been already
   error EntropyAlreadySet(uint256 tokenId);
   error NotRevocableAnymore(uint256 tokenId, uint256 now);
   error TransferLockedWhileRevocable(uint256 tokenId);

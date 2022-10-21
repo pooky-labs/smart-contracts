@@ -44,10 +44,10 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
   // MintTemplate events
   event MintTemplateCreated(uint256 indexed templateId);
   event MintTemplateEnabled(uint256 indexed templateId, bool enabled);
-  event RequestMintFromTemplate(uint256 indexed templateId, address indexed user);
+  event RequestMintFromTemplate(uint256 indexed templateId, address indexed recipient);
 
   // Chainlink VRF events
-  event RandomnessRequested(uint256 indexed requestId, address indexed user, uint256 indexed tokenId);
+  event RandomnessRequested(uint256 indexed requestId, uint256 indexed tokenId, address indexed recipient);
   event RandomnessFulfilled(uint256 indexed requestId, uint256 indexed tokenId, uint256 randomEntropy);
 
   error MintDisabled(uint256 templateId);
@@ -179,7 +179,7 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
     );
 
     mintRandomRequests[requestId] = MintRandomRequest(recipient, tokenId);
-    emit RandomnessRequested(requestId, recipient, tokenId);
+    emit RandomnessRequested(requestId, tokenId, recipient);
   }
 
   /**

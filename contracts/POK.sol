@@ -23,10 +23,13 @@ contract POK is ERC20Upgradeable, AccessControlUpgradeable {
   // Roles
   bytes32 public constant POOKY_CONTRACT = keccak256("POOKY_CONTRACT");
 
+  /// If the $POK transfers between non-POOKY_CONTRACT accounts are allowed.
   bool public transferEnabled;
 
+  /// Emitted when transfer are enabled/disabled.
   event SetTransferEnabled(bool transferEnabled);
 
+  /// Thrown when an account tries to transfer $POK.
   error TransfersDisabled();
 
   function initialize(
@@ -58,7 +61,7 @@ contract POK is ERC20Upgradeable, AccessControlUpgradeable {
   }
 
   /**
-   * @notice Enable/disable transfers of $POK tokens between users.
+   * @notice Enable/disable transfers of $POK tokens between accounts.
    * @dev Requirements:
    * - only POOKY_CONTRACT role can mint $POK tokens
    */
@@ -69,9 +72,10 @@ contract POK is ERC20Upgradeable, AccessControlUpgradeable {
 
   /**
    * @dev Restrict the $POK transfers between accounts.
-   * - Do not allow transfer between users if they are disabled, see {POK-setTransferEnabled}.
-   * - Mints and burns are always allowed.
+   * Requirements:
+   * - Transfer between accounts if they are disabled, see {POK-setTransferEnabled}.
    * - POOKY_CONTRACT can always send and receive tokens.
+   * - Mints and burns are always allowed.
    */
   function _beforeTokenTransfer(
     address from,

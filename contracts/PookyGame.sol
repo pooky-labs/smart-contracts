@@ -41,12 +41,19 @@ contract PookyGame is AccessControlUpgradeable {
   mapping(BallRarity => uint256) public maxBallLevelPerRarity;
   mapping(uint256 => bool) nonces;
 
+  /// Thrown when an account tries to level up a ball that is not owned the sender.
   error OwnershipRequired(uint256 tokenId);
+  /// Thrown when an account tries to level a ball above its maximum level.
   error MaximumLevelReached(uint256 tokenId, uint256 maxLevel);
+  /// Thrown when an account does not own enough $POK token to cover the level up fee.
   error InsufficientPOKBalance(uint256 required, uint256 actual);
+  /// Thrown when an account submits an invalid signature.
   error InvalidSignature();
+  /// Thrown when an account submits an expired signature.
   error ExpiredSignature(uint256 expiration);
+  /// Thrown when an account tries to claim rewards twice.
   error NonceUsed();
+  /// Thrown when the native transfer has failed.
   error RewardTransferFailed(uint256 amount, address recipient);
 
   function initialize(address _admin) public initializer {
@@ -189,17 +196,7 @@ contract PookyGame is AccessControlUpgradeable {
     uint256 nonce,
     bytes memory signature
   ) external {
-    if (!verifySignature(
-      abi.encode(
-        msg.sender, 
-        amountNative, 
-        amountPOK, 
-        ballUpdates, 
-        ttl, 
-        nonce
-      ), 
-      signature
-    )) {
+    if (!verifySignature(abi.encode(msg.sender, amountNative, amountPOK, ballUpdates, ttl, nonce), signature)) {
       revert InvalidSignature();
     }
 

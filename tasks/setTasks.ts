@@ -34,7 +34,7 @@ task('setMinTierToBuy', 'Sets minimum tier to mint ball')
     const [, , , MOD] = await hre.ethers.getSigners();
 
     const PookyBallGenesisMinter = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
-    await waitTx(PookyBallGenesisMinter.connect(MOD).setMinTierToBuy(hre.ethers.utils.parseEther(params.tier)));
+    await waitTx(PookyBallGenesisMinter.connect(MOD).setMinTierToMint(hre.ethers.utils.parseEther(params.tier)));
 
     console.log('Done');
   });
@@ -59,7 +59,7 @@ task('setMaxBallsPerUser', 'Sets maximum balls per user')
     const [, , , MOD] = await hre.ethers.getSigners();
 
     const PookyBallGenesisMinter = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
-    await waitTx(PookyBallGenesisMinter.connect(MOD).setMaxBallsPerUser(params.maximum));
+    await waitTx(PookyBallGenesisMinter.connect(MOD).setMaxAccountMints(params.maximum));
 
     console.log('Done');
   });
@@ -75,24 +75,6 @@ task('setRevokePeriod', 'Sets revoke period')
 
     console.log('Done');
   });
-
-task('setLevelPxpNeeded', 'Sets pxp needed for all levels').setAction(async (params, hre) => {
-  await hre.run('set-hre');
-
-  const PookyGame = await getContractFromJsonDb<PookyGame>('PookyGame', hre);
-  await waitTx(PookyGame._setLevelPXP());
-
-  console.log('Done');
-});
-
-task('setLevelCost', 'Sets cost for all levels').setAction(async (params, hre) => {
-  await hre.run('set-hre');
-
-  const PookyGame = await getContractFromJsonDb<PookyGame>('PookyGame', hre);
-  await waitTx(PookyGame._setLevelPOKCost());
-
-  console.log('Done');
-});
 
 task('setMaxBallLevel', 'Sets maximum ball level for every ball type').setAction(async (params, hre) => {
   await hre.run('set-hre');
