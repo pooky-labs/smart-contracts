@@ -30,7 +30,6 @@ struct BallInfo {
   uint256 randomEntropy;
   uint256 level;
   uint256 pxp;
-  uint256 revocableUntil;
 }
 ```
 

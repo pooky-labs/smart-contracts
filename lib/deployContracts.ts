@@ -126,7 +126,6 @@ export async function deployContracts(
     accounts.treasury,
     totalSupply,
     Params.MAX_BALLS_PER_USER,
-    Params.REVOKE_PERIOD,
     Params.VRF_COORDINATOR,
     Params.GAS_LIMIT,
     Params.MINIMUM_CONFIRMATIONS,

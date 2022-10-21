@@ -1,8 +1,6 @@
-import { ZERO_ADDRESS } from '../lib/constants';
 import parseEther from '../lib/parseEther';
 import { DEFAULT_ADMIN_ROLE, POOKY_CONTRACT } from '../lib/roles';
 import getTestAccounts from '../lib/testing/getTestAccounts';
-import nowUNIX from '../lib/testing/nowUNIX';
 import { randUint256 } from '../lib/testing/rand';
 import { expectHasRole, expectMissingRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
@@ -10,7 +8,6 @@ import { BallLuxury, BallRarity } from '../lib/types';
 import numeric from '../lib/utils/numeric';
 import { PookyBall, PookyBallGenesisMinter } from '../typings';
 import { faker } from '@faker-js/faker';
-import { anyUint } from '@nomicfoundation/hardhat-chai-matchers/withArgs';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
@@ -19,17 +16,17 @@ import { BigNumber } from 'ethers';
 describe('PookyBall', () => {
   let pooky: SignerWithAddress;
   let player1: SignerWithAddress;
-  let player2: SignerWithAddress;
+
   let PookyBall: PookyBall;
   let PookyBallGenesisMinter: PookyBallGenesisMinter;
 
   let tokenId: BigNumber;
 
   beforeEach(async () => {
-    ({ pooky, player1, player2 } = await getTestAccounts());
+    ({ pooky, player1 } = await getTestAccounts());
     ({ PookyBall, PookyBallGenesisMinter } = await loadFixture(stackFixture));
 
-    await PookyBall.connect(pooky).mint(player1.address, BallRarity.Common, BallLuxury.Common, 0);
+    await PookyBall.connect(pooky).mint(player1.address, BallRarity.Common, BallLuxury.Common);
     tokenId = await PookyBall.lastTokenId();
   });
 
@@ -76,7 +73,7 @@ describe('PookyBall', () => {
     for (const [rarityName, rarity] of Object.entries(BallRarity).filter(numeric)) {
       for (const [luxuryName, luxury] of Object.entries(BallLuxury).filter(numeric)) {
         it(`should display ${rarityName}/${luxuryName} information`, async () => {
-          await PookyBall.connect(pooky).mint(player1.address, rarity, luxury, 0);
+          await PookyBall.connect(pooky).mint(player1.address, rarity, luxury);
           const info = await PookyBall.getBallInfo(await PookyBall.lastTokenId());
 
           expect(info.rarity).to.equals(rarity);
@@ -84,22 +81,6 @@ describe('PookyBall', () => {
         });
       }
     }
-  });
-
-  describe('isRevocable', () => {
-    it('should return that a token is not revocable if minted with revocableUntil=0', async () => {
-      await PookyBall.connect(pooky).mint(player1.address, BallRarity.Common, BallLuxury.Common, 0);
-      const tokenId = await PookyBall.lastTokenId();
-
-      expect(await PookyBall.isRevocable(tokenId)).to.be.false;
-    });
-
-    it('should return that a token is revocable if minted with revocableUntil=nowUnix() + 3600', async () => {
-      await PookyBall.connect(pooky).mint(player1.address, BallRarity.Common, BallLuxury.Common, nowUNIX() + 3600);
-      const tokenId = await PookyBall.lastTokenId();
-
-      expect(await PookyBall.isRevocable(tokenId)).to.be.true;
-    });
   });
 
   describe('setRandomEntropy', () => {
@@ -172,63 +153,16 @@ describe('PookyBall', () => {
   describe('mint', () => {
     it('should allow POOKY_CONTRACT contracts to mint a new token', async () => {
       await expect(
-        PookyBall.connect(pooky).mint(player1.address, BallRarity.Common, BallLuxury.Common, 0),
+        PookyBall.connect(pooky).mint(player1.address, BallRarity.Common, BallLuxury.Common),
       ).to.changeTokenBalance(PookyBall, player1.address, 1);
     });
 
-    it('should revert if non-POOKY_CONTRACT account tries to mint ball with random rarity and random revocable timestamp', async () => {
+    it('should revert if non-POOKY_CONTRACT account tries to mint a new token', async () => {
       await expectMissingRole(
-        PookyBall.connect(player1).mint(player1.address, BallRarity.Common, BallLuxury.Common, 0),
+        PookyBall.connect(player1).mint(player1.address, BallRarity.Common, BallLuxury.Common),
         player1,
         POOKY_CONTRACT,
       );
-    });
-  });
-
-  describe('revoke', async () => {
-    it('should burn a revocable ball', async () => {
-      await PookyBall.connect(pooky).mint(player1.address, BallRarity.Common, BallLuxury.Common, nowUNIX() + 3600);
-      const tokenId = await PookyBall.lastTokenId();
-
-      await expect(PookyBall.connect(pooky).revoke(tokenId)).to.changeTokenBalance(PookyBall, player1.address, -1);
-    });
-
-    it('should revert if ball is revocation date is over', async () => {
-      await PookyBall.connect(pooky).mint(player1.address, BallRarity.Common, BallLuxury.Common, nowUNIX() - 3600);
-      const tokenId = await PookyBall.lastTokenId();
-
-      await expect(PookyBall.connect(pooky).revoke(tokenId))
-        .to.be.revertedWithCustomError(PookyBall, 'NotRevocableAnymore')
-        .withArgs(tokenId, anyUint);
-    });
-  });
-
-  describe('_beforeTokenTransfer', () => {
-    let revocableTokenId: BigNumber;
-
-    beforeEach(async () => {
-      await PookyBall.connect(pooky).mint(player1.address, BallRarity.Common, BallLuxury.Common, nowUNIX() + 3600);
-      revocableTokenId = await PookyBall.lastTokenId();
-    });
-
-    it('should allow player to burn revocable token', async () => {
-      expect(PookyBall.connect(player1).transferFrom(player1.address, ZERO_ADDRESS, revocableTokenId))
-        .to.changeTokenBalance(PookyBall, player1.address, -1)
-        .and.changeTokenBalance(PookyBall, ZERO_ADDRESS, 1);
-    });
-
-    it('should revert if token is still revocable', async () => {
-      expect(PookyBall.connect(player1).transferFrom(player1.address, player2.address, revocableTokenId))
-        .to.be.revertedWithCustomError(PookyBall, 'TransferLockedWhileRevocable')
-        .withArgs(tokenId);
-    });
-
-    it('should allow POOKY_CONTRACT contracts to transfer freely', async () => {
-      await PookyBall.connect(pooky).mint(pooky.address, BallRarity.Common, BallLuxury.Common, nowUNIX() + 3600);
-      revocableTokenId = await PookyBall.lastTokenId();
-      expect(PookyBall.connect(pooky).transferFrom(pooky.address, player1.address, revocableTokenId))
-        .to.changeTokenBalance(PookyBall, pooky.address, -1)
-        .and.changeTokenBalance(PookyBall, player1.address, 1);
     });
   });
 

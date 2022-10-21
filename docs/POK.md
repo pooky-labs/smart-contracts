@@ -23,17 +23,23 @@ bytes32 POOKY_CONTRACT
 bool transferEnabled
 ```
 
+If the $POK transfers between non-POOKY_CONTRACT accounts are allowed.
+
 ### SetTransferEnabled
 
 ```solidity
 event SetTransferEnabled(bool transferEnabled)
 ```
 
+Emitted when transfer are enabled/disabled.
+
 ### TransfersDisabled
 
 ```solidity
 error TransfersDisabled()
 ```
+
+Thrown when an account tries to transfer $POK.
 
 ### initialize
 
@@ -69,7 +75,7 @@ _Requirements:
 function setTransferEnabled(bool _transferEnabled) external
 ```
 
-Enable/disable transfers of $POK tokens between users.
+Enable/disable transfers of $POK tokens between accounts.
 
 _Requirements:
 - only POOKY_CONTRACT role can mint $POK tokens_
@@ -81,7 +87,8 @@ function _beforeTokenTransfer(address from, address to, uint256) internal view
 ```
 
 _Restrict the $POK transfers between accounts.
-- Do not allow transfer between users if they are disabled, see {POK-setTransferEnabled}.
-- Mints and burns are always allowed.
-- POOKY_CONTRACT can always send and receive tokens._
+Requirements:
+- Transfer between accounts if they are disabled, see {POK-setTransferEnabled}.
+- POOKY_CONTRACT can always send and receive tokens.
+- Mints and burns are always allowed._
 

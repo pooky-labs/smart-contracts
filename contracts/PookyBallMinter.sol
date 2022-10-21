@@ -141,13 +141,8 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
    * Emits a RequestMintFromTemplate event.
    * @param recipient The final recipient of the newly linted Pooky Ball.
    * @param templateId The MintTemplate id.
-   * @param revocableUntil The UNIX timestamp until the ball can be revoked.
    */
-  function _requestMintFromTemplate(
-    address recipient,
-    uint256 templateId,
-    uint256 revocableUntil
-  ) internal {
+  function _requestMintFromTemplate(address recipient, uint256 templateId) internal {
     MintTemplate storage template = mintTemplates[templateId];
 
     if (!template.enabled) {
@@ -159,7 +154,7 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
     }
 
     template.currentMints++;
-    uint256 newTokenId = pookyBall.mint(address(this), template.rarity, template.luxury, revocableUntil);
+    uint256 newTokenId = pookyBall.mint(address(this), template.rarity, template.luxury);
 
     emit RequestMintFromTemplate(templateId, recipient);
     _requestRandomEntropyForMint(recipient, newTokenId);

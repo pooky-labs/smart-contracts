@@ -87,13 +87,13 @@ event MintTemplateEnabled(uint256 templateId, bool enabled)
 ### RequestMintFromTemplate
 
 ```solidity
-event RequestMintFromTemplate(uint256 templateId, address user)
+event RequestMintFromTemplate(uint256 templateId, address recipient)
 ```
 
 ### RandomnessRequested
 
 ```solidity
-event RandomnessRequested(uint256 requestId, address user, uint256 tokenId)
+event RandomnessRequested(uint256 requestId, uint256 tokenId, address recipient)
 ```
 
 ### RandomnessFulfilled
@@ -177,7 +177,7 @@ Emits a MintTemplateEnabled event._
 ### _requestMintFromTemplate
 
 ```solidity
-function _requestMintFromTemplate(address recipient, uint256 templateId, uint256 revocableUntil) internal
+function _requestMintFromTemplate(address recipient, uint256 templateId) internal
 ```
 
 _Internal function that mints a ball to the current contract and that will later be forwarded to {recipient}.
@@ -193,7 +193,6 @@ Emits a RequestMintFromTemplate event._
 | ---- | ---- | ----------- |
 | recipient | address | The final recipient of the newly linted Pooky Ball. |
 | templateId | uint256 | The MintTemplate id. |
-| revocableUntil | uint256 | The UNIX timestamp until the ball can be revoked. |
 
 ### _requestRandomEntropyForMint
 

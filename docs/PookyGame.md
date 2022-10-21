@@ -77,11 +77,15 @@ mapping(uint256 => bool) nonces
 error OwnershipRequired(uint256 tokenId)
 ```
 
+Thrown when an account tries to level up a ball that is not owned the sender.
+
 ### MaximumLevelReached
 
 ```solidity
 error MaximumLevelReached(uint256 tokenId, uint256 maxLevel)
 ```
+
+Thrown when an account tries to level a ball above its maximum level.
 
 ### InsufficientPOKBalance
 
@@ -89,11 +93,15 @@ error MaximumLevelReached(uint256 tokenId, uint256 maxLevel)
 error InsufficientPOKBalance(uint256 required, uint256 actual)
 ```
 
+Thrown when an account does not own enough $POK token to cover the level up fee.
+
 ### InvalidSignature
 
 ```solidity
 error InvalidSignature()
 ```
+
+Thrown when an account submits an invalid signature.
 
 ### ExpiredSignature
 
@@ -101,17 +109,23 @@ error InvalidSignature()
 error ExpiredSignature(uint256 expiration)
 ```
 
+Thrown when an account submits an expired signature.
+
 ### NonceUsed
 
 ```solidity
 error NonceUsed()
 ```
 
+Thrown when an account tries to claim rewards twice.
+
 ### RewardTransferFailed
 
 ```solidity
 error RewardTransferFailed(uint256 amount, address recipient)
 ```
+
+Thrown when the native transfer has failed.
 
 ### initialize
 

@@ -33,7 +33,7 @@ describe('PookyGame', () => {
     ({ pooky, backend, player1, player2 } = await getTestAccounts());
     ({ PookyGame, PookyBall, POK } = await loadFixture(stackFixture));
 
-    await PookyBall.connect(pooky).mint(player1.address, BallRarity.Common, BallLuxury.Common, 0);
+    await PookyBall.connect(pooky).mint(player1.address, BallRarity.Common, BallLuxury.Common);
     tokenId = await PookyBall.lastTokenId();
   });
 

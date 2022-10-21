@@ -22,20 +22,14 @@ import { BallRarity, BallRarity, BallInfo } from "./types/DataTypes.sol";
  *   in-game boosts.
  * - `level` the ball level
  * - `pxp` the ball PXP (experience points)
- * - `revocableUntil` the date/time until the ball can be revoked. See below for detailed explanations.
  *
  * Leveling up:
  * Pooky Balls NFT gain PXP when used to place prediction on the Pooky game. Balls cannot loose PXP.
  * Once a ball has acquired enough PXP, it can be leveled up in exchange of a certain amount of $POK token (see {POK}).
  *
- * NFT revocations:
- * Pooky Balls NFT can be minted in response of a credit card payment. Since the charge can be disputed, tokens
- * purchased with credit card are kept _revocable_ for a certain period of time.
- * Revocable balls cannot be transferred and can be burned in case of a refund.
- *
  * Roles:
- * - DEFAULT_ADMIN_ROLE can add/remove roles
- * - POOKY_CONTRACT role can mint/revoke new tokens
+ * - DEFAULT_ADMIN_ROLE can add/remove roles.
+ * - POOKY_CONTRACT role can mint new tokens.
  */
 contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   using StringsUpgradeable for uint256;
@@ -55,8 +49,6 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
 
   /// Thrown when the entropy of a ball has been already
   error EntropyAlreadySet(uint256 tokenId);
-  error NotRevocableAnymore(uint256 tokenId, uint256 now);
-  error TransferLockedWhileRevocable(uint256 tokenId);
 
   function initialize(
     string memory _name,
@@ -109,14 +101,6 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   function getBallInfo(uint256 tokenId) external view returns (BallInfo memory) {
     _requireMinted(tokenId);
     return balls[tokenId];
-  }
-
-  /**
-   * @notice If a Pooky Ball with id {tokenId} is revocable.
-   */
-  function isRevocable(uint256 tokenId) public view returns (bool) {
-    _requireMinted(tokenId);
-    return block.timestamp <= balls[tokenId].revocableUntil;
   }
 
   /**
@@ -180,57 +164,19 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   }
 
   /**
-   * @notice Mint a ball with a specific {BallRarity} and with a specific revocation date/time, with all other Ball
-   * parameters set to default.
+   * @notice Mint a ball with a specific {BallRarity} and {BallLuxury} with all other Ball parameters set to default.
    * @dev Requirements:
    * - Only POOKY_CONTRACT role can mint Pooky Balls.
    * @param to The address which will own the minted Pooky Ball.
    * @param rarity The Pooky Ball rarity.
    * @param luxury The Pooky Ball luxury.
-   * @param revocableUntil The UNIX timestamp until the ball can be revoked.
    */
   function mint(
     address to,
     BallRarity rarity,
-    BallLuxury luxury,
-    uint256 revocableUntil
+    BallLuxury luxury
   ) external onlyRole(POOKY_CONTRACT) returns (uint256) {
-    return
-      _mintBall(
-        to,
-        BallInfo({ rarity: rarity, luxury: luxury, randomEntropy: 0, level: 0, pxp: 0, revocableUntil: revocableUntil })
-      );
-  }
-
-  /**
-   * @notice Revoke and burn the Pooky Ball with id {tokenId}.
-   * @dev Requirements:
-   * - Only POOKY_CONTRACT role can revoke Pooky Balls.
-   * - Ball is revocable only if current timestamp is less then `ball.revocableUntil`
-   */
-  function revoke(uint256 tokenId) external onlyRole(POOKY_CONTRACT) {
-    if (!isRevocable(tokenId)) {
-      revert NotRevocableAnymore(tokenId, block.timestamp);
-    }
-
-    _burn(tokenId);
-  }
-
-  /**
-   * @dev Restrict revocable Pooky Balls transfers.
-   * Mints and burns are always allowed, as transfers from POOKY_CONTRACT role.
-   */
-  function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256 tokenId
-  ) internal view override {
-    if (from == address(0) || to == address(0)) return;
-    if (hasRole(POOKY_CONTRACT, from)) return;
-
-    if (isRevocable(tokenId)) {
-      revert TransferLockedWhileRevocable(tokenId);
-    }
+    return _mintBall(to, BallInfo({ rarity: rarity, luxury: luxury, randomEntropy: 0, level: 0, pxp: 0 }));
   }
 
   /**

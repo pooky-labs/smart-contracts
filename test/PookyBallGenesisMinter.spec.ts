@@ -134,23 +134,6 @@ describe('PookyBallGenesisMinter', () => {
     });
   });
 
-  describe('setRevokePeriod', () => {
-    let newRevokePeriod: number;
-
-    beforeEach(() => {
-      newRevokePeriod = faker.datatype.number(10) * 24 * 3600;
-    });
-
-    it('should allow TECH account to change the revoke period', async () => {
-      await PookyBallGenesisMinter.connect(tech).setRevokePeriod(newRevokePeriod);
-      expect(await PookyBallGenesisMinter.revokePeriod()).to.equals(newRevokePeriod);
-    });
-
-    it('should revert if non-TECH account tries to set revoke period', async () => {
-      await expectMissingRole(PookyBallGenesisMinter.connect(player1).setRevokePeriod(newRevokePeriod), player1, TECH);
-    });
-  });
-
   describe('minTierToMint', () => {
     it('should let TECH account sets minimum tier to buy', async () => {
       const randomMinimumTierToBuy = randInt(HUNDRED);
@@ -158,18 +141,6 @@ describe('PookyBallGenesisMinter', () => {
 
       const minTierToMint = await PookyBallGenesisMinter.minTierToMint();
       expect(minTierToMint).to.be.equal(randomMinimumTierToBuy, 'Minimum tier to buy is not set successfully');
-    });
-  });
-
-  describe('setRevokePeriod', () => {
-    it('should let TECH account sets revoke period', async () => {
-      const randomRevokePeriod = randInt(HUNDRED);
-
-      // Revoke period need to be a little bigger
-      await PookyBallGenesisMinter.connect(tech).setRevokePeriod(randomRevokePeriod * HUNDRED);
-
-      const revokePeriod = await PookyBallGenesisMinter.revokePeriod();
-      expect(revokePeriod).to.be.equal(randomRevokePeriod * HUNDRED, 'Revoke period is not set successfully');
     });
   });
 
@@ -304,53 +275,6 @@ describe('PookyBallGenesisMinter', () => {
 
     it.skip('should revert if the token transfer to the treasury fails', () => {
       // We need to re-deploy the contract to change the treasury
-    });
-  });
-
-  describe('mintAuthorized', () => {
-    it('should allow BACKEND role to mint a Pooky Ball token', async () => {
-      await expect(
-        PookyBallGenesisMinter.connect(backend).mintAuthorized(player1.address, lastMintTemplateId, 1),
-      ).to.changeTokenBalance(PookyBall, PookyBallGenesisMinter, 1);
-
-      const randomEntropy = ethers.utils.keccak256(randomBytes(32));
-      await expect(
-        VRFCoordinatorV2.fulfillRandomWordsWithOverride(1, PookyBallGenesisMinter.address, [randomEntropy]),
-      ).to.changeTokenBalances(PookyBall, [PookyBallGenesisMinter, player1], [-1, 1]);
-    });
-
-    it('should revert if non-BACKEND account tries to mint balls authorized', async () => {
-      await expectMissingRole(
-        PookyBallGenesisMinter.connect(player1).mintAuthorized(player1.address, lastMintTemplateId, 1),
-        player1,
-        BACKEND,
-      );
-    });
-  });
-
-  describe('revokeAuthorized', () => {
-    let tokenId: BigNumber;
-
-    beforeEach(async () => {
-      // Mint a revocable ball to player1
-      await PookyBallGenesisMinter.connect(tech).setRevokePeriod(3600);
-      await PookyBallGenesisMinter.connect(backend).mintAuthorized(player1.address, lastMintTemplateId, 1);
-      tokenId = await PookyBall.lastTokenId();
-
-      const randomEntropy = ethers.utils.keccak256(randomBytes(32));
-      await VRFCoordinatorV2.fulfillRandomWordsWithOverride(1, PookyBallGenesisMinter.address, [randomEntropy]);
-    });
-
-    it('should allow BACKEND account to revoke authorized ball', async () => {
-      await expect(PookyBallGenesisMinter.connect(backend).revokeAuthorized(tokenId)).to.changeTokenBalance(
-        PookyBall,
-        player1,
-        -1,
-      );
-    });
-
-    it('should revert if non-BACKEND account tries to revoke ball authorized', async () => {
-      await expectMissingRole(PookyBallGenesisMinter.connect(player1).revokeAuthorized(tokenId), player1, BACKEND);
     });
   });
 });
