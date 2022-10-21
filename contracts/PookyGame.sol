@@ -54,22 +54,36 @@ contract PookyGame is AccessControlUpgradeable {
   /// Thrown when an account tries to claim rewards twice.
   error NonceUsed();
   /// Thrown when the native transfer has failed.
-  error RewardTransferFailed(uint256 amount, address recipient);
+  error TransferFailed(uint256 amount, address recipient);
 
   function initialize(address _admin) public initializer {
     __AccessControl_init();
     _setupRole(DEFAULT_ADMIN_ROLE, _admin);
-  }
 
-  /**
-   * @dev Initialization function that sets the Pooky Ball maximum level for a given rarity.
-   */
-  function _setMaxBallLevel() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    // Set the Pooky Ball maximum level for a given rarity
     maxBallLevelPerRarity[BallRarity.Common] = 40;
     maxBallLevelPerRarity[BallRarity.Rare] = 60;
     maxBallLevelPerRarity[BallRarity.Epic] = 80;
     maxBallLevelPerRarity[BallRarity.Legendary] = 100;
     maxBallLevelPerRarity[BallRarity.Mythic] = 100;
+  }
+
+  /**
+   * @notice Receive funds that will be used for native token reward.
+   */
+  receive() external payable {}
+
+  /**
+   * @notice Withdraw all the native tokens of the contract.
+   * @dev Useful if the contract need to be hard-upgraded.
+   * Requirements:
+   * - only DEFAULT_ADMIN_ROLE role can withdraw the native tokens.
+   */
+  function withdraw() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    (bool sent, ) = address(msg.sender).call{ value: address(this).balance }("");
+    if (!sent) {
+      revert TransferFailed(address(this).balance, msg.sender);
+    }
   }
 
   /**
@@ -223,7 +237,7 @@ contract PookyGame is AccessControlUpgradeable {
 
     (bool sent, ) = address(msg.sender).call{ value: amountNative }("");
     if (!sent) {
-      revert RewardTransferFailed(amountNative, msg.sender);
+      revert TransferFailed(amountNative, msg.sender);
     }
   }
 }

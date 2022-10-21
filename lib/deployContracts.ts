@@ -10,7 +10,7 @@ import * as Params from './constants';
 import { deployWithProxy } from './deployWithProxy';
 import logger from './logger';
 import parseEther from './parseEther';
-import { BACKEND, POOKY_CONTRACT, REWARD_SIGNER, TECH } from './roles';
+import { POOKY_CONTRACT, REWARD_SIGNER, TECH } from './roles';
 import { BallLuxury, BallRarity, ContractStack } from './types';
 import { registerContractInJsonDb } from './utils/DbHelper';
 import waitTx from './waitTx';
@@ -156,15 +156,12 @@ export async function deployContracts(
   await waitTx(PookyBall.grantRole(POOKY_CONTRACT, PookyBallGenesisMinter.address));
   await waitTx(PookyBall.grantRole(POOKY_CONTRACT, PookyGame.address));
 
-  await waitTx(PookyBallGenesisMinter.grantRole(BACKEND, accounts.backend));
   await waitTx(PookyBallGenesisMinter.grantRole(TECH, accounts.tech));
   await waitTx(PookyBallGenesisMinter.setPookyBallContract(PookyBall.address));
 
-  await waitTx(PookyGame._setMaxBallLevel());
+  await waitTx(PookyGame.grantRole(REWARD_SIGNER, accounts.backend));
   await waitTx(PookyGame.setPookyBallContract(PookyBall.address));
   await waitTx(PookyGame.setPOKContract(POK.address));
-
-  await waitTx(PookyGame.grantRole(REWARD_SIGNER, accounts.backend));
 
   // Create the mint templates using the TECH role
   await waitTx(PookyBallGenesisMinter.grantRole(TECH, deployer.address));

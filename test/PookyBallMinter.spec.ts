@@ -2,7 +2,7 @@ import { ZERO_ADDRESS } from '../lib/constants';
 import parseEther from '../lib/parseEther';
 import { DEFAULT_ADMIN_ROLE, TECH } from '../lib/roles';
 import getTestAccounts from '../lib/testing/getTestAccounts';
-import { randAccount } from '../lib/testing/rand';
+import { randAccount, randUint256 } from '../lib/testing/rand';
 import { expectMissingRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
 import { BallLuxury, BallRarity } from '../lib/types';
@@ -139,6 +139,14 @@ describe('PookyBallMinter', () => {
         player1,
         TECH,
       );
+    });
+  });
+
+  describe('rawFulfillRandomWords', () => {
+    it('should revert if sender is not the VRF coordinator', async () => {
+      await expect(PookyBallMinter.connect(player1).rawFulfillRandomWords(1, [randUint256()]))
+        .to.be.revertedWithCustomError(PookyBallMinter, 'OnlyVRFCoordinator')
+        .withArgs(await PookyBallMinter.vrf_coordinator(), player1.address);
     });
   });
 });

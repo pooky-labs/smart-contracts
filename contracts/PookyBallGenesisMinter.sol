@@ -45,7 +45,7 @@ contract PookyBallGenesisMinter is PookyBallMinter {
   /// Thrown when the msg.value is insufficient.
   error InsufficientValue(uint256 required, uint256 actual);
   /// Thrown when a native transfer to treasury fails (but it should never happen).
-  error TransferToTreasuryFailed(address from);
+  error TransferFailed(address from, address to);
   /// Thrown when an account's tier is too low regarding the {minTierToMint} value.
   error TierTooLow(uint256 required, uint256 actual);
   /// Thrown when an account has reached the maximum allowed mints per account.
@@ -78,6 +78,15 @@ contract PookyBallGenesisMinter is PookyBallMinter {
       _keyHash,
       _subscriptionId
     );
+  }
+
+  /**
+   * @notice Set the treasury wallet address.
+   * @dev Requirements:
+   * - only DEFAULT_ADMIN_ROLE can change the treasury wallet.
+   */
+  function setTreasuryWallet(address _treasuryWallet) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    treasuryWallet = _treasuryWallet;
   }
 
   /**
@@ -175,7 +184,7 @@ contract PookyBallGenesisMinter is PookyBallMinter {
     // Forward the funds to the treasury wallet
     (bool sent, ) = treasuryWallet.call{ value: msg.value }("");
     if (!sent) {
-      revert TransferToTreasuryFailed(msg.sender);
+      revert TransferFailed(msg.sender, treasuryWallet);
     }
   }
 }

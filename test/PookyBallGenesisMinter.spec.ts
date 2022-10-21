@@ -1,23 +1,20 @@
 import { HUNDRED, ZERO_ADDRESS } from '../lib/constants';
 import parseEther from '../lib/parseEther';
-import { BACKEND, TECH } from '../lib/roles';
+import { TECH } from '../lib/roles';
 import getTestAccounts from '../lib/testing/getTestAccounts';
 import { randAccount, randInt } from '../lib/testing/rand';
 import { expectHasRole, expectMissingRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
 import { BallLuxury, BallRarity } from '../lib/types';
-import { PookyBall, PookyBallGenesisMinter, VRFCoordinatorV2Mock } from '../typings';
+import { InvalidReceiver, PookyBall, PookyBallGenesisMinter, VRFCoordinatorV2Mock } from '../typings';
 import { faker } from '@faker-js/faker';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { randomBytes } from 'crypto';
-import { BigNumber, ethers } from 'ethers';
 import range from 'lodash/range';
 import { beforeEach } from 'mocha';
 
 describe('PookyBallGenesisMinter', () => {
-  let backend: SignerWithAddress;
   let tech: SignerWithAddress;
   let treasury: SignerWithAddress;
   let player1: SignerWithAddress;
@@ -26,6 +23,7 @@ describe('PookyBallGenesisMinter', () => {
   let PookyBallGenesisMinter: PookyBallGenesisMinter;
   let PookyBall: PookyBall;
   let VRFCoordinatorV2: VRFCoordinatorV2Mock;
+  let InvalidReceiver: InvalidReceiver;
 
   let minTierToMint: number;
   let lastMintTemplateId: number;
@@ -33,8 +31,8 @@ describe('PookyBallGenesisMinter', () => {
   let mintsLeft1: number;
 
   beforeEach(async () => {
-    ({ backend, tech, treasury, player1, player2 } = await getTestAccounts());
-    ({ PookyBallGenesisMinter, PookyBall, VRFCoordinatorV2 } = await loadFixture(stackFixture));
+    ({ tech, treasury, player1, player2 } = await getTestAccounts());
+    ({ PookyBallGenesisMinter, PookyBall, VRFCoordinatorV2, InvalidReceiver } = await loadFixture(stackFixture));
 
     minTierToMint = (await PookyBallGenesisMinter.minTierToMint()).toNumber();
     lastMintTemplateId = (await PookyBallGenesisMinter.lastMintTemplateId()).toNumber();
@@ -47,11 +45,18 @@ describe('PookyBallGenesisMinter', () => {
   describe('configuration', () => {
     it('should have roles configured properly', async () => {
       await expectHasRole(PookyBallGenesisMinter, tech, TECH);
-      await expectHasRole(PookyBallGenesisMinter, backend, BACKEND);
     });
 
     it('should have contracts configured properly', async () => {
       expect(await PookyBallGenesisMinter.pookyBall()).to.be.equal(PookyBall.address);
+    });
+  });
+
+  describe('setTreasuryWallet', () => {
+    it('should change the treasury wallet', async () => {
+      const expectedTreasuryWallet = randAccount();
+      await PookyBallGenesisMinter.setTreasuryWallet(expectedTreasuryWallet);
+      expect(await PookyBallGenesisMinter.treasuryWallet()).to.equals(expectedTreasuryWallet);
     });
   });
 
@@ -273,8 +278,15 @@ describe('PookyBallGenesisMinter', () => {
         .withArgs(expectedValue, actualValue);
     });
 
-    it.skip('should revert if the token transfer to the treasury fails', () => {
-      // We need to re-deploy the contract to change the treasury
+    it('should revert if the token transfer to the treasury fails', async () => {
+      await PookyBallGenesisMinter.setTreasuryWallet(InvalidReceiver.address);
+      await expect(
+        PookyBallGenesisMinter.connect(player1).mint(lastMintTemplateId, 1, {
+          value: template.price,
+        }),
+      )
+        .to.be.revertedWithCustomError(PookyBallGenesisMinter, 'TransferFailed')
+        .withArgs(player1.address, await PookyBallGenesisMinter.treasuryWallet());
     });
   });
 });

@@ -7,7 +7,7 @@ import { expectHasRole, expectMissingRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
 import { BallLuxury, BallRarity } from '../lib/types';
 import { signRewardsClaim } from '../lib/utils/signRewardsClaim';
-import { POK, PookyBall, PookyGame } from '../typings';
+import { InvalidReceiver, POK, PookyBall, PookyGame } from '../typings';
 import { BallUpdatesStruct } from '../typings/contracts/PookyGame';
 import { faker } from '@faker-js/faker';
 import { loadFixture, setBalance } from '@nomicfoundation/hardhat-network-helpers';
@@ -18,6 +18,7 @@ import { ethers } from 'hardhat';
 import { beforeEach } from 'mocha';
 
 describe('PookyGame', () => {
+  let deployer: SignerWithAddress;
   let pooky: SignerWithAddress;
   let backend: SignerWithAddress;
   let player1: SignerWithAddress;
@@ -26,12 +27,13 @@ describe('PookyGame', () => {
   let POK: POK;
   let PookyGame: PookyGame;
   let PookyBall: PookyBall;
+  let InvalidReceiver: InvalidReceiver;
 
   let tokenId: BigNumber;
 
   beforeEach(async () => {
-    ({ pooky, backend, player1, player2 } = await getTestAccounts());
-    ({ PookyGame, PookyBall, POK } = await loadFixture(stackFixture));
+    ({ deployer, pooky, backend, player1, player2 } = await getTestAccounts());
+    ({ PookyGame, PookyBall, POK, InvalidReceiver } = await loadFixture(stackFixture));
 
     await PookyBall.connect(pooky).mint(player1.address, BallRarity.Common, BallLuxury.Common);
     tokenId = await PookyBall.lastTokenId();
@@ -49,6 +51,41 @@ describe('PookyGame', () => {
       );
 
       await expectHasRole(PookyGame, backend, REWARD_SIGNER);
+    });
+  });
+
+  describe('receive', () => {
+    it('should allow native currency to be received', async () => {
+      const expectedAmount = parseEther(faker.datatype.number(1000) + 1);
+      await expect(
+        player1.sendTransaction({
+          to: PookyGame.address,
+          value: expectedAmount,
+        }),
+      ).to.changeEtherBalances([player1.address, PookyGame.address], [`-${expectedAmount.toString()}`, expectedAmount]);
+    });
+  });
+
+  describe('withdraw', () => {
+    let expectedAmount: BigNumber;
+
+    beforeEach(async () => {
+      expectedAmount = parseEther(faker.datatype.number(1000) + 1);
+      await setBalance(PookyGame.address, expectedAmount);
+    });
+
+    it('should allow DEFAULT_ADMIN_ROLE to withdraw native tokens', async () => {
+      await expect(PookyGame.withdraw()).to.changeEtherBalances(
+        [PookyGame.address, deployer.address],
+        [`-${expectedAmount.toString()}`, expectedAmount],
+      );
+    });
+
+    it('should revert if the withdrawer is not a valid destination', async () => {
+      await PookyGame.grantRole(DEFAULT_ADMIN_ROLE, InvalidReceiver.address);
+      await expect(PookyGame.connect(await ethers.getSigner(InvalidReceiver.address)).withdraw())
+        .to.be.revertedWithCustomError(PookyGame, 'TransferFailed')
+        .withArgs(expectedAmount, InvalidReceiver.address);
     });
   });
 
@@ -355,8 +392,29 @@ describe('PookyGame', () => {
         .withArgs();
     });
 
-    it.skip('should revert if native transfer fails', async () => {
-      // TODO
+    it('should revert if native transfer fails', async () => {
+      const signature = await signRewardsClaim(
+        InvalidReceiver.address,
+        rewardNative,
+        rewardPOK,
+        ballUpdates,
+        ttl,
+        nonce,
+        backend,
+      );
+
+      expect(
+        PookyGame.connect(await ethers.getSigner(InvalidReceiver.address)).claimRewards(
+          rewardNative,
+          rewardPOK,
+          ballUpdates,
+          ttl,
+          nonce,
+          signature,
+        ),
+      )
+        .to.be.revertedWithCustomError(PookyGame, 'TransferFailed')
+        .withArgs(rewardNative, InvalidReceiver.address);
     });
   });
 });
