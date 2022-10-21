@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 // Pooky Game Contracts (mocks/InvalidReceiver.sol)
 
 pragma solidity ^0.8.9;

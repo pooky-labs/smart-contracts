@@ -24,12 +24,11 @@
     "eslint": "eslint '**/*.{js,ts}'"
   },
   "repository": "github:pooky-labs/smart-contracts",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "dependencies": {
-    "@chainlink/contracts": "^0.4.2",
-    "@openzeppelin/contracts-upgradeable": "^4.7.3"
   },
   "devDependencies": {
+    "@chainlink/contracts": "^0.4.2",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.1",
     "@faker-js/faker": "^7.5.0",
@@ -38,6 +37,7 @@
     "@nomicfoundation/hardhat-toolbox": "^1.0.2",
     "@nomiclabs/hardhat-ethers": "^2.1.1",
     "@nomiclabs/hardhat-etherscan": "^3.1.0",
+    "@openzeppelin/contracts-upgradeable": "^4.7.3",
     "@openzeppelin/hardhat-upgrades": "^1.20.0",
     "@pooky-labs/prettier-config": "github:pooky-labs/prettier-config",
     "@trivago/prettier-plugin-sort-imports": "^3.3.0",

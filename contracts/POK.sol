@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 // Pooky Game Contracts (POK.sol)
 
 pragma solidity ^0.8.9;
