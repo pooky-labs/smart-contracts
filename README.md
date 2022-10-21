@@ -1,16 +1,8 @@
-<p align="center">
-  <h1 align="center">Pooky Smart Contracts</h1>
+# <img src="static/pookyball.png" alt="Pookyball visual example" height="40px"/> Pooky Smart Contracts
 
-  <img src="static/pookyball.png" alt="Pookyball visual example"/>
-
-  <p align="center">
-    <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="Licensed under MIT"></a>
-    <a href="#"><img src="https://img.shields.io/badge/audit-pending-yellowgreen?style=flat-square" alt="Audit: pending"></a>
-    <a href=""><img src="https://img.shields.io/codecov/c/gh/pooky-labs/smart-contracts?logo=codecov&style=flat-square&token=Ks4qCi1bN3" alt="Code coverage"></a>
-  </p>
-</p>
-
-![Pookyball Epic Alpha](static/pookyball.png)
+[![Licensed under MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+[![Audit: pending](https://img.shields.io/badge/audit-pending-yellowgreen?style=flat-square)](#)
+[![Code coverage](https://img.shields.io/codecov/c/gh/pooky-labs/smart-contracts?logo=codecov&style=flat-square&token=Ks4qCi1bN3)](https://app.codecov.io/gh/pooky-labs/smart-contracts)
 
 ## Maintainers - core team
 
