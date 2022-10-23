@@ -91,10 +91,10 @@ error InsufficientValue(uint256 required, uint256 actual)
 
 Thrown when the msg.value is insufficient.
 
-### TransferToTreasuryFailed
+### TransferFailed
 
 ```solidity
-error TransferToTreasuryFailed(address from)
+error TransferFailed(address from, address to)
 ```
 
 Thrown when a native transfer to treasury fails (but it should never happen).
@@ -128,6 +128,17 @@ Thrown when a mint exceeds the {maxSupply}.
 ```solidity
 function initialize(uint256 _startFromId, address _admin, address _treasuryWallet, uint256 _maxMintSupply, uint256 _maxBallsPerUser, address _vrfCoordinator, uint32 _callbackGasLimit, uint16 _requestConfirmations, bytes32 _keyHash, uint64 _subscriptionId) public
 ```
+
+### setTreasuryWallet
+
+```solidity
+function setTreasuryWallet(address _treasuryWallet) external
+```
+
+Set the treasury wallet address.
+
+_Requirements:
+- only DEFAULT_ADMIN_ROLE can change the treasury wallet._
 
 ### mintsLeft
 
@@ -189,10 +200,10 @@ _Internal function that mints multiple balls at once._
 | templateId | uint256 | The selected MintTemplate id. |
 | amount | uint256 | The number of balls minted by the account. |
 
-### mint
+### mintTo
 
 ```solidity
-function mint(uint256 templateId, uint256 amount) external payable
+function mintTo(uint256 templateId, address recipient, uint256 amount) external payable
 ```
 
 Public mint function that is callable by the external accounts.
@@ -205,5 +216,6 @@ Requirements:
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | templateId | uint256 | The {MintTemplate} id. |
+| recipient | address | The account which will receive the NFT. |
 | amount | uint256 | The amount of balls to mint. |
 

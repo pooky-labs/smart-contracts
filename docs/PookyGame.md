@@ -119,10 +119,10 @@ error NonceUsed()
 
 Thrown when an account tries to claim rewards twice.
 
-### RewardTransferFailed
+### TransferFailed
 
 ```solidity
-error RewardTransferFailed(uint256 amount, address recipient)
+error TransferFailed(uint256 amount, address recipient)
 ```
 
 Thrown when the native transfer has failed.
@@ -133,13 +133,25 @@ Thrown when the native transfer has failed.
 function initialize(address _admin) public
 ```
 
-### _setMaxBallLevel
+### receive
 
 ```solidity
-function _setMaxBallLevel() external
+receive() external payable
 ```
 
-_Initialization function that sets the Pooky Ball maximum level for a given rarity._
+Receive funds that will be used for native token reward.
+
+### withdraw
+
+```solidity
+function withdraw() external
+```
+
+Withdraw all the native tokens of the contract.
+
+_Useful if the contract need to be hard-upgraded.
+Requirements:
+- only DEFAULT_ADMIN_ROLE role can withdraw the native tokens._
 
 ### setPookyBallContract
 

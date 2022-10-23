@@ -170,21 +170,26 @@ contract PookyBallGenesisMinter is PookyBallMinter {
    * - Transaction value must be equal to the ball price * amount.
    * - Native transfer to the {treasuryWallet} must succeed.
    * @param templateId The {MintTemplate} id.
+   * @param recipient The account which will receive the NFT.
    * @param amount The amount of balls to mint.
    */
-  function mint(uint256 templateId, uint256 amount) external payable {
+  function mintTo(
+    uint256 templateId,
+    address recipient,
+    uint256 amount
+  ) external payable {
     uint256 totalPrice = mintTemplates[templateId].price * amount;
 
     if (msg.value < totalPrice) {
       revert InsufficientValue(totalPrice, msg.value);
     }
 
-    _mint(msg.sender, templateId, amount);
+    _mint(recipient, templateId, amount);
 
     // Forward the funds to the treasury wallet
     (bool sent, ) = treasuryWallet.call{ value: msg.value }("");
     if (!sent) {
-      revert TransferFailed(msg.sender, treasuryWallet);
+      revert TransferFailed(recipient, treasuryWallet);
     }
   }
 }

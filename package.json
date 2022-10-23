@@ -16,6 +16,7 @@
     "prepare": "simple-git-hooks || true",
     "format": "prettier --write '{**/*,*}.{js,ts,sol,json,yml,yaml,md}'",
     "compile": "hardhat compile",
+    "docgen": "hardhat docgen",
     "node": "hardhat node",
     "test": "hardhat test",
     "test:gas": "REPORT_GAS=true hardhat test",

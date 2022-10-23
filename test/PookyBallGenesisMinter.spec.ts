@@ -149,13 +149,13 @@ describe('PookyBallGenesisMinter', () => {
     });
   });
 
-  describe('mint', () => {
+  describe('mintTo', () => {
     it('should let user mint multiple balls successfully', async () => {
       const numberOfBalls = faker.datatype.number(4) + 1;
       const txValue = template.price.mul(numberOfBalls);
 
       await expect(
-        PookyBallGenesisMinter.connect(player1).mint(lastMintTemplateId, numberOfBalls, {
+        PookyBallGenesisMinter.connect(player1).mintTo(lastMintTemplateId, player1.address, numberOfBalls, {
           value: txValue,
         }),
       )
@@ -183,7 +183,7 @@ describe('PookyBallGenesisMinter', () => {
       await PookyBallGenesisMinter.connect(tech).setMinTierToMint(1);
 
       await expect(
-        PookyBallGenesisMinter.connect(player2).mint(lastMintTemplateId, 1, {
+        PookyBallGenesisMinter.connect(player2).mintTo(lastMintTemplateId, player2.address, 1, {
           value: template.price,
         }),
       )
@@ -195,7 +195,7 @@ describe('PookyBallGenesisMinter', () => {
       await PookyBallGenesisMinter.connect(tech).enableMintTemplate(lastMintTemplateId, false);
 
       await expect(
-        PookyBallGenesisMinter.connect(player1).mint(lastMintTemplateId, 1, {
+        PookyBallGenesisMinter.connect(player1).mintTo(lastMintTemplateId, player1.address, 1, {
           value: template.price,
         }),
       )
@@ -218,7 +218,7 @@ describe('PookyBallGenesisMinter', () => {
       lastMintTemplateId = (await PookyBallGenesisMinter.lastMintTemplateId()).toNumber();
 
       await expect(
-        PookyBallGenesisMinter.connect(player1).mint(lastMintTemplateId, 1, {
+        PookyBallGenesisMinter.connect(player1).mintTo(lastMintTemplateId, player1.address, 1, {
           value: price,
         }),
       )
@@ -230,7 +230,7 @@ describe('PookyBallGenesisMinter', () => {
       const numberOfBalls = mintsLeft1 + 1; // Will overflow the maximum balls
 
       await expect(
-        PookyBallGenesisMinter.connect(player1).mint(lastMintTemplateId, numberOfBalls, {
+        PookyBallGenesisMinter.connect(player1).mintTo(lastMintTemplateId, player1.address, numberOfBalls, {
           value: template.price.mul(numberOfBalls),
         }),
       )
@@ -257,7 +257,7 @@ describe('PookyBallGenesisMinter', () => {
       const numberOfBalls = maxMintSupply + 1;
 
       await expect(
-        PookyBallGenesisMinter.connect(player1).mint(lastMintTemplateId, numberOfBalls, {
+        PookyBallGenesisMinter.connect(player1).mintTo(lastMintTemplateId, player1.address, numberOfBalls, {
           value: price * numberOfBalls,
         }),
       )
@@ -270,7 +270,7 @@ describe('PookyBallGenesisMinter', () => {
       const expectedValue = template.price.mul(numberOfBalls);
       const actualValue = expectedValue.sub(1); // 1 wei less than required
       await expect(
-        PookyBallGenesisMinter.connect(player1).mint(lastMintTemplateId, numberOfBalls, {
+        PookyBallGenesisMinter.connect(player1).mintTo(lastMintTemplateId, player1.address, numberOfBalls, {
           value: actualValue,
         }),
       )
@@ -281,7 +281,7 @@ describe('PookyBallGenesisMinter', () => {
     it('should revert if the token transfer to the treasury fails', async () => {
       await PookyBallGenesisMinter.setTreasuryWallet(InvalidReceiver.address);
       await expect(
-        PookyBallGenesisMinter.connect(player1).mint(lastMintTemplateId, 1, {
+        PookyBallGenesisMinter.connect(player1).mintTo(lastMintTemplateId, player1.address, 1, {
           value: template.price,
         }),
       )
