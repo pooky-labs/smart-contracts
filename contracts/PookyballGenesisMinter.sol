@@ -144,7 +144,7 @@ contract PookyballGenesisMinter is PookyballMinter {
     uint256 templateId,
     uint256 amount
   ) internal {
-    if (accountTiers[recipient] < minTierToMint) {
+    if (accountTiers[recipient] <= minTierToMint) {
       revert TierTooLow(minTierToMint, accountTiers[recipient]);
     }
 
