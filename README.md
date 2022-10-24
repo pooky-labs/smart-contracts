@@ -4,27 +4,6 @@
 [![Audit: pending](https://img.shields.io/badge/audit-pending-yellowgreen?style=flat-square)](#)
 [![Code coverage](https://img.shields.io/codecov/c/gh/pooky-labs/smart-contracts?logo=codecov&style=flat-square&token=Ks4qCi1bN3)](https://app.codecov.io/gh/pooky-labs/smart-contracts)
 
-## Maintainers - core team
-
-<table>
-  <tr>
-    <td align="center">
-      <a href="https://github.com/DuXXuD">
-        <img src="https://avatars.githubusercontent.com/u/12116005?v=3?s=150" width="150px;" alt="Dusan Zdravkovic"/>
-        <br />
-        <b>Dusan Zdravkovic</b>
-      </a>
-    </td>
-    <td align="center">
-      <a href="https://github.com/mathieu-bour">
-        <img src="https://avatars.githubusercontent.com/u/21281702?v=3?s=150" width="150px;" alt="Mathieu Bour"/>
-        <br />
-        <b>Mathieu Bour</b>
-      </a>
-    </td>
-  </tr>
-</table>
-
 ## Contribute
 
 This repository uses the following environment:
