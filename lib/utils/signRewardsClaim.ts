@@ -3,8 +3,8 @@ import { BigNumberish, Signer, utils } from 'ethers';
 
 /**
  * Sign the reward claim payload.
- * @param userAddress The address of the user who is claiming the reward.
- * @param rewardNAT The amount of native currency to claim.
+ * @param account The address of the user who is claiming the reward.
+ * @param rewardNative The amount of native currency to claim.
  * @param rewardPOK The amount of POK to claim.
  * @param ballUpdates The balls updates (PXP, level up).
  * @param ttl The data when the signature expires
@@ -12,8 +12,8 @@ import { BigNumberish, Signer, utils } from 'ethers';
  * @param signer The ethers.js signer.
  */
 export async function signRewardsClaim(
-  userAddress: string,
-  rewardNAT: BigNumberish,
+  account: string,
+  rewardNative: BigNumberish,
   rewardPOK: BigNumberish,
   ballUpdates: BallUpdatesStruct[],
   ttl: BigNumberish,
@@ -29,7 +29,7 @@ export async function signRewardsClaim(
       'uint256',
       'uint256',
     ],
-    [userAddress, rewardNAT, rewardPOK, ballUpdates, ttl, nonce],
+    [account, rewardNative, rewardPOK, ballUpdates, ttl, nonce],
   );
   const hash = utils.keccak256(message);
   return signer.signMessage(utils.arrayify(hash));

@@ -20,7 +20,7 @@ struct BallInfo {
 
 object ERC721
 
-object PookyBall {
+object Pookyball {
   + map balls
 ==
   + getBallInfo()
@@ -32,8 +32,8 @@ object PookyBall {
   # revokeBall() : PC
   # setRandomEntropy() : PC
 }
-ERC721 *-- PookyBall
-"PookyBall::map balls" -> BallInfo
+ERC721 *-- Pookyball
+"Pookyball::map balls" -> BallInfo
 
 struct MintTemplate {
   canMint
@@ -44,7 +44,7 @@ struct MintTemplate {
   payingToken
 }
 
-object PookyBallMinter {
+object PookyballMinter {
   + map mintTemplates
 ==
   #createMintTemplate() : MOD
@@ -55,7 +55,7 @@ object PookyBallMinter {
   ~ _requestMintFromTemplate()
 }
 
-"PookyBallMinter::map mintTemplates" -> MintTemplate
+"PookyballMinter::map mintTemplates" -> MintTemplate
 
 object PookyMintEvent {
   + mintBalls()
@@ -72,8 +72,8 @@ object PookyMarketplace {
 }
 
 
-PookyBallMinter *-- PookyMintEvent
-PookyBallMinter *-- PookyMarketplace
+PookyballMinter *-- PookyMintEvent
+PookyballMinter *-- PookyMarketplace
 
 object PookyGame {
   + matchweekClaim()
@@ -95,8 +95,8 @@ object Roles #LightGreen {
 }
 
 Legend -[hidden]-> Roles
-POK -[hidden]> PookyBall
-PookyBall -[hidden]-> PookyBallMinter
+POK -[hidden]> Pookyball
+Pookyball -[hidden]-> PookyballMinter
 POK -[hidden]-> PookyGame
 
 @enduml

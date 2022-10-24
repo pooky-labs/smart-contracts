@@ -2,13 +2,13 @@
 participant Moderator
 box #F0F8FF
 participant PookyMintEvent
-participant PookyBallMinter
+participant PookyballMinter
 end box
 
-Moderator -> PookyBallMinter : setVrfParameters
+Moderator -> PookyballMinter : setVrfParameters
 
-Moderator -> PookyBallMinter: createMintTemplate(rarity)
-activate PookyBallMinter
-PookyBallMinter --> Moderator: templateId
-deactivate PookyBallMinter
+Moderator -> PookyballMinter: createMintTemplate(rarity)
+activate PookyballMinter
+PookyballMinter --> Moderator: templateId
+deactivate PookyballMinter
 @enduml

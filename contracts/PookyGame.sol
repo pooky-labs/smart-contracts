@@ -1,22 +1,22 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 // Pooky Game Contracts (PookyGame.sol)
 
 pragma solidity ^0.8.9;
 
-import "./interfaces/IPookyBall.sol";
+import "./interfaces/IPookyball.sol";
 import "./interfaces/IPOK.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol";
 import { BallUpdates, BallInfo, BallRarity } from "./types/DataTypes.sol";
 
 /**
- * @title PookyBallMinter
+ * @title PookyballMinter
  * @author Pooky Engineering Team
  *
  * @notice The contract controls the on-chain features of the Pooky game.
  * Notable features:
- * - Claim prediction rewards (Pooky Ball PXP + $POK tokens) using a signature from the Pooky back-end.
- * - Level up Pooky Balls by spending $POK token.
+ * - Claim prediction rewards (Pookyball PXP + $POK tokens) using a signature from the Pooky back-end.
+ * - Level up Pookyballs by spending $POK token.
  *
  * Roles:
  * - DEFAULT_ADMIN_ROLE can add/remove roles.
@@ -29,7 +29,7 @@ contract PookyGame is AccessControlUpgradeable {
   bytes32 public constant REWARD_SIGNER = keccak256("REWARD_SIGNER");
 
   // Contracts
-  IPookyBall public pookyBall;
+  IPookyball public pookyBall;
   IPOK public pok;
 
   uint256 public constant PXP_DECIMALS = 18;
@@ -41,23 +41,26 @@ contract PookyGame is AccessControlUpgradeable {
   mapping(BallRarity => uint256) public maxBallLevelPerRarity;
   mapping(uint256 => bool) nonces;
 
+  /// Thrown when an account tries to level up a ball that is not owned the sender.
   error OwnershipRequired(uint256 tokenId);
+  /// Thrown when an account tries to level a ball above its maximum level.
   error MaximumLevelReached(uint256 tokenId, uint256 maxLevel);
+  /// Thrown when an account does not own enough $POK token to cover the level up fee.
   error InsufficientPOKBalance(uint256 required, uint256 actual);
+  /// Thrown when an account submits an invalid signature.
   error InvalidSignature();
+  /// Thrown when an account submits an expired signature.
   error ExpiredSignature(uint256 expiration);
+  /// Thrown when an account tries to claim rewards twice.
   error NonceUsed();
-  error RewardTransferFailed(uint256 amount, address recipient);
+  /// Thrown when the native transfer has failed.
+  error TransferFailed(uint256 amount, address recipient);
 
   function initialize(address _admin) public initializer {
     __AccessControl_init();
     _setupRole(DEFAULT_ADMIN_ROLE, _admin);
-  }
 
-  /**
-   * @dev Initialization function that sets the Pooky Ball maximum level for a given rarity.
-   */
-  function _setMaxBallLevel() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    // Set the Pookyball maximum level for a given rarity
     maxBallLevelPerRarity[BallRarity.Common] = 40;
     maxBallLevelPerRarity[BallRarity.Rare] = 60;
     maxBallLevelPerRarity[BallRarity.Epic] = 80;
@@ -66,12 +69,30 @@ contract PookyGame is AccessControlUpgradeable {
   }
 
   /**
-   * @notice Sets the address of the PookyBall contract.
+   * @notice Receive funds that will be used for native token reward.
+   */
+  receive() external payable {}
+
+  /**
+   * @notice Withdraw all the native tokens of the contract.
+   * @dev Useful if the contract need to be hard-upgraded.
+   * Requirements:
+   * - only DEFAULT_ADMIN_ROLE role can withdraw the native tokens.
+   */
+  function withdraw() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    (bool sent, ) = address(msg.sender).call{ value: address(this).balance }("");
+    if (!sent) {
+      revert TransferFailed(address(this).balance, msg.sender);
+    }
+  }
+
+  /**
+   * @notice Sets the address of the Pookyball contract.
    * @dev Requirements:
    * - only DEFAULT_ADMIN_ROLE role can call this function.
    */
-  function setPookyBallContract(address _pookyBall) external onlyRole(DEFAULT_ADMIN_ROLE) {
-    pookyBall = IPookyBall(_pookyBall);
+  function setPookyballContract(address _pookyBall) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    pookyBall = IPookyball(_pookyBall);
   }
 
   /**
@@ -127,10 +148,10 @@ contract PookyGame is AccessControlUpgradeable {
   }
 
   /**
-   * @notice Level up a Pooky Ball in exchange of a certain amount of $POK token.
+   * @notice Level up a Pookyball in exchange of a certain amount of $POK token.
    * @dev Requirements
-   * - msg.sender must be the owner of Pooky Ball tokenId.
-   * - Pooky Ball level should be strictly less than the maximum allowed level for its rarity.
+   * - msg.sender must be the owner of Pookyball tokenId.
+   * - Pookyball level should be strictly less than the maximum allowed level for its rarity.
    * - msg.sender must own enough $POK tokens to pay the level up fee.
    */
   function levelUp(uint256 tokenId) public {
@@ -176,7 +197,7 @@ contract PookyGame is AccessControlUpgradeable {
    * @dev No explicit re-entrancy guard is present as this function is nonce-based.
    * @param amountNative The amount of native currency to transfer.
    * @param amountPOK The $POK token amount.
-   * @param ballUpdates The updated to apply to the Pooky Balls (PXP and optional level up).
+   * @param ballUpdates The updated to apply to the Pookyballs (PXP and optional level up).
    * @param ttl UNIX timestamp until signature is valid.
    * @param nonce Unique word that prevents the usage the same signature twice.
    * @param signature The signature of the previous parameters generated using the eth_personalSign RPC call.
@@ -189,17 +210,7 @@ contract PookyGame is AccessControlUpgradeable {
     uint256 nonce,
     bytes memory signature
   ) external {
-    if (!verifySignature(
-      abi.encode(
-        msg.sender, 
-        amountNative, 
-        amountPOK, 
-        ballUpdates, 
-        ttl, 
-        nonce
-      ), 
-      signature
-    )) {
+    if (!verifySignature(abi.encode(msg.sender, amountNative, amountPOK, ballUpdates, ttl, nonce), signature)) {
       revert InvalidSignature();
     }
 
@@ -226,7 +237,7 @@ contract PookyGame is AccessControlUpgradeable {
 
     (bool sent, ) = address(msg.sender).call{ value: amountNative }("");
     if (!sent) {
-      revert RewardTransferFailed(amountNative, msg.sender);
+      revert TransferFailed(amountNative, msg.sender);
     }
   }
 }

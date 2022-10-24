@@ -4,8 +4,8 @@
 
 The contract controls the on-chain features of the Pooky game.
 Notable features:
-- Claim prediction rewards (Pooky Ball PXP + $POK tokens) using a signature from the Pooky back-end.
-- Level up Pooky Balls by spending $POK token.
+- Claim prediction rewards (Pookyball PXP + $POK tokens) using a signature from the Pooky back-end.
+- Level up Pookyballs by spending $POK token.
 
 Roles:
 - DEFAULT_ADMIN_ROLE can add/remove roles.
@@ -20,7 +20,7 @@ bytes32 REWARD_SIGNER
 ### pookyBall
 
 ```solidity
-contract IPookyBall pookyBall
+contract IPookyball pookyBall
 ```
 
 ### pok
@@ -77,11 +77,15 @@ mapping(uint256 => bool) nonces
 error OwnershipRequired(uint256 tokenId)
 ```
 
+Thrown when an account tries to level up a ball that is not owned the sender.
+
 ### MaximumLevelReached
 
 ```solidity
 error MaximumLevelReached(uint256 tokenId, uint256 maxLevel)
 ```
+
+Thrown when an account tries to level a ball above its maximum level.
 
 ### InsufficientPOKBalance
 
@@ -89,11 +93,15 @@ error MaximumLevelReached(uint256 tokenId, uint256 maxLevel)
 error InsufficientPOKBalance(uint256 required, uint256 actual)
 ```
 
+Thrown when an account does not own enough $POK token to cover the level up fee.
+
 ### InvalidSignature
 
 ```solidity
 error InvalidSignature()
 ```
+
+Thrown when an account submits an invalid signature.
 
 ### ExpiredSignature
 
@@ -101,17 +109,23 @@ error InvalidSignature()
 error ExpiredSignature(uint256 expiration)
 ```
 
+Thrown when an account submits an expired signature.
+
 ### NonceUsed
 
 ```solidity
 error NonceUsed()
 ```
 
-### RewardTransferFailed
+Thrown when an account tries to claim rewards twice.
+
+### TransferFailed
 
 ```solidity
-error RewardTransferFailed(uint256 amount, address recipient)
+error TransferFailed(uint256 amount, address recipient)
 ```
+
+Thrown when the native transfer has failed.
 
 ### initialize
 
@@ -119,21 +133,33 @@ error RewardTransferFailed(uint256 amount, address recipient)
 function initialize(address _admin) public
 ```
 
-### _setMaxBallLevel
+### receive
 
 ```solidity
-function _setMaxBallLevel() external
+receive() external payable
 ```
 
-_Initialization function that sets the Pooky Ball maximum level for a given rarity._
+Receive funds that will be used for native token reward.
 
-### setPookyBallContract
+### withdraw
 
 ```solidity
-function setPookyBallContract(address _pookyBall) external
+function withdraw() external
 ```
 
-Sets the address of the PookyBall contract.
+Withdraw all the native tokens of the contract.
+
+_Useful if the contract need to be hard-upgraded.
+Requirements:
+- only DEFAULT_ADMIN_ROLE role can withdraw the native tokens._
+
+### setPookyballContract
+
+```solidity
+function setPookyballContract(address _pookyBall) external
+```
+
+Sets the address of the Pookyball contract.
 
 _Requirements:
 - only DEFAULT_ADMIN_ROLE role can call this function._
@@ -198,11 +224,11 @@ This computation the ball PXP into account and add an additional POK fee if ball
 function levelUp(uint256 tokenId) public
 ```
 
-Level up a Pooky Ball in exchange of a certain amount of $POK token.
+Level up a Pookyball in exchange of a certain amount of $POK token.
 
 _Requirements
-- msg.sender must be the owner of Pooky Ball tokenId.
-- Pooky Ball level should be strictly less than the maximum allowed level for its rarity.
+- msg.sender must be the owner of Pookyball tokenId.
+- Pookyball level should be strictly less than the maximum allowed level for its rarity.
 - msg.sender must own enough $POK tokens to pay the level up fee._
 
 ### verifySignature
@@ -229,7 +255,7 @@ _No explicit re-entrancy guard is present as this function is nonce-based._
 | ---- | ---- | ----------- |
 | amountNative | uint256 | The amount of native currency to transfer. |
 | amountPOK | uint256 | The $POK token amount. |
-| ballUpdates | struct BallUpdates[] | The updated to apply to the Pooky Balls (PXP and optional level up). |
+| ballUpdates | struct BallUpdates[] | The updated to apply to the Pookyballs (PXP and optional level up). |
 | ttl | uint256 | UNIX timestamp until signature is valid. |
 | nonce | uint256 | Unique word that prevents the usage the same signature twice. |
 | signature | bytes | The signature of the previous parameters generated using the eth_personalSign RPC call. |

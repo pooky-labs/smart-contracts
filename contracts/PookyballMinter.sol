@@ -1,34 +1,34 @@
-// SPDX-License-Identifier: UNLICENSED
-// Pooky Game Contracts (PookyBallMinter.sol)
+// SPDX-License-Identifier: MIT
+// Pooky Game Contracts (PookyballMinter.sol)
 
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
-import "./interfaces/IPookyBall.sol";
+import "./interfaces/IPookyball.sol";
 import { BallRarity, MintTemplate, MintRandomRequest } from "./types/DataTypes.sol";
 import "./vendor/VRFConsumerBaseV2.sol";
 
 /**
- * @title PookyBallMinter
+ * @title PookyballMinter
  * @author Pooky Engineering Team
  *
- * @notice PookyBallMinter contains the game logic related to Pooky Ball mint.
+ * @notice PookyballMinter contains the game logic related to Pookyball mint.
  * Mints can only be triggers by specifying a MintTemplate id.
  * This contract is the base contract for {PookyMintEvent}, and will be used for the PookyStore.
  *
- * Chainlink VRF requests are used to obtain randomEntropy for the Pooky Balls.
+ * Chainlink VRF requests are used to obtain randomEntropy for the Pookyballs.
 
  * Roles:
  * - DEFAULT_ADMIN_ROLE can add/remove roles
  * - TECH role can create/change mint templates
  */
-abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
+abstract contract PookyballMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
   // Roles
   bytes32 public constant TECH = keccak256("TECH");
 
   // Contracts
-  IPookyBall public pookyBall;
+  IPookyball public pookyBall;
 
   // Chainlink VRF parameters
   VRFCoordinatorV2Interface public vrf_coordinator;
@@ -44,10 +44,10 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
   // MintTemplate events
   event MintTemplateCreated(uint256 indexed templateId);
   event MintTemplateEnabled(uint256 indexed templateId, bool enabled);
-  event RequestMintFromTemplate(uint256 indexed templateId, address indexed user);
+  event RequestMintFromTemplate(uint256 indexed templateId, address indexed recipient);
 
   // Chainlink VRF events
-  event RandomnessRequested(uint256 indexed requestId, address indexed user, uint256 indexed tokenId);
+  event RandomnessRequested(uint256 indexed requestId, uint256 indexed tokenId, address indexed recipient);
   event RandomnessFulfilled(uint256 indexed requestId, uint256 indexed tokenId, uint256 randomEntropy);
 
   error MintDisabled(uint256 templateId);
@@ -57,7 +57,7 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
   /**
    * Initialization function that sets Chainlink VRF parameters.
    */
-  function __PookyBallMinter_init(
+  function __PookyballMinter_init(
     uint256 _startFromId,
     address _admin,
     address _vrfCoordinator,
@@ -100,12 +100,12 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
   }
 
   /**
-   * @notice Sets the address of the PookyBall contract.
+   * @notice Sets the address of the Pookyball contract.
    * @dev Requirements:
    * - only DEFAULT_ADMIN_ROLE role can call this function.
    */
-  function setPookyBallContract(address _pookyBall) external onlyRole(DEFAULT_ADMIN_ROLE) {
-    pookyBall = IPookyBall(_pookyBall);
+  function setPookyballContract(address _pookyBall) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    pookyBall = IPookyball(_pookyBall);
   }
 
   /**
@@ -139,15 +139,10 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
    * - MintTemplate maximum mints has not been reached.
    * The random entropy is made to Chainlink VRF platform.
    * Emits a RequestMintFromTemplate event.
-   * @param recipient The final recipient of the newly linted Pooky Ball.
+   * @param recipient The final recipient of the newly linted Pookyball.
    * @param templateId The MintTemplate id.
-   * @param revocableUntil The UNIX timestamp until the ball can be revoked.
    */
-  function _requestMintFromTemplate(
-    address recipient,
-    uint256 templateId,
-    uint256 revocableUntil
-  ) internal {
+  function _requestMintFromTemplate(address recipient, uint256 templateId) internal {
     MintTemplate storage template = mintTemplates[templateId];
 
     if (!template.enabled) {
@@ -159,7 +154,7 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
     }
 
     template.currentMints++;
-    uint256 newTokenId = pookyBall.mint(address(this), template.rarity, template.luxury, revocableUntil);
+    uint256 newTokenId = pookyBall.mint(address(this), template.rarity, template.luxury);
 
     emit RequestMintFromTemplate(templateId, recipient);
     _requestRandomEntropyForMint(recipient, newTokenId);
@@ -179,13 +174,13 @@ abstract contract PookyBallMinter is AccessControlUpgradeable, VRFConsumerBaseV2
     );
 
     mintRandomRequests[requestId] = MintRandomRequest(recipient, tokenId);
-    emit RandomnessRequested(requestId, recipient, tokenId);
+    emit RandomnessRequested(requestId, tokenId, recipient);
   }
 
   /**
    * @dev Handle randomness response from Chainlink VRF coordinator.
    * Since only 1 word is requested in {_requestRandomEntropyForMint}, only first received number is used to set the
-   * Pooky Ball random entropy.
+   * Pookyball random entropy.
    * Emits a RandomnessFulfilled event.
    */
   function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {

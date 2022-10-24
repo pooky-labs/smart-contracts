@@ -1,16 +1,16 @@
 import {
   POK__factory,
   POKMock__factory,
-  PookyBall__factory,
-  PookyBallGenesisMinter__factory,
-  PookyBallMock__factory,
+  Pookyball__factory,
+  PookyballGenesisMinter__factory,
+  PookyballMock__factory,
   PookyGame__factory,
 } from '../typings';
 import * as Params from './constants';
 import { deployWithProxy } from './deployWithProxy';
 import logger from './logger';
 import parseEther from './parseEther';
-import { BACKEND, POOKY_CONTRACT, REWARD_SIGNER, TECH } from './roles';
+import { POOKY_CONTRACT, REWARD_SIGNER, TECH } from './roles';
 import { BallLuxury, BallRarity, ContractStack } from './types';
 import { registerContractInJsonDb } from './utils/DbHelper';
 import waitTx from './waitTx';
@@ -33,7 +33,7 @@ interface DeployContractsOptions {
   /** Write the deployed contracts to the file database. */
   writeInDB?: boolean;
 
-  /** Use mocked POK and PookyBall instead */
+  /** Use mocked POK and Pookyball instead */
   mock?: boolean;
 
   baseURI?: string;
@@ -98,7 +98,7 @@ export async function deployContracts(
     writeInDB = true,
     mock = false,
     baseURI = 'https://tokens.pooky.gg/',
-    contractURI = 'https://contract.pooky.gg/PookyBall.json',
+    contractURI = 'https://contract.pooky.gg/Pookyball.json',
     totalSupply = 20000,
   }: DeployContractsOptions = {},
 ): Promise<ContractStack> {
@@ -110,30 +110,29 @@ export async function deployContracts(
   const POK = await deployWithProxy(POKFactory.connect(deployer), ['POK Token', 'POK', deployer.address]);
   logger.info('Deployed POK to', POK.address);
 
-  const PookyBallFactory = mock ? new PookyBallMock__factory() : new PookyBall__factory();
-  const PookyBall = await deployWithProxy(PookyBallFactory.connect(deployer), [
-    'Pooky Ball',
+  const PookyballFactory = mock ? new PookyballMock__factory() : new Pookyball__factory();
+  const Pookyball = await deployWithProxy(PookyballFactory.connect(deployer), [
+    'Pookyball',
     'POOKY_CONTRACT BALL',
     baseURI,
     contractURI,
     deployer.address,
   ]);
-  logger.info('Deployed PookyBall to', PookyBall.address);
+  logger.info('Deployed Pookyball to', Pookyball.address);
 
-  const PookyBallGenesisMinter = await deployWithProxy(new PookyBallGenesisMinter__factory().connect(deployer), [
+  const PookyballGenesisMinter = await deployWithProxy(new PookyballGenesisMinter__factory().connect(deployer), [
     Params.START_ID,
     deployer.address,
     accounts.treasury,
     totalSupply,
     Params.MAX_BALLS_PER_USER,
-    Params.REVOKE_PERIOD,
     Params.VRF_COORDINATOR,
     Params.GAS_LIMIT,
     Params.MINIMUM_CONFIRMATIONS,
     Params.KEY_HASH,
     Params.SUBSCRIPTION_ID,
   ]);
-  logger.info('Deployed PookyBallGenesisMinter to', PookyBallGenesisMinter.address);
+  logger.info('Deployed PookyballGenesisMinter to', PookyballGenesisMinter.address);
 
   const PookyGame = await deployWithProxy(new PookyGame__factory().connect(deployer), [deployer.address]);
   logger.info('Deployed PookyGame to', PookyGame.address);
@@ -141,34 +140,31 @@ export async function deployContracts(
   if (writeInDB) {
     if (mock) {
       await registerContractInJsonDb('POKMock', POK);
-      await registerContractInJsonDb('PookyBallMock', PookyBall);
+      await registerContractInJsonDb('PookyballMock', Pookyball);
     } else {
       await registerContractInJsonDb('POK', POK);
-      await registerContractInJsonDb('PookyBall', PookyBall);
+      await registerContractInJsonDb('Pookyball', Pookyball);
     }
 
-    await registerContractInJsonDb('PookyBallGenesisMinter', PookyBallGenesisMinter);
+    await registerContractInJsonDb('PookyballGenesisMinter', PookyballGenesisMinter);
     await registerContractInJsonDb('PookyGame', PookyGame);
   }
 
-  await waitTx(POK.grantRole(POOKY_CONTRACT, PookyBallGenesisMinter.address));
+  await waitTx(POK.grantRole(POOKY_CONTRACT, PookyballGenesisMinter.address));
   await waitTx(POK.grantRole(POOKY_CONTRACT, PookyGame.address));
 
-  await waitTx(PookyBall.grantRole(POOKY_CONTRACT, PookyBallGenesisMinter.address));
-  await waitTx(PookyBall.grantRole(POOKY_CONTRACT, PookyGame.address));
+  await waitTx(Pookyball.grantRole(POOKY_CONTRACT, PookyballGenesisMinter.address));
+  await waitTx(Pookyball.grantRole(POOKY_CONTRACT, PookyGame.address));
 
-  await waitTx(PookyBallGenesisMinter.grantRole(BACKEND, accounts.backend));
-  await waitTx(PookyBallGenesisMinter.grantRole(TECH, accounts.tech));
-  await waitTx(PookyBallGenesisMinter.setPookyBallContract(PookyBall.address));
-
-  await waitTx(PookyGame._setMaxBallLevel());
-  await waitTx(PookyGame.setPookyBallContract(PookyBall.address));
-  await waitTx(PookyGame.setPOKContract(POK.address));
+  await waitTx(PookyballGenesisMinter.grantRole(TECH, accounts.tech));
+  await waitTx(PookyballGenesisMinter.setPookyballContract(Pookyball.address));
 
   await waitTx(PookyGame.grantRole(REWARD_SIGNER, accounts.backend));
+  await waitTx(PookyGame.setPookyballContract(Pookyball.address));
+  await waitTx(PookyGame.setPOKContract(POK.address));
 
   // Create the mint templates using the TECH role
-  await waitTx(PookyBallGenesisMinter.grantRole(TECH, deployer.address));
+  await waitTx(PookyballGenesisMinter.grantRole(TECH, deployer.address));
   let supplyCounter = totalSupply;
   for (const template of templates) {
     let templateSupply: number;
@@ -189,12 +185,12 @@ export async function deployContracts(
       maxMints: templateSupply,
     };
 
-    await waitTx(PookyBallGenesisMinter.createMintTemplate(mintTemplate));
+    await waitTx(PookyballGenesisMinter.createMintTemplate(mintTemplate));
     logger.info('price=', ethers.utils.formatEther(mintTemplate.price), 'supply=', mintTemplate.maxMints);
 
     supplyCounter -= templateSupply;
   }
-  await waitTx(PookyBallGenesisMinter.renounceRole(TECH, deployer.address));
+  await waitTx(PookyballGenesisMinter.renounceRole(TECH, deployer.address));
 
-  return { POK, PookyBall, PookyBallGenesisMinter, PookyGame };
+  return { POK, Pookyball, PookyballGenesisMinter, PookyGame };
 }

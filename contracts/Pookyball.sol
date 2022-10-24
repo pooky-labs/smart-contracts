@@ -1,43 +1,37 @@
-// SPDX-License-Identifier: UNLICENSED
-// Pooky Game Contracts (PookyBall.sol)
+// SPDX-License-Identifier: MIT
+// Pooky Game Contracts (Pookyball.sol)
 
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
-import "./interfaces/IPookyBall.sol";
+import "./interfaces/IPookyball.sol";
 import { BallRarity, BallRarity, BallInfo } from "./types/DataTypes.sol";
 
 /**
- * @title PookyBall
+ * @title Pookyball
  * @author Pooky Engineering Team
  *
- * @notice PookyBall is ERC721 token representing Pooky Ball NFTs. Balls are mintable by other Pooky game contracts.
- * This contract does not hold any aspect of the Pooky gameplay and only serves as Pooky Ball information storage.
+ * @notice Pookyball is ERC721 token representing Pookyball NFTs. Balls are mintable by other Pooky game contracts.
+ * This contract does not hold any aspect of the Pooky gameplay and only serves as Pookyball information storage.
  *
- * Pooky Balls NFT have the following features (see {BallInfo}):
+ * Pookyballs NFT have the following features (see {BallInfo}):
  * - `rarity`
  * - `randomEntropy` the ball random entropy (provided by Chainlink VRF v2) which is used to generate the ball image and
  *   in-game boosts.
  * - `level` the ball level
  * - `pxp` the ball PXP (experience points)
- * - `revocableUntil` the date/time until the ball can be revoked. See below for detailed explanations.
  *
  * Leveling up:
- * Pooky Balls NFT gain PXP when used to place prediction on the Pooky game. Balls cannot loose PXP.
+ * Pookyballs NFT gain PXP when used to place prediction on the Pooky game. Balls cannot loose PXP.
  * Once a ball has acquired enough PXP, it can be leveled up in exchange of a certain amount of $POK token (see {POK}).
  *
- * NFT revocations:
- * Pooky Balls NFT can be minted in response of a credit card payment. Since the charge can be disputed, tokens
- * purchased with credit card are kept _revocable_ for a certain period of time.
- * Revocable balls cannot be transferred and can be burned in case of a refund.
- *
  * Roles:
- * - DEFAULT_ADMIN_ROLE can add/remove roles
- * - POOKY_CONTRACT role can mint/revoke new tokens
+ * - DEFAULT_ADMIN_ROLE can add/remove roles.
+ * - POOKY_CONTRACT role can mint new tokens.
  */
-contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
+contract Pookyball is IPookyball, ERC721Upgradeable, AccessControlUpgradeable {
   using StringsUpgradeable for uint256;
 
   // Roles
@@ -53,9 +47,8 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   event BallLevelUpdated(uint256 indexed tokenId, uint256 level);
   event BallPXPUpdated(uint256 indexed tokenId, uint256 amount);
 
+  /// Thrown when the entropy of a ball has been already
   error EntropyAlreadySet(uint256 tokenId);
-  error NotRevocableAnymore(uint256 tokenId, uint256 now);
-  error TransferLockedWhileRevocable(uint256 tokenId);
 
   function initialize(
     string memory _name,
@@ -101,7 +94,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   }
 
   /**
-   * @notice Ball information of a particular Pooky Ball.
+   * @notice Ball information of a particular Pookyball.
    * @dev Requirements:
    * - Ball {tokenId} should exist (minted and not burned).
    */
@@ -111,17 +104,9 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   }
 
   /**
-   * @notice If a Pooky Ball with id {tokenId} is revocable.
-   */
-  function isRevocable(uint256 tokenId) public view returns (bool) {
-    _requireMinted(tokenId);
-    return block.timestamp <= balls[tokenId].revocableUntil;
-  }
-
-  /**
-   * @notice Sets the random entropy of the Pooky Ball with id {tokenId}.
+   * @notice Sets the random entropy of the Pookyball with id {tokenId}.
    * @dev Requirements:
-   * - Only POOKY_CONTRACT role can increase Pooky Balls levels.
+   * - Only POOKY_CONTRACT role can increase Pookyballs levels.
    * - Ball {tokenId} should exist (minted and not burned).
    * - Previous entropy should be zero.
    */
@@ -137,12 +122,12 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   }
 
   /**
-   * @notice Change the PXP (Experience points) of the Pooky Ball with id {tokenId}.
+   * @notice Change the PXP (Experience points) of the Pookyball with id {tokenId}.
    * @dev Requirements:
-   * - Only POOKY_CONTRACT role can increase Pooky Balls PXP.
+   * - Only POOKY_CONTRACT role can increase Pookyballs PXP.
    * - Ball {tokenId} should exist (minted and not burned).
-   * @param tokenId The Pooky Ball NFT id.
-   * @param amount The PXP amount to add the to Pooky Ball.
+   * @param tokenId The Pookyball NFT id.
+   * @param amount The PXP amount to add the to Pookyball.
    */
   function changePXP(uint256 tokenId, uint256 amount) external onlyRole(POOKY_CONTRACT) {
     _requireMinted(tokenId);
@@ -152,11 +137,11 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   }
 
   /**
-   * @notice Change the level of the Pooky Ball with id {tokenId} to the {newLevel}
+   * @notice Change the level of the Pookyball with id {tokenId} to the {newLevel}
    * @dev Requirements:
-   * - Only POOKY_CONTRACT role can increase Pooky Balls levels.
+   * - Only POOKY_CONTRACT role can increase Pookyballs levels.
    * - Ball {tokenId} should exist (minted and not burned).
-   * @param tokenId The Pooky Ball NFT id.
+   * @param tokenId The Pookyball NFT id.
    * @param newLevel The new Ball level.
    */
   function changeLevel(uint256 tokenId, uint256 newLevel) external onlyRole(POOKY_CONTRACT) {
@@ -179,57 +164,19 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   }
 
   /**
-   * @notice Mint a ball with a specific {BallRarity} and with a specific revocation date/time, with all other Ball
-   * parameters set to default.
+   * @notice Mint a ball with a specific {BallRarity} and {BallLuxury} with all other Ball parameters set to default.
    * @dev Requirements:
-   * - Only POOKY_CONTRACT role can mint Pooky Balls.
-   * @param to The address which will own the minted Pooky Ball.
-   * @param rarity The Pooky Ball rarity.
-   * @param luxury The Pooky Ball luxury.
-   * @param revocableUntil The UNIX timestamp until the ball can be revoked.
+   * - Only POOKY_CONTRACT role can mint Pookyballs.
+   * @param to The address which will own the minted Pookyball.
+   * @param rarity The Pookyball rarity.
+   * @param luxury The Pookyball luxury.
    */
   function mint(
     address to,
     BallRarity rarity,
-    BallLuxury luxury,
-    uint256 revocableUntil
+    BallLuxury luxury
   ) external onlyRole(POOKY_CONTRACT) returns (uint256) {
-    return
-      _mintBall(
-        to,
-        BallInfo({ rarity: rarity, luxury: luxury, randomEntropy: 0, level: 0, pxp: 0, revocableUntil: revocableUntil })
-      );
-  }
-
-  /**
-   * @notice Revoke and burn the Pooky Ball with id {tokenId}.
-   * @dev Requirements:
-   * - Only POOKY_CONTRACT role can revoke Pooky Balls.
-   * - Ball is revocable only if current timestamp is less then `ball.revocableUntil`
-   */
-  function revoke(uint256 tokenId) external onlyRole(POOKY_CONTRACT) {
-    if (!isRevocable(tokenId)) {
-      revert NotRevocableAnymore(tokenId, block.timestamp);
-    }
-
-    _burn(tokenId);
-  }
-
-  /**
-   * @dev Restrict revocable Pooky Balls transfers.
-   * Mints and burns are always allowed, as transfers from POOKY_CONTRACT role.
-   */
-  function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256 tokenId
-  ) internal view override {
-    if (from == address(0) || to == address(0)) return;
-    if (hasRole(POOKY_CONTRACT, from)) return;
-
-    if (isRevocable(tokenId)) {
-      revert TransferLockedWhileRevocable(tokenId);
-    }
+    return _mintBall(to, BallInfo({ rarity: rarity, luxury: luxury, randomEntropy: 0, level: 0, pxp: 0 }));
   }
 
   /**

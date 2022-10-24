@@ -1,15 +1,15 @@
-// SPDX-License-Identifier: UNLICENSED
-// Pooky Game Contracts (mocks/PookyBallMock.sol)
+// SPDX-License-Identifier: MIT
+// Pooky Game Contracts (mocks/PookyballMock.sol)
 
 pragma solidity ^0.8.9;
 
-import "../PookyBall.sol";
+import "../Pookyball.sol";
 import { BallInfo } from "../types/DataTypes.sol";
 
 /**
- * @notice PookyBallMock is used for testing: everybody is allowed mint new Pooky Balls  tokens.
+ * @notice PookyballMock is used for testing: everybody is allowed mint new Pookyballs  tokens.
  */
-contract PookyBallMock is PookyBall {
+contract PookyballMock is Pookyball {
   function mock_mintBall(address to, BallInfo memory ballInfo) external returns (uint256) {
     return _mintBall(to, ballInfo);
   }

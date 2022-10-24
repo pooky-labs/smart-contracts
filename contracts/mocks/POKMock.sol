@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 // Pooky Game Contracts (mocks/POKMock.sol)
 
 pragma solidity ^0.8.9;
@@ -6,7 +6,7 @@ pragma solidity ^0.8.9;
 import "../POK.sol";
 
 /**
- * @title PookyBall
+ * @title Pookyball
  * @author Pooky Engineering Team
  *
  * @notice POKMock is used for testing: everybody is allowed mint new $POK tokens.

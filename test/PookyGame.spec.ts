@@ -7,7 +7,7 @@ import { expectHasRole, expectMissingRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
 import { BallLuxury, BallRarity } from '../lib/types';
 import { signRewardsClaim } from '../lib/utils/signRewardsClaim';
-import { POK, PookyBall, PookyGame } from '../typings';
+import { InvalidReceiver, POK, Pookyball, PookyGame } from '../typings';
 import { BallUpdatesStruct } from '../typings/contracts/PookyGame';
 import { faker } from '@faker-js/faker';
 import { loadFixture, setBalance } from '@nomicfoundation/hardhat-network-helpers';
@@ -18,6 +18,7 @@ import { ethers } from 'hardhat';
 import { beforeEach } from 'mocha';
 
 describe('PookyGame', () => {
+  let deployer: SignerWithAddress;
   let pooky: SignerWithAddress;
   let backend: SignerWithAddress;
   let player1: SignerWithAddress;
@@ -25,23 +26,24 @@ describe('PookyGame', () => {
 
   let POK: POK;
   let PookyGame: PookyGame;
-  let PookyBall: PookyBall;
+  let Pookyball: Pookyball;
+  let InvalidReceiver: InvalidReceiver;
 
   let tokenId: BigNumber;
 
   beforeEach(async () => {
-    ({ pooky, backend, player1, player2 } = await getTestAccounts());
-    ({ PookyGame, PookyBall, POK } = await loadFixture(stackFixture));
+    ({ deployer, pooky, backend, player1, player2 } = await getTestAccounts());
+    ({ PookyGame, Pookyball, POK, InvalidReceiver } = await loadFixture(stackFixture));
 
-    await PookyBall.connect(pooky).mint(player1.address, BallRarity.Common, BallLuxury.Common, 0);
-    tokenId = await PookyBall.lastTokenId();
+    await Pookyball.connect(pooky).mint(player1.address, BallRarity.Common, BallLuxury.Common);
+    tokenId = await Pookyball.lastTokenId();
   });
 
   describe('configuration', () => {
     it('should have addresses properly configured', async () => {
       expect(await PookyGame.pookyBall()).to.be.equal(
-        PookyBall.address,
-        'PookyBall contract address is not set correctly inside PookyGame contract',
+        Pookyball.address,
+        'Pookyball contract address is not set correctly inside PookyGame contract',
       );
       expect(await PookyGame.pok()).to.be.equal(
         POK.address,
@@ -52,21 +54,56 @@ describe('PookyGame', () => {
     });
   });
 
-  describe('setPookyBallContract', () => {
-    let newPookyBall: string;
+  describe('receive', () => {
+    it('should allow native currency to be received', async () => {
+      const expectedAmount = parseEther(faker.datatype.number(1000) + 1);
+      await expect(
+        player1.sendTransaction({
+          to: PookyGame.address,
+          value: expectedAmount,
+        }),
+      ).to.changeEtherBalances([player1.address, PookyGame.address], [`-${expectedAmount.toString()}`, expectedAmount]);
+    });
+  });
+
+  describe('withdraw', () => {
+    let expectedAmount: BigNumber;
+
+    beforeEach(async () => {
+      expectedAmount = parseEther(faker.datatype.number(1000) + 1);
+      await setBalance(PookyGame.address, expectedAmount);
+    });
+
+    it('should allow DEFAULT_ADMIN_ROLE to withdraw native tokens', async () => {
+      await expect(PookyGame.withdraw()).to.changeEtherBalances(
+        [PookyGame.address, deployer.address],
+        [`-${expectedAmount.toString()}`, expectedAmount],
+      );
+    });
+
+    it('should revert if the withdrawer is not a valid destination', async () => {
+      await PookyGame.grantRole(DEFAULT_ADMIN_ROLE, InvalidReceiver.address);
+      await expect(PookyGame.connect(await ethers.getSigner(InvalidReceiver.address)).withdraw())
+        .to.be.revertedWithCustomError(PookyGame, 'TransferFailed')
+        .withArgs(expectedAmount, InvalidReceiver.address);
+    });
+  });
+
+  describe('setPookyballContract', () => {
+    let newPookyball: string;
 
     beforeEach(() => {
-      newPookyBall = randAccount();
+      newPookyball = randAccount();
     });
 
-    it('should allow DEFAULT_ADMIN_ROLE account to set the PookyBall contract address', async () => {
-      await PookyGame.setPookyBallContract(newPookyBall);
-      expect(await PookyGame.pookyBall()).to.equals(newPookyBall);
+    it('should allow DEFAULT_ADMIN_ROLE account to set the Pookyball contract address', async () => {
+      await PookyGame.setPookyballContract(newPookyball);
+      expect(await PookyGame.pookyBall()).to.equals(newPookyball);
     });
 
-    it('should revert if non-DEFAULT_ADMIN_ROLE account tries to set PookyBall contract address', async () => {
+    it('should revert if non-DEFAULT_ADMIN_ROLE account tries to set Pookyball contract address', async () => {
       await expectMissingRole(
-        PookyGame.connect(player1).setPookyBallContract(newPookyBall),
+        PookyGame.connect(player1).setPookyballContract(newPookyball),
         player1,
         DEFAULT_ADMIN_ROLE,
       );
@@ -120,16 +157,16 @@ describe('PookyGame', () => {
     });
 
     it('should return levelPOK cost if ball has enough PXP', async () => {
-      await PookyBall.connect(pooky).changeLevel(tokenId, newLevel);
-      await PookyBall.connect(pooky).changePXP(tokenId, requiredPXP.mul(2)); // double of the required amount
+      await Pookyball.connect(pooky).changeLevel(tokenId, newLevel);
+      await Pookyball.connect(pooky).changePXP(tokenId, requiredPXP.mul(2)); // double of the required amount
 
       const expectedPOKamount = await PookyGame.levelPOK(newLevel + 1);
       expect(await PookyGame.levelPOKCost(tokenId)).to.equals(expectedPOKamount);
     });
 
     it('should return more than levelPOK cost if ball has enough PXP', async () => {
-      await PookyBall.connect(pooky).changeLevel(tokenId, newLevel);
-      await PookyBall.connect(pooky).changePXP(tokenId, requiredPXP.div(2)); // half of the required amount
+      await Pookyball.connect(pooky).changeLevel(tokenId, newLevel);
+      await Pookyball.connect(pooky).changePXP(tokenId, requiredPXP.div(2)); // half of the required amount
 
       const expectedPOKamount = await PookyGame.levelPOK(newLevel + 1);
       expect(await PookyGame.levelPOKCost(tokenId)).to.be.greaterThan(expectedPOKamount);
@@ -150,11 +187,11 @@ describe('PookyGame', () => {
       requiredPOK = await PookyGame.levelPOK(currentLevel + 1);
       deltaPOK = parseEther(faker.datatype.number(1000));
 
-      await PookyBall.connect(pooky).changeLevel(tokenId, currentLevel);
+      await Pookyball.connect(pooky).changeLevel(tokenId, currentLevel);
     });
 
     it('should allow player to level up a ball', async () => {
-      await PookyBall.connect(pooky).changePXP(tokenId, requiredPXP.add(deltaPXP));
+      await Pookyball.connect(pooky).changePXP(tokenId, requiredPXP.add(deltaPXP));
       await POK.connect(pooky).mint(player1.address, requiredPOK.add(deltaPOK));
 
       await expect(PookyGame.connect(player1).levelUp(tokenId)).to.changeTokenBalance(
@@ -162,7 +199,7 @@ describe('PookyGame', () => {
         player1,
         `-${requiredPOK.toString()}`,
       );
-      const { level: newLevel, pxp } = await PookyBall.getBallInfo(tokenId);
+      const { level: newLevel, pxp } = await Pookyball.getBallInfo(tokenId);
       expect(newLevel).to.equal(currentLevel + 1);
       expect(pxp).to.equals(deltaPXP);
       expect(await POK.balanceOf(player1.address)).to.equals(deltaPOK);
@@ -177,14 +214,14 @@ describe('PookyGame', () => {
         player1,
         `-${actualPOKRequired.toString()}`,
       );
-      const { level: newLevel, pxp } = await PookyBall.getBallInfo(tokenId);
+      const { level: newLevel, pxp } = await Pookyball.getBallInfo(tokenId);
       expect(newLevel).to.equal(currentLevel + 1);
       expect(pxp).to.equals(0);
       expect(await POK.balanceOf(player1.address)).to.equals(deltaPOK);
     });
 
     it('should revert if the player is not the owner of the ball', async () => {
-      await PookyBall.connect(pooky).changePXP(tokenId, requiredPXP);
+      await Pookyball.connect(pooky).changePXP(tokenId, requiredPXP);
       await POK.connect(pooky).mint(player2.address, requiredPOK);
 
       await expect(PookyGame.connect(player2).levelUp(tokenId))
@@ -193,13 +230,13 @@ describe('PookyGame', () => {
     });
 
     it('should revert if the ball has reached the maximum level', async () => {
-      const { rarity } = await PookyBall.getBallInfo(tokenId);
+      const { rarity } = await Pookyball.getBallInfo(tokenId);
       const maxLevel = (await PookyGame.maxBallLevelPerRarity(rarity)).toNumber();
       requiredPXP = await PookyGame.levelPXP(maxLevel + 1);
       requiredPOK = await PookyGame.levelPOK(maxLevel + 1);
 
-      await PookyBall.connect(pooky).changeLevel(tokenId, maxLevel);
-      await PookyBall.connect(pooky).changePXP(tokenId, requiredPXP);
+      await Pookyball.connect(pooky).changeLevel(tokenId, maxLevel);
+      await Pookyball.connect(pooky).changePXP(tokenId, requiredPXP);
       await POK.connect(pooky).mint(player1.address, requiredPOK);
 
       await expect(PookyGame.connect(player1).levelUp(tokenId))
@@ -208,8 +245,8 @@ describe('PookyGame', () => {
     });
 
     it('should revert if the ball the user does not own enough POK', async () => {
-      await PookyBall.connect(pooky).changeLevel(tokenId, currentLevel);
-      await PookyBall.connect(pooky).changePXP(tokenId, requiredPXP);
+      await Pookyball.connect(pooky).changeLevel(tokenId, currentLevel);
+      await Pookyball.connect(pooky).changePXP(tokenId, requiredPXP);
       const actualPOK = requiredPOK.sub(1);
       await POK.connect(pooky).mint(player1.address, actualPOK);
 
@@ -222,7 +259,7 @@ describe('PookyGame', () => {
   describe('claimRewards', () => {
     let nonce: BigNumber;
     let currentTimestamp: number;
-    let rewardNAT: BigNumber;
+    let rewardNative: BigNumber;
     let rewardPOK: BigNumber;
     let ttl: number;
 
@@ -232,11 +269,11 @@ describe('PookyGame', () => {
 
     beforeEach(async () => {
       nonce = randUint256();
-      rewardNAT = parseEther(faker.datatype.number(1000));
+      rewardNative = parseEther(faker.datatype.number(1000));
       rewardPOK = parseEther(faker.datatype.number(1000));
       ({ timestamp: currentTimestamp } = await ethers.provider.getBlock('latest'));
       ttl = currentTimestamp + 3600 + faker.datatype.number(1000); // at least 1 hour
-      currentLevel = (await PookyBall.getBallInfo(tokenId)).level.toNumber();
+      currentLevel = (await Pookyball.getBallInfo(tokenId)).level.toNumber();
       rewardPXP = await PookyGame.levelPXP(currentLevel + 1);
       ballUpdates = [
         {
@@ -247,32 +284,48 @@ describe('PookyGame', () => {
       ];
 
       // Ensure that the PookyGame contract has enough native currency
-      await setBalance(PookyGame.address, rewardNAT.mul(100).toHexString().replace(/0x0+/, '0x'));
+      await setBalance(PookyGame.address, rewardNative.mul(100).toHexString().replace(/0x0+/, '0x'));
     });
 
     it('should allow players to claim POK', async () => {
-      const signature = await signRewardsClaim(player1.address, rewardNAT, rewardPOK, [], ttl, nonce, backend);
+      const signature = await signRewardsClaim(player1.address, rewardNative, rewardPOK, [], ttl, nonce, backend);
 
       await expect(
-        PookyGame.connect(player1).claimRewards(rewardNAT, rewardPOK, [], ttl, nonce, signature),
+        PookyGame.connect(player1).claimRewards(rewardNative, rewardPOK, [], ttl, nonce, signature),
       ).to.changeTokenBalance(POK, player1, rewardPOK);
     });
 
     it('should allow players to claim POK and add PXP to an existing ball', async () => {
-      const signature = await signRewardsClaim(player1.address, rewardNAT, rewardPOK, ballUpdates, ttl, nonce, backend);
+      const signature = await signRewardsClaim(
+        player1.address,
+        rewardNative,
+        rewardPOK,
+        ballUpdates,
+        ttl,
+        nonce,
+        backend,
+      );
 
-      await expect(PookyGame.connect(player1).claimRewards(rewardNAT, rewardPOK, ballUpdates, ttl, nonce, signature)).to
-        .not.be.reverted;
-      const newBallLevel = (await PookyBall.getBallInfo(tokenId)).level;
+      await expect(PookyGame.connect(player1).claimRewards(rewardNative, rewardPOK, ballUpdates, ttl, nonce, signature))
+        .to.not.be.reverted;
+      const newBallLevel = (await Pookyball.getBallInfo(tokenId)).level;
       expect(newBallLevel).to.be.equal(currentLevel + ONE);
     });
 
     it('should revert if user tries to claim rewards with an invalid signature', async () => {
-      const signature = await signRewardsClaim(player1.address, rewardNAT, rewardPOK, ballUpdates, ttl, nonce, backend);
+      const signature = await signRewardsClaim(
+        player1.address,
+        rewardNative,
+        rewardPOK,
+        ballUpdates,
+        ttl,
+        nonce,
+        backend,
+      );
 
       await expect(
         PookyGame.connect(player1).claimRewards(
-          rewardNAT,
+          rewardNative,
           rewardPOK.mul(100), // wrong amount!
           ballUpdates,
           ttl,
@@ -285,9 +338,9 @@ describe('PookyGame', () => {
     });
 
     it('should revert if user tries to claim rewards with signature from another user', async () => {
-      const signature = await signRewardsClaim(player2.address, rewardNAT, rewardPOK, [], ttl, nonce, backend);
+      const signature = await signRewardsClaim(player2.address, rewardNative, rewardPOK, [], ttl, nonce, backend);
 
-      await expect(PookyGame.connect(player1).claimRewards(rewardNAT, rewardPOK, [], ttl, nonce, signature))
+      await expect(PookyGame.connect(player1).claimRewards(rewardNative, rewardPOK, [], ttl, nonce, signature))
         .to.be.revertedWithCustomError(PookyGame, 'InvalidSignature')
         .withArgs();
     });
@@ -296,7 +349,7 @@ describe('PookyGame', () => {
       const expiredTimestamp = currentTimestamp - 100;
       const signature = await signRewardsClaim(
         player1.address,
-        rewardNAT,
+        rewardNative,
         rewardPOK,
         ballUpdates,
         expiredTimestamp,
@@ -305,27 +358,63 @@ describe('PookyGame', () => {
       );
 
       await expect(
-        PookyGame.connect(player1).claimRewards(rewardNAT, rewardPOK, ballUpdates, expiredTimestamp, nonce, signature),
+        PookyGame.connect(player1).claimRewards(
+          rewardNative,
+          rewardPOK,
+          ballUpdates,
+          expiredTimestamp,
+          nonce,
+          signature,
+        ),
       )
         .to.be.revertedWithCustomError(PookyGame, 'ExpiredSignature')
         .withArgs(expiredTimestamp);
     });
 
     it('should revert if nonce has already been used', async () => {
-      const signature = await signRewardsClaim(player1.address, rewardNAT, rewardPOK, ballUpdates, ttl, nonce, backend);
+      const signature = await signRewardsClaim(
+        player1.address,
+        rewardNative,
+        rewardPOK,
+        ballUpdates,
+        ttl,
+        nonce,
+        backend,
+      );
 
       // First call: success!
-      await expect(PookyGame.connect(player1).claimRewards(rewardNAT, rewardPOK, ballUpdates, ttl, nonce, signature)).to
-        .not.be.reverted;
+      await expect(PookyGame.connect(player1).claimRewards(rewardNative, rewardPOK, ballUpdates, ttl, nonce, signature))
+        .to.not.be.reverted;
 
       // Second call: reverted because nonce was already used
-      await expect(PookyGame.connect(player1).claimRewards(rewardNAT, rewardPOK, ballUpdates, ttl, nonce, signature))
+      await expect(PookyGame.connect(player1).claimRewards(rewardNative, rewardPOK, ballUpdates, ttl, nonce, signature))
         .to.be.revertedWithCustomError(PookyGame, 'NonceUsed')
         .withArgs();
     });
 
-    it.skip('should revert if native transfer fails', async () => {
-      // TODO
+    it('should revert if native transfer fails', async () => {
+      const signature = await signRewardsClaim(
+        InvalidReceiver.address,
+        rewardNative,
+        rewardPOK,
+        ballUpdates,
+        ttl,
+        nonce,
+        backend,
+      );
+
+      expect(
+        PookyGame.connect(await ethers.getSigner(InvalidReceiver.address)).claimRewards(
+          rewardNative,
+          rewardPOK,
+          ballUpdates,
+          ttl,
+          nonce,
+          signature,
+        ),
+      )
+        .to.be.revertedWithCustomError(PookyGame, 'TransferFailed')
+        .withArgs(rewardNative, InvalidReceiver.address);
     });
   });
 });

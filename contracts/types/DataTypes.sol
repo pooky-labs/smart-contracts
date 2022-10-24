@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 // Pooky Game Contracts (types/DataTypes.sol)
 
 pragma solidity ^0.8.9;
@@ -30,7 +30,6 @@ struct BallInfo {
   uint256 randomEntropy;
   uint256 level;
   uint256 pxp;
-  uint256 revocableUntil;
 }
 
 /**
@@ -40,7 +39,7 @@ struct BallInfo {
  * @param maxMints Maximum number of mints with this template.
  * @param currentMints Current number of mints with this template.
  * @param price Price for the one ball.
- * @param payingToken Address of the token with which user pays. If the native token is used 0x0 should be set.
+ * @param payingToken Address of the token with which players pays. If the native token is used 0x0 should be set.
  */
 struct MintTemplate {
   bool enabled;
@@ -54,7 +53,7 @@ struct MintTemplate {
 
 /**
  * @notice Structure containing info for the request which is sent to Chainlink VRF
- * @param user address of the user to which ball will be sent
+ * @param recipient account to which ball will be sent
  * @param tokenId id of the ball
  */
 struct MintRandomRequest {
@@ -64,9 +63,9 @@ struct MintRandomRequest {
 
 /**
  * @notice Structure containing parameters for the ball updates after matchweek ends.
- * @param tokenId Pooky Ball id.
- * @param addPXP Amount of PXP to add to the Pooky Ball.
- * @param shouldLevelUp If Pooky Ball should be leveled up.
+ * @param tokenId Pookyball id.
+ * @param addPXP Amount of PXP to add to the Pookyball.
+ * @param shouldLevelUp If Pookyball should be leveled up.
  */
 struct BallUpdates {
   uint256 tokenId;
