@@ -17,8 +17,8 @@ export default async function stackFixture() {
   );
 
   await stack.POK.grantRole(POOKY_CONTRACT, pooky.address);
-  await stack.PookyBall.grantRole(POOKY_CONTRACT, pooky.address);
-  await stack.PookyBallGenesisMinter.grantRole(POOKY_CONTRACT, pooky.address);
+  await stack.Pookyball.grantRole(POOKY_CONTRACT, pooky.address);
+  await stack.PookyballGenesisMinter.grantRole(POOKY_CONTRACT, pooky.address);
   await stack.PookyGame.grantRole(POOKY_CONTRACT, pooky.address);
 
   // Set up the VRF coordinator
@@ -26,8 +26,8 @@ export default async function stackFixture() {
   await VRFCoordinatorV2.deployed();
   await VRFCoordinatorV2.createSubscription();
   const subId = await VRFCoordinatorV2.s_currentSubId();
-  await VRFCoordinatorV2.addConsumer(subId, stack.PookyBallGenesisMinter.address);
-  await stack.PookyBallGenesisMinter.connect(tech).setVrfParameters(
+  await VRFCoordinatorV2.addConsumer(subId, stack.PookyballGenesisMinter.address);
+  await stack.PookyballGenesisMinter.connect(tech).setVrfParameters(
     VRFCoordinatorV2.address,
     subId,
     1000000,

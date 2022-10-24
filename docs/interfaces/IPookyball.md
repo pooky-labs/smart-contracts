@@ -1,6 +1,6 @@
 # Solidity API
 
-## IPookyBall
+## IPookyball
 
 ### getBallInfo
 

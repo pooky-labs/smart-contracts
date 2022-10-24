@@ -63,9 +63,9 @@ struct MintRandomRequest {
 
 /**
  * @notice Structure containing parameters for the ball updates after matchweek ends.
- * @param tokenId Pooky Ball id.
- * @param addPXP Amount of PXP to add to the Pooky Ball.
- * @param shouldLevelUp If Pooky Ball should be leveled up.
+ * @param tokenId Pookyball id.
+ * @param addPXP Amount of PXP to add to the Pookyball.
+ * @param shouldLevelUp If Pookyball should be leveled up.
  */
 struct BallUpdates {
   uint256 tokenId;

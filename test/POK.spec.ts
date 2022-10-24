@@ -3,7 +3,7 @@ import { DEFAULT_ADMIN_ROLE, POOKY_CONTRACT } from '../lib/roles';
 import getTestAccounts from '../lib/testing/getTestAccounts';
 import { expectHasRole, expectMissingRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
-import { POK, PookyBallGenesisMinter, PookyGame } from '../typings';
+import { POK, PookyballGenesisMinter, PookyGame } from '../typings';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
@@ -15,16 +15,16 @@ describe('POK', async () => {
 
   let POK: POK;
   let PookyGame: PookyGame;
-  let PookyBallGenesisMinter: PookyBallGenesisMinter;
+  let PookyballGenesisMinter: PookyballGenesisMinter;
 
   beforeEach(async () => {
     ({ pooky, player1, player2 } = await getTestAccounts());
-    ({ POK, PookyBallGenesisMinter, PookyGame } = await loadFixture(stackFixture));
+    ({ POK, PookyballGenesisMinter, PookyGame } = await loadFixture(stackFixture));
   });
 
   describe('configuration', () => {
     it('should have roles configured', async () => {
-      await expectHasRole(POK, PookyBallGenesisMinter, POOKY_CONTRACT);
+      await expectHasRole(POK, PookyballGenesisMinter, POOKY_CONTRACT);
       await expectHasRole(POK, PookyGame, POOKY_CONTRACT);
     });
   });

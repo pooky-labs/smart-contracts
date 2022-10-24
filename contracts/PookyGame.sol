@@ -3,20 +3,20 @@
 
 pragma solidity ^0.8.9;
 
-import "./interfaces/IPookyBall.sol";
+import "./interfaces/IPookyball.sol";
 import "./interfaces/IPOK.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol";
 import { BallUpdates, BallInfo, BallRarity } from "./types/DataTypes.sol";
 
 /**
- * @title PookyBallMinter
+ * @title PookyballMinter
  * @author Pooky Engineering Team
  *
  * @notice The contract controls the on-chain features of the Pooky game.
  * Notable features:
- * - Claim prediction rewards (Pooky Ball PXP + $POK tokens) using a signature from the Pooky back-end.
- * - Level up Pooky Balls by spending $POK token.
+ * - Claim prediction rewards (Pookyball PXP + $POK tokens) using a signature from the Pooky back-end.
+ * - Level up Pookyballs by spending $POK token.
  *
  * Roles:
  * - DEFAULT_ADMIN_ROLE can add/remove roles.
@@ -29,7 +29,7 @@ contract PookyGame is AccessControlUpgradeable {
   bytes32 public constant REWARD_SIGNER = keccak256("REWARD_SIGNER");
 
   // Contracts
-  IPookyBall public pookyBall;
+  IPookyball public pookyBall;
   IPOK public pok;
 
   uint256 public constant PXP_DECIMALS = 18;
@@ -60,7 +60,7 @@ contract PookyGame is AccessControlUpgradeable {
     __AccessControl_init();
     _setupRole(DEFAULT_ADMIN_ROLE, _admin);
 
-    // Set the Pooky Ball maximum level for a given rarity
+    // Set the Pookyball maximum level for a given rarity
     maxBallLevelPerRarity[BallRarity.Common] = 40;
     maxBallLevelPerRarity[BallRarity.Rare] = 60;
     maxBallLevelPerRarity[BallRarity.Epic] = 80;
@@ -87,12 +87,12 @@ contract PookyGame is AccessControlUpgradeable {
   }
 
   /**
-   * @notice Sets the address of the PookyBall contract.
+   * @notice Sets the address of the Pookyball contract.
    * @dev Requirements:
    * - only DEFAULT_ADMIN_ROLE role can call this function.
    */
-  function setPookyBallContract(address _pookyBall) external onlyRole(DEFAULT_ADMIN_ROLE) {
-    pookyBall = IPookyBall(_pookyBall);
+  function setPookyballContract(address _pookyBall) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    pookyBall = IPookyball(_pookyBall);
   }
 
   /**
@@ -148,10 +148,10 @@ contract PookyGame is AccessControlUpgradeable {
   }
 
   /**
-   * @notice Level up a Pooky Ball in exchange of a certain amount of $POK token.
+   * @notice Level up a Pookyball in exchange of a certain amount of $POK token.
    * @dev Requirements
-   * - msg.sender must be the owner of Pooky Ball tokenId.
-   * - Pooky Ball level should be strictly less than the maximum allowed level for its rarity.
+   * - msg.sender must be the owner of Pookyball tokenId.
+   * - Pookyball level should be strictly less than the maximum allowed level for its rarity.
    * - msg.sender must own enough $POK tokens to pay the level up fee.
    */
   function levelUp(uint256 tokenId) public {
@@ -197,7 +197,7 @@ contract PookyGame is AccessControlUpgradeable {
    * @dev No explicit re-entrancy guard is present as this function is nonce-based.
    * @param amountNative The amount of native currency to transfer.
    * @param amountPOK The $POK token amount.
-   * @param ballUpdates The updated to apply to the Pooky Balls (PXP and optional level up).
+   * @param ballUpdates The updated to apply to the Pookyballs (PXP and optional level up).
    * @param ttl UNIX timestamp until signature is valid.
    * @param nonce Unique word that prevents the usage the same signature twice.
    * @param signature The signature of the previous parameters generated using the eth_personalSign RPC call.

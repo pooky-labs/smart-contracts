@@ -1,8 +1,8 @@
 # Solidity API
 
-## PookyBallMock
+## PookyballMock
 
-PookyBallMock is used for testing: everybody is allowed mint new Pooky Balls  tokens.
+PookyballMock is used for testing: everybody is allowed mint new Pookyballs  tokens.
 
 ### mock_mintBall
 

@@ -1,12 +1,12 @@
 import { getContractFromJsonDb } from '../lib/utils/DbHelper';
-import { PookyBall, PookyBallGenesisMinter, PookyGame } from '../typings';
+import { Pookyball, PookyballGenesisMinter, PookyGame } from '../typings';
 import { task } from 'hardhat/config';
 
 task('getMinTierToBuy', 'Gets minimum tier to mint ball').setAction(async (params, hre) => {
   await hre.run('set-hre');
 
-  const PookyBallGenesisMinter = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
-  const minTierToBuy = await PookyBallGenesisMinter.minTierToBuy();
+  const PookyballGenesisMinter = await getContractFromJsonDb<PookyballGenesisMinter>('PookyballGenesisMinter', hre);
+  const minTierToBuy = await PookyballGenesisMinter.minTierToBuy();
 
   console.log(`Min tier to buy is ${minTierToBuy}`);
 });
@@ -16,8 +16,8 @@ task('getAddressTier', 'Gets tier for address')
   .setAction(async (params, hre) => {
     await hre.run('set-hre');
 
-    const PookyBallGenesisMinter = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
-    const tier = await PookyBallGenesisMinter.userTiers(params.player);
+    const PookyballGenesisMinter = await getContractFromJsonDb<PookyballGenesisMinter>('PookyballGenesisMinter', hre);
+    const tier = await PookyballGenesisMinter.userTiers(params.player);
 
     console.log(tier);
   });
@@ -25,8 +25,8 @@ task('getAddressTier', 'Gets tier for address')
 task('getMaxBallsPerUser', 'Gets maximum balls per user').setAction(async (params, hre) => {
   await hre.run('set-hre');
 
-  const PookyBallGenesisMinter = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
-  const maxBalls = await PookyBallGenesisMinter.maxBallsPerUser();
+  const PookyballGenesisMinter = await getContractFromJsonDb<PookyballGenesisMinter>('PookyballGenesisMinter', hre);
+  const maxBalls = await PookyballGenesisMinter.maxBallsPerUser();
 
   console.log(`Maximum balls per user is ${hre.ethers.utils.formatEther(maxBalls)}`);
 });
@@ -36,7 +36,7 @@ task('getMintsLeft', 'Gets mints left of player')
   .setAction(async (params, hre) => {
     await hre.run('set-hre');
 
-    const pookyMintEventContract = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
+    const pookyMintEventContract = await getContractFromJsonDb<PookyballGenesisMinter>('PookyballGenesisMinter', hre);
     const mintLeft = await pookyMintEventContract.mintsLeft(params.player);
 
     console.log(`Number of mints left for player is ${hre.ethers.utils.formatEther(mintLeft)}`);
@@ -45,7 +45,7 @@ task('getMintsLeft', 'Gets mints left of player')
 task('getRevokePeriod', 'Gets revoke period').setAction(async (params, hre) => {
   await hre.run('set-hre');
 
-  const pookyMintEventContract = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
+  const pookyMintEventContract = await getContractFromJsonDb<PookyballGenesisMinter>('PookyballGenesisMinter', hre);
   const revokePeriod = await pookyMintEventContract.revokePeriod();
 
   console.log(`Revoke period is ${revokePeriod}`);
@@ -54,7 +54,7 @@ task('getRevokePeriod', 'Gets revoke period').setAction(async (params, hre) => {
 task('getAllMintTemplates', 'Prints all mint templates').setAction(async (params, hre) => {
   await hre.run('set-hre');
 
-  const pookyMintEventContract = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
+  const pookyMintEventContract = await getContractFromJsonDb<PookyballGenesisMinter>('PookyballGenesisMinter', hre);
   const numberOfTemplates = (await pookyMintEventContract.lastMintTemplateId()).toNumber();
 
   for (let i = 0; i < numberOfTemplates; i++) {
@@ -70,11 +70,11 @@ task('getAllMintTemplates', 'Prints all mint templates').setAction(async (params
   }
 });
 
-task('getPookyBallContract', 'Gets PookyBall contract', async (taskArgs, hre) => {
+task('getPookyballContract', 'Gets Pookyball contract', async (taskArgs, hre) => {
   await hre.run('set-hre');
 
-  const PookyBallGenesisMinter = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
-  let pookyBallAddress = await PookyBallGenesisMinter.pookyBall();
+  const PookyballGenesisMinter = await getContractFromJsonDb<PookyballGenesisMinter>('PookyballGenesisMinter', hre);
+  let pookyBallAddress = await PookyballGenesisMinter.pookyBall();
   console.log('Pooky ball contract address in PookyMintEvent contract is ' + pookyBallAddress);
 
   const PookyGame = await getContractFromJsonDb<PookyGame>('PookyGame', hre);
@@ -82,7 +82,7 @@ task('getPookyBallContract', 'Gets PookyBall contract', async (taskArgs, hre) =>
   console.log(`Pooky ball contract address in PookyGame contract is ${pookyBallAddress}`);
 });
 
-task('getPookySigner', 'Gets BE signer from PookyBall contract', async (taskArgs, hre) => {
+task('getPookySigner', 'Gets BE signer from Pookyball contract', async (taskArgs, hre) => {
   await hre.run('set-hre');
 
   const PookyGame = await getContractFromJsonDb<PookyGame>('PookyGame', hre);
@@ -103,33 +103,33 @@ task('getBallInfo', 'Gets informations of ball')
   .setAction(async (params, hre) => {
     await hre.run('set-hre');
 
-    const PookyBall = await getContractFromJsonDb<PookyBall>('PookyBall', hre);
-    const ballInfo = await PookyBall.getBallInfo(params.index);
+    const Pookyball = await getContractFromJsonDb<Pookyball>('Pookyball', hre);
+    const ballInfo = await Pookyball.getBallInfo(params.index);
     console.log(ballInfo);
   });
 
-task('getPookyBallContractUri', 'Gets contract URI from PookyBall contract').setAction(async (params, hre) => {
+task('getPookyballContractUri', 'Gets contract URI from Pookyball contract').setAction(async (params, hre) => {
   await hre.run('set-hre');
 
-  const PookyBall = await getContractFromJsonDb<PookyBall>('PookyBall', hre);
-  const contractURI = await PookyBall.contractURI();
-  console.log(`ContractURI for PookyBall is ${contractURI}`);
+  const Pookyball = await getContractFromJsonDb<Pookyball>('Pookyball', hre);
+  const contractURI = await Pookyball.contractURI();
+  console.log(`ContractURI for Pookyball is ${contractURI}`);
 });
 
-task('getPookyBallBaseUri', 'Gets base URI from PookyBall contract').setAction(async (params, hre) => {
+task('getPookyballBaseUri', 'Gets base URI from Pookyball contract').setAction(async (params, hre) => {
   await hre.run('set-hre');
 
-  const PookyBall = await getContractFromJsonDb<PookyBall>('PookyBall', hre);
-  const baseURI = await PookyBall.baseURI_();
-  console.log(`BaseURI for PookyBall is ${baseURI}`);
+  const Pookyball = await getContractFromJsonDb<Pookyball>('Pookyball', hre);
+  const baseURI = await Pookyball.baseURI_();
+  console.log(`BaseURI for Pookyball is ${baseURI}`);
 });
 
-task('getPookyBallTokenUri', 'Gets token URI from PookyBall contract')
+task('getPookyballTokenUri', 'Gets token URI from Pookyball contract')
   .addPositionalParam('tokenId', 'Token index')
   .setAction(async (params, hre) => {
     await hre.run('set-hre');
 
-    const PookyBall = await getContractFromJsonDb<PookyBall>('PookyBall', hre);
-    const tokenURI = await PookyBall.tokenURI(params.tokenId);
-    console.log(`TokenURI for PookyBall is ${tokenURI}`);
+    const Pookyball = await getContractFromJsonDb<Pookyball>('Pookyball', hre);
+    const tokenURI = await Pookyball.tokenURI(params.tokenId);
+    console.log(`TokenURI for Pookyball is ${tokenURI}`);
   });

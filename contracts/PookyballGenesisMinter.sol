@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (PookyBallGenesisMinter.sol)
+// Pooky Game Contracts (PookyballGenesisMinter.sol)
 
 pragma solidity ^0.8.9;
 
-import "./interfaces/IPookyBall.sol";
-import "./PookyBallMinter.sol";
+import "./interfaces/IPookyball.sol";
+import "./PookyballMinter.sol";
 import { BallRarity, MintTemplate, MintRandomRequest } from "./types/DataTypes.sol";
 
 /**
- * @title PookyBallGenesisMinter
+ * @title PookyballGenesisMinter
  * @author Pooky Engineering Team
  *
- * @notice Extension of PookyBallMinter that will only be used for the initial minting event.
+ * @notice Extension of PookyballMinter that will only be used for the initial minting event.
  * This particular Minter also includes a basic tiered allowlist.
  *
  * @dev The zero tier means that the mint is public.
@@ -20,8 +20,8 @@ import { BallRarity, MintTemplate, MintRandomRequest } from "./types/DataTypes.s
  *   DEFAULT_ADMIN_ROLE can add/remove roles.
  *   TECH role represents the Pooky Engineering team which is allowed to set account allowlist tier.
  */
-contract PookyBallGenesisMinter is PookyBallMinter {
-  /// The minimum required tier (inclusive) to mint a Pooky Ball token.
+contract PookyballGenesisMinter is PookyballMinter {
+  /// The minimum required tier (inclusive) to mint a Pookyball token.
   uint256 public minTierToMint;
   /// The allowlist account => tier mapping.
   mapping(address => uint256) public accountTiers;
@@ -69,7 +69,7 @@ contract PookyBallGenesisMinter is PookyBallMinter {
     maxMintSupply = _maxMintSupply;
     treasuryWallet = _treasuryWallet;
 
-    __PookyBallMinter_init(
+    __PookyballMinter_init(
       _startFromId,
       _admin,
       _vrfCoordinator,
@@ -123,7 +123,7 @@ contract PookyBallGenesisMinter is PookyBallMinter {
 
   /**
    * @notice Set the maximum number of mintable balls per account.
-   * @dev Pooky Balls balance might exceed this limit as Ball transfers are permitted.
+   * @dev Pookyballs balance might exceed this limit as Ball transfers are permitted.
    * Mints are tracked by {accountMints}.
    *
    * Requirements:
@@ -135,7 +135,7 @@ contract PookyBallGenesisMinter is PookyBallMinter {
 
   /**
    * @dev Internal function that mints multiple balls at once.
-   * @param recipient The account address that will receive the Pooky Balls NFTs.
+   * @param recipient The account address that will receive the Pookyballs NFTs.
    * @param templateId The selected MintTemplate id.
    * @param amount The number of balls minted by the account.
    */

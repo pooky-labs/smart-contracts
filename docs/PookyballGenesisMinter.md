@@ -1,8 +1,8 @@
 # Solidity API
 
-## PookyBallGenesisMinter
+## PookyballGenesisMinter
 
-Extension of PookyBallMinter that will only be used for the initial minting event.
+Extension of PookyballMinter that will only be used for the initial minting event.
 This particular Minter also includes a basic tiered allowlist.
 
 _The zero tier means that the mint is public.
@@ -17,7 +17,7 @@ Roles:
 uint256 minTierToMint
 ```
 
-The minimum required tier (inclusive) to mint a Pooky Ball token.
+The minimum required tier (inclusive) to mint a Pookyball token.
 
 ### accountTiers
 
@@ -178,7 +178,7 @@ function setMaxAccountMints(uint256 _maxAccountsMints) external
 
 Set the maximum number of mintable balls per account.
 
-_Pooky Balls balance might exceed this limit as Ball transfers are permitted.
+_Pookyballs balance might exceed this limit as Ball transfers are permitted.
 Mints are tracked by {accountMints}.
 
 Requirements:
@@ -196,7 +196,7 @@ _Internal function that mints multiple balls at once._
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| recipient | address | The account address that will receive the Pooky Balls NFTs. |
+| recipient | address | The account address that will receive the Pookyballs NFTs. |
 | templateId | uint256 | The selected MintTemplate id. |
 | amount | uint256 | The number of balls minted by the account. |
 

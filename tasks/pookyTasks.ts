@@ -1,9 +1,9 @@
 import { getContractFromJsonDb } from '../lib/utils/DbHelper';
 import { signRewardsClaim } from '../lib/utils/signRewardsClaim';
 import waitTx from '../lib/waitTx';
-import { POK, POKMock, PookyBallGenesisMinter, PookyGame } from '../typings';
-import { MintTemplateStruct } from '../typings/contracts/PookyBallGenesisMinter';
+import { POK, POKMock, PookyballGenesisMinter, PookyGame } from '../typings';
 import { BallUpdatesStruct } from '../typings/contracts/PookyGame';
+import { MintTemplateStruct } from '../typings/contracts/PookyballGenesisMinter';
 import { BigNumber, Wallet } from 'ethers';
 import { task } from 'hardhat/config';
 
@@ -32,7 +32,7 @@ task('createMintTemplate', 'Creates new mint template')
 
     const [, , , MOD] = await hre.ethers.getSigners();
 
-    const PookyBallGenesisMinter = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
+    const PookyballGenesisMinter = await getContractFromJsonDb<PookyballGenesisMinter>('PookyballGenesisMinter', hre);
     const POK = await getContractFromJsonDb<POK>('POK', hre);
 
     console.log('Creating new mint template with specifications:');
@@ -50,7 +50,7 @@ task('createMintTemplate', 'Creates new mint template')
       payingToken: POK.address,
     };
 
-    const tx = await PookyBallGenesisMinter.connect(MOD).createMintTemplate(mintTemplate);
+    const tx = await PookyballGenesisMinter.connect(MOD).createMintTemplate(mintTemplate);
     await tx.wait();
 
     console.log(`Tx hash: ${tx.hash}`);
@@ -64,8 +64,8 @@ task('changeMintTemplate', 'Change canMint option in mint template')
 
     const [, , , MOD] = await hre.ethers.getSigners();
 
-    const PookyBallGenesisMinter = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
-    await waitTx(PookyBallGenesisMinter.connect(MOD).enableMintTemplate(params.templateId, Boolean(params.mintable)));
+    const PookyballGenesisMinter = await getContractFromJsonDb<PookyballGenesisMinter>('PookyballGenesisMinter', hre);
+    await waitTx(PookyballGenesisMinter.connect(MOD).enableMintTemplate(params.templateId, Boolean(params.mintable)));
 
     console.log('Done');
   });
@@ -77,11 +77,11 @@ task('mintBall', 'Mint ball from mint template for given user')
     await hre.run('set-hre');
     const [, , , , player] = await hre.ethers.getSigners();
 
-    const PookyBallGenesisMinter = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
-    const template = await PookyBallGenesisMinter.mintTemplates(parseInt(params.templateNumber) + 1);
+    const PookyballGenesisMinter = await getContractFromJsonDb<PookyballGenesisMinter>('PookyballGenesisMinter', hre);
+    const template = await PookyballGenesisMinter.mintTemplates(parseInt(params.templateNumber) + 1);
 
     await waitTx(
-      PookyBallGenesisMinter.connect(player).mint(params.templateNumber, params.number, {
+      PookyballGenesisMinter.connect(player).mint(params.templateNumber, params.number, {
         value: template.price,
       }),
     );
@@ -109,10 +109,10 @@ task('mintBallsAuthorized', 'Backend signer mint balls for user')
     await hre.run('set-hre');
     const [, backendSigner, , ,] = await hre.ethers.getSigners();
 
-    const PookyBallGenesisMinter = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
+    const PookyballGenesisMinter = await getContractFromJsonDb<PookyballGenesisMinter>('PookyballGenesisMinter', hre);
 
     await waitTx(
-      PookyBallGenesisMinter.connect(backendSigner).mintAuthorized(params.recipient, params.templateId, params.amount),
+      PookyballGenesisMinter.connect(backendSigner).mintAuthorized(params.recipient, params.templateId, params.amount),
     );
 
     console.log('Done');
@@ -124,9 +124,9 @@ task('revokeBallAuthorized', 'Backend signer revokes ball')
     await hre.run('set-hre');
     const [, backendSigner, , ,] = await hre.ethers.getSigners();
 
-    const PookyBallGenesisMinter = await getContractFromJsonDb<PookyBallGenesisMinter>('PookyBallGenesisMinter', hre);
+    const PookyballGenesisMinter = await getContractFromJsonDb<PookyballGenesisMinter>('PookyballGenesisMinter', hre);
 
-    await waitTx(PookyBallGenesisMinter.connect(backendSigner).revokeBallAuthorized(params.ballId));
+    await waitTx(PookyballGenesisMinter.connect(backendSigner).revokeBallAuthorized(params.ballId));
 
     console.log('Done');
   });

@@ -4,7 +4,7 @@ participant User
 participant Backend
 participant PookyGame
 participant POK
-participant PookyBall
+participant Pookyball
 
 
 User -> Backend : matcweek claim reward
@@ -14,7 +14,7 @@ PookyGame -> PookyGame : check if signature\nis valid
 PookyGame -> POK : mint POK reward
 POK --> User : mint POK
 group loop [BallUpdates.length times]
-  PookyGame -> PookyBall : addBallPxp\nlevelUp
+  PookyGame -> Pookyball : addBallPxp\nlevelUp
 end
 
 @enduml

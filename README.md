@@ -1,4 +1,4 @@
-# <img src="static/pookyball.png" alt="Pookyball visual example" height="40px"/> Pooky Smart Contracts
+# Pooky Smart Contracts
 
 [![Licensed under MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Audit: pending](https://img.shields.io/badge/audit-pending-yellowgreen?style=flat-square)](#)
@@ -58,7 +58,7 @@ its unit tests.
 
 ```
 contracts/POK.sol       => test/POK.spec.ts
-contracts/PookyBall.sol => test/PookyBall.spec.ts
+contracts/Pookyball.sol => test/Pookyball.spec.ts
 etc.
 ```
 

@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (PookyBall.sol)
+// Pooky Game Contracts (Pookyball.sol)
 
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
-import "./interfaces/IPookyBall.sol";
+import "./interfaces/IPookyball.sol";
 import { BallRarity, BallRarity, BallInfo } from "./types/DataTypes.sol";
 
 /**
- * @title PookyBall
+ * @title Pookyball
  * @author Pooky Engineering Team
  *
- * @notice PookyBall is ERC721 token representing Pooky Ball NFTs. Balls are mintable by other Pooky game contracts.
- * This contract does not hold any aspect of the Pooky gameplay and only serves as Pooky Ball information storage.
+ * @notice Pookyball is ERC721 token representing Pookyball NFTs. Balls are mintable by other Pooky game contracts.
+ * This contract does not hold any aspect of the Pooky gameplay and only serves as Pookyball information storage.
  *
- * Pooky Balls NFT have the following features (see {BallInfo}):
+ * Pookyballs NFT have the following features (see {BallInfo}):
  * - `rarity`
  * - `randomEntropy` the ball random entropy (provided by Chainlink VRF v2) which is used to generate the ball image and
  *   in-game boosts.
@@ -24,14 +24,14 @@ import { BallRarity, BallRarity, BallInfo } from "./types/DataTypes.sol";
  * - `pxp` the ball PXP (experience points)
  *
  * Leveling up:
- * Pooky Balls NFT gain PXP when used to place prediction on the Pooky game. Balls cannot loose PXP.
+ * Pookyballs NFT gain PXP when used to place prediction on the Pooky game. Balls cannot loose PXP.
  * Once a ball has acquired enough PXP, it can be leveled up in exchange of a certain amount of $POK token (see {POK}).
  *
  * Roles:
  * - DEFAULT_ADMIN_ROLE can add/remove roles.
  * - POOKY_CONTRACT role can mint new tokens.
  */
-contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
+contract Pookyball is IPookyball, ERC721Upgradeable, AccessControlUpgradeable {
   using StringsUpgradeable for uint256;
 
   // Roles
@@ -94,7 +94,7 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   }
 
   /**
-   * @notice Ball information of a particular Pooky Ball.
+   * @notice Ball information of a particular Pookyball.
    * @dev Requirements:
    * - Ball {tokenId} should exist (minted and not burned).
    */
@@ -104,9 +104,9 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   }
 
   /**
-   * @notice Sets the random entropy of the Pooky Ball with id {tokenId}.
+   * @notice Sets the random entropy of the Pookyball with id {tokenId}.
    * @dev Requirements:
-   * - Only POOKY_CONTRACT role can increase Pooky Balls levels.
+   * - Only POOKY_CONTRACT role can increase Pookyballs levels.
    * - Ball {tokenId} should exist (minted and not burned).
    * - Previous entropy should be zero.
    */
@@ -122,12 +122,12 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   }
 
   /**
-   * @notice Change the PXP (Experience points) of the Pooky Ball with id {tokenId}.
+   * @notice Change the PXP (Experience points) of the Pookyball with id {tokenId}.
    * @dev Requirements:
-   * - Only POOKY_CONTRACT role can increase Pooky Balls PXP.
+   * - Only POOKY_CONTRACT role can increase Pookyballs PXP.
    * - Ball {tokenId} should exist (minted and not burned).
-   * @param tokenId The Pooky Ball NFT id.
-   * @param amount The PXP amount to add the to Pooky Ball.
+   * @param tokenId The Pookyball NFT id.
+   * @param amount The PXP amount to add the to Pookyball.
    */
   function changePXP(uint256 tokenId, uint256 amount) external onlyRole(POOKY_CONTRACT) {
     _requireMinted(tokenId);
@@ -137,11 +137,11 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   }
 
   /**
-   * @notice Change the level of the Pooky Ball with id {tokenId} to the {newLevel}
+   * @notice Change the level of the Pookyball with id {tokenId} to the {newLevel}
    * @dev Requirements:
-   * - Only POOKY_CONTRACT role can increase Pooky Balls levels.
+   * - Only POOKY_CONTRACT role can increase Pookyballs levels.
    * - Ball {tokenId} should exist (minted and not burned).
-   * @param tokenId The Pooky Ball NFT id.
+   * @param tokenId The Pookyball NFT id.
    * @param newLevel The new Ball level.
    */
   function changeLevel(uint256 tokenId, uint256 newLevel) external onlyRole(POOKY_CONTRACT) {
@@ -166,10 +166,10 @@ contract PookyBall is IPookyBall, ERC721Upgradeable, AccessControlUpgradeable {
   /**
    * @notice Mint a ball with a specific {BallRarity} and {BallLuxury} with all other Ball parameters set to default.
    * @dev Requirements:
-   * - Only POOKY_CONTRACT role can mint Pooky Balls.
-   * @param to The address which will own the minted Pooky Ball.
-   * @param rarity The Pooky Ball rarity.
-   * @param luxury The Pooky Ball luxury.
+   * - Only POOKY_CONTRACT role can mint Pookyballs.
+   * @param to The address which will own the minted Pookyball.
+   * @param rarity The Pookyball rarity.
+   * @param luxury The Pookyball luxury.
    */
   function mint(
     address to,

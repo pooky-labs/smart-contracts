@@ -1,4 +1,4 @@
-import { POK, PookyBall, PookyBallGenesisMinter, PookyGame } from '../typings';
+import { POK, Pookyball, PookyballGenesisMinter, PookyGame } from '../typings';
 import { BaseContract, ContractFactory } from 'ethers';
 
 export enum BallRarity {
@@ -27,7 +27,7 @@ export interface TypeContractFactory<C extends BaseContract = BaseContract> exte
 
 export type ContractStack = {
   POK: POK;
-  PookyBall: PookyBall;
-  PookyBallGenesisMinter: PookyBallGenesisMinter;
+  Pookyball: Pookyball;
+  PookyballGenesisMinter: PookyballGenesisMinter;
   PookyGame: PookyGame;
 };

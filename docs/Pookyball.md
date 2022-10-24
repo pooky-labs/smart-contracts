@@ -1,11 +1,11 @@
 # Solidity API
 
-## PookyBall
+## Pookyball
 
-PookyBall is ERC721 token representing Pooky Ball NFTs. Balls are mintable by other Pooky game contracts.
-This contract does not hold any aspect of the Pooky gameplay and only serves as Pooky Ball information storage.
+Pookyball is ERC721 token representing Pookyball NFTs. Balls are mintable by other Pooky game contracts.
+This contract does not hold any aspect of the Pooky gameplay and only serves as Pookyball information storage.
 
-Pooky Balls NFT have the following features (see {BallInfo}):
+Pookyballs NFT have the following features (see {BallInfo}):
 - `rarity`
 - `randomEntropy` the ball random entropy (provided by Chainlink VRF v2) which is used to generate the ball image and
   in-game boosts.
@@ -13,7 +13,7 @@ Pooky Balls NFT have the following features (see {BallInfo}):
 - `pxp` the ball PXP (experience points)
 
 Leveling up:
-Pooky Balls NFT gain PXP when used to place prediction on the Pooky game. Balls cannot loose PXP.
+Pookyballs NFT gain PXP when used to place prediction on the Pooky game. Balls cannot loose PXP.
 Once a ball has acquired enough PXP, it can be leveled up in exchange of a certain amount of $POK token (see {POK}).
 
 Roles:
@@ -120,7 +120,7 @@ Requirements:
 function getBallInfo(uint256 tokenId) external view returns (struct BallInfo)
 ```
 
-Ball information of a particular Pooky Ball.
+Ball information of a particular Pookyball.
 
 _Requirements:
 - Ball {tokenId} should exist (minted and not burned)._
@@ -131,10 +131,10 @@ _Requirements:
 function setRandomEntropy(uint256 tokenId, uint256 _randomEntropy) external
 ```
 
-Sets the random entropy of the Pooky Ball with id {tokenId}.
+Sets the random entropy of the Pookyball with id {tokenId}.
 
 _Requirements:
-- Only POOKY_CONTRACT role can increase Pooky Balls levels.
+- Only POOKY_CONTRACT role can increase Pookyballs levels.
 - Ball {tokenId} should exist (minted and not burned).
 - Previous entropy should be zero._
 
@@ -144,18 +144,18 @@ _Requirements:
 function changePXP(uint256 tokenId, uint256 amount) external
 ```
 
-Change the PXP (Experience points) of the Pooky Ball with id {tokenId}.
+Change the PXP (Experience points) of the Pookyball with id {tokenId}.
 
 _Requirements:
-- Only POOKY_CONTRACT role can increase Pooky Balls PXP.
+- Only POOKY_CONTRACT role can increase Pookyballs PXP.
 - Ball {tokenId} should exist (minted and not burned)._
 
 #### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| tokenId | uint256 | The Pooky Ball NFT id. |
-| amount | uint256 | The PXP amount to add the to Pooky Ball. |
+| tokenId | uint256 | The Pookyball NFT id. |
+| amount | uint256 | The PXP amount to add the to Pookyball. |
 
 ### changeLevel
 
@@ -163,17 +163,17 @@ _Requirements:
 function changeLevel(uint256 tokenId, uint256 newLevel) external
 ```
 
-Change the level of the Pooky Ball with id {tokenId} to the {newLevel}
+Change the level of the Pookyball with id {tokenId} to the {newLevel}
 
 _Requirements:
-- Only POOKY_CONTRACT role can increase Pooky Balls levels.
+- Only POOKY_CONTRACT role can increase Pookyballs levels.
 - Ball {tokenId} should exist (minted and not burned)._
 
 #### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| tokenId | uint256 | The Pooky Ball NFT id. |
+| tokenId | uint256 | The Pookyball NFT id. |
 | newLevel | uint256 | The new Ball level. |
 
 ### _mintBall
@@ -193,15 +193,15 @@ function mint(address to, enum BallRarity rarity, enum BallLuxury luxury) extern
 Mint a ball with a specific {BallRarity} and {BallLuxury} with all other Ball parameters set to default.
 
 _Requirements:
-- Only POOKY_CONTRACT role can mint Pooky Balls._
+- Only POOKY_CONTRACT role can mint Pookyballs._
 
 #### Parameters
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| to | address | The address which will own the minted Pooky Ball. |
-| rarity | enum BallRarity | The Pooky Ball rarity. |
-| luxury | enum BallLuxury | The Pooky Ball luxury. |
+| to | address | The address which will own the minted Pookyball. |
+| rarity | enum BallRarity | The Pookyball rarity. |
+| luxury | enum BallLuxury | The Pookyball luxury. |
 
 ### supportsInterface
 

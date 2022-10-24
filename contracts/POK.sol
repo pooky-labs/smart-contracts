@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 /**
- * @title PookyBall
+ * @title Pookyball
  * @author Pooky Engineering Team
  *
  * @notice POK is ERC20 token used inside of the game.

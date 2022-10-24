@@ -4,8 +4,8 @@
 
 The contract controls the on-chain features of the Pooky game.
 Notable features:
-- Claim prediction rewards (Pooky Ball PXP + $POK tokens) using a signature from the Pooky back-end.
-- Level up Pooky Balls by spending $POK token.
+- Claim prediction rewards (Pookyball PXP + $POK tokens) using a signature from the Pooky back-end.
+- Level up Pookyballs by spending $POK token.
 
 Roles:
 - DEFAULT_ADMIN_ROLE can add/remove roles.
@@ -20,7 +20,7 @@ bytes32 REWARD_SIGNER
 ### pookyBall
 
 ```solidity
-contract IPookyBall pookyBall
+contract IPookyball pookyBall
 ```
 
 ### pok
@@ -153,13 +153,13 @@ _Useful if the contract need to be hard-upgraded.
 Requirements:
 - only DEFAULT_ADMIN_ROLE role can withdraw the native tokens._
 
-### setPookyBallContract
+### setPookyballContract
 
 ```solidity
-function setPookyBallContract(address _pookyBall) external
+function setPookyballContract(address _pookyBall) external
 ```
 
-Sets the address of the PookyBall contract.
+Sets the address of the Pookyball contract.
 
 _Requirements:
 - only DEFAULT_ADMIN_ROLE role can call this function._
@@ -224,11 +224,11 @@ This computation the ball PXP into account and add an additional POK fee if ball
 function levelUp(uint256 tokenId) public
 ```
 
-Level up a Pooky Ball in exchange of a certain amount of $POK token.
+Level up a Pookyball in exchange of a certain amount of $POK token.
 
 _Requirements
-- msg.sender must be the owner of Pooky Ball tokenId.
-- Pooky Ball level should be strictly less than the maximum allowed level for its rarity.
+- msg.sender must be the owner of Pookyball tokenId.
+- Pookyball level should be strictly less than the maximum allowed level for its rarity.
 - msg.sender must own enough $POK tokens to pay the level up fee._
 
 ### verifySignature
@@ -255,7 +255,7 @@ _No explicit re-entrancy guard is present as this function is nonce-based._
 | ---- | ---- | ----------- |
 | amountNative | uint256 | The amount of native currency to transfer. |
 | amountPOK | uint256 | The $POK token amount. |
-| ballUpdates | struct BallUpdates[] | The updated to apply to the Pooky Balls (PXP and optional level up). |
+| ballUpdates | struct BallUpdates[] | The updated to apply to the Pookyballs (PXP and optional level up). |
 | ttl | uint256 | UNIX timestamp until signature is valid. |
 | nonce | uint256 | Unique word that prevents the usage the same signature twice. |
 | signature | bytes | The signature of the previous parameters generated using the eth_personalSign RPC call. |
