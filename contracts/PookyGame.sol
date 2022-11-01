@@ -55,6 +55,8 @@ contract PookyGame is AccessControlUpgradeable {
   error NonceUsed();
   /// Thrown when the native transfer has failed.
   error TransferFailed(uint256 amount, address recipient);
+  /// Thrown when there is not enough native tokens in the contract for sending the reward.
+  error NotEnoughNativeTokens(uint256 balance, uint256 amountNeeded);
 
   function initialize(address _admin) public initializer {
     __AccessControl_init();
@@ -222,6 +224,10 @@ contract PookyGame is AccessControlUpgradeable {
 
     if (nonces[nonce]) {
       revert NonceUsed();
+    }
+
+    if (address(this).balance < amountNative) {
+      revert NotEnoughNativeTokens(address(this).balance, amountNative);
     }
 
     nonces[nonce] = true;
