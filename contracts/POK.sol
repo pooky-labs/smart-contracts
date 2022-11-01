@@ -52,18 +52,18 @@ contract POK is ERC20Upgradeable, AccessControlUpgradeable {
   }
 
   /**
-   * @notice Burn an arbitrary amount of $POK of an account.
+   * @notice Burn an arbitrary amount of $POK of an sender account.
    * @dev Requirements:
-   * - only POOKY_CONTRACT role can mint $POK tokens
+   * - only POOKY_CONTRACT role can burn $POK tokens from itself
    */
-  function burn(address from, uint256 amount) external onlyRole(POOKY_CONTRACT) {
-    _burn(from, amount);
+  function burn(uint256 amount) external onlyRole(POOKY_CONTRACT) {
+    _burn(msg.sender, amount);
   }
 
   /**
    * @notice Enable/disable transfers of $POK tokens between accounts.
    * @dev Requirements:
-   * - only POOKY_CONTRACT role can mint $POK tokens
+   * - only DEFAULT_ADMIN_ROLE role can enable/disable transfers
    */
   function setTransferEnabled(bool _transferEnabled) external onlyRole(DEFAULT_ADMIN_ROLE) {
     transferEnabled = _transferEnabled;

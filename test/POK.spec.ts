@@ -50,8 +50,8 @@ describe('POK', async () => {
       );
     });
 
-    it('should revert if non-POOKY_CONTRACT account tries to mint random amount of POK tokens', async () => {
-      await expectMissingRole(POK.connect(player1).burn(player1.address, parseEther(10)), player1, POOKY_CONTRACT);
+    it('should revert if non-POOKY_CONTRACT account tries to burn random amount of POK tokens', async () => {
+      await expectMissingRole(POK.connect(player1).burn(parseEther(10)), player1, POOKY_CONTRACT);
     });
   });
 

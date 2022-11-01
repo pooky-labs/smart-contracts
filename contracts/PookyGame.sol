@@ -176,8 +176,10 @@ contract PookyGame is AccessControlUpgradeable {
       remainingPXP = ball.pxp - levelPXP(nextLevel);
     }
 
+    // Transfer $POK tokens to PookyGame contract to be burned
+    pok.transferFrom(msg.sender, address(this), levelPOKCost_);
     // Burn $POK tokens
-    pok.burn(msg.sender, levelPOKCost_);
+    pok.burn(levelPOKCost_);
     // Reset the ball PXP
     pookyBall.changePXP(tokenId, remainingPXP);
     // Increment the ball level
