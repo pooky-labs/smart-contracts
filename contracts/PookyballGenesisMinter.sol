@@ -5,7 +5,7 @@ pragma solidity ^0.8.9;
 
 import "./interfaces/IPookyball.sol";
 import "./PookyballMinter.sol";
-import { BallRarity, MintTemplate, MintRandomRequest } from "./types/DataTypes.sol";
+import { BallRarity, MintTemplate, MintRandomRequest } from "./DataTypes.sol";
 
 /**
  * @title PookyballGenesisMinter

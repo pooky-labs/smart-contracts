@@ -4,7 +4,7 @@
 pragma solidity ^0.8.9;
 
 import "../Pookyball.sol";
-import { BallInfo } from "../types/DataTypes.sol";
+import { BallInfo } from "../DataTypes.sol";
 
 /**
  * @notice PookyballMock is used for testing: everybody is allowed mint new Pookyballs  tokens.

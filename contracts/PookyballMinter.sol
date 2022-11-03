@@ -5,9 +5,9 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
+import { BallRarity, MintTemplate, MintRandomRequest } from "./DataTypes.sol";
 import "./interfaces/IPookyball.sol";
-import { BallRarity, MintTemplate, MintRandomRequest } from "./types/DataTypes.sol";
-import "./vendor/VRFConsumerBaseV2.sol";
+import "./interfaces/IVRFConsumerBaseV2.sol";
 
 /**
  * @title PookyballMinter
@@ -23,7 +23,7 @@ import "./vendor/VRFConsumerBaseV2.sol";
  * - DEFAULT_ADMIN_ROLE can add/remove roles
  * - TECH role can create/change mint templates
  */
-abstract contract PookyballMinter is AccessControlUpgradeable, VRFConsumerBaseV2 {
+abstract contract PookyballMinter is AccessControlUpgradeable, IVRFConsumerBaseV2 {
   // Roles
   bytes32 public constant TECH = keccak256("TECH");
 
@@ -71,8 +71,6 @@ abstract contract PookyballMinter is AccessControlUpgradeable, VRFConsumerBaseV2
     __AccessControl_init();
     lastMintTemplateId = _startFromId - 1;
     _setupRole(DEFAULT_ADMIN_ROLE, _admin);
-
-    __VRFConsumerBaseV2_init(_vrfCoordinator);
 
     // We have to initialize the VRF parameters without the setter as it requires the deployer to have the TECH role
     vrf_coordinator = VRFCoordinatorV2Interface(_vrfCoordinator);
@@ -187,30 +185,24 @@ abstract contract PookyballMinter is AccessControlUpgradeable, VRFConsumerBaseV2
   }
 
   /**
+   * @notice Called by the Chainlink VRF coordinator when fulfilling random words.
    * @dev Handle randomness response from Chainlink VRF coordinator.
    * Since only 1 word is requested in {_requestRandomEntropyForMint}, only first received number is used to set the
    * Pookyball random entropy.
-   * Emits a RandomnessFulfilled event.
-   */
-  function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
-    MintRandomRequest storage request = mintRandomRequests[requestId];
-
-    pookyBall.setRandomEntropy(request.tokenId, randomWords[0]);
-    pookyBall.transferFrom(address(this), request.recipient, request.tokenId);
-
-    emit RandomnessFulfilled(requestId, request.tokenId, randomWords[0]);
-  }
-
-  /**
-   * @notice Called by the Chainlink VRF coordinator when fulfilling random words.
-   * @dev Requirements:
+   * Requirements:
    * - Only vrf_coordinator can call this function.
+   * Emits a RandomnessFulfilled event.
    */
   function rawFulfillRandomWords(uint256 requestId, uint256[] memory randomWords) external override {
     if (msg.sender != address(vrf_coordinator)) {
       revert OnlyVRFCoordinator(address(vrf_coordinator), msg.sender);
     }
 
-    fulfillRandomWords(requestId, randomWords);
+    MintRandomRequest storage request = mintRandomRequests[requestId];
+
+    pookyBall.setRandomEntropy(request.tokenId, randomWords[0]);
+    pookyBall.transferFrom(address(this), request.recipient, request.tokenId);
+
+    emit RandomnessFulfilled(requestId, request.tokenId, randomWords[0]);
   }
 }

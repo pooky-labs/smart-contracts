@@ -2,8 +2,8 @@
 // A mock for testing code that relies on VRFCoordinatorV2.
 pragma solidity ^0.8.4;
 
-import { VRFCoordinatorV2Interface } from "../interfaces/VRFCoordinatorV2Interface.sol";
-import "../vendor/VRFConsumerBaseV2.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
+import "../interfaces/IVRFConsumerBaseV2.sol";
 
 contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
   uint96 public immutable BASE_FEE;
@@ -118,7 +118,7 @@ contract VRFCoordinatorV2Mock is VRFCoordinatorV2Interface {
       revert InvalidRandomWords();
     }
 
-    VRFConsumerBaseV2 v;
+    IVRFConsumerBaseV2 v;
     bytes memory callReq = abi.encodeWithSelector(v.rawFulfillRandomWords.selector, _requestId, _words);
     (bool success, ) = _consumer.call{ gas: req.callbackGasLimit }(callReq);
 

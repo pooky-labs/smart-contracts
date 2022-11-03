@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (types/DataTypes.sol)
+// Pooky Game Contracts (DataTypes.sol)
 
 pragma solidity ^0.8.9;
 

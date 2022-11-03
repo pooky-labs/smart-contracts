@@ -4,7 +4,8 @@
 pragma solidity ^0.8.9;
 
 /**
- * This contract always revert when receiving tokens. This allow to tests scenarii
+ * @title InvalidReceiver
+ * This contract always revert when receiving tokens. This allow to test scenarii where a native transfer fails.
  */
 contract InvalidReceiver {
   receive() external payable {
