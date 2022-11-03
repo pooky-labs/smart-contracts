@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "./interfaces/IPookyball.sol";
-import { BallRarity, BallRarity, BallInfo } from "./types/DataTypes.sol";
+import { BallRarity, BallRarity, BallInfo } from "./DataTypes.sol";
 
 /**
  * @title Pookyball

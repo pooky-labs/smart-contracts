@@ -120,8 +120,14 @@ describe('PookyballMinter', () => {
   });
 
   describe('enableMintTemplate', () => {
+    let lastMintTemplateId: number;
+
+    beforeEach(async () => {
+      lastMintTemplateId = (await PookyballMinter.lastMintTemplateId()).toNumber();
+    });
+
     it('should allow TECH account to toggle mint template', async () => {
-      const templateId = await PookyballMinter.lastMintTemplateId();
+      const templateId = lastMintTemplateId;
       const { enabled } = await PookyballMinter.mintTemplates(templateId);
       const expected = !enabled;
 
@@ -139,6 +145,27 @@ describe('PookyballMinter', () => {
         player1,
         TECH,
       );
+    });
+
+    it('should revert if mint template id is zero', async () => {
+      await expect(PookyballMinter.connect(tech).enableMintTemplate(0, false))
+        .to.revertedWithCustomError(PookyballMinter, 'InvalidMintTemplateId')
+        .withArgs(0, lastMintTemplateId);
+    });
+
+    it('should revert if mint template id is too high', async () => {
+      const templateId = lastMintTemplateId + 1;
+      await expect(PookyballMinter.connect(tech).enableMintTemplate(templateId, false))
+        .to.revertedWithCustomError(PookyballMinter, 'InvalidMintTemplateId')
+        .withArgs(templateId, lastMintTemplateId);
+    });
+
+    it('should revert if mint template is already enabled', async () => {
+      const templateId = lastMintTemplateId;
+      const enabled = (await PookyballMinter.mintTemplates(templateId)).enabled;
+      await expect(PookyballMinter.connect(tech).enableMintTemplate(templateId, enabled))
+        .to.revertedWithCustomError(PookyballMinter, 'MintTemplateEnabledAlreadySetTo')
+        .withArgs(enabled);
     });
   });
 

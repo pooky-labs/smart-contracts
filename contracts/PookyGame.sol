@@ -7,7 +7,7 @@ import "./interfaces/IPookyball.sol";
 import "./interfaces/IPOK.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol";
-import { BallUpdates, BallInfo, BallRarity } from "./types/DataTypes.sol";
+import { BallUpdates, BallInfo, BallRarity } from "./DataTypes.sol";
 
 /**
  * @title PookyballMinter

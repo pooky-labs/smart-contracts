@@ -2,9 +2,9 @@
 
 ## TimelockAdmin
 
-This contract will be used as ProxyAdmin on proxy contracts 
+This contract will be used as ProxyAdmin on proxy contracts
 and as DEFAULT_ADMIN_ROLE in implementation contracts.
-It's standard OpenZepellin implementation of Timelock contract in which 
+It's standard OpenZepellin implementation of Timelock contract in which
 each action needs to be proposed and waited for `minDelay` time until exectued.
 
 `proposers` will be set to Pooky Tech Team multisig wallet and Pooky Executives Team multisig.
