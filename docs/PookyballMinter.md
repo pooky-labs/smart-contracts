@@ -120,6 +120,18 @@ error MaximumMintsReached(uint256 templateId, uint256 maximumMints)
 error OnlyVRFCoordinator(address coordinator, address actual)
 ```
 
+### InvalidMintTemplateId
+
+```solidity
+error InvalidMintTemplateId(uint256 mintTemplateId, uint256 lastMintTemplateId)
+```
+
+### MintTemplateEnabledAlreadySetTo
+
+```solidity
+error MintTemplateEnabledAlreadySetTo(bool enabled)
+```
+
 ### __PookyballMinter_init
 
 ```solidity

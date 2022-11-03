@@ -53,6 +53,8 @@ abstract contract PookyballMinter is AccessControlUpgradeable, VRFConsumerBaseV2
   error MintDisabled(uint256 templateId);
   error MaximumMintsReached(uint256 templateId, uint256 maximumMints);
   error OnlyVRFCoordinator(address coordinator, address actual);
+  error InvalidMintTemplateId(uint256 mintTemplateId, uint256 lastMintTemplateId);
+  error MintTemplateEnabledAlreadySetTo(bool enabled);
 
   /**
    * Initialization function that sets Chainlink VRF parameters.
@@ -128,6 +130,13 @@ abstract contract PookyballMinter is AccessControlUpgradeable, VRFConsumerBaseV2
    * Emits a MintTemplateEnabled event.
    */
   function enableMintTemplate(uint256 mintTemplateId, bool _enabled) external onlyRole(TECH) {
+    if (mintTemplateId == 0 || mintTemplateId > lastMintTemplateId) {
+      revert InvalidMintTemplateId(mintTemplateId, lastMintTemplateId);
+    }
+    if (mintTemplates[mintTemplateId].enabled == _enabled) {
+      revert MintTemplateEnabledAlreadySetTo(_enabled);
+    }
+
     mintTemplates[mintTemplateId].enabled = _enabled;
     emit MintTemplateEnabled(mintTemplateId, _enabled);
   }

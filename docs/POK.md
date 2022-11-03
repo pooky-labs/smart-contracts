@@ -61,13 +61,13 @@ _Requirements:
 ### burn
 
 ```solidity
-function burn(address from, uint256 amount) external
+function burn(uint256 amount) external
 ```
 
-Burn an arbitrary amount of $POK of an account.
+Burn an arbitrary amount of $POK of an sender account.
 
 _Requirements:
-- only POOKY_CONTRACT role can mint $POK tokens_
+- only POOKY_CONTRACT role can burn $POK tokens from itself_
 
 ### setTransferEnabled
 
@@ -78,7 +78,7 @@ function setTransferEnabled(bool _transferEnabled) external
 Enable/disable transfers of $POK tokens between accounts.
 
 _Requirements:
-- only POOKY_CONTRACT role can mint $POK tokens_
+- only DEFAULT_ADMIN_ROLE role can enable/disable transfers_
 
 ### _beforeTokenTransfer
 

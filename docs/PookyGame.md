@@ -127,6 +127,14 @@ error TransferFailed(uint256 amount, address recipient)
 
 Thrown when the native transfer has failed.
 
+### NotEnoughNativeTokens
+
+```solidity
+error NotEnoughNativeTokens(uint256 balance, uint256 amountNeeded)
+```
+
+Thrown when there is not enough native tokens in the contract for sending the reward.
+
 ### initialize
 
 ```solidity

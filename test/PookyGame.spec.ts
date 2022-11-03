@@ -193,6 +193,7 @@ describe('PookyGame', () => {
     it('should allow player to level up a ball', async () => {
       await Pookyball.connect(pooky).changePXP(tokenId, requiredPXP.add(deltaPXP));
       await POK.connect(pooky).mint(player1.address, requiredPOK.add(deltaPOK));
+      await POK.connect(player1).approve(PookyGame.address, requiredPOK);
 
       await expect(PookyGame.connect(player1).levelUp(tokenId)).to.changeTokenBalance(
         POK,
@@ -208,6 +209,7 @@ describe('PookyGame', () => {
     it('should allow player to level up a ball by exchanging POK to fill missing PXP', async () => {
       const actualPOKRequired = await PookyGame.levelPOKCost(tokenId);
       await POK.connect(pooky).mint(player1.address, actualPOKRequired.add(deltaPOK));
+      await POK.connect(player1).approve(PookyGame.address, actualPOKRequired);
 
       await expect(PookyGame.connect(player1).levelUp(tokenId)).to.changeTokenBalance(
         POK,
@@ -305,6 +307,8 @@ describe('PookyGame', () => {
         nonce,
         backend,
       );
+      const requiredPOK = await PookyGame.levelPOK(currentLevel + 1);
+      await POK.connect(player1).approve(PookyGame.address, requiredPOK);
 
       await expect(PookyGame.connect(player1).claimRewards(rewardNative, rewardPOK, ballUpdates, ttl, nonce, signature))
         .to.not.be.reverted;
@@ -381,6 +385,9 @@ describe('PookyGame', () => {
         nonce,
         backend,
       );
+
+      const requiredPOK = await PookyGame.levelPOK(currentLevel + 1);
+      await POK.connect(player1).approve(PookyGame.address, requiredPOK);
 
       // First call: success!
       await expect(PookyGame.connect(player1).claimRewards(rewardNative, rewardPOK, ballUpdates, ttl, nonce, signature))
