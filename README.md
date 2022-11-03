@@ -54,8 +54,8 @@ etc.
 ### Pooky Wallets
 - `EXEC_WALLET` - Multisig wallet owned by Pooky Executives team.
 - `TECH_WALLET` - Multisig wallet owned by Pooky Technical team.
-- `REWARD_SIGNER_WALLET` - Wallet which is stored securly on the backend, used to sign matchweek rewards.
-- `TimelockAdmin` - Timelock contract to set delay of 48h on transaction execution. Proposers for transactions will be `EXEC_WALLET` and `TECH_WALLET`. While transaction executors will be only `EXEC_WALLET`.
+- `REWARD_SIGNER_WALLET` - Wallet which is stored securely on the backend, used to sign rewards.
+- `TimelockAdmin` - Timelock contract to set delay of 48h on transaction execution. Proposers for transactions will be `EXEC_WALLET` and `TECH_WALLET`, transaction executors will be restricted to `EXEC_WALLET`.
 
 ### Roles
 - `ProxyAdmin`
