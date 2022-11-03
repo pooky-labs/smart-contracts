@@ -60,35 +60,35 @@ etc.
 ### Roles
 - `ProxyAdmin`
   - Used in all proxy contracts.
-  - This role can upgrade and change implementation contracts. Only address which will have this permission is `TimelockAdmin` contract 
+  - This role can upgrade and change implementation contracts. Only address which will have this permission is `TimelockAdmin` contract.
 
 - `DEFAULT_ADMIN_ROLE` 
-  - Used in `POK.sol`, `Pookyball.sol`, `PookyballMinter.sol`, `PookyballGenesisMinter.sol`, `PookyGame.sol`
-  - Only address which will have these permissions is `TimelockAdmin` contract
-    - Can add/remove roles on contracts
-    - Can enable/disable transfer of $POK tokens
-    - Can set contractURI on `Pookyball.sol`
-    - Can set Pookyball and POK contract addresses on `PookyballMinter.sol` and `PookyGame.sol`
-    - Can set treasury wallet on `PookyballGenesisMinter.sol`
-    - Can withdraw funds on `PookyGame.sol`
+  - Used in `POK.sol`, `Pookyball.sol`, `PookyballMinter.sol`, `PookyballGenesisMinter.sol`, `PookyGame.sol`.
+  - Only address which will have these permissions is `TimelockAdmin` contract.
+    - Can add/remove roles on contracts.
+    - Can enable/disable transfer of $POK tokens.
+    - Can set contractURI on `Pookyball.sol`.
+    - Can set Pookyball and POK contract addresses on `PookyballMinter.sol` and `PookyGame.sol`.
+    - Can set treasury wallet on `PookyballGenesisMinter.sol`.
+    - Can withdraw funds on `PookyGame.sol`.
 
 
 - `POOKY_CONTRACT`
-  - Used in `POK.sol` and `Pookyball.sol`
+  - Used in `POK.sol` and `Pookyball.sol`.
   - Only addresses which will have these permissions are other Pooky smart contracts (`PookyballMinter.sol`, `PookyballGenesisMinter.sol`, `PookyGame.sol`).
-    - Can mint $POK or burn from it's address. Can send/receive $POK while transfer is disabled
-    - Can mint new balls on `Pookyball.sol`
-    - Can change ball parameters (setRandomEntropy, change level, change pxp) on `Pookyball.sol`
+    - Can mint $POK or burn from it's address. Can send/receive $POK while transfer is disabled.
+    - Can mint new balls on `Pookyball.sol`.
+    - Can change ball parameters (setRandomEntropy, change level, change pxp) on `Pookyball.sol`.
 
 - `TECH`
-  - Used in `PookyballGenesisMinter.sol` and `PookyballMinter.sol`
+  - Used in `PookyballGenesisMinter.sol` and `PookyballMinter.sol`.
   - Only address which will have these permissions is `TECH_WALLET`. 
-    - Can set tiers for accounts on `PookyballGenesisMinter.sol`
-    - Can set minimum tier which can mint, and maximum number of mints per account, on `PookyballGenesisMinter.sol`
-    - Can create and enable/disable mint templates on `PookyballMinter.sol`
-    - Can change Chainlink VRF parameters on `PookyballMinter.sol`
+    - Can set tiers for accounts on `PookyballGenesisMinter.sol`.
+    - Can set minimum tier which can mint, and maximum number of mints per account, on `PookyballGenesisMinter.sol`.
+    - Can create and enable/disable mint templates on `PookyballMinter.sol`.
+    - Can change Chainlink VRF parameters on `PookyballMinter.sol`.
 
 - `REWARD_SIGNER`
   - Used in `PookyGame.sol`
-  - Only address which will have these permissions is `REWARD_SIGNER_WALLET` 
-    - Can sign parameters for claiming rewards on `PookyGame.sol`
+  - Only address which will have these permissions is `REWARD_SIGNER_WALLET`.
+    - Can sign parameters for claiming rewards on `PookyGame.sol`.
