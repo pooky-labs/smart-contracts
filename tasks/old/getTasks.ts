@@ -1,5 +1,5 @@
-import { getContractFromJsonDb } from '../lib/utils/DbHelper';
-import { Pookyball, PookyballGenesisMinter, PookyGame } from '../typings';
+import { getContractFromJsonDb } from '../../lib/utils/DbHelper';
+import { Pookyball, PookyballGenesisMinter, PookyGame } from '../../typings';
 import { task } from 'hardhat/config';
 
 task('getMinTierToBuy', 'Gets minimum tier to mint ball').setAction(async (params, hre) => {
@@ -10,17 +10,6 @@ task('getMinTierToBuy', 'Gets minimum tier to mint ball').setAction(async (param
 
   console.log(`Min tier to buy is ${minTierToBuy}`);
 });
-
-task('getAddressTier', 'Gets tier for address')
-  .addPositionalParam('player', 'Player address')
-  .setAction(async (params, hre) => {
-    await hre.run('set-hre');
-
-    const PookyballGenesisMinter = await getContractFromJsonDb<PookyballGenesisMinter>('PookyballGenesisMinter', hre);
-    const tier = await PookyballGenesisMinter.userTiers(params.player);
-
-    console.log(tier);
-  });
 
 task('getMaxBallsPerUser', 'Gets maximum balls per user').setAction(async (params, hre) => {
   await hre.run('set-hre');

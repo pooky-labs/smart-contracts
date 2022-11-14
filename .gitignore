@@ -4,10 +4,11 @@ node_modules
 .env
 coverage
 coverage.json
-typings
 
-#Hardhat files
+# Hardhat files
 cache
 artifacts
+/typings
 
-.openzeppelin
+# OpenZeppelin
+.openzeppelin/unknown-*.json

@@ -1,11 +1,11 @@
-import { HUNDRED, ZERO_ADDRESS } from '../lib/constants';
-import parseEther from '../lib/parseEther';
+import { ZERO_ADDRESS } from '../lib/constants';
 import { TECH } from '../lib/roles';
 import getTestAccounts from '../lib/testing/getTestAccounts';
-import { randAccount, randInt } from '../lib/testing/rand';
+import { randAccount, randUint256 } from '../lib/testing/rand';
 import { expectHasRole, expectMissingRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
-import { BallLuxury, BallRarity } from '../lib/types';
+import { BallLuxury, BallRarity } from '../lib/typings/DataTypes';
+import parseEther from '../lib/utils/parseEther';
 import { InvalidReceiver, Pookyball, PookyballGenesisMinter, VRFCoordinatorV2Mock } from '../typings';
 import { faker } from '@faker-js/faker';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
@@ -141,7 +141,7 @@ describe('PookyballGenesisMinter', () => {
 
   describe('minTierToMint', () => {
     it('should let TECH account sets minimum tier to buy', async () => {
-      const randomMinimumTierToBuy = randInt(HUNDRED);
+      const randomMinimumTierToBuy = faker.datatype.number(10);
       await PookyballGenesisMinter.connect(tech).setMinTierToMint(randomMinimumTierToBuy);
 
       const minTierToMint = await PookyballGenesisMinter.minTierToMint();
@@ -167,7 +167,7 @@ describe('PookyballGenesisMinter', () => {
 
       for (let tokenId = startTokenId; tokenId < startTokenId + numberOfBalls; tokenId++) {
         // Fulfill the VRF request
-        const randomEntropy = randInt(HUNDRED);
+        const randomEntropy = randUint256();
         await expect(
           VRFCoordinatorV2.fulfillRandomWordsWithOverride(tokenId, PookyballGenesisMinter.address, [randomEntropy]),
         ).changeTokenBalance(Pookyball, player1, 1);

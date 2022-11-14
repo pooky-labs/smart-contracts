@@ -1,13 +1,9 @@
-import { BaseContract, Contract } from 'ethers';
+import { BaseContract } from 'ethers';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import low from 'lowdb';
 import FileSync from 'lowdb/adapters/FileSync';
 
 export const getDb = () => low(new FileSync('./deployed-contracts.json'));
-
-export const registerContractInJsonDb = async (contractName: string, contractInstance: Contract) => {
-  getDb().set(contractName, { address: contractInstance.address }).write();
-};
 
 export const getContractFromJsonDb = async <T extends BaseContract>(
   contractName: string,

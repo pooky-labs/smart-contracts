@@ -1,8 +1,8 @@
-import parseEther from '../lib/parseEther';
 import { DEFAULT_ADMIN_ROLE, POOKY_CONTRACT } from '../lib/roles';
 import getTestAccounts from '../lib/testing/getTestAccounts';
 import { expectHasRole, expectMissingRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
+import parseEther from '../lib/utils/parseEther';
 import { POK, PookyballGenesisMinter, PookyGame } from '../typings';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
