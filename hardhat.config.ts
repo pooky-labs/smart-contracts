@@ -1,7 +1,4 @@
-import './tasks/getTasks';
-import './tasks/helperTasks';
-import './tasks/pookyTasks';
-import './tasks/setTasks';
+import './tasks';
 import '@nomicfoundation/hardhat-chai-matchers';
 import '@nomicfoundation/hardhat-toolbox';
 import '@nomiclabs/hardhat-ethers';
@@ -15,7 +12,19 @@ import 'solidity-docgen';
 loadConfig();
 
 const config: HardhatUserConfig = {
-  solidity: '0.8.9',
+  solidity: {
+    version: '0.8.16', // see https://hardhat.org/hardhat-runner/docs/reference/solidity-support#solidity-support
+    settings: {
+      optimizer: {
+        enabled: true,
+      },
+    },
+  },
+  networks: {
+    local: {
+      url: 'http://127.0.0.1:8545/',
+    },
+  },
   warnings: {
     'contracts/mocks/**/*': 'off',
   },
@@ -36,10 +45,10 @@ const config: HardhatUserConfig = {
 };
 
 // Inject the mumbai network details only of the mumbai RPC url is provided
-if (process.env.MUMBAI_RPC) {
+if (process.env.MUMBAI_RPC_URL) {
   set(config, 'networks.mumbai', {
-    url: process.env.MUMBAI_RPC,
-    accounts: [process.env.PK_DEPLOYER as string],
+    url: process.env.MUMBAI_RPC_URL,
+    accounts: [process.env.DEPLOYER_PK as string],
   });
 }
 

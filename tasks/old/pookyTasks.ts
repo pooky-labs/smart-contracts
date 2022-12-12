@@ -1,27 +1,13 @@
-import { getContractFromJsonDb } from '../lib/utils/DbHelper';
-import { signRewardsClaim } from '../lib/utils/signRewardsClaim';
-import waitTx from '../lib/waitTx';
-import { POK, POKMock, PookyballGenesisMinter, PookyGame } from '../typings';
-import { BallUpdatesStruct } from '../typings/contracts/PookyGame';
-import { MintTemplateStruct } from '../typings/contracts/PookyballGenesisMinter';
+import { getContractFromJsonDb } from '../../lib/utils/DbHelper';
+import { signRewardsClaim } from '../../lib/utils/signRewardsClaim';
+import waitTx from '../../lib/waitTx';
+import { POK, POKMock, PookyballGenesisMinter, PookyGame } from '../../typings';
+import { BallUpdatesStruct } from '../../typings/contracts/PookyGame';
+import { MintTemplateStruct } from '../../typings/contracts/PookyballGenesisMinter';
 import { BigNumber, Wallet } from 'ethers';
 import { task } from 'hardhat/config';
 
 // MOCK MINTS
-
-task('mockPookMint', 'Mints mock pook token to address')
-  .addPositionalParam('toAddress', 'address to mint')
-  .addPositionalParam('amount', 'amount to mint')
-  .setAction(async (taskArgs, hre) => {
-    const POKMock = await getContractFromJsonDb<POKMock>('POKMock', hre);
-
-    console.log('Mock minting', taskArgs.amount, 'to', taskArgs.toAddress);
-
-    const amount = hre.ethers.utils.parseEther(taskArgs.amount);
-    const receipt = await waitTx(POKMock.mock_mint(taskArgs.toAddress, amount));
-
-    console.log(`Tx hash: ${receipt.transactionHash}`);
-  });
 
 task('createMintTemplate', 'Creates new mint template')
   .addPositionalParam('rarity', 'Minting ball with this rarity')
@@ -114,19 +100,6 @@ task('mintBallsAuthorized', 'Backend signer mint balls for user')
     await waitTx(
       PookyballGenesisMinter.connect(backendSigner).mintAuthorized(params.recipient, params.templateId, params.amount),
     );
-
-    console.log('Done');
-  });
-
-task('revokeBallAuthorized', 'Backend signer revokes ball')
-  .addPositionalParam('ballId', 'ID of balls to revoke')
-  .setAction(async (params, hre) => {
-    await hre.run('set-hre');
-    const [, backendSigner, , ,] = await hre.ethers.getSigners();
-
-    const PookyballGenesisMinter = await getContractFromJsonDb<PookyballGenesisMinter>('PookyballGenesisMinter', hre);
-
-    await waitTx(PookyballGenesisMinter.connect(backendSigner).revokeBallAuthorized(params.ballId));
 
     console.log('Done');
   });

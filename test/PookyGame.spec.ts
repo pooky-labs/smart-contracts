@@ -1,11 +1,10 @@
-import { ONE } from '../lib/constants';
-import parseEther from '../lib/parseEther';
 import { DEFAULT_ADMIN_ROLE, REWARD_SIGNER } from '../lib/roles';
 import getTestAccounts from '../lib/testing/getTestAccounts';
 import { randAccount, randUint256 } from '../lib/testing/rand';
 import { expectHasRole, expectMissingRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
-import { BallLuxury, BallRarity } from '../lib/types';
+import { BallLuxury, BallRarity } from '../lib/typings/DataTypes';
+import parseEther from '../lib/utils/parseEther';
 import { signRewardsClaim } from '../lib/utils/signRewardsClaim';
 import { InvalidReceiver, POK, Pookyball, PookyGame } from '../typings';
 import { BallUpdatesStruct } from '../typings/contracts/PookyGame';
@@ -313,7 +312,7 @@ describe('PookyGame', () => {
       await expect(PookyGame.connect(player1).claimRewards(rewardNative, rewardPOK, ballUpdates, ttl, nonce, signature))
         .to.not.be.reverted;
       const newBallLevel = (await Pookyball.getBallInfo(tokenId)).level;
-      expect(newBallLevel).to.be.equal(currentLevel + ONE);
+      expect(newBallLevel).to.be.equal(currentLevel + 1);
     });
 
     it('should revert if user tries to claim rewards with an invalid signature', async () => {

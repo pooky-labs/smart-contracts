@@ -1,11 +1,11 @@
 import { ZERO_ADDRESS } from '../lib/constants';
-import parseEther from '../lib/parseEther';
 import { DEFAULT_ADMIN_ROLE, TECH } from '../lib/roles';
 import getTestAccounts from '../lib/testing/getTestAccounts';
 import { randAccount, randUint256 } from '../lib/testing/rand';
 import { expectMissingRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
-import { BallLuxury, BallRarity } from '../lib/types';
+import { BallLuxury, BallRarity } from '../lib/typings/DataTypes';
+import parseEther from '../lib/utils/parseEther';
 import { PookyballGenesisMinter } from '../typings';
 import { MintTemplateStruct } from '../typings/contracts/PookyballMinter';
 import { faker } from '@faker-js/faker';

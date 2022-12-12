@@ -1,17 +1,24 @@
+import mainnet from '../lib/config/mainnet';
+import mumbai from '../lib/config/mumbai';
 import { deployContracts } from '../lib/deployContracts';
-import { ethers } from 'hardhat';
+import DeployConfig from '../lib/typings/DeployConfig';
+import { ethers, network } from 'hardhat';
 
 async function main() {
   const [deployer] = await ethers.getSigners();
-  await deployContracts(
-    deployer,
-    {
-      treasury: process.env.DEPLOY_TREASURY as string,
-      tech: process.env.DEPLOY_TREASURY as string,
-      backend: process.env.DEPLOY_TECH as string,
-    },
-    { writeInDB: true },
-  );
+
+  let config: DeployConfig;
+
+  switch (network.name) {
+    case 'mumbai':
+      config = mumbai;
+      break;
+    default:
+      config = mainnet;
+      break;
+  }
+
+  await deployContracts(deployer, { ...config, state: network.name });
 }
 
 main().catch((error) => {

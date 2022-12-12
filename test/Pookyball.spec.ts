@@ -1,11 +1,11 @@
-import parseEther from '../lib/parseEther';
 import { DEFAULT_ADMIN_ROLE, POOKY_CONTRACT } from '../lib/roles';
 import getTestAccounts from '../lib/testing/getTestAccounts';
 import { randUint256 } from '../lib/testing/rand';
 import { expectHasRole, expectMissingRole } from '../lib/testing/roles';
 import stackFixture from '../lib/testing/stackFixture';
-import { BallLuxury, BallRarity } from '../lib/types';
+import { BallLuxury, BallRarity } from '../lib/typings/DataTypes';
 import numeric from '../lib/utils/numeric';
+import parseEther from '../lib/utils/parseEther';
 import { Pookyball, PookyballGenesisMinter } from '../typings';
 import { faker } from '@faker-js/faker';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
