@@ -192,4 +192,23 @@ contract PookyballGenesisMinter is PookyballMinter {
       revert TransferFailed(recipient, treasuryWallet);
     }
   }
+
+  /**
+   * @dev Function which Paper.xyz uses to check if address can buy token
+   */
+  function checkClaimEligibility(address recipient, uint256 quantity) external view returns (string memory){
+    if (accountTiers[recipient] < minTierToMint) {
+      return "Tier too low";
+    }
+
+    if (quantity > mintsLeft(recipient)) {
+      return "Max mints reached";
+    }
+
+    if (ballsMinted + quantity > maxMintSupply) {
+      return "Max supply reached";
+    }
+
+    return "";
+  }
 }
