@@ -5,7 +5,7 @@ import { GAME, MINTER } from '../roles';
 import getTestAccounts from './getTestAccounts';
 
 export default async function stackFixture() {
-  const { deployer, treasury, tech, backend, minter, game } = await getTestAccounts();
+  const { deployer, treasury, tech, rewarder, minter, game } = await getTestAccounts();
 
   // Set up the VRF coordinator
   const VRFCoordinatorV2 = await new VRFCoordinatorV2Mock__factory().connect(deployer).deploy(0, 0);
@@ -13,12 +13,12 @@ export default async function stackFixture() {
   await VRFCoordinatorV2.createSubscription();
   const subId = 1;
 
-  const { POK, Pookyball, ...contracts } = await deployContracts(deployer, {
+  const { POK, Pookyball, Rewards, ...contracts } = await deployContracts(deployer, {
     ...testing,
     accounts: {
       treasury: treasury.address,
       tech: tech.address,
-      backend: backend.address,
+      backend: rewarder.address,
     },
     vrf: {
       ...testing.vrf,
@@ -38,5 +38,5 @@ export default async function stackFixture() {
   const InvalidReceiver = await new InvalidReceiver__factory().connect(deployer).deploy();
   await InvalidReceiver.deployed();
 
-  return { POK, Pookyball, VRFCoordinatorV2, InvalidReceiver, ...contracts };
+  return { POK, Pookyball, Rewards, VRFCoordinatorV2, InvalidReceiver, ...contracts };
 }

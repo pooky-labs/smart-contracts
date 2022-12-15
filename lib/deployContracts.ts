@@ -8,7 +8,7 @@ import {
 } from '../types';
 import deployer from './deploy';
 import logger from './logger';
-import { BURNER, GAME, MINTER, REWARD_SIGNER } from './roles';
+import { BURNER, GAME, MINTER, REWARDER } from './roles';
 import Config from './types/Config';
 import waitTx from './waitTx';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
@@ -71,7 +71,7 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
   await waitTx(Pookyball.grantRole(MINTER, GenesisMinter.address));
   await waitTx(Pookyball.grantRole(GAME, Level.address));
   await waitTx(Pookyball.grantRole(GAME, Rewards.address));
-  await waitTx(Rewards.grantRole(REWARD_SIGNER, options.accounts.backend));
+  await waitTx(Rewards.grantRole(REWARDER, options.accounts.backend));
 
   // Step 5: create the mint templates
   let supplyCounter = options.mint.totalSupply;

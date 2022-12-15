@@ -11,21 +11,23 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 
 describe('Level', () => {
-  let deployer: SignerWithAddress;
+  // Signers
   let minter: SignerWithAddress;
   let game: SignerWithAddress;
   let player1: SignerWithAddress;
   let player2: SignerWithAddress;
 
+  // Contracts
   let Level: Level;
   let POK: POK;
   let Pookyball: Pookyball;
 
+  // Internal data
   let nextLevel: number;
   let tokenId: number;
 
   beforeEach(async () => {
-    ({ deployer, minter, game, player1, player2 } = await getTestAccounts());
+    ({ minter, game, player1, player2 } = await getTestAccounts());
     ({ Level, POK, Pookyball } = await loadFixture(stackFixture));
 
     nextLevel = faker.datatype.number({ min: 2, max: 15 });
@@ -64,7 +66,7 @@ describe('Level', () => {
     });
   });
 
-  describe.only('levelUp', async () => {
+  describe('levelUp', async () => {
     it('should revert if the sender is not the owner of the Pookyball token', async () => {
       await expect(Level.connect(player2).levelUp(tokenId, 1))
         .to.be.revertedWithCustomError(Level, 'OwnershipRequired')

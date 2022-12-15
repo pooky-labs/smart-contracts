@@ -7,7 +7,6 @@ import { BigNumberish, Signer, utils } from 'ethers';
  * @param amountPOK The amount of POK to claim.
  * @param tokenIds The token ids which will receive PXP.
  * @param tokenPXP The token PXP.
- * @param ttl The data when the signature expires
  * @param nonce The signature nonce.
  * @param signer The ethers.js signer.
  */
@@ -17,14 +16,13 @@ export async function signRewards(
   amountPOK: BigNumberish,
   tokenIds: BigNumberish[],
   tokenPXP: BigNumberish[],
-  ttl: BigNumberish,
   nonce: BigNumberish,
   signer: Signer,
 ): Promise<string> {
-  const message = utils.defaultAbiCoder.encode(
-    ['address', 'uint256', 'uint256', 'uint256[]', 'uint256', 'uint256'],
-    [account, amountNative, amountPOK, tokenIds, tokenPXP, ttl, nonce],
+  const payload = utils.solidityPack(
+    ['address', 'uint256', 'uint256', 'uint256[]', 'uint256[]', 'uint256'],
+    [account, amountNative, amountPOK, tokenIds, tokenPXP, nonce],
   );
-  const hash = utils.keccak256(message);
+  const hash = utils.keccak256(payload);
   return signer.signMessage(utils.arrayify(hash));
 }

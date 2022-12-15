@@ -30,8 +30,8 @@ import type {
 export interface RewardsInterface extends utils.Interface {
   functions: {
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
-    "REWARD_SIGNER()": FunctionFragment;
-    "claim(uint256,uint256,uint256[],uint256[],uint256,bytes)": FunctionFragment;
+    "REWARDER()": FunctionFragment;
+    "claim(uint256,uint256,uint256[],uint256[],bytes)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
@@ -46,7 +46,7 @@ export interface RewardsInterface extends utils.Interface {
   getFunction(
     nameOrSignatureOrTopic:
       | "DEFAULT_ADMIN_ROLE"
-      | "REWARD_SIGNER"
+      | "REWARDER"
       | "claim"
       | "getRoleAdmin"
       | "grantRole"
@@ -63,10 +63,7 @@ export interface RewardsInterface extends utils.Interface {
     functionFragment: "DEFAULT_ADMIN_ROLE",
     values?: undefined
   ): string;
-  encodeFunctionData(
-    functionFragment: "REWARD_SIGNER",
-    values?: undefined
-  ): string;
+  encodeFunctionData(functionFragment: "REWARDER", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "claim",
     values: [
@@ -74,7 +71,6 @@ export interface RewardsInterface extends utils.Interface {
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>[],
       PromiseOrValue<BigNumberish>[],
-      PromiseOrValue<BigNumberish>,
       PromiseOrValue<BytesLike>
     ]
   ): string;
@@ -113,10 +109,7 @@ export interface RewardsInterface extends utils.Interface {
     functionFragment: "DEFAULT_ADMIN_ROLE",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "REWARD_SIGNER",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "REWARDER", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "claim", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getRoleAdmin",
@@ -255,14 +248,13 @@ export interface Rewards extends BaseContract {
   functions: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
-    REWARD_SIGNER(overrides?: CallOverrides): Promise<[string]>;
+    REWARDER(overrides?: CallOverrides): Promise<[string]>;
 
     claim(
       amountNative: PromiseOrValue<BigNumberish>,
       amountPOK: PromiseOrValue<BigNumberish>,
       tokenIds: PromiseOrValue<BigNumberish>[],
       tokenPXP: PromiseOrValue<BigNumberish>[],
-      nonce_: PromiseOrValue<BigNumberish>,
       signature: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -313,14 +305,13 @@ export interface Rewards extends BaseContract {
 
   DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
-  REWARD_SIGNER(overrides?: CallOverrides): Promise<string>;
+  REWARDER(overrides?: CallOverrides): Promise<string>;
 
   claim(
     amountNative: PromiseOrValue<BigNumberish>,
     amountPOK: PromiseOrValue<BigNumberish>,
     tokenIds: PromiseOrValue<BigNumberish>[],
     tokenPXP: PromiseOrValue<BigNumberish>[],
-    nonce_: PromiseOrValue<BigNumberish>,
     signature: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -371,14 +362,13 @@ export interface Rewards extends BaseContract {
   callStatic: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
-    REWARD_SIGNER(overrides?: CallOverrides): Promise<string>;
+    REWARDER(overrides?: CallOverrides): Promise<string>;
 
     claim(
       amountNative: PromiseOrValue<BigNumberish>,
       amountPOK: PromiseOrValue<BigNumberish>,
       tokenIds: PromiseOrValue<BigNumberish>[],
       tokenPXP: PromiseOrValue<BigNumberish>[],
-      nonce_: PromiseOrValue<BigNumberish>,
       signature: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -494,14 +484,13 @@ export interface Rewards extends BaseContract {
   estimateGas: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
-    REWARD_SIGNER(overrides?: CallOverrides): Promise<BigNumber>;
+    REWARDER(overrides?: CallOverrides): Promise<BigNumber>;
 
     claim(
       amountNative: PromiseOrValue<BigNumberish>,
       amountPOK: PromiseOrValue<BigNumberish>,
       tokenIds: PromiseOrValue<BigNumberish>[],
       tokenPXP: PromiseOrValue<BigNumberish>[],
-      nonce_: PromiseOrValue<BigNumberish>,
       signature: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -555,14 +544,13 @@ export interface Rewards extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    REWARD_SIGNER(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    REWARDER(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     claim(
       amountNative: PromiseOrValue<BigNumberish>,
       amountPOK: PromiseOrValue<BigNumberish>,
       tokenIds: PromiseOrValue<BigNumberish>[],
       tokenPXP: PromiseOrValue<BigNumberish>[],
-      nonce_: PromiseOrValue<BigNumberish>,
       signature: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;

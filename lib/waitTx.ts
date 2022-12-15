@@ -1,6 +1,5 @@
 import logger from './logger';
-import { ContractReceipt } from '@ethersproject/contracts/src.ts';
-import { ContractTransaction, utils } from 'ethers';
+import { ContractReceipt, ContractTransaction, utils } from 'ethers';
 
 interface WaitTxOptions {
   confirmations?: number;

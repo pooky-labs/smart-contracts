@@ -9,9 +9,7 @@ export default function hashRole(role: string): string {
 }
 
 export const DEFAULT_ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
-export const POOKY_CONTRACT = hashRole('POOKY_CONTRACT');
 export const MINTER = hashRole('MINTER');
 export const BURNER = hashRole('BURNER');
 export const GAME = hashRole('GAME');
-export const REWARD_SIGNER = hashRole('REWARD_SIGNER');
-export const TECH = hashRole('TECH');
+export const REWARDER = hashRole('REWARDER');

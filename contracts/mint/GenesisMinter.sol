@@ -20,7 +20,7 @@ contract GenesisMinter is AccessControl {
   IWaitList public immutable waitlist;
   address immutable treasury;
 
-  uint256 nextTemplateId = 0;
+  uint256 nextTemplateId;
   mapping(uint256 => Template) templates;
 
   error TemplateDisabled(uint256 templateId);

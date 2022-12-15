@@ -12,7 +12,7 @@ contract Rewards is AccessControl {
   using ECDSA for bytes32;
 
   // Roles
-  bytes32 public constant REWARD_SIGNER = keccak256("REWARD_SIGNER");
+  bytes32 public constant REWARDER = keccak256("REWARDER");
 
   // Contracts
   IPookyball public pookyball;
@@ -28,8 +28,6 @@ contract Rewards is AccessControl {
   error InvalidSignature();
   /// Thrown when the length of two parameters mismatch. Used in batched functions.
   error ArgumentSizeMismatch(uint256 x, uint256 y);
-  /// Thrown when an account submits an invalid signature.
-  error InvalidNonce(uint256 expected, uint256 actual);
   /// Thrown when the reward contract does not own enough native currency.
   error InsufficientBalance(uint256 expected, uint256 actual);
   /// Thrown when the native transfer has failed.
@@ -47,14 +45,6 @@ contract Rewards is AccessControl {
   receive() external payable {}
 
   /**
-   * @dev Internal function that checks if a {message} has be signed by a REWARD_SIGNER.
-   */
-  function verifySignature(bytes memory message, bytes memory signature) private view returns (bool) {
-    address signer = keccak256(message).toEthSignedMessageHash().recover(signature);
-    return hasRole(REWARD_SIGNER, signer);
-  }
-
-  /**
    * @notice Claim rewards using a signature generated from the Pooky game back-end.
    * Rewards include: native currency, $POK tokens and PXP for the Pookyball tokens.
    * @dev Requirements:
@@ -67,20 +57,18 @@ contract Rewards is AccessControl {
     uint256 amountPOK,
     uint256[] calldata tokenIds,
     uint256[] calldata tokenPXP,
-    uint256 nonce_,
     bytes memory signature
   ) external {
-    if (!verifySignature(abi.encode(msg.sender, amountNative, amountPOK, tokenIds, tokenPXP, nonce_), signature)) {
+    bytes32 hash = keccak256(
+      abi.encodePacked(msg.sender, amountNative, amountPOK, tokenIds, tokenPXP, nonces[msg.sender] + 1)
+    ).toEthSignedMessageHash();
+
+    if (!hasRole(REWARDER, hash.recover(signature))) {
       revert InvalidSignature();
     }
 
     if (tokenIds.length != tokenPXP.length) {
       revert ArgumentSizeMismatch(tokenIds.length, tokenPXP.length);
-    }
-
-    // Ensure that the nonce follows the previous one
-    if (nonces[msg.sender]++ != nonce_) {
-      revert InvalidNonce(nonces[msg.sender], nonce_);
     }
 
     // Ensure that the contract has enough tokens to deliver
@@ -109,5 +97,7 @@ contract Rewards is AccessControl {
       }
       emit NativeClaimed(msg.sender, amountNative);
     }
+
+    nonces[msg.sender]++;
   }
 }
