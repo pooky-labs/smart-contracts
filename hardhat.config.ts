@@ -1,19 +1,15 @@
-import './tasks';
-import '@nomicfoundation/hardhat-chai-matchers';
 import '@nomicfoundation/hardhat-toolbox';
-import '@nomiclabs/hardhat-ethers';
-import '@openzeppelin/hardhat-upgrades';
 import { config as loadConfig } from 'dotenv';
+import 'hardhat-dependency-compiler';
 import 'hardhat-ignore-warnings';
 import { HardhatUserConfig } from 'hardhat/config';
 import set from 'lodash/set';
-import 'solidity-docgen';
 
 loadConfig();
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: '0.8.16', // see https://hardhat.org/hardhat-runner/docs/reference/solidity-support#solidity-support
+    version: '0.8.17', // see https://hardhat.org/hardhat-runner/docs/reference/solidity-support#solidity-support
     settings: {
       optimizer: {
         enabled: true,
@@ -25,11 +21,14 @@ const config: HardhatUserConfig = {
       url: 'http://127.0.0.1:8545/',
     },
   },
+  dependencyCompiler: {
+    paths: ['@chainlink/contracts/src/v0.8/mocks/VRFCoordinatorV2Mock.sol'],
+  },
   warnings: {
-    'contracts/mocks/**/*': 'off',
+    '@chainlink/contracts/src/v0.8/mocks/VRFCoordinatorV2Mock.sol': 'off',
   },
   typechain: {
-    outDir: 'typings',
+    outDir: 'types',
     target: 'ethers-v5',
   },
   gasReporter: {
@@ -38,9 +37,6 @@ const config: HardhatUserConfig = {
     currency: 'EUR',
     token: 'MATIC',
     excludeContracts: ['mocks', 'vendor'],
-  },
-  docgen: {
-    pages: 'files',
   },
 };
 

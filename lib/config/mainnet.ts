@@ -1,11 +1,11 @@
 import { ZERO_ADDRESS } from '../constants';
-import DeployConfig from '../typings/DeployConfig';
+import Config from '../types/Config';
 import templates from './templates';
 
 /**
  * Deploy configuration for Polygon Mainnet.
  */
-const mainnet: DeployConfig = {
+const mainnet: Config = {
   state: 'mainnet',
   verify: true,
 
@@ -32,11 +32,11 @@ const mainnet: DeployConfig = {
    */
   vrf: {
     gasLimit: 2500000, // Maximum allowed gas by VRFCoordinatorV2.getRequestConfig
-    minimumConfirmations: 10,
+    minimumRequestConfirmations: 10,
 
     coordinator: '0xae975071be8f8ee67addbc1a82488f1c24858067',
     keyHash: '0xcc294a196eeeb44da2888d17c0625cc88d70d9760a69d58d853ba6581a9ab0cd', // 500 gwei/gas
-    subscriptionId: 0, // TBD
+    subId: 0, // TBD
   },
 };
 
