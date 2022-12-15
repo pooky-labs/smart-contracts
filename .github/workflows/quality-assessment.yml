@@ -9,49 +9,28 @@ jobs:
     name: Lint with ESLint
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: npm
-      - name: Install dependencies
-        run: npm ci
+      - name: Setup environment
+        uses: pooky-labs/actions/setup-node@main
       - name: Lint with ESLint
-        run: npm run eslint
+        run: pnpm eslint
 
   solhint:
     name: Lint with Solhint
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: npm
-      - name: Install dependencies
-        run: npm ci
+      - name: Setup environment
+        uses: pooky-labs/actions/setup-node@main
       - name: Lint with Solhint
-        run: npm run solhint
+        run: pnpm solhint
 
   gas:
     name: Runs the gas estimator with the tests
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: npm
-      - name: Install dependencies
-        run: npm ci
+      - name: Setup environment
+        uses: pooky-labs/actions/setup-node@main
       - name: Run the tests
-        run: npm run test:gas
+        run: pnpm test:gas
         env:
           COINMARKETCAP_API_KEY: ${{ secrets.COINMARKETCAP_API_KEY }}
 
@@ -59,17 +38,10 @@ jobs:
     name: Compute the coverage with the tests
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: npm
-      - name: Install dependencies
-        run: npm ci
+      - name: Setup environment
+        uses: pooky-labs/actions/setup-node@main
       - name: Run the tests in coverage mode
-        run: npm run test:coverage
+        run: pnpm test:coverage
       - name: Send the coverage results to Codecov
         uses: codecov/codecov-action@v3
         with:
