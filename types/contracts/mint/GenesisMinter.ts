@@ -8,7 +8,6 @@ import type {
   BytesLike,
   CallOverrides,
   ContractTransaction,
-  Overrides,
   PayableOverrides,
   PopulatedTransaction,
   Signer,
@@ -52,62 +51,16 @@ export type TemplateStructOutput = [
 
 export interface GenesisMinterInterface extends utils.Interface {
   functions: {
-    "DEFAULT_ADMIN_ROLE()": FunctionFragment;
-    "createTemplate(uint8,uint256,uint256,uint256,uint256)": FunctionFragment;
-    "getRoleAdmin(bytes32)": FunctionFragment;
-    "grantRole(bytes32,address)": FunctionFragment;
-    "hasRole(bytes32,address)": FunctionFragment;
     "mint(uint256,address,uint256)": FunctionFragment;
     "pookyball()": FunctionFragment;
-    "renounceRole(bytes32,address)": FunctionFragment;
-    "revokeRole(bytes32,address)": FunctionFragment;
-    "supportsInterface(bytes4)": FunctionFragment;
-    "template(uint256)": FunctionFragment;
+    "templates(uint256)": FunctionFragment;
     "waitlist()": FunctionFragment;
   };
 
   getFunction(
-    nameOrSignatureOrTopic:
-      | "DEFAULT_ADMIN_ROLE"
-      | "createTemplate"
-      | "getRoleAdmin"
-      | "grantRole"
-      | "hasRole"
-      | "mint"
-      | "pookyball"
-      | "renounceRole"
-      | "revokeRole"
-      | "supportsInterface"
-      | "template"
-      | "waitlist"
+    nameOrSignatureOrTopic: "mint" | "pookyball" | "templates" | "waitlist"
   ): FunctionFragment;
 
-  encodeFunctionData(
-    functionFragment: "DEFAULT_ADMIN_ROLE",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "createTemplate",
-    values: [
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getRoleAdmin",
-    values: [PromiseOrValue<BytesLike>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "grantRole",
-    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "hasRole",
-    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
-  ): string;
   encodeFunctionData(
     functionFragment: "mint",
     values: [
@@ -118,98 +71,35 @@ export interface GenesisMinterInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "pookyball", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "renounceRole",
-    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "revokeRole",
-    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "supportsInterface",
-    values: [PromiseOrValue<BytesLike>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "template",
+    functionFragment: "templates",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(functionFragment: "waitlist", values?: undefined): string;
 
-  decodeFunctionResult(
-    functionFragment: "DEFAULT_ADMIN_ROLE",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "createTemplate",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getRoleAdmin",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pookyball", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "renounceRole",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "supportsInterface",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "template", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "templates", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "waitlist", data: BytesLike): Result;
 
   events: {
-    "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
-    "RoleGranted(bytes32,address,address)": EventFragment;
-    "RoleRevoked(bytes32,address,address)": EventFragment;
+    "Sale(address,uint256,uint256,uint256)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Sale"): EventFragment;
 }
 
-export interface RoleAdminChangedEventObject {
-  role: string;
-  previousAdminRole: string;
-  newAdminRole: string;
-}
-export type RoleAdminChangedEvent = TypedEvent<
-  [string, string, string],
-  RoleAdminChangedEventObject
->;
-
-export type RoleAdminChangedEventFilter =
-  TypedEventFilter<RoleAdminChangedEvent>;
-
-export interface RoleGrantedEventObject {
-  role: string;
+export interface SaleEventObject {
   account: string;
-  sender: string;
+  templateId: BigNumber;
+  quantity: BigNumber;
+  value: BigNumber;
 }
-export type RoleGrantedEvent = TypedEvent<
-  [string, string, string],
-  RoleGrantedEventObject
+export type SaleEvent = TypedEvent<
+  [string, BigNumber, BigNumber, BigNumber],
+  SaleEventObject
 >;
 
-export type RoleGrantedEventFilter = TypedEventFilter<RoleGrantedEvent>;
-
-export interface RoleRevokedEventObject {
-  role: string;
-  account: string;
-  sender: string;
-}
-export type RoleRevokedEvent = TypedEvent<
-  [string, string, string],
-  RoleRevokedEventObject
->;
-
-export type RoleRevokedEventFilter = TypedEventFilter<RoleRevokedEvent>;
+export type SaleEventFilter = TypedEventFilter<SaleEvent>;
 
 export interface GenesisMinter extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -238,34 +128,6 @@ export interface GenesisMinter extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
-
-    createTemplate(
-      rarity: PromiseOrValue<BigNumberish>,
-      luxury: PromiseOrValue<BigNumberish>,
-      supply: PromiseOrValue<BigNumberish>,
-      minted: PromiseOrValue<BigNumberish>,
-      price: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    getRoleAdmin(
-      role: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<[string]>;
-
-    grantRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    hasRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
-
     mint(
       templateId: PromiseOrValue<BigNumberish>,
       recipient: PromiseOrValue<string>,
@@ -275,58 +137,21 @@ export interface GenesisMinter extends BaseContract {
 
     pookyball(overrides?: CallOverrides): Promise<[string]>;
 
-    renounceRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    revokeRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    supportsInterface(
-      interfaceId: PromiseOrValue<BytesLike>,
+    templates(
+      arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
-    ): Promise<[boolean]>;
-
-    template(
-      templateId: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[TemplateStructOutput]>;
+    ): Promise<
+      [number, BigNumber, BigNumber, BigNumber, BigNumber] & {
+        rarity: number;
+        luxury: BigNumber;
+        supply: BigNumber;
+        minted: BigNumber;
+        price: BigNumber;
+      }
+    >;
 
     waitlist(overrides?: CallOverrides): Promise<[string]>;
   };
-
-  DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
-
-  createTemplate(
-    rarity: PromiseOrValue<BigNumberish>,
-    luxury: PromiseOrValue<BigNumberish>,
-    supply: PromiseOrValue<BigNumberish>,
-    minted: PromiseOrValue<BigNumberish>,
-    price: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  getRoleAdmin(
-    role: PromiseOrValue<BytesLike>,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
-  grantRole(
-    role: PromiseOrValue<BytesLike>,
-    account: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  hasRole(
-    role: PromiseOrValue<BytesLike>,
-    account: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
 
   mint(
     templateId: PromiseOrValue<BigNumberish>,
@@ -337,59 +162,22 @@ export interface GenesisMinter extends BaseContract {
 
   pookyball(overrides?: CallOverrides): Promise<string>;
 
-  renounceRole(
-    role: PromiseOrValue<BytesLike>,
-    account: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  revokeRole(
-    role: PromiseOrValue<BytesLike>,
-    account: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  supportsInterface(
-    interfaceId: PromiseOrValue<BytesLike>,
+  templates(
+    arg0: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
-  ): Promise<boolean>;
-
-  template(
-    templateId: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<TemplateStructOutput>;
+  ): Promise<
+    [number, BigNumber, BigNumber, BigNumber, BigNumber] & {
+      rarity: number;
+      luxury: BigNumber;
+      supply: BigNumber;
+      minted: BigNumber;
+      price: BigNumber;
+    }
+  >;
 
   waitlist(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
-    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
-
-    createTemplate(
-      rarity: PromiseOrValue<BigNumberish>,
-      luxury: PromiseOrValue<BigNumberish>,
-      supply: PromiseOrValue<BigNumberish>,
-      minted: PromiseOrValue<BigNumberish>,
-      price: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    getRoleAdmin(
-      role: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    grantRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    hasRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
     mint(
       templateId: PromiseOrValue<BigNumberish>,
       recipient: PromiseOrValue<string>,
@@ -399,95 +187,38 @@ export interface GenesisMinter extends BaseContract {
 
     pookyball(overrides?: CallOverrides): Promise<string>;
 
-    renounceRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
+    templates(
+      arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
-    ): Promise<void>;
-
-    revokeRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    supportsInterface(
-      interfaceId: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    template(
-      templateId: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<TemplateStructOutput>;
+    ): Promise<
+      [number, BigNumber, BigNumber, BigNumber, BigNumber] & {
+        rarity: number;
+        luxury: BigNumber;
+        supply: BigNumber;
+        minted: BigNumber;
+        price: BigNumber;
+      }
+    >;
 
     waitlist(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
-    "RoleAdminChanged(bytes32,bytes32,bytes32)"(
-      role?: PromiseOrValue<BytesLike> | null,
-      previousAdminRole?: PromiseOrValue<BytesLike> | null,
-      newAdminRole?: PromiseOrValue<BytesLike> | null
-    ): RoleAdminChangedEventFilter;
-    RoleAdminChanged(
-      role?: PromiseOrValue<BytesLike> | null,
-      previousAdminRole?: PromiseOrValue<BytesLike> | null,
-      newAdminRole?: PromiseOrValue<BytesLike> | null
-    ): RoleAdminChangedEventFilter;
-
-    "RoleGranted(bytes32,address,address)"(
-      role?: PromiseOrValue<BytesLike> | null,
+    "Sale(address,uint256,uint256,uint256)"(
       account?: PromiseOrValue<string> | null,
-      sender?: PromiseOrValue<string> | null
-    ): RoleGrantedEventFilter;
-    RoleGranted(
-      role?: PromiseOrValue<BytesLike> | null,
+      templateId?: PromiseOrValue<BigNumberish> | null,
+      quantity?: null,
+      value?: null
+    ): SaleEventFilter;
+    Sale(
       account?: PromiseOrValue<string> | null,
-      sender?: PromiseOrValue<string> | null
-    ): RoleGrantedEventFilter;
-
-    "RoleRevoked(bytes32,address,address)"(
-      role?: PromiseOrValue<BytesLike> | null,
-      account?: PromiseOrValue<string> | null,
-      sender?: PromiseOrValue<string> | null
-    ): RoleRevokedEventFilter;
-    RoleRevoked(
-      role?: PromiseOrValue<BytesLike> | null,
-      account?: PromiseOrValue<string> | null,
-      sender?: PromiseOrValue<string> | null
-    ): RoleRevokedEventFilter;
+      templateId?: PromiseOrValue<BigNumberish> | null,
+      quantity?: null,
+      value?: null
+    ): SaleEventFilter;
   };
 
   estimateGas: {
-    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
-
-    createTemplate(
-      rarity: PromiseOrValue<BigNumberish>,
-      luxury: PromiseOrValue<BigNumberish>,
-      supply: PromiseOrValue<BigNumberish>,
-      minted: PromiseOrValue<BigNumberish>,
-      price: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    getRoleAdmin(
-      role: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    grantRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    hasRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     mint(
       templateId: PromiseOrValue<BigNumberish>,
       recipient: PromiseOrValue<string>,
@@ -497,25 +228,8 @@ export interface GenesisMinter extends BaseContract {
 
     pookyball(overrides?: CallOverrides): Promise<BigNumber>;
 
-    renounceRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    revokeRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    supportsInterface(
-      interfaceId: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    template(
-      templateId: PromiseOrValue<BigNumberish>,
+    templates(
+      arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -523,36 +237,6 @@ export interface GenesisMinter extends BaseContract {
   };
 
   populateTransaction: {
-    DEFAULT_ADMIN_ROLE(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    createTemplate(
-      rarity: PromiseOrValue<BigNumberish>,
-      luxury: PromiseOrValue<BigNumberish>,
-      supply: PromiseOrValue<BigNumberish>,
-      minted: PromiseOrValue<BigNumberish>,
-      price: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    getRoleAdmin(
-      role: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    grantRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    hasRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     mint(
       templateId: PromiseOrValue<BigNumberish>,
       recipient: PromiseOrValue<string>,
@@ -562,25 +246,8 @@ export interface GenesisMinter extends BaseContract {
 
     pookyball(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    renounceRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    revokeRole(
-      role: PromiseOrValue<BytesLike>,
-      account: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    supportsInterface(
-      interfaceId: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    template(
-      templateId: PromiseOrValue<BigNumberish>,
+    templates(
+      arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

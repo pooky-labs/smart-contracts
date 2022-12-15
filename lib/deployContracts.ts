@@ -6,13 +6,13 @@ import {
   Rewards__factory,
   WaitList__factory,
 } from '../types';
+import { TemplateStruct } from '../types/contracts/mint/GenesisMinter';
 import deployer from './deploy';
 import logger from './logger';
 import { BURNER, GAME, MINTER, REWARDER } from './roles';
 import Config from './types/Config';
 import waitTx from './waitTx';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { ethers } from 'ethers';
 
 /**
  * Deploy the full contract stack and configure the access controls and the contracts links properly.
@@ -23,6 +23,30 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
     logger.setSettings(options.log);
   } else if (options.log === false) {
     logger.setSettings({ minLevel: 'error' });
+  }
+
+  // Step 0: prepare data
+  const templates: TemplateStruct[] = [];
+
+  let supplyCounter = options.mint.totalSupply;
+  for (const template of options.mint.templates) {
+    let supply: number;
+
+    if (template.supply === null) {
+      supply = supplyCounter;
+    } else {
+      supply = Math.round((options.mint.totalSupply * template.supply) / 10000);
+    }
+
+    templates.push({
+      rarity: template.rarity,
+      luxury: template.luxury,
+      supply: supply,
+      minted: 0,
+      price: template.price,
+    });
+
+    supplyCounter -= supply;
   }
 
   const deploy = deployer(signer, options.verify);
@@ -44,7 +68,7 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
   logger.info('Deployed Pookyball to', Pookyball.address);
 
   // Step 2: deploy mint contracts
-  const WaitList = await deploy(WaitList__factory);
+  const WaitList = await deploy(WaitList__factory, 3);
   logger.info('Deployed WaitList to', WaitList.address);
 
   const GenesisMinter = await deploy(
@@ -52,6 +76,7 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
     Pookyball.address,
     WaitList.address,
     options.accounts.treasury,
+    templates,
   );
   await GenesisMinter.deployed();
   logger.info('Deployed GenesisMinter to', GenesisMinter.address);
@@ -72,23 +97,6 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
   await waitTx(Pookyball.grantRole(GAME, Level.address));
   await waitTx(Pookyball.grantRole(GAME, Rewards.address));
   await waitTx(Rewards.grantRole(REWARDER, options.accounts.backend));
-
-  // Step 5: create the mint templates
-  let supplyCounter = options.mint.totalSupply;
-  for (const template of options.mint.templates) {
-    let supply: number;
-
-    if (template.supply === null) {
-      supply = supplyCounter;
-    } else {
-      supply = Math.round((options.mint.totalSupply * template.supply) / 10000);
-    }
-
-    await waitTx(GenesisMinter.createTemplate(template.rarity, template.luxury, supply, 0, template.price));
-    logger.info('price=', ethers.utils.formatEther(template.price), 'supply=', supply);
-
-    supplyCounter -= supply;
-  }
 
   return { POK, Pookyball, WaitList, GenesisMinter, Level, Rewards };
 }

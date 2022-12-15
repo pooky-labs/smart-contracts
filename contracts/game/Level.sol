@@ -10,6 +10,8 @@ import "../types/PookyballRarity.sol";
  * @title Level
  * @author Mathieu Bour
  * @notice Gameplay contract that allow to level up Pookyball tokens.
+ * @dev Technically, this contract is allowed to write the Pookyball.metadata mapping using the setLevel and
+ * setPXP functions.
  */
 contract Level {
   // Contracts
@@ -34,7 +36,8 @@ contract Level {
     pok = _pok;
     pookyball = _pookyball;
 
-    // Set the maximum levels as described in the Pooky whitepaper, see https://whitepaper.pooky.gg/pookyball-features/levelling-up
+    // Set the maximum levels as described in the Pooky whitepaper
+    // see https://whitepaper.pooky.gg/pookyball-features/levelling-up
     maxLevels[PookyballRarity.COMMON] = 40;
     maxLevels[PookyballRarity.RARE] = 60;
     maxLevels[PookyballRarity.EPIC] = 80;
