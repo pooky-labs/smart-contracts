@@ -1,3 +1,9 @@
+import { faker } from '@faker-js/faker';
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { expect } from 'chai';
+import { randomBytes } from 'crypto';
+import { BigNumber, utils } from 'ethers';
 import { DEFAULT_ADMIN_ROLE, GAME, MINTER } from '../../lib/roles';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
 import { expectMissingRole } from '../../lib/testing/roles';
@@ -5,12 +11,6 @@ import stackFixture from '../../lib/testing/stackFixture';
 import PookyballLuxury from '../../lib/types/PookyballLuxury';
 import PookyballRarity from '../../lib/types/PookyballRarity';
 import { Pookyball, VRFCoordinatorV2Mock } from '../../types';
-import { faker } from '@faker-js/faker';
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { expect } from 'chai';
-import { randomBytes } from 'crypto';
-import { BigNumber, utils } from 'ethers';
 
 describe('Pookyball', () => {
   let deployer: SignerWithAddress;

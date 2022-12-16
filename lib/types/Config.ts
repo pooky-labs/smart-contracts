@@ -1,7 +1,7 @@
-import PookyballLuxury from './PookyballLuxury';
-import PookyballRarity from './PookyballRarity';
 import { BigNumberish, BytesLike } from 'ethers';
 import { ISettingsParam } from 'tslog/src/interfaces';
+import PookyballLuxury from './PookyballLuxury';
+import PookyballRarity from './PookyballRarity';
 
 /**
  * Contract stack deployment configuration.
@@ -9,7 +9,6 @@ import { ISettingsParam } from 'tslog/src/interfaces';
 export default interface Config {
   log?: ISettingsParam | false;
 
-  state?: string;
   verify?: boolean;
 
   accounts: {
@@ -25,11 +24,10 @@ export default interface Config {
 
   mint: {
     totalSupply: number;
-    maxAccountsMints: number;
     templates: {
       rarity: PookyballRarity;
       luxury: PookyballLuxury;
-      /** Over 10,000 tokens. */
+      /** Over a 10,000 tokens basis. */
       supply: number | null;
       price: BigNumberish;
     }[];

@@ -1,14 +1,14 @@
+import { faker } from '@faker-js/faker';
+import { anyUint } from '@nomicfoundation/hardhat-chai-matchers/withArgs';
+import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { expect } from 'chai';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
 import stackFixture from '../../lib/testing/stackFixture';
 import PookyballLuxury from '../../lib/types/PookyballLuxury';
 import PookyballRarity from '../../lib/types/PookyballRarity';
 import parseEther from '../../lib/utils/parseEther';
 import { Level, POK, Pookyball } from '../../types';
-import { faker } from '@faker-js/faker';
-import { anyUint } from '@nomicfoundation/hardhat-chai-matchers/withArgs';
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { expect } from 'chai';
 
 describe('Level', () => {
   // Signers

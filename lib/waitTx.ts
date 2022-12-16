@@ -1,5 +1,5 @@
-import logger from './logger';
 import { ContractReceipt, ContractTransaction, utils } from 'ethers';
+import logger from './logger';
 
 interface WaitTxOptions {
   confirmations?: number;

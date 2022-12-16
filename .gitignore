@@ -1,3 +1,4 @@
+# IDEs
 .idea
 
 node_modules
@@ -8,4 +9,5 @@ coverage.json
 # Hardhat files
 cache
 artifacts
-/types
+/dist
+/typechain-types

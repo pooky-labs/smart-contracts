@@ -1,22 +1,22 @@
+import { BigNumber } from 'ethers';
 import Config from '../types/Config';
 import mainnet from './mainnet';
-import { BigNumber } from 'ethers';
 
 /**
  * Deploy configuration for Polygon Mumbai testnet.
  */
 const mumbai: Config = {
-  state: 'mumbai',
+  ...mainnet,
   verify: false,
 
   accounts: {
-    treasury: '0xBABA035d2e22073C3a2AadA404dae4f6A9D57BD7',
+    treasury: '0x2dfCa6e357a73D180B8e6aa8f7690A315a4395F7',
     tech: '0xF00Db2f08D1F6b3f6089573085B5826Bb358e319',
     backend: '0xCAFE3e690bf74Ec274210E1c448130c1f8228513',
   },
 
   metadata: {
-    contractURI: 'https://contracts.pooky.gg/Pookyball.json',
+    contractURI: 'https://static.pooky.tech/contracts/Pookyball.json',
     baseURI: 'https://tokens.pooky.tech/',
   },
 
@@ -24,7 +24,6 @@ const mumbai: Config = {
     ...mainnet.mint,
     templates: mainnet.mint.templates.map((t) => ({
       ...t,
-
       // Price are divided by 1,000,000 on testnet because it is hard to get MATIC test tokens
       price: BigNumber.from(t.price).div(1e6),
     })),

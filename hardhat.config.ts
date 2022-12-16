@@ -4,6 +4,8 @@ import 'hardhat-dependency-compiler';
 import 'hardhat-ignore-warnings';
 import { HardhatUserConfig } from 'hardhat/config';
 import set from 'lodash/set';
+import './tasks/clean';
+import './tasks/typechain';
 
 loadConfig();
 
@@ -28,7 +30,6 @@ const config: HardhatUserConfig = {
     '@chainlink/contracts/src/v0.8/mocks/VRFCoordinatorV2Mock.sol': 'off',
   },
   typechain: {
-    outDir: 'types',
     target: 'ethers-v5',
   },
   gasReporter: {
@@ -36,7 +37,6 @@ const config: HardhatUserConfig = {
     coinmarketcap: process.env.COINMARKETCAP_API_KEY,
     currency: 'EUR',
     token: 'MATIC',
-    excludeContracts: ['mocks', 'vendor'],
   },
 };
 

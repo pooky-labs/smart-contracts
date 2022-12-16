@@ -1,3 +1,4 @@
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
   GenesisMinter__factory,
   Level__factory,
@@ -12,7 +13,6 @@ import logger from './logger';
 import { BURNER, GAME, MINTER, REWARDER } from './roles';
 import Config from './types/Config';
 import waitTx from './waitTx';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 /**
  * Deploy the full contract stack and configure the access controls and the contracts links properly.

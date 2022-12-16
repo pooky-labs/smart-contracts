@@ -1,11 +1,11 @@
-import getTestAccounts from '../../lib/testing/getTestAccounts';
-import stackFixture from '../../lib/testing/stackFixture';
-import { WaitList } from '../../types';
 import { faker } from '@faker-js/faker';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { Wallet } from 'ethers';
+import getTestAccounts from '../../lib/testing/getTestAccounts';
+import stackFixture from '../../lib/testing/stackFixture';
+import { WaitList } from '../../types';
 
 describe('WaitList', () => {
   let owner: SignerWithAddress;

@@ -1,6 +1,6 @@
+import { ethers } from 'hardhat';
 import Config from '../types/Config';
 import mainnet from './mainnet';
-import { ethers } from 'hardhat';
 
 /**
  * Testing configuration: it should be as close as possible as the mainnet config.
