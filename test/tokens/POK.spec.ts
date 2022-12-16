@@ -6,7 +6,7 @@ import { describe } from 'mocha';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
 import stackFixture from '../../lib/testing/stackFixture';
 import parseEther from '../../lib/utils/parseEther';
-import { POK } from '../../types';
+import { POK } from '../../typechain-types';
 
 describe('POK', () => {
   let minter: SignerWithAddress;

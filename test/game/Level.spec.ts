@@ -8,7 +8,7 @@ import stackFixture from '../../lib/testing/stackFixture';
 import PookyballLuxury from '../../lib/types/PookyballLuxury';
 import PookyballRarity from '../../lib/types/PookyballRarity';
 import parseEther from '../../lib/utils/parseEther';
-import { Level, POK, Pookyball } from '../../types';
+import { Level, POK, Pookyball } from '../../typechain-types';
 
 describe('Level', () => {
   // Signers

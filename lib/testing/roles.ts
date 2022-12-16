@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ContractTransaction } from 'ethers';
-import { AccessControl } from '../../types';
+import { AccessControl } from '../../typechain-types';
 import hashRole from '../roles';
 import getAddress, { AddressSubject } from '../utils/getAddress';
 

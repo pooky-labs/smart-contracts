@@ -6,8 +6,8 @@ import {
   Pookyball__factory,
   Rewards__factory,
   WaitList__factory,
-} from '../types';
-import { TemplateStruct } from '../types/contracts/mint/GenesisMinter';
+} from '../typechain-types';
+import { TemplateStruct } from '../typechain-types/contracts/mint/GenesisMinter';
 import deployer from './deploy';
 import logger from './logger';
 import { BURNER, GAME, MINTER, REWARDER } from './roles';

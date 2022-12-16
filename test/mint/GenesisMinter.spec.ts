@@ -4,8 +4,8 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
 import stackFixture from '../../lib/testing/stackFixture';
-import { GenesisMinter, Pookyball, WaitList } from '../../types';
-import { TemplateStructOutput } from '../../types/contracts/mint/GenesisMinter';
+import { GenesisMinter, Pookyball, WaitList } from '../../typechain-types';
+import { TemplateStructOutput } from '../../typechain-types/contracts/mint/GenesisMinter';
 
 describe('GenesisMinter', () => {
   let owner: SignerWithAddress;

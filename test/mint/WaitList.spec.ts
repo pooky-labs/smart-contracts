@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import { Wallet } from 'ethers';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
 import stackFixture from '../../lib/testing/stackFixture';
-import { WaitList } from '../../types';
+import { WaitList } from '../../typechain-types';
 
 describe('WaitList', () => {
   let owner: SignerWithAddress;

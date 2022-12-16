@@ -21,7 +21,7 @@ async function main() {
       break;
   }
 
-  await deployContracts(deployer, { ...config, state: network.name });
+  await deployContracts(deployer, config);
 }
 
 main().catch((error) => {
