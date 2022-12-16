@@ -88,7 +88,10 @@
   },
   "pnpm": {
     "peerDependencyRules": {
-      "ignoreMissing": ["@ethersproject/bytes", "@vue/compiler-sfc"]
+      "ignoreMissing": [
+        "@ethersproject/bytes",
+        "@vue/compiler-sfc"
+      ]
     }
   }
 }

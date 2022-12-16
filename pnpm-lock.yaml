@@ -1285,6 +1285,9 @@ packages:
     peerDependencies:
       '@vue/compiler-sfc': 3.x
       prettier: 2.x
+    peerDependenciesMeta:
+      '@vue/compiler-sfc':
+        optional: true
     dependencies:
       '@babel/core': 7.17.8
       '@babel/generator': 7.17.7
