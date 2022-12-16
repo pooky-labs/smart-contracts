@@ -116,6 +116,18 @@ declare module "hardhat/types/runtime" {
       name: "Pookyball",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Pookyball__factory>;
+    getContractFactory(
+      name: "DefaultOperatorFilterer",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.DefaultOperatorFilterer__factory>;
+    getContractFactory(
+      name: "IOperatorFilterRegistry",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IOperatorFilterRegistry__factory>;
+    getContractFactory(
+      name: "OperatorFilterer",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.OperatorFilterer__factory>;
 
     getContractAt(
       name: "LinkTokenInterface",
@@ -247,6 +259,21 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.Pookyball>;
+    getContractAt(
+      name: "DefaultOperatorFilterer",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.DefaultOperatorFilterer>;
+    getContractAt(
+      name: "IOperatorFilterRegistry",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IOperatorFilterRegistry>;
+    getContractAt(
+      name: "OperatorFilterer",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.OperatorFilterer>;
 
     // default types
     getContractFactory(

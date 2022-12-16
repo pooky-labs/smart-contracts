@@ -38,6 +38,7 @@ specifiers:
   latest: ^0.2.0
   lodash: ^4.17.21
   lowdb: ^1.0.0
+  operator-filter-registry: ^1.3.1
   prettier: ^2.7.1
   prettier-plugin-solidity: ^1.0.0-beta.24
   prompts: ^2.4.2
@@ -89,6 +90,7 @@ devDependencies:
   latest: 0.2.0
   lodash: 4.17.21
   lowdb: 1.0.0
+  operator-filter-registry: 1.3.1
   prettier: 2.8.1
   prettier-plugin-solidity: 1.0.0_prettier@2.8.1
   prompts: 2.4.2
@@ -1198,6 +1200,10 @@ packages:
       undici: 5.14.0
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /@openzeppelin/contracts-upgradeable/4.8.0:
+    resolution: {integrity: sha512-5GeFgqMiDlqGT8EdORadp1ntGF0qzWZLmEY7Wbp/yVhN7/B3NNzCxujuI77ktlyG81N3CUZP8cZe3ZAQ/cW10w==}
     dev: true
 
   /@openzeppelin/contracts/4.8.0:
@@ -5661,6 +5667,13 @@ packages:
     engines: {node: '>=4'}
     dependencies:
       mimic-fn: 1.2.0
+    dev: true
+
+  /operator-filter-registry/1.3.1:
+    resolution: {integrity: sha512-6iHmJc5YP+EktYjMg88MLnezbPP/5kBBdzXoFODSYK2/UnfQoCFHF920+gFgX0jUJRys7e5e9nU9/j+Nor8ZTQ==}
+    dependencies:
+      '@openzeppelin/contracts': 4.8.0
+      '@openzeppelin/contracts-upgradeable': 4.8.0
     dev: true
 
   /optionator/0.8.3:

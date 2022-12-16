@@ -7,6 +7,7 @@ import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "operator-filter-registry/src/DefaultOperatorFilterer.sol";
 import "../interfaces/IPookyball.sol";
 import "../types/PookyballMetadata.sol";
 import "../types/PookyballRarity.sol";
@@ -23,7 +24,7 @@ import "../types/PookyballRarity.sol";
  * - MINTER role can mint new tokens.
  * - GAME role can change the mutable token metadata (level and PXP).
  */
-contract Pookyball is IPookyball, ERC721, AccessControl, VRFConsumerBaseV2 {
+contract Pookyball is IPookyball, ERC721, AccessControl, VRFConsumerBaseV2, DefaultOperatorFilterer {
   using Strings for uint256;
 
   // Roles
@@ -178,5 +179,65 @@ contract Pookyball is IPookyball, ERC721, AccessControl, VRFConsumerBaseV2 {
     bytes4 interfaceId
   ) public view virtual override(IERC165, ERC721, AccessControl) returns (bool) {
     return super.supportsInterface(interfaceId);
+  }
+
+  // Operator Filter Registry implementation
+  // ---
+  // In order to enforce the creator fees on secondary sales, we chose to adhere to the Operator Filter Registry
+  // standard that was initially developed by OpenSea.
+  // See https://github.com/ProjectOpenSea/operator-filter-registry
+
+  /**
+   * @dev See {IERC721-setApprovalForAll}.
+   */
+  function setApprovalForAll(
+    address operator,
+    bool approved
+  ) public override(ERC721, IERC721) onlyAllowedOperatorApproval(operator) {
+    super.setApprovalForAll(operator, approved);
+  }
+
+  /**
+   * @dev See {IERC721-approve}.
+   */
+  function approve(
+    address operator,
+    uint256 tokenId
+  ) public override(ERC721, IERC721) onlyAllowedOperatorApproval(operator) {
+    super.approve(operator, tokenId);
+  }
+
+  /**
+   * @dev See {IERC721-transferFrom}.
+   */
+  function transferFrom(
+    address from,
+    address to,
+    uint256 tokenId
+  ) public override(ERC721, IERC721) onlyAllowedOperator(from) {
+    super.transferFrom(from, to, tokenId);
+  }
+
+  /**
+   * @dev See {IERC721-safeTransferFrom}.
+   */
+  function safeTransferFrom(
+    address from,
+    address to,
+    uint256 tokenId
+  ) public override(ERC721, IERC721) onlyAllowedOperator(from) {
+    super.safeTransferFrom(from, to, tokenId);
+  }
+
+  /**
+   * @dev See {IERC721-safeTransferFrom}.
+   */
+  function safeTransferFrom(
+    address from,
+    address to,
+    uint256 tokenId,
+    bytes memory data
+  ) public override(ERC721, IERC721) onlyAllowedOperator(from) {
+    super.safeTransferFrom(from, to, tokenId, data);
   }
 }
