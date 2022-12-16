@@ -1,4 +1,4 @@
-import { AccessControlUpgradeable } from '../../typings';
+import { AccessControl } from '../../types';
 import hashRole from '../roles';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
@@ -14,7 +14,7 @@ function getRole(role: string) {
   return role.match(/^0x[\da-fA-F]+$/) ? role : hashRole(role);
 }
 
-export async function expectHasRole(contract: AccessControlUpgradeable, subject: AddressSubject, role: string) {
+export async function expectHasRole(contract: AccessControl, subject: AddressSubject, role: string) {
   const actual = getAddress(subject);
   const hashedRole = getRole(role);
 

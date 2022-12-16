@@ -37,8 +37,8 @@ contract Pookyball is IPookyball, ERC721, AccessControl, VRFConsumerBaseV2 {
    * Specified by OpenSea documentation (https://docs.opensea.io/docs/contract-level-metadata).
    */
   string public contractURI;
-  uint256 public lastTokenId;
 
+  uint256 public lastTokenId;
   mapping(uint256 => PookyballMetadata) _metadata;
 
   // VRF parameters
@@ -50,8 +50,8 @@ contract Pookyball is IPookyball, ERC721, AccessControl, VRFConsumerBaseV2 {
   mapping(uint256 => uint256) vrfRequests;
 
   event SeedSet(uint256 indexed tokenId, uint256 seed);
-  event LevelChanged(uint256 indexed tokenId, uint32 level);
-  event PXPChanged(uint256 indexed tokenId, uint64 amount);
+  event LevelChanged(uint256 indexed tokenId, uint256 level);
+  event PXPChanged(uint256 indexed tokenId, uint256 amount);
 
   constructor(
     string memory _baseURI,
@@ -74,17 +74,24 @@ contract Pookyball is IPookyball, ERC721, AccessControl, VRFConsumerBaseV2 {
     _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
   }
 
-  function setBaseURI(string memory newBaseURI) external onlyRole(DEFAULT_ADMIN_ROLE) {
-    baseURI = newBaseURI;
-  }
-
   /**
    * @notice Set the URI of the contract-level metadata.
-   * @dev Requirements:
+   * @dev We keep this function as an escape hatch in case of a migration to another token metadata platform.
+   * Requirements:
    * - Only DEFAULT_ADMIN_ROLE role can set the contract URI.
    */
   function setContractURI(string memory newContractURI) external onlyRole(DEFAULT_ADMIN_ROLE) {
     contractURI = newContractURI;
+  }
+
+  /**
+   * @notice Change the base URI of the tokens URI.
+   * @dev We keep this function as an escape hatch in case of a migration to another token metadata platform.
+   * Requirements:
+   * - Only DEFAULT_ADMIN_ROLE role can set base URI.
+   */
+  function setBaseURI(string memory newBaseURI) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    baseURI = newBaseURI;
   }
 
   /**
@@ -101,13 +108,19 @@ contract Pookyball is IPookyball, ERC721, AccessControl, VRFConsumerBaseV2 {
   /**
    * @notice PookyballMetadata the token {tokenId}.
    * @dev Requirements:
-   * - Ball {tokenId} should exist (minted and not burned).
+   * - Pookyball {tokenId} should exist (minted and not burned).
    */
   function metadata(uint256 tokenId) external view returns (PookyballMetadata memory) {
     _requireMinted(tokenId);
     return _metadata[tokenId];
   }
 
+  /**
+   * @notice Mint a new Pookyball token with a given rarity and luxury. Level, PXP and seed are set to zero, entropy is
+   * requested to the VRF coordinator.
+   * @dev Requirements:
+   * - sender must have the MINTER role.
+   */
   function mint(address recipient, PookyballRarity rarity, uint256 luxury) external onlyRole(MINTER) returns (uint256) {
     _mint(recipient, ++lastTokenId);
     _metadata[lastTokenId] = PookyballMetadata(rarity, luxury, 0, 0, 0);
@@ -124,23 +137,42 @@ contract Pookyball is IPookyball, ERC721, AccessControl, VRFConsumerBaseV2 {
     return lastTokenId;
   }
 
+  /**
+   * @notice Change the level of a Pookyball token.
+   * @dev Requirements:
+   * - sender must have the GAME role.
+   * - Pookyball {tokenId} should exist (minted and not burned).
+   */
   function setLevel(uint256 tokenId, uint256 newLevel) external onlyRole(GAME) {
     _requireMinted(tokenId);
     _metadata[tokenId].level = newLevel;
-  }
-
-  function setPXP(uint256 tokenId, uint256 newPXP) external onlyRole(GAME) {
-    _requireMinted(tokenId);
-    _metadata[tokenId].pxp = newPXP;
-  }
-
-  function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
-    uint256 tokenId = vrfRequests[requestId];
-    _metadata[tokenId].seed = randomWords[0];
+    emit LevelChanged(tokenId, newLevel);
   }
 
   /**
-   * IERC165 declaration.
+   * @notice Change the PXP of a Pookyball token.
+   * @dev Requirements:
+   * - sender must have the GAME role.
+   * - Pookyball {tokenId} should exist (minted and not burned).
+   */
+  function setPXP(uint256 tokenId, uint256 newPXP) external onlyRole(GAME) {
+    _requireMinted(tokenId);
+    _metadata[tokenId].pxp = newPXP;
+    emit PXPChanged(tokenId, newPXP);
+  }
+
+  /**
+   * @notice Receive the entropy from the VRF coordinator.
+   * @dev randomWords will only have one word as entropy is requested per token.
+   */
+  function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+    uint256 tokenId = vrfRequests[requestId];
+    _metadata[tokenId].seed = randomWords[0];
+    emit SeedSet(tokenId, randomWords[0]);
+  }
+
+  /**
+   * @notice IERC165 declaration.
    */
   function supportsInterface(
     bytes4 interfaceId

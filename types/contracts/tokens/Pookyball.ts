@@ -354,8 +354,8 @@ export interface PookyballInterface extends utils.Interface {
   events: {
     "Approval(address,address,uint256)": EventFragment;
     "ApprovalForAll(address,address,bool)": EventFragment;
-    "LevelChanged(uint256,uint32)": EventFragment;
-    "PXPChanged(uint256,uint64)": EventFragment;
+    "LevelChanged(uint256,uint256)": EventFragment;
+    "PXPChanged(uint256,uint256)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
@@ -400,10 +400,10 @@ export type ApprovalForAllEventFilter = TypedEventFilter<ApprovalForAllEvent>;
 
 export interface LevelChangedEventObject {
   tokenId: BigNumber;
-  level: number;
+  level: BigNumber;
 }
 export type LevelChangedEvent = TypedEvent<
-  [BigNumber, number],
+  [BigNumber, BigNumber],
   LevelChangedEventObject
 >;
 
@@ -1009,7 +1009,7 @@ export interface Pookyball extends BaseContract {
       approved?: null
     ): ApprovalForAllEventFilter;
 
-    "LevelChanged(uint256,uint32)"(
+    "LevelChanged(uint256,uint256)"(
       tokenId?: PromiseOrValue<BigNumberish> | null,
       level?: null
     ): LevelChangedEventFilter;
@@ -1018,7 +1018,7 @@ export interface Pookyball extends BaseContract {
       level?: null
     ): LevelChangedEventFilter;
 
-    "PXPChanged(uint256,uint64)"(
+    "PXPChanged(uint256,uint256)"(
       tokenId?: PromiseOrValue<BigNumberish> | null,
       amount?: null
     ): PXPChangedEventFilter;

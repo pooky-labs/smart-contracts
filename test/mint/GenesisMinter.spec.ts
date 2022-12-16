@@ -72,7 +72,7 @@ describe('GenesisMinter', () => {
     });
 
     it('should allow account to mint multiple Pookyball tokens', async () => {
-      const quantity = faker.datatype.number(3) + 2;
+      const quantity = faker.datatype.number(1) + 2;
       const value = template.price.mul(quantity);
 
       await expect(GenesisMinter.connect(player1).mint(templateId, player1.address, quantity, { value }))
