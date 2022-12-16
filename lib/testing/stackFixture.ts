@@ -1,4 +1,4 @@
-import { InvalidReceiver__factory, VRFCoordinatorV2Mock__factory } from '../../types';
+import { InvalidReceiver__factory, VRFCoordinatorV2Mock__factory } from '../../typechain-types';
 import testing from '../config/testing';
 import { deployContracts } from '../deployContracts';
 import { GAME, MINTER } from '../roles';

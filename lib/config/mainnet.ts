@@ -1,4 +1,4 @@
-import { ZERO_ADDRESS } from '../constants';
+import { constants } from 'ethers';
 import Config from '../types/Config';
 import templates from './templates';
 
@@ -6,23 +6,22 @@ import templates from './templates';
  * Deploy configuration for Polygon Mainnet.
  */
 const mainnet: Config = {
-  state: 'mainnet',
+  confirmations: 5,
   verify: true,
 
   accounts: {
     treasury: '0x96224b6a800294f40c547f7ec0952ea222526040',
     tech: '0x3CC4F4372F83ad3C577eD6e1Aae3D244A1b955D5',
-    backend: ZERO_ADDRESS, // TBD
+    backend: constants.AddressZero, // TBD
   },
 
   metadata: {
-    contractURI: 'https://contracts.pooky.gg/Pookyball.json',
+    contractURI: 'https://static.pooky.gg/contracts/Pookyball.json',
     baseURI: 'https://tokens.pooky.gg/',
   },
 
   mint: {
     totalSupply: 20000,
-    maxAccountsMints: 10,
     templates,
   },
 

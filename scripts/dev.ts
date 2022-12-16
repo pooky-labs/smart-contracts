@@ -1,4 +1,6 @@
-import { task } from 'hardhat/config';
+import { ethers, run } from 'hardhat';
+import mainnet from '../lib/config/mainnet';
+import { deployContracts } from '../lib/deployContracts';
 
 async function wait() {
   let ok = false;
@@ -23,17 +25,18 @@ async function wait() {
   } while (!ok);
 }
 
-task('dev', async (_, hre) => {
-  await hre.run('compile');
-  const node = hre.run('node');
+async function main() {
+  await run('compile');
+  const node = run('node');
   await wait();
 
-  const [deployer] = await hre.ethers.getSigners();
-  const factory = await hre.ethers.getContractFactory('TestERC20');
-  const contract = await factory.connect(deployer).deploy();
-  await contract.deployed();
-
-  console.log('TestERC20 deployed to', contract.address);
+  const [deployer] = await ethers.getSigners();
+  await deployContracts(deployer, { ...mainnet, verify: false, confirmations: 0 });
 
   await node;
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
 });

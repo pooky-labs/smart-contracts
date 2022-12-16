@@ -6,16 +6,10 @@ module.exports = {
     node: true,
   },
   root: true,
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'prettier'],
   extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 12,
   },
-  overrides: [
-    {
-      files: ['hardhat.config.ts'],
-      globals: { task: true },
-    },
-  ],
 };

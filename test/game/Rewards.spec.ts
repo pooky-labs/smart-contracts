@@ -1,15 +1,15 @@
+import { faker } from '@faker-js/faker';
+import { loadFixture, setBalance } from '@nomicfoundation/hardhat-network-helpers';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { expect } from 'chai';
+import { BigNumber } from 'ethers';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
 import { signRewards } from '../../lib/testing/signRewards';
 import stackFixture from '../../lib/testing/stackFixture';
 import PookyballLuxury from '../../lib/types/PookyballLuxury';
 import PookyballRarity from '../../lib/types/PookyballRarity';
 import parseEther from '../../lib/utils/parseEther';
-import { Pookyball, Rewards, POK } from '../../types';
-import { faker } from '@faker-js/faker';
-import { loadFixture, setBalance } from '@nomicfoundation/hardhat-network-helpers';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { expect } from 'chai';
-import { BigNumber } from 'ethers';
+import { Pookyball, Rewards, POK } from '../../typechain-types';
 
 describe('Rewards', () => {
   // Signers

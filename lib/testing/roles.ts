@@ -1,14 +1,8 @@
-import { AccessControl } from '../../types';
-import hashRole from '../roles';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { BaseContract, ContractTransaction } from 'ethers';
-
-type AddressSubject = string | SignerWithAddress | BaseContract;
-
-function getAddress(subject: AddressSubject) {
-  return typeof subject === 'string' ? subject : subject.address;
-}
+import { ContractTransaction } from 'ethers';
+import { AccessControl } from '../../typechain-types';
+import hashRole from '../roles';
+import getAddress, { AddressSubject } from '../utils/getAddress';
 
 function getRole(role: string) {
   return role.match(/^0x[\da-fA-F]+$/) ? role : hashRole(role);

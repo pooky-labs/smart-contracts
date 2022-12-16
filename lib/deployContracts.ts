@@ -1,3 +1,4 @@
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
   GenesisMinter__factory,
   Level__factory,
@@ -5,14 +6,13 @@ import {
   Pookyball__factory,
   Rewards__factory,
   WaitList__factory,
-} from '../types';
-import { TemplateStruct } from '../types/contracts/mint/GenesisMinter';
+} from '../typechain-types';
+import { TemplateStruct } from '../typechain-types/contracts/mint/GenesisMinter';
 import deployer from './deploy';
 import logger from './logger';
 import { BURNER, GAME, MINTER, REWARDER } from './roles';
 import Config from './types/Config';
 import waitTx from './waitTx';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 /**
  * Deploy the full contract stack and configure the access controls and the contracts links properly.
@@ -49,7 +49,7 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
     supplyCounter -= supply;
   }
 
-  const deploy = deployer(signer, options.verify);
+  const deploy = deployer(signer, { verify: options.verify, confirmations: options.confirmations });
 
   // Step 1: deploy tokens
   const POK = await deploy(POK__factory);

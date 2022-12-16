@@ -1,20 +1,23 @@
-import getTestAccounts from '../../lib/testing/getTestAccounts';
-import stackFixture from '../../lib/testing/stackFixture';
-import { GenesisMinter, Pookyball, WaitList } from '../../types';
-import { TemplateStructOutput } from '../../types/contracts/mint/GenesisMinter';
 import { faker } from '@faker-js/faker';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
+import getTestAccounts from '../../lib/testing/getTestAccounts';
+import stackFixture from '../../lib/testing/stackFixture';
+import { GenesisMinter, Pookyball, WaitList } from '../../typechain-types';
+import { TemplateStructOutput } from '../../typechain-types/contracts/mint/GenesisMinter';
 
 describe('GenesisMinter', () => {
+  // Signers
   let owner: SignerWithAddress;
   let player1: SignerWithAddress;
 
+  // Contracts
   let GenesisMinter: GenesisMinter;
   let WaitList: WaitList;
   let Pookyball: Pookyball;
 
+  // Internal data
   let templateId: number;
   let template: TemplateStructOutput;
 

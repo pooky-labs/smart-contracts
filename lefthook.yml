@@ -1,0 +1,12 @@
+pre-commit:
+  parallel: true
+  commands:
+    eslint:
+      glob: '*.{js,ts,jsx,tsx}'
+      run: ./node_modules/.bin/eslint {staged_files}
+    prettier:
+      glob: '*.{js,ts,jsx,tsx,sol,json,yml,yaml,md}'
+      run: ./node_modules/.bin/prettier -w {staged_files}
+    depcheck:
+      glob: '*.{js,ts,jsx,tsx}'
+      run: ./node_modules/.bin/depcheck
