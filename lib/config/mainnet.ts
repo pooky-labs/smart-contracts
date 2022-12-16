@@ -6,6 +6,7 @@ import templates from './templates';
  * Deploy configuration for Polygon Mainnet.
  */
 const mainnet: Config = {
+  confirmations: 5,
   verify: true,
 
   accounts: {

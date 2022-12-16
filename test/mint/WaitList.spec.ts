@@ -8,11 +8,13 @@ import stackFixture from '../../lib/testing/stackFixture';
 import { WaitList } from '../../typechain-types';
 
 describe('WaitList', () => {
+  // Signers
   let owner: SignerWithAddress;
   let player1: SignerWithAddress;
   let player2: SignerWithAddress;
   let player3: SignerWithAddress;
 
+  // Contracts
   let WaitList: WaitList;
 
   beforeEach(async () => {

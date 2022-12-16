@@ -8,7 +8,7 @@ import PookyballRarity from './PookyballRarity';
  */
 export default interface Config {
   log?: ISettingsParam | false;
-
+  confirmations?: number;
   verify?: boolean;
 
   accounts: {

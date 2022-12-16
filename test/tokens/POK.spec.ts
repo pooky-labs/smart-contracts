@@ -2,17 +2,18 @@ import { faker } from '@faker-js/faker';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { describe } from 'mocha';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
 import stackFixture from '../../lib/testing/stackFixture';
 import parseEther from '../../lib/utils/parseEther';
 import { POK } from '../../typechain-types';
 
 describe('POK', () => {
+  // Signers
   let minter: SignerWithAddress;
   let player1: SignerWithAddress;
   let player2: SignerWithAddress;
 
+  // Contracts
   let POK: POK;
 
   beforeEach(async () => {

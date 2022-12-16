@@ -8,13 +8,16 @@ import { GenesisMinter, Pookyball, WaitList } from '../../typechain-types';
 import { TemplateStructOutput } from '../../typechain-types/contracts/mint/GenesisMinter';
 
 describe('GenesisMinter', () => {
+  // Signers
   let owner: SignerWithAddress;
   let player1: SignerWithAddress;
 
+  // Contracts
   let GenesisMinter: GenesisMinter;
   let WaitList: WaitList;
   let Pookyball: Pookyball;
 
+  // Internal data
   let templateId: number;
   let template: TemplateStructOutput;
 

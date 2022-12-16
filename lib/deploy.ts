@@ -6,12 +6,18 @@ export interface TypeContractFactory<C extends BaseContract, A extends unknown[]
   deploy(...args: A): Promise<C>;
 }
 
+interface DeployerOptions {
+  confirmations?: number;
+  verify?: boolean;
+}
+
 /**
  * Build a custom deploy function that allow tro deploy easily using the TypeChain factories
  * @param signer The deployer wallet signer, MUST have a sufficient balance to run the whole script.
  * @param verify If the contract should be verified on Etherscan/Polyscan, etc.
+ * @param wait The number of confirmations that we should wait after deployment.
  */
-export default function deployer(signer: Signer, verify = true) {
+export default function deployer(signer: Signer, { verify = true, confirmations }: DeployerOptions = {}) {
   return async function deploy<C extends BaseContract, A extends unknown[]>(
     factoryClass: { new (): TypeContractFactory<C, A> },
     ...args: A
@@ -19,9 +25,9 @@ export default function deployer(signer: Signer, verify = true) {
     const factory = new factoryClass();
     const contract = await factory.connect(signer).deploy(...args);
     await contract.deployed();
+    await contract.deployTransaction.wait(confirmations);
 
     if (verify) {
-      await contract.deployTransaction.wait(5);
       await run('verify:verify', {
         address: contract.address,
         constructorArguments: args,

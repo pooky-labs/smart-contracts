@@ -1,0 +1,15 @@
+ignores:
+  # Smart contracts
+  - '@chainlink/contracts'
+  - '@openzeppelin/contracts'
+  - operator-filter-registry
+
+  # Package
+
+  # Prettier
+  - '@trivago/prettier-plugin-sort-imports'
+  - prettier-plugin-solidity
+
+  # CI
+  - '@evilmartians/lefthook'
+  - depcheck

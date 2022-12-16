@@ -49,7 +49,7 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
     supplyCounter -= supply;
   }
 
-  const deploy = deployer(signer, options.verify);
+  const deploy = deployer(signer, { verify: options.verify, confirmations: options.confirmations });
 
   // Step 1: deploy tokens
   const POK = await deploy(POK__factory);

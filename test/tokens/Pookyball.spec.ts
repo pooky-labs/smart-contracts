@@ -13,15 +13,18 @@ import PookyballRarity from '../../lib/types/PookyballRarity';
 import { Pookyball, VRFCoordinatorV2Mock } from '../../typechain-types';
 
 describe('Pookyball', () => {
+  // Signers
   let deployer: SignerWithAddress;
   let minter: SignerWithAddress;
   let game: SignerWithAddress;
   let player1: SignerWithAddress;
   let player2: SignerWithAddress;
 
+  // Contracts
   let Pookyball: Pookyball;
   let VRFCoordinatorV2: VRFCoordinatorV2Mock;
 
+  // Internal data
   let tokenId: number;
 
   beforeEach(async () => {
