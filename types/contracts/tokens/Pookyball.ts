@@ -54,6 +54,7 @@ export interface PookyballInterface extends utils.Interface {
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
     "GAME()": FunctionFragment;
     "MINTER()": FunctionFragment;
+    "OPERATOR_FILTER_REGISTRY()": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "baseURI()": FunctionFragment;
@@ -93,6 +94,7 @@ export interface PookyballInterface extends utils.Interface {
       | "DEFAULT_ADMIN_ROLE"
       | "GAME"
       | "MINTER"
+      | "OPERATOR_FILTER_REGISTRY"
       | "approve"
       | "balanceOf"
       | "baseURI"
@@ -133,6 +135,10 @@ export interface PookyballInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "GAME", values?: undefined): string;
   encodeFunctionData(functionFragment: "MINTER", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "OPERATOR_FILTER_REGISTRY",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "approve",
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
@@ -273,6 +279,10 @@ export interface PookyballInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "GAME", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "MINTER", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "OPERATOR_FILTER_REGISTRY",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "baseURI", data: BytesLike): Result;
@@ -513,8 +523,10 @@ export interface Pookyball extends BaseContract {
 
     MINTER(overrides?: CallOverrides): Promise<[string]>;
 
+    OPERATOR_FILTER_REGISTRY(overrides?: CallOverrides): Promise<[string]>;
+
     approve(
-      to: PromiseOrValue<string>,
+      operator: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -674,8 +686,10 @@ export interface Pookyball extends BaseContract {
 
   MINTER(overrides?: CallOverrides): Promise<string>;
 
+  OPERATOR_FILTER_REGISTRY(overrides?: CallOverrides): Promise<string>;
+
   approve(
-    to: PromiseOrValue<string>,
+    operator: PromiseOrValue<string>,
     tokenId: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -833,8 +847,10 @@ export interface Pookyball extends BaseContract {
 
     MINTER(overrides?: CallOverrides): Promise<string>;
 
+    OPERATOR_FILTER_REGISTRY(overrides?: CallOverrides): Promise<string>;
+
     approve(
-      to: PromiseOrValue<string>,
+      operator: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1088,8 +1104,10 @@ export interface Pookyball extends BaseContract {
 
     MINTER(overrides?: CallOverrides): Promise<BigNumber>;
 
+    OPERATOR_FILTER_REGISTRY(overrides?: CallOverrides): Promise<BigNumber>;
+
     approve(
-      to: PromiseOrValue<string>,
+      operator: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -1252,8 +1270,12 @@ export interface Pookyball extends BaseContract {
 
     MINTER(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    OPERATOR_FILTER_REGISTRY(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     approve(
-      to: PromiseOrValue<string>,
+      operator: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;

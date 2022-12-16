@@ -17,6 +17,7 @@ describe('Pookyball', () => {
   let minter: SignerWithAddress;
   let game: SignerWithAddress;
   let player1: SignerWithAddress;
+  let player2: SignerWithAddress;
 
   let Pookyball: Pookyball;
   let VRFCoordinatorV2: VRFCoordinatorV2Mock;
@@ -24,7 +25,7 @@ describe('Pookyball', () => {
   let tokenId: number;
 
   beforeEach(async () => {
-    ({ deployer, minter, game, player1 } = await getTestAccounts());
+    ({ deployer, minter, game, player1, player2 } = await getTestAccounts());
     ({ Pookyball, VRFCoordinatorV2 } = await loadFixture(stackFixture));
 
     await Pookyball.connect(minter).mint(player1.address, PookyballRarity.COMMON, PookyballLuxury.COMMON);
@@ -125,6 +126,62 @@ describe('Pookyball', () => {
       await expect(VRFCoordinatorV2.fulfillRandomWordsWithOverride(1, Pookyball.address, [seed]))
         .to.emit(Pookyball, 'SeedSet')
         .withArgs(tokenId, seed);
+    });
+  });
+
+  describe('supportsInterface', () => {
+    const interfaces = {
+      ERC165: '0x01ffc9a7',
+      ERC721: '0x80ac58cd',
+    };
+
+    for (const [name, interfaceId] of Object.entries(interfaces)) {
+      it(`should support the ${name} interface (${interfaceId})`, async () => {
+        expect(await Pookyball.supportsInterface(interfaceId)).to.be.true;
+      });
+    }
+  });
+
+  describe('setApprovalForAll', () => {
+    it('should not revert', async () => {
+      await expect(Pookyball.connect(player1).setApprovalForAll(player2.address, true)).to.not.be.reverted;
+    });
+  });
+
+  describe('approve', () => {
+    it('should not revert', async () => {
+      await expect(Pookyball.connect(player1).approve(player2.address, tokenId)).to.not.be.reverted;
+    });
+  });
+
+  describe('transferFrom', () => {
+    it('should not revert', async () => {
+      await expect(
+        Pookyball.connect(player1).transferFrom(player1.address, player2.address, tokenId),
+      ).to.changeTokenBalances(Pookyball, [player1.address, player2.address], [-1, 1]);
+    });
+  });
+
+  describe('safeTransferFrom', () => {
+    it('should not revert without data', async () => {
+      await expect(
+        Pookyball.connect(player1)['safeTransferFrom(address,address,uint256)'](
+          player1.address,
+          player2.address,
+          tokenId,
+        ),
+      ).to.changeTokenBalances(Pookyball, [player1.address, player2.address], [-1, 1]);
+    });
+
+    it('should not revert with data', async () => {
+      await expect(
+        Pookyball.connect(player1)['safeTransferFrom(address,address,uint256,bytes)'](
+          player1.address,
+          player2.address,
+          tokenId,
+          utils.arrayify(utils.keccak256(randomBytes(16))),
+        ),
+      ).to.changeTokenBalances(Pookyball, [player1.address, player2.address], [-1, 1]);
     });
   });
 });
