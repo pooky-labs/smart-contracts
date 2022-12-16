@@ -1,4 +1,5 @@
-import { BallLuxury, BallRarity } from '../typings/DataTypes';
+import PookyballLuxury from '../types/PookyballLuxury';
+import PookyballRarity from '../types/PookyballRarity';
 import parseEther from '../utils/parseEther';
 
 /**
@@ -7,40 +8,40 @@ import parseEther from '../utils/parseEther';
  */
 const templates = [
   {
-    rarity: BallRarity.Rare,
-    luxury: BallLuxury.Common,
+    rarity: PookyballRarity.RARE,
+    luxury: PookyballLuxury.COMMON,
     supply: 1688,
     price: parseEther(140),
   },
   {
-    rarity: BallRarity.Epic,
-    luxury: BallLuxury.Common,
+    rarity: PookyballRarity.EPIC,
+    luxury: PookyballLuxury.COMMON,
     supply: 367,
     price: parseEther(560),
   },
   {
-    rarity: BallRarity.Epic,
-    luxury: BallLuxury.Alpha,
+    rarity: PookyballRarity.EPIC,
+    luxury: PookyballLuxury.ALPHA,
     supply: 80,
     price: parseEther(1680),
   },
   {
-    rarity: BallRarity.Legendary,
-    luxury: BallLuxury.Common,
+    rarity: PookyballRarity.LEGENDARY,
+    luxury: PookyballLuxury.COMMON,
     supply: 80,
     price: parseEther(2240),
   },
   {
-    rarity: BallRarity.Legendary,
-    luxury: BallLuxury.Alpha,
+    rarity: PookyballRarity.LEGENDARY,
+    luxury: PookyballLuxury.ALPHA,
     supply: 20,
     price: parseEther(6720),
   },
 
   // Common balls takes the rest of the supply
   {
-    rarity: BallRarity.Common,
-    luxury: BallLuxury.Common,
+    rarity: PookyballRarity.COMMON,
+    luxury: PookyballLuxury.COMMON,
     supply: null,
     price: parseEther(35),
   },

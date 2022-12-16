@@ -8,7 +8,4 @@ coverage.json
 # Hardhat files
 cache
 artifacts
-/typings
-
-# OpenZeppelin
-.openzeppelin/unknown-*.json
+/types

@@ -1,41 +1,42 @@
-import { InvalidReceiver__factory, VRFCoordinatorV2Mock__factory } from '../../typings';
+import { InvalidReceiver__factory, VRFCoordinatorV2Mock__factory } from '../../types';
 import testing from '../config/testing';
 import { deployContracts } from '../deployContracts';
-import { POOKY_CONTRACT } from '../roles';
+import { GAME, MINTER } from '../roles';
 import getTestAccounts from './getTestAccounts';
-import { ethers } from 'hardhat';
 
 export default async function stackFixture() {
-  const { deployer, treasury, tech, pooky, backend } = await getTestAccounts();
+  const { deployer, treasury, tech, rewarder, minter, game } = await getTestAccounts();
 
   // Set up the VRF coordinator
   const VRFCoordinatorV2 = await new VRFCoordinatorV2Mock__factory().connect(deployer).deploy(0, 0);
   await VRFCoordinatorV2.deployed();
   await VRFCoordinatorV2.createSubscription();
-  const subscriptionId = await VRFCoordinatorV2.s_currentSubId();
+  const subId = 1;
 
-  const stack = await deployContracts(deployer, {
+  const { POK, Pookyball, Rewards, ...contracts } = await deployContracts(deployer, {
     ...testing,
     accounts: {
       treasury: treasury.address,
       tech: tech.address,
-      backend: backend.address,
+      backend: rewarder.address,
     },
     vrf: {
       ...testing.vrf,
       coordinator: VRFCoordinatorV2.address,
-      subscriptionId,
+      subId,
     },
   });
 
-  await stack.POK.grantRole(POOKY_CONTRACT, pooky.address);
-  await stack.Pookyball.grantRole(POOKY_CONTRACT, pooky.address);
-  await stack.PookyballGenesisMinter.grantRole(POOKY_CONTRACT, pooky.address);
-  await stack.PookyGame.grantRole(POOKY_CONTRACT, pooky.address);
-  await VRFCoordinatorV2.addConsumer(subscriptionId, stack.PookyballGenesisMinter.address);
+  await VRFCoordinatorV2.addConsumer(subId, Pookyball.address);
 
+  // Additional role setup
+  await POK.connect(deployer).grantRole(MINTER, minter.address);
+  await Pookyball.connect(deployer).grantRole(MINTER, minter.address);
+  await Pookyball.connect(deployer).grantRole(GAME, game.address);
+
+  // Additional contracts deployments
   const InvalidReceiver = await new InvalidReceiver__factory().connect(deployer).deploy();
   await InvalidReceiver.deployed();
 
-  return { ...stack, VRFCoordinatorV2, InvalidReceiver };
+  return { POK, Pookyball, Rewards, VRFCoordinatorV2, InvalidReceiver, ...contracts };
 }

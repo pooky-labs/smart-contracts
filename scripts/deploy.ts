@@ -1,13 +1,13 @@
 import mainnet from '../lib/config/mainnet';
 import mumbai from '../lib/config/mumbai';
 import { deployContracts } from '../lib/deployContracts';
-import DeployConfig from '../lib/typings/DeployConfig';
+import Config from '../lib/types/Config';
 import { ethers, network } from 'hardhat';
 
 async function main() {
   const [deployer] = await ethers.getSigners();
 
-  let config: DeployConfig;
+  let config: Config;
 
   switch (network.name) {
     case 'mumbai':

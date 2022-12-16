@@ -1,12 +1,11 @@
-import DeployConfig from '../typings/DeployConfig';
+import Config from '../types/Config';
 import mainnet from './mainnet';
 import { BigNumber } from 'ethers';
 
 /**
  * Deploy configuration for Polygon Mumbai testnet.
  */
-const mumbai: DeployConfig = {
-  mocks: true,
+const mumbai: Config = {
   state: 'mumbai',
   verify: false,
 
@@ -18,7 +17,7 @@ const mumbai: DeployConfig = {
 
   metadata: {
     contractURI: 'https://contracts.pooky.gg/Pookyball.json',
-    baseURI: 'https://static.pooky.gg/nft/',
+    baseURI: 'https://tokens.pooky.tech/',
   },
 
   mint: {
@@ -35,7 +34,7 @@ const mumbai: DeployConfig = {
     ...mainnet.vrf,
     coordinator: '0x7a1bac17ccc5b313516c5e16fb24f7659aa5ebed',
     keyHash: '0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f',
-    subscriptionId: 2307, // see: https://vrf.chain.link/mumbai/2307
+    subId: 2307, // see: https://vrf.chain.link/mumbai/2307
   },
 };
 
