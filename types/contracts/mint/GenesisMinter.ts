@@ -51,6 +51,8 @@ export type TemplateStructOutput = [
 
 export interface GenesisMinterInterface extends utils.Interface {
   functions: {
+    "ineligibilityReason(uint256,address,uint256)": FunctionFragment;
+    "lastTemplateId()": FunctionFragment;
     "mint(uint256,address,uint256)": FunctionFragment;
     "pookyball()": FunctionFragment;
     "templates(uint256)": FunctionFragment;
@@ -58,9 +60,27 @@ export interface GenesisMinterInterface extends utils.Interface {
   };
 
   getFunction(
-    nameOrSignatureOrTopic: "mint" | "pookyball" | "templates" | "waitlist"
+    nameOrSignatureOrTopic:
+      | "ineligibilityReason"
+      | "lastTemplateId"
+      | "mint"
+      | "pookyball"
+      | "templates"
+      | "waitlist"
   ): FunctionFragment;
 
+  encodeFunctionData(
+    functionFragment: "ineligibilityReason",
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "lastTemplateId",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "mint",
     values: [
@@ -76,6 +96,14 @@ export interface GenesisMinterInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "waitlist", values?: undefined): string;
 
+  decodeFunctionResult(
+    functionFragment: "ineligibilityReason",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "lastTemplateId",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pookyball", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "templates", data: BytesLike): Result;
@@ -128,6 +156,15 @@ export interface GenesisMinter extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    ineligibilityReason(
+      templateId: PromiseOrValue<BigNumberish>,
+      recipient: PromiseOrValue<string>,
+      quantity: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    lastTemplateId(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     mint(
       templateId: PromiseOrValue<BigNumberish>,
       recipient: PromiseOrValue<string>,
@@ -152,6 +189,15 @@ export interface GenesisMinter extends BaseContract {
 
     waitlist(overrides?: CallOverrides): Promise<[string]>;
   };
+
+  ineligibilityReason(
+    templateId: PromiseOrValue<BigNumberish>,
+    recipient: PromiseOrValue<string>,
+    quantity: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  lastTemplateId(overrides?: CallOverrides): Promise<BigNumber>;
 
   mint(
     templateId: PromiseOrValue<BigNumberish>,
@@ -178,6 +224,15 @@ export interface GenesisMinter extends BaseContract {
   waitlist(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
+    ineligibilityReason(
+      templateId: PromiseOrValue<BigNumberish>,
+      recipient: PromiseOrValue<string>,
+      quantity: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    lastTemplateId(overrides?: CallOverrides): Promise<BigNumber>;
+
     mint(
       templateId: PromiseOrValue<BigNumberish>,
       recipient: PromiseOrValue<string>,
@@ -219,6 +274,15 @@ export interface GenesisMinter extends BaseContract {
   };
 
   estimateGas: {
+    ineligibilityReason(
+      templateId: PromiseOrValue<BigNumberish>,
+      recipient: PromiseOrValue<string>,
+      quantity: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    lastTemplateId(overrides?: CallOverrides): Promise<BigNumber>;
+
     mint(
       templateId: PromiseOrValue<BigNumberish>,
       recipient: PromiseOrValue<string>,
@@ -237,6 +301,15 @@ export interface GenesisMinter extends BaseContract {
   };
 
   populateTransaction: {
+    ineligibilityReason(
+      templateId: PromiseOrValue<BigNumberish>,
+      recipient: PromiseOrValue<string>,
+      quantity: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    lastTemplateId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     mint(
       templateId: PromiseOrValue<BigNumberish>,
       recipient: PromiseOrValue<string>,

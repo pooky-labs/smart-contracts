@@ -10,7 +10,7 @@ const mainnet: Config = {
   verify: true,
 
   accounts: {
-    treasury: ZERO_ADDRESS, // TBD
+    treasury: '0x96224b6a800294f40c547f7ec0952ea222526040',
     tech: '0x3CC4F4372F83ad3C577eD6e1Aae3D244A1b955D5',
     backend: ZERO_ADDRESS, // TBD
   },
