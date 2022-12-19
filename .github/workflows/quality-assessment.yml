@@ -66,4 +66,4 @@ jobs:
         with:
           token: ${{ secrets.NODE_AUTH_TOKEN }}
           access: public
-          dry-run: github.event_name != 'push'
+          dry-run: ${{ github.event_name != 'push' }}
