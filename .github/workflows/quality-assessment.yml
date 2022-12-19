@@ -47,3 +47,23 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.json
+
+  publish:
+    name: Publish on npm registry
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Setup environment
+        uses: pooky-labs/actions/setup-node@main
+      - name: Set version
+        run: |
+          version=$(npm pkg get version | sed s/\"//g)
+          metadata=alpha.$GITHUB_RUN_NUMBER.$GITHUB_RUN_ATTEMPT+${GITHUB_SHA::7}
+          target="$version-$metadata"
+          npm pkg set version="$target"
+          echo "Changed version to $target"
+      - name: Publish on npm registry
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NODE_AUTH_TOKEN }}
+          access: public
+          dry-run: ${{ github.event_name != 'push' }}

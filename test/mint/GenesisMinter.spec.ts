@@ -1,9 +1,10 @@
 import { faker } from '@faker-js/faker';
-import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
+import { loadFixture, setBalance } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
 import stackFixture from '../../lib/testing/stackFixture';
+import parseEther from '../../lib/utils/parseEther';
 import { GenesisMinter, Pookyball, WaitList } from '../../typechain-types';
 import { TemplateStructOutput } from '../../typechain-types/contracts/mint/GenesisMinter';
 
@@ -75,8 +76,14 @@ describe('GenesisMinter', () => {
     });
 
     it('should allow account to mint multiple Pookyball tokens', async () => {
-      const quantity = faker.datatype.number(1) + 2;
+      const quantity = 3 + faker.datatype.number(5);
       const value = template.price.mul(quantity);
+
+      // Sometimes, the test fails with the following error:
+      // InvalidInputError: sender doesn't have enough funds to send tx.
+      // The max upfront cost is: xxxx and the sender's account only has: 10000000000000000000000
+      // Setting player1's balance to 1,000,000,000 ETH fixes the problem.
+      await setBalance(player1.address, parseEther(1e9));
 
       await expect(GenesisMinter.connect(player1).mint(templateId, player1.address, quantity, { value }))
         .to.changeTokenBalance(Pookyball, player1.address, quantity)
