@@ -50,6 +50,7 @@ jobs:
 
   publish:
     name: Publish on npm registry
+    runs-on: ubuntu-20.04
     steps:
       - name: Setup environment
         uses: pooky-labs/actions/setup-node@main
