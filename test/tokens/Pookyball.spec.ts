@@ -134,8 +134,10 @@ describe('Pookyball', () => {
 
   describe('supportsInterface', () => {
     const interfaces = {
-      ERC165: '0x01ffc9a7',
-      ERC721: '0x80ac58cd',
+      IERC165: '0x01ffc9a7',
+      IERC721: '0x80ac58cd',
+      IERC721Metadata: '0x5b5e139f',
+      IERC2981: '0x5b5e139f',
     };
 
     for (const [name, interfaceId] of Object.entries(interfaces)) {
