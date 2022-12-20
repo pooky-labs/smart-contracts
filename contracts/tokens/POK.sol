@@ -4,6 +4,7 @@ pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "../interfaces/IPOK.sol";
 
 /**
  * @title Pookyball
@@ -18,7 +19,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
  * - MINTER role can freely mint new $POK tokens.
  * - BURNER role can freely burning existing $POK tokens.
  */
-contract POK is ERC20, AccessControl {
+contract POK is IPOK, ERC20, AccessControl {
   /// Role that allows to freely mint new $POK tokens
   bytes32 public constant MINTER = keccak256("MINTER");
   /// Role that allows to freely burning existing $POK tokens

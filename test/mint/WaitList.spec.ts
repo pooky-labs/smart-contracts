@@ -3,7 +3,9 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { Wallet } from 'ethers';
+import { OPERATOR } from '../../lib/roles';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
+import { expectMissingRole } from '../../lib/testing/roles';
 import stackFixture from '../../lib/testing/stackFixture';
 import { WaitList } from '../../typechain-types';
 
@@ -23,11 +25,11 @@ describe('WaitList', () => {
   });
 
   describe('setRequiredTier', async () => {
-    it('should revert if non-owner tries to change the required tier', async () => {
-      await expect(WaitList.connect(player1).setRequiredTier(0)).to.be.revertedWith('Ownable: caller is not the owner');
+    it('should revert if non-OPERATOR tries to change the required tier', async () => {
+      await expectMissingRole(WaitList.connect(player1).setRequiredTier(0), player1, OPERATOR);
     });
 
-    it('should allow owner to change the required tier', async () => {
+    it('should allow OPERATOR-role to change the required tier', async () => {
       const newRequiredTier = faker.datatype.number(5);
       await WaitList.connect(owner).setRequiredTier(newRequiredTier);
       expect(await WaitList.requiredTier()).to.eq(newRequiredTier);
@@ -35,10 +37,8 @@ describe('WaitList', () => {
   });
 
   describe('setBatch', async () => {
-    it('should revert if non-owner tries to set the account tiers', async () => {
-      await expect(WaitList.connect(player1).setBatch([player1.address], [4])).to.be.revertedWith(
-        'Ownable: caller is not the owner',
-      );
+    it('should revert if non-OPERATOR tries to set the account tiers', async () => {
+      await expectMissingRole(WaitList.connect(player1).setBatch([player1.address], [4]), player1, OPERATOR);
     });
 
     it('should revert if accounts and tiers size mismatch', async () => {

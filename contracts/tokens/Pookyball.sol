@@ -110,7 +110,7 @@ contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBas
   }
 
   /**
-   * @notice PookyballMetadata the token {tokenId}.
+   * @notice PookyballMetadata of the token {tokenId}.
    * @dev Requirements:
    * - Pookyball {tokenId} should exist (minted and not burned).
    */
@@ -186,10 +186,7 @@ contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBas
   function supportsInterface(
     bytes4 interfaceId
   ) public view virtual override(IERC165, ERC721, ERC2981, AccessControl) returns (bool) {
-    return ERC721.supportsInterface(interfaceId)
-    || ERC2981.supportsInterface(interfaceId)
-    || AccessControl.supportsInterface(interfaceId)
-    || super.supportsInterface(interfaceId);
+    return super.supportsInterface(interfaceId);
   }
 
   // Operator Filter Registry implementation
