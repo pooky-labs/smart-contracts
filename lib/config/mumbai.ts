@@ -10,8 +10,9 @@ const mumbai: Config = {
   verify: false,
 
   accounts: {
+    ...mainnet.accounts,
     treasury: '0x2dfCa6e357a73D180B8e6aa8f7690A315a4395F7',
-    tech: '0xF00Db2f08D1F6b3f6089573085B5826Bb358e319',
+    admin: '0xF00Db2f08D1F6b3f6089573085B5826Bb358e319',
     backend: '0xCAFE3e690bf74Ec274210E1c448130c1f8228513',
   },
 

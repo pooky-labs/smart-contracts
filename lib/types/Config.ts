@@ -12,9 +12,10 @@ export default interface Config {
   verify?: boolean;
 
   accounts: {
-    tech: string;
+    admin: string;
     treasury: string;
     backend: string;
+    operators?: string[];
   };
 
   metadata: {

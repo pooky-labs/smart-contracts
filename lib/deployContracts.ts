@@ -10,7 +10,7 @@ import {
 import { TemplateStruct } from '../typechain-types/contracts/mint/GenesisMinter';
 import deployer from './deploy';
 import logger from './logger';
-import { BURNER, GAME, MINTER, REWARDER } from './roles';
+import { BURNER, DEFAULT_ADMIN_ROLE, GAME, MINTER, OPERATOR, REWARDER } from './roles';
 import Config from './types/Config';
 import waitTx from './waitTx';
 
@@ -48,6 +48,8 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
 
     supplyCounter -= supply;
   }
+
+  logger.info('Deployer', signer.address);
 
   const deploy = deployer(signer, { verify: options.verify, confirmations: options.confirmations });
 
@@ -92,12 +94,28 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
   logger.info('Deployed Rewards to', Rewards.address);
 
   // Step 4: assign permissions
+  // Step 4.1: assign DEFAULT_ADMIN_ROLE to the admin multi signature wallet
+  await waitTx(POK.grantRole(DEFAULT_ADMIN_ROLE, options.accounts.admin));
+  await waitTx(Pookyball.grantRole(DEFAULT_ADMIN_ROLE, options.accounts.admin));
+  await waitTx(Rewards.grantRole(DEFAULT_ADMIN_ROLE, options.accounts.admin));
+  await waitTx(WaitList.grantRole(DEFAULT_ADMIN_ROLE, options.accounts.admin));
+
+  // Step 4.2: assign the required gameplay roles
   await waitTx(POK.grantRole(MINTER, Rewards.address));
   await waitTx(POK.grantRole(BURNER, Level.address));
   await waitTx(Pookyball.grantRole(MINTER, GenesisMinter.address));
   await waitTx(Pookyball.grantRole(GAME, Level.address));
   await waitTx(Pookyball.grantRole(GAME, Rewards.address));
   await waitTx(Rewards.grantRole(REWARDER, options.accounts.backend));
+  for (const operator of options.accounts.operators ?? []) {
+    await waitTx(WaitList.grantRole(OPERATOR, operator));
+  }
+
+  // Step 4.3: resign all the DEFAULT_ADMIN_ROLE so only the multi signature remains admin
+  await waitTx(POK.renounceRole(DEFAULT_ADMIN_ROLE, signer.address));
+  await waitTx(Pookyball.renounceRole(DEFAULT_ADMIN_ROLE, signer.address));
+  await waitTx(Rewards.renounceRole(DEFAULT_ADMIN_ROLE, signer.address));
+  await waitTx(WaitList.renounceRole(DEFAULT_ADMIN_ROLE, signer.address));
 
   return { POK, Pookyball, WaitList, GenesisMinter, Level, Rewards };
 }

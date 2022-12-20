@@ -1,11 +1,20 @@
 import { InvalidReceiver__factory, VRFCoordinatorV2Mock__factory } from '../../typechain-types';
 import testing from '../config/testing';
 import { deployContracts } from '../deployContracts';
-import { GAME, MINTER, OPERATOR } from '../roles';
+import { GAME, MINTER } from '../roles';
 import getTestAccounts from './getTestAccounts';
 
 export default async function stackFixture() {
-  const { deployer, treasury, tech, rewarder, minter, game } = await getTestAccounts();
+  const { deployer, admin, treasury, rewarder, operator, minter, game } = await getTestAccounts();
+
+  if (testing.log !== false) {
+    console.table(
+      Object.entries(await getTestAccounts()).reduce((acc, [name, signer]) => {
+        acc.push({ name, address: signer.address });
+        return acc;
+      }, [] as { name: string; address: string }[]),
+    );
+  }
 
   // Set up the VRF coordinator
   const VRFCoordinatorV2 = await new VRFCoordinatorV2Mock__factory().connect(deployer).deploy(0, 0);
@@ -16,9 +25,10 @@ export default async function stackFixture() {
   const { POK, Pookyball, Rewards, WaitList, ...contracts } = await deployContracts(deployer, {
     ...testing,
     accounts: {
+      admin: admin.address,
       treasury: treasury.address,
-      tech: tech.address,
       backend: rewarder.address,
+      operators: [operator.address],
     },
     vrf: {
       ...testing.vrf,
@@ -30,10 +40,9 @@ export default async function stackFixture() {
   await VRFCoordinatorV2.addConsumer(subId, Pookyball.address);
 
   // Additional role setup
-  await POK.connect(deployer).grantRole(MINTER, minter.address);
-  await Pookyball.connect(deployer).grantRole(MINTER, minter.address);
-  await Pookyball.connect(deployer).grantRole(GAME, game.address);
-  await WaitList.connect(deployer).grantRole(OPERATOR, deployer.address);
+  await POK.connect(admin).grantRole(MINTER, minter.address);
+  await Pookyball.connect(admin).grantRole(MINTER, minter.address);
+  await Pookyball.connect(admin).grantRole(GAME, game.address);
 
   // Additional contracts deployments
   const InvalidReceiver = await new InvalidReceiver__factory().connect(deployer).deploy();

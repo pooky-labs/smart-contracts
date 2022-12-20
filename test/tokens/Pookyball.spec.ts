@@ -14,7 +14,7 @@ import { Pookyball, VRFCoordinatorV2Mock } from '../../typechain-types';
 
 describe('Pookyball', () => {
   // Signers
-  let deployer: SignerWithAddress;
+  let admin: SignerWithAddress;
   let minter: SignerWithAddress;
   let game: SignerWithAddress;
   let player1: SignerWithAddress;
@@ -28,7 +28,7 @@ describe('Pookyball', () => {
   let tokenId: number;
 
   beforeEach(async () => {
-    ({ deployer, minter, game, player1, player2 } = await getTestAccounts());
+    ({ admin, minter, game, player1, player2 } = await getTestAccounts());
     ({ Pookyball, VRFCoordinatorV2 } = await loadFixture(stackFixture));
 
     await Pookyball.connect(minter).mint(player1.address, PookyballRarity.COMMON, PookyballLuxury.COMMON);
@@ -42,7 +42,7 @@ describe('Pookyball', () => {
 
     it('should allow DEFAULT_ADMIN_ROLE to change the contract URI', async () => {
       const newContractURI = faker.internet.url();
-      await Pookyball.connect(deployer).setContractURI(newContractURI);
+      await Pookyball.connect(admin).setContractURI(newContractURI);
       expect(await Pookyball.contractURI()).to.eq(newContractURI);
     });
   });
@@ -54,7 +54,7 @@ describe('Pookyball', () => {
 
     it('should allow DEFAULT_ADMIN_ROLE to change the base URI', async () => {
       const newBaseURI = faker.internet.url();
-      await Pookyball.connect(deployer).setBaseURI(newBaseURI);
+      await Pookyball.connect(admin).setBaseURI(newBaseURI);
       expect(await Pookyball.baseURI()).to.eq(newBaseURI);
     });
   });
