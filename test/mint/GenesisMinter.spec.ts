@@ -10,7 +10,7 @@ import { TemplateStructOutput } from '../../typechain-types/contracts/mint/Genes
 
 describe('GenesisMinter', () => {
   // Signers
-  let owner: SignerWithAddress;
+  let operator: SignerWithAddress;
   let player1: SignerWithAddress;
 
   // Contracts
@@ -23,13 +23,13 @@ describe('GenesisMinter', () => {
   let template: TemplateStructOutput;
 
   beforeEach(async () => {
-    ({ deployer: owner, player1 } = await getTestAccounts());
+    ({ operator, player1 } = await getTestAccounts());
     ({ GenesisMinter, WaitList, Pookyball } = await loadFixture(stackFixture));
 
     templateId = faker.datatype.number({ min: 1, max: (await GenesisMinter.lastTemplateId()).toNumber() });
     template = await GenesisMinter.templates(templateId);
-    await WaitList.connect(owner).setRequiredTier(3);
-    await WaitList.connect(owner).setBatch([player1.address], [3]);
+    await WaitList.connect(operator).setRequiredTier(3);
+    await WaitList.connect(operator).setBatch([player1.address], [3]);
   });
 
   describe('templates', async () => {
@@ -45,7 +45,7 @@ describe('GenesisMinter', () => {
 
   describe('mint', () => {
     it('should revert if sender is not eligible', async () => {
-      await WaitList.connect(owner).setBatch([player1.address], [2]);
+      await WaitList.connect(operator).setBatch([player1.address], [2]);
 
       await expect(GenesisMinter.connect(player1).mint(templateId, player1.address, 1, { value: template.price }))
         .to.be.revertedWithCustomError(GenesisMinter, 'Ineligible')
@@ -94,7 +94,7 @@ describe('GenesisMinter', () => {
 
   describe('ineligibilityReason', () => {
     it('should return "not eligible yet" if sender is not eligible', async () => {
-      await WaitList.connect(owner).setBatch([player1.address], [2]);
+      await WaitList.connect(operator).setBatch([player1.address], [2]);
       expect(await GenesisMinter.ineligibilityReason(templateId, player1.address, 1)).to.eq('not eligible yet');
     });
 
