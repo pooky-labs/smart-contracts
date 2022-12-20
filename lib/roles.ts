@@ -13,3 +13,4 @@ export const MINTER = hashRole('MINTER');
 export const BURNER = hashRole('BURNER');
 export const GAME = hashRole('GAME');
 export const REWARDER = hashRole('REWARDER');
+export const OPERATOR = hashRole('OPERATOR');
