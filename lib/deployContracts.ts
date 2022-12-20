@@ -59,6 +59,7 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
     Pookyball__factory,
     options.metadata.baseURI,
     options.metadata.contractURI,
+    options.accounts.treasury,
     options.vrf.coordinator,
     options.vrf.keyHash,
     options.vrf.subId,

@@ -5,6 +5,7 @@ pragma solidity ^0.8.17;
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/common/ERC2981.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "operator-filter-registry/src/DefaultOperatorFilterer.sol";
@@ -24,7 +25,7 @@ import "../types/PookyballRarity.sol";
  * - MINTER role can mint new tokens.
  * - GAME role can change the mutable token metadata (level and PXP).
  */
-contract Pookyball is IPookyball, ERC721, AccessControl, VRFConsumerBaseV2, DefaultOperatorFilterer {
+contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBaseV2, DefaultOperatorFilterer {
   using Strings for uint256;
 
   // Roles
@@ -57,6 +58,7 @@ contract Pookyball is IPookyball, ERC721, AccessControl, VRFConsumerBaseV2, Defa
   constructor(
     string memory _baseURI,
     string memory _contractURI,
+    address _treasury,
     address _vrfCoordinator,
     bytes32 _vrfKeyHash,
     uint64 _vrfSubId,
@@ -72,6 +74,7 @@ contract Pookyball is IPookyball, ERC721, AccessControl, VRFConsumerBaseV2, Defa
     vrfMinimumRequestConfirmations = _vrfMinimumRequestConfirmations;
     vrfCallbackGasLimit = _vrfCallbackGasLimit;
 
+    _setDefaultRoyalty(_treasury, 500);
     _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
   }
 
@@ -174,11 +177,19 @@ contract Pookyball is IPookyball, ERC721, AccessControl, VRFConsumerBaseV2, Defa
 
   /**
    * @notice IERC165 declaration.
+   * @dev Supports the following `interfaceId`s:
+   * - IERC165: 0x01ffc9a7
+   * - IERC721: 0x80ac58cd
+   * - IERC721Metadata: 0x5b5e139f
+   * - IERC2981: 0x2a55205a
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(IERC165, ERC721, AccessControl) returns (bool) {
-    return super.supportsInterface(interfaceId);
+  ) public view virtual override(IERC165, ERC721, ERC2981, AccessControl) returns (bool) {
+    return ERC721.supportsInterface(interfaceId)
+    || ERC2981.supportsInterface(interfaceId)
+    || AccessControl.supportsInterface(interfaceId)
+    || super.supportsInterface(interfaceId);
   }
 
   // Operator Filter Registry implementation
