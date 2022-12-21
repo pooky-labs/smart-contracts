@@ -8,6 +8,12 @@ import "../interfaces/IPookyball.sol";
 import "../interfaces/IPOK.sol";
 import "../types/PookyballMetadata.sol";
 
+/**
+ * @title Rewards
+ * @author Mathieu Bour
+ * @notice Gameplay contract that allows to claim rewards native, $POK tokens and Pookyball PX rewards.
+ * @dev Only authorized REWARDER-role can sign the rewards payload.
+ */
 contract Rewards is AccessControl {
   using ECDSA for bytes32;
 
@@ -18,10 +24,14 @@ contract Rewards is AccessControl {
   IPookyball public pookyball;
   IPOK public pok;
 
+  /// To prevent users to use the same signature multiple times, a incrementing nonce is required
   mapping(address => uint256) public nonces;
 
+  /// Fired when $POK tokens are claimed
   event POKClaimed(address indexed account, uint256 amountPOK);
+  /// Fired when Pookyball PXP are claimed
   event PookyballPXPClaimed(address indexed account, uint indexed tokenId, uint pxp);
+  /// Fired when native currency is claimed
   event NativeClaimed(address indexed account, uint256 amountNative);
 
   /// Thrown when an account submits an invalid signature.
@@ -48,7 +58,7 @@ contract Rewards is AccessControl {
    * @notice Claim rewards using a signature generated from the Pooky game back-end.
    * Rewards include: native currency, $POK tokens and PXP for the Pookyball tokens.
    * @dev Requirements:
-   * - Signature is valid
+   * - signature is valid
    * - tokenIds and tokenPXP have the same size
    * - contract has enough native currency to reward player
    */

@@ -20,6 +20,10 @@ import "../types/PookyballRarity.sol";
  * @notice Pookyball is ERC721 token representing Pookyball NFTs. Balls are mintable by other Pooky game contracts.
  * This contract does not hold any aspect of the Pooky gameplay and only serves as Pookyball information storage.
  *
+ * In order to enforce the creator fees on secondary sales, we chose to adhere to the Operator Filter Registry
+ * standard that was initially developed by OpenSea.
+ * For more information, see https://github.com/ProjectOpenSea/operator-filter-registry
+ *
  * Roles:
  * - DEFAULT_ADMIN_ROLE can add/remove roles.
  * - MINTER role can mint new tokens.
@@ -32,6 +36,9 @@ contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBas
   bytes32 public constant MINTER = keccak256("MINTER");
   bytes32 public constant GAME = keccak256("GAME");
 
+  /**
+   * @notice The prefix of all the Pookyball metadata.
+   */
   string public baseURI;
 
   /**
@@ -40,7 +47,10 @@ contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBas
    */
   string public contractURI;
 
+  /// Last minted tokenId, will always exist
   uint256 public lastTokenId;
+
+  /// Tokens gameplay metadata, see {PookyballMetadata}
   mapping(uint256 => PookyballMetadata) _metadata;
 
   // VRF parameters
@@ -50,10 +60,6 @@ contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBas
   uint16 public vrfMinimumRequestConfirmations;
   uint32 public vrfCallbackGasLimit;
   mapping(uint256 => uint256) vrfRequests;
-
-  event SeedSet(uint256 indexed tokenId, uint256 seed);
-  event LevelChanged(uint256 indexed tokenId, uint256 level);
-  event PXPChanged(uint256 indexed tokenId, uint256 amount);
 
   constructor(
     string memory _baseURI,
@@ -124,6 +130,7 @@ contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBas
    * requested to the VRF coordinator.
    * @dev Requirements:
    * - sender must have the MINTER role.
+   * - `recipients`, `rarities` and `luxuries` arguments must have the same size
    */
   function mint(
     address[] memory recipients,
@@ -204,13 +211,8 @@ contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBas
     return super.supportsInterface(interfaceId);
   }
 
-  // Operator Filter Registry implementation
-  // ---
-  // In order to enforce the creator fees on secondary sales, we chose to adhere to the Operator Filter Registry
-  // standard that was initially developed by OpenSea.
-  // See https://github.com/ProjectOpenSea/operator-filter-registry
-
   /**
+   * Operator Filter Registry implementation
    * @dev See {IERC721-setApprovalForAll}.
    */
   function setApprovalForAll(
@@ -221,6 +223,7 @@ contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBas
   }
 
   /**
+   * Operator Filter Registry implementation
    * @dev See {IERC721-approve}.
    */
   function approve(
@@ -231,6 +234,7 @@ contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBas
   }
 
   /**
+   * Operator Filter Registry implementation
    * @dev See {IERC721-transferFrom}.
    */
   function transferFrom(
@@ -242,6 +246,7 @@ contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBas
   }
 
   /**
+   * Operator Filter Registry implementation
    * @dev See {IERC721-safeTransferFrom}.
    */
   function safeTransferFrom(
@@ -253,6 +258,7 @@ contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBas
   }
 
   /**
+   * Operator Filter Registry implementation
    * @dev See {IERC721-safeTransferFrom}.
    */
   function safeTransferFrom(

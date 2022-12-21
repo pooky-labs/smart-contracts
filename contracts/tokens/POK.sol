@@ -13,7 +13,7 @@ import "../interfaces/IPOK.sol";
  * @notice POK is ERC20 token used inside of the game, $POK is soul-bounded and serves as in-game currency.
  * Mintable by other Pooky game contracts.
  *
- * @dev Roles:
+ * @dev Implemented roles:
  * - DEFAULT_ADMIN_ROLE can add/remove roles, it will be granted to the deployer and then quickly transferred to a
  *   Gnosis Safe multi-signature wallet.
  * - MINTER role can freely mint new $POK tokens.

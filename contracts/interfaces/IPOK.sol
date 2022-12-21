@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 /**
  * @title IPOK
  * @author Mathieu Bour
- * Minimal $POK ERC20 token interface.
+ * @notice Minimal $POK ERC20 token interface.
  */
 interface IPOK is IAccessControl, IERC20 {
   /**

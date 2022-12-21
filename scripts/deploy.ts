@@ -1,27 +1,10 @@
-import { ethers, network } from 'hardhat';
-import mainnet from '../lib/config/mainnet';
-import mumbai from '../lib/config/mumbai';
+import { ethers } from 'hardhat';
+import getConfig from '../lib/config/getConfig';
 import { deployContracts } from '../lib/deployContracts';
-import Config from '../lib/types/Config';
 
 async function main() {
   const [deployer] = await ethers.getSigners();
-
-  let config: Config;
-
-  switch (network.name) {
-    case 'mumbai':
-      config = mumbai;
-      break;
-    case 'hardhat':
-      config = { ...mainnet, verify: false };
-      break;
-    default:
-      config = mainnet;
-      break;
-  }
-
-  await deployContracts(deployer, config);
+  await deployContracts(deployer, getConfig());
 }
 
 main().catch((error) => {
