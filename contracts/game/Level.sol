@@ -10,26 +10,29 @@ import "../types/PookyballRarity.sol";
  * @title Level
  * @author Mathieu Bour
  * @notice Gameplay contract that allow to level up Pookyball tokens.
- * @dev Technically, this contract is allowed to write the Pookyball.metadata mapping using the setLevel and
- * setPXP functions.
+ * Reference: https://whitepaper.pooky.gg/pookyball-features/levelling-up
+ * @dev Level contract is allowed to write the Pookyball.metadata mapping using the setLevel and setPXP functions.
  */
 contract Level {
-  // Contracts
-  IPookyball public immutable pookyball;
-  IPOK public immutable pok;
-
+  // Gameplay constants
   uint256 public constant PXP_DECIMALS = 18;
   uint256 public constant PXP_BASE = 60 * 10 ** PXP_DECIMALS;
   uint256 public constant RATIO_DECIMALS = 3;
   uint256 public constant RATIO_PXP = 1085; // =1.085: each level costs 1.085 more than the previous one.
   uint256 public constant RATIO_POK = 90; // =0.090: 9% of PXP cost is required in $POK tokens to confirm level up.
 
+  // Contracts
+  IPookyball public immutable pookyball;
+  IPOK public immutable pok;
+
+  /// Each PookyballRarity has a maximum level
   mapping(PookyballRarity => uint256) public maxLevels;
 
   /// Thrown when an account tries to level up a ball that is not owned the sender.
   error OwnershipRequired(uint256 tokenId, address expected, address actual);
   /// Thrown when an account tries to level a ball above its maximum level.
   error MaximumLevelReached(uint256 tokenId, uint256 maxLevel);
+  /// Thrown when an account does own enough $POK token to pay the level up fee
   error InsufficientPOKBalance(uint expected, uint actual);
 
   constructor(IPOK _pok, IPookyball _pookyball) {

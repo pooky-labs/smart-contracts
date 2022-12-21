@@ -16,17 +16,21 @@ struct Template {
 
 /**
  * @title GenesisMinter
+ * @author Mathieu Bour
  * @notice Mint contract for the Pooky "genesis" collection.
  */
 contract GenesisMinter {
+  // Contracts
   IPookyball public immutable pookyball;
+  IWaitList public immutable waitlist;
+
+  /// Where the mint funds will be forwarded
   address immutable treasury;
 
   uint256 public lastTemplateId;
   mapping(uint256 => Template) public templates;
 
-  IWaitList public immutable waitlist;
-
+  /// Fired when a sale is made
   event Sale(address indexed account, uint256 indexed templateId, uint256 quantity, uint256 value);
 
   /// Thrown when an account is not eligible from the waitlist point of view.
@@ -70,6 +74,7 @@ contract GenesisMinter {
       revert InsufficientValue(quantity * template.price, msg.value);
     }
 
+    // Build the arrays for the batched mint
     address[] memory recipients = new address[](quantity);
     PookyballRarity[] memory rarities = new PookyballRarity[](quantity);
     uint[] memory luxuries = new uint[](quantity);

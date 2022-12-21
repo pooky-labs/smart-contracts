@@ -9,6 +9,16 @@ import './tasks/typechain';
 
 loadConfig();
 
+const accounts: string[] = [];
+
+if (process.env.DEPLOYER_PK) {
+  accounts.push(process.env.DEPLOYER_PK);
+  if (process.env.PLAYER1_PK) {
+    // Push the player 1 private key only if the deployer key is truthy
+    accounts.push(process.env.PLAYER1_PK);
+  }
+}
+
 const config: HardhatUserConfig = {
   solidity: {
     version: '0.8.17', // see https://hardhat.org/hardhat-runner/docs/reference/solidity-support#solidity-support
@@ -19,11 +29,9 @@ const config: HardhatUserConfig = {
     },
   },
   networks: {
-    hardhat: {
-      gas: 'auto',
-    },
     local: {
       url: 'http://127.0.0.1:8545/',
+      accounts,
     },
   },
   dependencyCompiler: {
@@ -47,7 +55,7 @@ const config: HardhatUserConfig = {
 if (process.env.MUMBAI_RPC_URL) {
   set(config, 'networks.mumbai', {
     url: process.env.MUMBAI_RPC_URL,
-    accounts: [process.env.DEPLOYER_PK as string],
+    accounts,
   });
 }
 

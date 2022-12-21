@@ -7,7 +7,7 @@ import mainnet from './mainnet';
  */
 const mumbai: Config = {
   ...mainnet,
-  verify: false,
+  verify: true,
 
   accounts: {
     ...mainnet.accounts,

@@ -6,7 +6,8 @@ import "@openzeppelin/contracts/access/IAccessControl.sol";
 
 /**
  * @title IWaitList
- * @notice Minimal waitlist implementation.
+ * @author Mathieu Bour
+ * @notice Minimal tiered waitlist implementation.
  */
 interface IWaitList is IAccessControl {
   /// Emitted when the tier of an address is set.
@@ -14,6 +15,19 @@ interface IWaitList is IAccessControl {
 
   /// Thrown when the length of two parameters mismatch. Used in batched functions.
   error ArgumentSizeMismatch(uint256 x, uint256 y);
+
+  /**
+   * Change the minimum required tier to be considered as "eligible".
+   * @param newRequiredTier The new required tier.
+   */
+  function setRequiredTier(uint256 newRequiredTier) external;
+
+  /**
+   * @notice Set the tier of multiple accounts at the same time.
+   * @param accounts The account addresses.
+   * @param tiers The associated tiers.
+   */
+  function setBatch(address[] memory accounts, uint256[] memory tiers) external;
 
   /**
    * @notice Check if an account is eligible.

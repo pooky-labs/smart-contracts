@@ -9,9 +9,17 @@ import "../types/PookyballMetadata.sol";
 
 /**
  * @title IPookyball
- * Minimal Pookyball interface.
+ * @author Mathieu Bour
+ * @notice Minimal Pookyball interface.
  */
 interface IPookyball is IAccessControl, IERC2981, IERC721 {
+  /// Fired when the seed of a Pookyball token is set by the VRFCoordinator
+  event SeedSet(uint256 indexed tokenId, uint256 seed);
+  /// Fired when the level of a Pookyball token is changed
+  event LevelChanged(uint256 indexed tokenId, uint256 level);
+  /// Fired when the PXP of a Pookyball token is changed
+  event PXPChanged(uint256 indexed tokenId, uint256 amount);
+
   /// Thrown when the length of two parameters mismatch. Used in the mint batched function.
   error ArgumentSizeMismatch(uint256 x, uint256 y, uint256 z);
 
