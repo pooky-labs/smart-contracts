@@ -10,11 +10,15 @@ const mainnet: Config = {
   verify: true,
 
   accounts: {
-    treasury: '0x96224b6a800294f40c547f7ec0952ea222526040',
     admin: '0x3CC4F4372F83ad3C577eD6e1Aae3D244A1b955D5',
+    treasury: {
+      primary: '0x96224b6a800294f40c547f7ec0952ea222526040',
+      secondary: '',
+    },
     backend: constants.AddressZero, // TBD
     operators: [
       '0xe73b648f6de254101052e126c0499c32ed736a37', // Mathieu Bour (windyy.eth)
+      '0x3C3Bc507Ff3e4Afb96538d2Bf3f5D421aE3933F4', // Mathieu Bour (Pooky)
       '0x481074326aC46C7BC52f0b25D2F7Aaf40f586472', // Pierre Gerbaud (pierregerbaud.eth)
     ],
   },

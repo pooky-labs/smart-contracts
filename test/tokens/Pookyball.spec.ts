@@ -3,7 +3,7 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { randomBytes } from 'crypto';
-import { BigNumber, utils } from 'ethers';
+import { BigNumber, utils, Wallet } from 'ethers';
 import range from 'lodash/range';
 import { DEFAULT_ADMIN_ROLE, GAME, MINTER } from '../../lib/roles';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
@@ -11,6 +11,7 @@ import { expectMissingRole } from '../../lib/testing/roles';
 import stackFixture from '../../lib/testing/stackFixture';
 import PookyballLuxury from '../../lib/types/PookyballLuxury';
 import PookyballRarity from '../../lib/types/PookyballRarity';
+import parseEther from '../../lib/utils/parseEther';
 import { Pookyball, VRFCoordinatorV2Mock } from '../../typechain-types';
 
 describe('Pookyball', () => {
@@ -63,6 +64,23 @@ describe('Pookyball', () => {
   describe('setTokenURI', () => {
     it('should return a valid token URI', async () => {
       expect(await Pookyball.tokenURI(tokenId)).to.eq(`https://tokens.pooky.gg/${tokenId}`);
+    });
+  });
+
+  describe('setERC2981Receiver', () => {
+    it('should revert if non-DEFAULT_ADMIN_ROLE tries to change the base URI', async () => {
+      await expectMissingRole(
+        Pookyball.connect(player1).setERC2981Receiver(Wallet.createRandom().address),
+        player1,
+        DEFAULT_ADMIN_ROLE,
+      );
+    });
+
+    it('should allow DEFAULT_ADMIN_ROLE to change the ERC2981 receiver', async () => {
+      const newRecipient = Wallet.createRandom().address;
+      await Pookyball.connect(admin).setERC2981Receiver(newRecipient);
+      const [recipient] = await Pookyball.royaltyInfo(1, parseEther(1));
+      expect(recipient).to.eq(newRecipient);
     });
   });
 

@@ -36,6 +36,9 @@ contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBas
   bytes32 public constant MINTER = keccak256("MINTER");
   bytes32 public constant GAME = keccak256("GAME");
 
+  /// Secondary sales royalties, over 10,000 (5%)
+  uint96 public constant ROYALTY = 500;
+
   /**
    * @notice The prefix of all the Pookyball metadata.
    */
@@ -64,7 +67,7 @@ contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBas
   constructor(
     string memory _baseURI,
     string memory _contractURI,
-    address _treasury,
+    address _receiver,
     address _vrfCoordinator,
     bytes32 _vrfKeyHash,
     uint64 _vrfSubId,
@@ -80,7 +83,7 @@ contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBas
     vrfMinimumRequestConfirmations = _vrfMinimumRequestConfirmations;
     vrfCallbackGasLimit = _vrfCallbackGasLimit;
 
-    _setDefaultRoyalty(_treasury, 500);
+    _setDefaultRoyalty(_receiver, ROYALTY);
     _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
   }
 
@@ -123,6 +126,15 @@ contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBas
   function metadata(uint256 tokenId) external view returns (PookyballMetadata memory) {
     _requireMinted(tokenId);
     return _metadata[tokenId];
+  }
+
+  /**
+   * @notice Change the secondary sale royalties receiver address.
+   * @dev Requirements:
+   * - Only DEFAULT_ADMIN_ROLE role can set base URI.
+   */
+  function setERC2981Receiver(address newReceiver) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    _setDefaultRoyalty(newReceiver, ROYALTY);
   }
 
   /**

@@ -31,6 +31,11 @@ interface IPookyball is IAccessControl, IERC2981, IERC721 {
   function metadata(uint256 tokenId) external view returns (PookyballMetadata memory);
 
   /**
+   * @notice Change the secondary sale royalties receiver address.
+   */
+  function setERC2981Receiver(address newReceiver) external;
+
+  /**
    * @notice Mint a new Pookyball token with a given rarity and luxury.
    */
   function mint(
