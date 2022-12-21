@@ -12,6 +12,9 @@ import "../types/PookyballMetadata.sol";
  * Minimal Pookyball interface.
  */
 interface IPookyball is IAccessControl, IERC2981, IERC721 {
+  /// Thrown when the length of two parameters mismatch. Used in the mint batched function.
+  error ArgumentSizeMismatch(uint256 x, uint256 y, uint256 z);
+
   /**
    * @notice PookyballMetadata of the token {tokenId}.
    * @dev Requirements:
@@ -22,7 +25,11 @@ interface IPookyball is IAccessControl, IERC2981, IERC721 {
   /**
    * @notice Mint a new Pookyball token with a given rarity and luxury.
    */
-  function mint(address recipient, PookyballRarity rarity, uint256 luxury) external returns (uint256);
+  function mint(
+    address[] memory recipients,
+    PookyballRarity[] memory rarities,
+    uint256[] memory luxuries
+  ) external returns (uint256);
 
   /**
    * @notice Change the level of a Pookyball token.

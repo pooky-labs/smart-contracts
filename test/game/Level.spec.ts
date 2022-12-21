@@ -31,7 +31,7 @@ describe('Level', () => {
     ({ Level, POK, Pookyball } = await loadFixture(stackFixture));
 
     nextLevel = faker.datatype.number({ min: 2, max: 15 });
-    await Pookyball.connect(minter).mint(player1.address, PookyballRarity.COMMON, PookyballLuxury.COMMON);
+    await Pookyball.connect(minter).mint([player1.address], [PookyballRarity.COMMON], [PookyballLuxury.COMMON]);
     tokenId = (await Pookyball.lastTokenId()).toNumber();
     await Pookyball.connect(game).setLevel(tokenId, nextLevel - 1);
   });

@@ -40,7 +40,7 @@ describe('Rewards', () => {
       amountNative = parseEther(faker.datatype.number(5) + 5);
       amountPOK = parseEther(faker.datatype.number(5) + 5);
 
-      await Pookyball.connect(minter).mint(player1.address, PookyballRarity.COMMON, PookyballLuxury.COMMON);
+      await Pookyball.connect(minter).mint([player1.address], [PookyballRarity.COMMON], [PookyballLuxury.COMMON]);
       tokenId = (await Pookyball.lastTokenId()).toNumber();
       tokenPXP = parseEther(faker.datatype.number(5) + 5);
     });
