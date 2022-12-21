@@ -70,10 +70,18 @@ contract GenesisMinter {
       revert InsufficientValue(quantity * template.price, msg.value);
     }
 
-    // Actual Pookyball token mint
+    address[] memory recipients = new address[](quantity);
+    PookyballRarity[] memory rarities = new PookyballRarity[](quantity);
+    uint[] memory luxuries = new uint[](quantity);
+
     for (uint256 i = 0; i < quantity; i++) {
-      pookyball.mint(recipient, template.rarity, template.luxury);
+      recipients[i] = recipient;
+      rarities[i] = template.rarity;
+      luxuries[i] = template.luxury;
     }
+
+    // Actual Pookyball token mint
+    pookyball.mint(recipients, rarities, luxuries);
 
     templates[templateId].minted += quantity;
 

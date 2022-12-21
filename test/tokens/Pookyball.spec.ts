@@ -4,6 +4,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { randomBytes } from 'crypto';
 import { BigNumber, utils } from 'ethers';
+import range from 'lodash/range';
 import { DEFAULT_ADMIN_ROLE, GAME, MINTER } from '../../lib/roles';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
 import { expectMissingRole } from '../../lib/testing/roles';
@@ -31,7 +32,7 @@ describe('Pookyball', () => {
     ({ admin, minter, game, player1, player2 } = await getTestAccounts());
     ({ Pookyball, VRFCoordinatorV2 } = await loadFixture(stackFixture));
 
-    await Pookyball.connect(minter).mint(player1.address, PookyballRarity.COMMON, PookyballLuxury.COMMON);
+    await Pookyball.connect(minter).mint([player1.address], [PookyballRarity.COMMON], [PookyballLuxury.COMMON]);
     tokenId = (await Pookyball.lastTokenId()).toNumber();
   });
 
@@ -78,15 +79,37 @@ describe('Pookyball', () => {
   describe('mint', async () => {
     it('should revert if non-MINTER role tries to mint a token', async () => {
       await expectMissingRole(
-        Pookyball.connect(player1).mint(player1.address, PookyballRarity.LEGENDARY, PookyballLuxury.ALPHA),
+        Pookyball.connect(player1).mint([player1.address], [PookyballRarity.LEGENDARY], [PookyballLuxury.ALPHA]),
         player1,
         MINTER,
       );
     });
 
+    it('should revert if argument sizes mismatch', async () => {
+      await expect(
+        Pookyball.connect(minter).mint(
+          [player1.address],
+          [PookyballRarity.COMMON, PookyballRarity.LEGENDARY],
+          [PookyballLuxury.ALPHA],
+        ),
+      )
+        .to.be.revertedWithCustomError(Pookyball, 'ArgumentSizeMismatch')
+        .withArgs(1, 2, 1);
+
+      await expect(
+        Pookyball.connect(minter).mint(
+          [player1.address],
+          [PookyballRarity.COMMON],
+          [PookyballLuxury.ALPHA, PookyballLuxury.ALPHA],
+        ),
+      )
+        .to.be.revertedWithCustomError(Pookyball, 'ArgumentSizeMismatch')
+        .withArgs(1, 1, 2);
+    });
+
     it('should allow MINTER role to mint a new token', async () => {
       await expect(
-        Pookyball.connect(minter).mint(player1.address, PookyballRarity.LEGENDARY, PookyballLuxury.ALPHA),
+        Pookyball.connect(minter).mint([player1.address], [PookyballRarity.LEGENDARY], [PookyballLuxury.ALPHA]),
       ).to.changeTokenBalance(Pookyball, player1, 1);
 
       const metadata = await Pookyball.metadata(await Pookyball.lastTokenId());
@@ -129,6 +152,24 @@ describe('Pookyball', () => {
       await expect(VRFCoordinatorV2.fulfillRandomWordsWithOverride(1, Pookyball.address, [seed]))
         .to.emit(Pookyball, 'SeedSet')
         .withArgs(tokenId, seed);
+    });
+
+    it('should set the seed of a Pookyball token via the VRFCoordinatorV2 contract', async () => {
+      await Pookyball.connect(minter).mint(
+        [player1.address, player1.address, player2.address],
+        [PookyballRarity.COMMON, PookyballRarity.COMMON, PookyballRarity.COMMON],
+        [PookyballLuxury.COMMON, PookyballLuxury.COMMON, PookyballLuxury.COMMON],
+      );
+      const tokenId = (await Pookyball.lastTokenId()).toNumber();
+
+      const seeds = range(3).map(() => BigNumber.from(utils.keccak256(randomBytes(32))));
+      await expect(VRFCoordinatorV2.fulfillRandomWordsWithOverride(2, Pookyball.address, seeds))
+        .to.emit(Pookyball, 'SeedSet')
+        .withArgs(tokenId, seeds[0])
+        .and.to.emit(Pookyball, 'SeedSet')
+        .withArgs(tokenId - 1, seeds[1])
+        .and.to.emit(Pookyball, 'SeedSet')
+        .withArgs(tokenId - 2, seeds[2]);
     });
   });
 

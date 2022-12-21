@@ -125,16 +125,27 @@ contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBas
    * @dev Requirements:
    * - sender must have the MINTER role.
    */
-  function mint(address recipient, PookyballRarity rarity, uint256 luxury) external onlyRole(MINTER) returns (uint256) {
-    _mint(recipient, ++lastTokenId);
-    _metadata[lastTokenId] = PookyballMetadata(rarity, luxury, 0, 0, 0);
+  function mint(
+    address[] memory recipients,
+    PookyballRarity[] memory rarities,
+    uint256[] memory luxuries
+  ) external onlyRole(MINTER) returns (uint256) {
+    // Check the arguments length
+    if (recipients.length != rarities.length || recipients.length != luxuries.length) {
+      revert ArgumentSizeMismatch(recipients.length, rarities.length, luxuries.length);
+    }
+
+    for (uint i = 0; i < recipients.length; i++) {
+      _mint(recipients[i], ++lastTokenId);
+      _metadata[lastTokenId] = PookyballMetadata(rarities[i], luxuries[i], 0, 0, 0);
+    }
 
     uint256 requestId = vrfCoordinator.requestRandomWords(
       vrfKeyHash,
       vrfSubId,
       vrfMinimumRequestConfirmations,
       vrfCallbackGasLimit,
-      1
+      uint32(recipients.length)
     );
     vrfRequests[requestId] = lastTokenId;
 
@@ -171,8 +182,12 @@ contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBas
    */
   function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
     uint256 tokenId = vrfRequests[requestId];
-    _metadata[tokenId].seed = randomWords[0];
-    emit SeedSet(tokenId, randomWords[0]);
+
+    // Apply the random words
+    for (uint i = 0; i < randomWords.length; i++) {
+      _metadata[tokenId - i].seed = randomWords[i];
+      emit SeedSet(tokenId - i, randomWords[i]);
+    }
   }
 
   /**
