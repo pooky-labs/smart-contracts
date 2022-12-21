@@ -26,7 +26,10 @@ export default async function stackFixture() {
     ...testing,
     accounts: {
       admin: admin.address,
-      treasury: treasury.address,
+      treasury: {
+        primary: treasury.address,
+        secondary: treasury.address,
+      },
       backend: rewarder.address,
       operators: [operator.address],
     },

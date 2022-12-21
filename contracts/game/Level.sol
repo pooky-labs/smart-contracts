@@ -99,7 +99,7 @@ contract Level {
   /**
    * @notice Level up a Pookyball in exchange of a certain amount of $POK token.
    * @dev Requirements
-   * - msg.sender must be the owner of Pookyball tokenId.
+   * - msg.sender must be the owner of Pookyball `tokenId`.
    * - msg.sender must own enough $POK tokens to pay the level up fee.
    * - Pookyball level should be strictly less than the maximum allowed level for its rarity.
    */

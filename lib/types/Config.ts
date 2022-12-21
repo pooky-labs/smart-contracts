@@ -13,7 +13,11 @@ export default interface Config {
 
   accounts: {
     admin: string;
-    treasury: string;
+    treasury: {
+      primary: string;
+      secondary: string;
+    };
+
     backend: string;
     operators?: string[];
   };

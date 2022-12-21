@@ -62,7 +62,7 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
     Pookyball__factory,
     options.metadata.baseURI,
     options.metadata.contractURI,
-    options.accounts.treasury,
+    options.accounts.treasury.secondary,
     options.vrf.coordinator,
     options.vrf.keyHash,
     options.vrf.subId,
@@ -79,7 +79,7 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
     GenesisMinter__factory,
     Pookyball.address,
     WaitList.address,
-    options.accounts.treasury,
+    options.accounts.treasury.primary,
     templates,
   );
   await GenesisMinter.deployed();
