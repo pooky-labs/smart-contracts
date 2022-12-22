@@ -24,14 +24,14 @@ contract Rewards is AccessControl {
   IPookyball public pookyball;
   IPOK public pok;
 
-  /// To prevent users to use the same signature multiple times, a incrementing nonce is required
+  /// To prevent users to use the same signature multiple times, a incrementing nonce is required.
   mapping(address => uint256) public nonces;
 
-  /// Fired when $POK tokens are claimed
+  /// Fired when $POK tokens are claimed.
   event POKClaimed(address indexed account, uint256 amountPOK);
-  /// Fired when Pookyball PXP are claimed
+  /// Fired when Pookyball PXP are claimed.
   event PookyballPXPClaimed(address indexed account, uint indexed tokenId, uint pxp);
-  /// Fired when native currency is claimed
+  /// Fired when native currency is claimed.
   event NativeClaimed(address indexed account, uint256 amountNative);
 
   /// Thrown when an account submits an invalid signature.
