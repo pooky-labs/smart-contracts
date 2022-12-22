@@ -27,6 +27,7 @@ contract GenesisMinter {
   /// Where the mint funds will be forwarded
   address immutable treasury;
 
+  /// The lasted assigned template id, useful to iterate over the templates.
   uint256 public lastTemplateId;
   mapping(uint256 => Template) public templates;
 

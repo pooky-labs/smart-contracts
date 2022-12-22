@@ -11,15 +11,19 @@ import "../types/PookyballRarity.sol";
  * @author Mathieu Bour
  * @notice Gameplay contract that allow to level up Pookyball tokens.
  * Reference: https://whitepaper.pooky.gg/pookyball-features/levelling-up
- * @dev Level contract is allowed to write the Pookyball.metadata mapping using the setLevel and setPXP functions.
+ * @dev Level contract is allowed to write the {Pookyball.metadata} mapping using the `setLevel` and `setPXP` functions.
  */
 contract Level {
   // Gameplay constants
+  /// Like most of the tokens, PXP has 18 decimals.
   uint256 public constant PXP_DECIMALS = 18;
+  /// PXP required to reach the level 1.
   uint256 public constant PXP_BASE = 60 * 10 ** PXP_DECIMALS;
   uint256 public constant RATIO_DECIMALS = 3;
-  uint256 public constant RATIO_PXP = 1085; // =1.085: each level costs 1.085 more than the previous one.
-  uint256 public constant RATIO_POK = 90; // =0.090: 9% of PXP cost is required in $POK tokens to confirm level up.
+  /// =1.085: each level costs 1.085 more than the previous one.
+  uint256 public constant RATIO_PXP = 1085;
+  /// =0.090: 9% of PXP cost is required in $POK tokens to confirm level up.
+  uint256 public constant RATIO_POK = 90;
 
   // Contracts
   IPookyball public immutable pookyball;
@@ -49,34 +53,38 @@ contract Level {
   }
 
   /**
-   * Get the PXP required to level up a ball to {level}.
-   * @param level The targeted level.
+   * @notice Get the PXP required to level up a ball to {level}.
+   * @param n The targeted level.
+   * @return The required amount of PXP to go from level `n-1` to level `n`.
    */
-  function levelPXP(uint256 level) public pure returns (uint256) {
-    if (level == 0) {
+  function levelPXP(uint256 n) public pure returns (uint256) {
+    if (n == 0) {
       return 0;
     }
 
-    uint256 acc = PXP_BASE;
-    for (uint256 i = 1; i < level; i++) {
-      acc = (acc * RATIO_PXP) / 10 ** 3;
+    uint256 total = PXP_BASE;
+    for (uint256 i = 1; i < n; i++) {
+      total = (total * RATIO_PXP) / 10 ** 3;
     }
 
-    return acc;
+    return total;
   }
 
   /**
-   * Get the $POK tokens required to level up a ball to {level}. This does not take the ball PXP into account.
-   * @param level The targeted level.
+   * @notice Get the $POK tokens required to level up a ball to {level}.
+   * @dev This does not take the ball PXP into account.
+   * @param n The targeted level.
+   * @return The required amount of $POK token to go from level `n-1` to level `n`.
    */
-  function levelPOK(uint256 level) public pure returns (uint256) {
-    return (levelPXP(level) * RATIO_POK) / 10 ** RATIO_DECIMALS;
+  function levelPOK(uint256 n) public pure returns (uint256) {
+    return (levelPXP(n) * RATIO_POK) / 10 ** RATIO_DECIMALS;
   }
 
   /**
    * Get the $POK tokens required to level up the ball identified by {tokenId}.
    * This computation the ball PXP into account and add an additional POK fee if ball does not have enough PXP.
    * @param tokenId The targeted token id.
+   * @return The total cost in $POK tokens to pass {levels} levels.
    */
   function levelPOKCost(uint256 tokenId, uint levels) public view returns (uint256) {
     PookyballMetadata memory metadata = pookyball.metadata(tokenId);

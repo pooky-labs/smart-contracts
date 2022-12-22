@@ -11,7 +11,7 @@ import "../interfaces/IWaitList.sol";
  * @notice Basic wait list implementation. The greater the tier is, the higher the privileges should be.
  * @dev Implemented roles:
  * - `OPERATOR`:
- *   - change the `requiredTier` fto be eligible via the `isEligible` function.
+ *   - change the `requiredTier` to be eligible via the `isEligible` function.
  *   - add account addresses and their associated tiers to the wait list.
  */
 contract WaitList is IWaitList, AccessControl {
