@@ -1,5 +1,6 @@
 import { BaseContract, ContractFactory, Signer } from 'ethers';
 import { run } from 'hardhat';
+import { isNativeError } from 'util/types';
 
 export interface TypeContractFactory<C extends BaseContract, A extends unknown[]> extends ContractFactory {
   connect(signer: Signer): this;
@@ -28,10 +29,14 @@ export default function deployer(signer: Signer, { verify = true, confirmations 
     await contract.deployTransaction.wait(confirmations);
 
     if (verify) {
-      await run('verify:verify', {
-        address: contract.address,
-        constructorArguments: args,
-      });
+      try {
+        await run('verify:verify', {
+          address: contract.address,
+          constructorArguments: args,
+        });
+      } catch (err) {
+        if (!isNativeError(err) || !err.message.includes('Reason: Already Verified')) throw err;
+      }
     }
 
     return contract.connect(signer) as C;
