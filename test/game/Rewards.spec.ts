@@ -9,7 +9,7 @@ import stackFixture from '../../lib/testing/stackFixture';
 import PookyballLuxury from '../../lib/types/PookyballLuxury';
 import PookyballRarity from '../../lib/types/PookyballRarity';
 import parseEther from '../../lib/utils/parseEther';
-import { Pookyball, Rewards, POK } from '../../typechain-types';
+import { POK, Pookyball, Rewards } from '../../typechain-types';
 
 describe('Rewards', () => {
   // Signers
@@ -30,14 +30,14 @@ describe('Rewards', () => {
 
   describe('claim', () => {
     let nextNonce: number;
-    let amountNative: BigNumber;
+    let amountNAT: BigNumber;
     let amountPOK: BigNumber;
     let tokenId: number;
     let tokenPXP: BigNumber;
 
     beforeEach(async () => {
       nextNonce = (await Rewards.nonces(player1.address)).toNumber() + 1;
-      amountNative = parseEther(faker.datatype.number(5) + 5);
+      amountNAT = parseEther(faker.datatype.number(5) + 5);
       amountPOK = parseEther(faker.datatype.number(5) + 5);
 
       await Pookyball.connect(minter).mint([player1.address], [PookyballRarity.COMMON], [PookyballLuxury.COMMON]);
@@ -47,56 +47,45 @@ describe('Rewards', () => {
 
     it('should revert if signature is invalid', async () => {
       // This simulates an attack where the player attempts to get 100x his rewards
-      const malicious = await signRewards(
+      const [sig, rewards] = await signRewards(
         player1.address,
-        amountNative.mul(100),
-        amountPOK,
-        [],
-        [],
+        { amountNAT: amountNAT.mul(100), amountPOK },
         nextNonce,
         player1,
       );
 
-      await expect(Rewards.connect(player1).claim(amountNative, amountPOK, [], [], malicious))
+      await expect(Rewards.connect(player1).claim(rewards, sig, ''))
         .to.be.revertedWithCustomError(Rewards, 'InvalidSignature')
         .withArgs();
     });
 
-    it('should revert if tokenIds and tokenPXP arguments sizes mismatch', async () => {
-      const sizeMismatch = await signRewards(player1.address, amountNative, amountPOK, [], [122], nextNonce, rewarder);
-      await expect(Rewards.connect(player1).claim(amountNative, amountPOK, [], [122], sizeMismatch))
-        .to.be.revertedWithCustomError(Rewards, 'ArgumentSizeMismatch')
-        .withArgs(0, 1);
-    });
+    it('should revert if contract balance is less that the claimed native currency', async () => {
+      await setBalance(Rewards.address, amountNAT.div(2));
 
-    it('should revert if contract balance is less that the clamed native currency', async () => {
-      await setBalance(Rewards.address, amountNative.div(2));
-
-      const signature = await signRewards(player1.address, amountNative, amountPOK, [], [], nextNonce, rewarder);
-      await expect(Rewards.connect(player1).claim(amountNative, amountPOK, [], [], signature))
+      const [signature, rewards] = await signRewards(player1.address, { amountNAT, amountPOK }, nextNonce, rewarder);
+      await expect(Rewards.connect(player1).claim(rewards, signature, ''))
         .to.be.revertedWithCustomError(Rewards, 'InsufficientBalance')
-        .withArgs(amountNative, amountNative.div(2));
+        .withArgs(amountNAT, amountNAT.div(2));
     });
 
     it('should allow players to claim rewards', async () => {
-      const signature = await signRewards(
+      const [signature, rewards] = await signRewards(
         player1.address,
-        amountNative,
-        amountPOK,
-        [tokenId],
-        [tokenPXP],
+        {
+          amountNAT,
+          amountPOK,
+          pxp: [{ tokenId, amountPXP: tokenPXP }],
+          mints: [{ rarity: PookyballRarity.COMMON, luxury: PookyballLuxury.COMMON }],
+        },
         nextNonce,
         rewarder,
       );
 
-      await expect(Rewards.connect(player1).claim(amountNative, amountPOK, [tokenId], [tokenPXP], signature))
-        .to.emit(Rewards, 'POKClaimed')
-        .withArgs(player1.address, amountPOK)
+      await expect(Rewards.connect(player1).claim(rewards, signature, ''))
+        .to.emit(Rewards, 'RewardsClaimed')
+        .withArgs(player1.address, rewards, '')
         .and.to.changeTokenBalance(POK, player1.address, amountPOK)
-        .and.to.emit(Rewards, 'PookyballPXPClaimed')
-        .withArgs(player1.address, tokenId, tokenPXP)
-        .and.to.emit(Rewards, 'NativeClaimed')
-        .withArgs(player1.address, amountNative);
+        .and.to.changeEtherBalance(player1.address, rewards.amountNAT);
 
       const metadata = await Pookyball.metadata(tokenId);
       expect(await metadata.pxp).to.eq(tokenPXP);
