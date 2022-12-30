@@ -9,7 +9,7 @@ import {
   WaitList__factory,
 } from '../typechain-types';
 import { TemplateStruct } from '../typechain-types/contracts/mint/GenesisMinter';
-import deployer from './deploy';
+import deployer from './deployer';
 import logger from './logger';
 import { BURNER, DEFAULT_ADMIN_ROLE, GAME, MINTER, OPERATOR, REWARDER } from './roles';
 import Config from './types/Config';

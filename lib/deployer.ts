@@ -36,6 +36,7 @@ export default function deployer(signer: Signer, { verify = true, confirmations 
         });
       } catch (err) {
         if (!isNativeError(err) || !err.message.includes('Reason: Already Verified')) throw err;
+        console.log('Contract is already verified.');
       }
     }
 
