@@ -85,6 +85,9 @@ contract Rewards is AccessControl {
       revert InvalidSignature();
     }
 
+    // increment the sender's nonce to avoid duplicated reward claims
+    nonces[msg.sender]++;
+
     // Mint $POK token
     if (rewards.amountPOK > 0) {
       pok.mint(msg.sender, rewards.amountPOK);
@@ -128,6 +131,5 @@ contract Rewards is AccessControl {
     }
 
     emit RewardsClaimed(msg.sender, rewards, data);
-    nonces[msg.sender]++;
   }
 }
