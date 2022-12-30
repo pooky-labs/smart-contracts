@@ -8,11 +8,12 @@
 
 ### Maintainers
 
-- Mathieu Bour <mathieu.bour@pooky.gg>, Blockchain Engineer, Pooky Labs
+- Mathieu Bour <[mathieu.bour@pooky.gg](mailto:mathieu.bour@pooky.gg)>, Blockchain Engineer, Pooky Labs
 
 ### Contributors
 
-- Dusan Zdravkovic <duxxud@gmail.com>, Former Blockchain Engineer, Pooky Labs
+- Claudiu Micu <[claudiu.micu@pooky.gg](mailto:claudiu.micu@pooky.gg)>, Software Engineer, Pooky Labs
+- Dusan Zdravkovic <[duxxud@gmail.com](mailto:duxxud@gmail.com)>, Former Blockchain Engineer, Pooky Labs
 
 ### On-chain maintenance
 

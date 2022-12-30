@@ -31,7 +31,7 @@ struct RewardsData {
 
 /**
  * @title Rewards
- * @author Mathieu Bour
+ * @author Mathieu Bour, Claudiu Micu
  * @notice Gameplay contract that allows to claim rewards native, $POK tokens and Pookyball PX rewards.
  * @dev Only authorized REWARDER-role can sign the rewards payload.
  */
@@ -85,7 +85,7 @@ contract Rewards is AccessControl {
       revert InvalidSignature();
     }
 
-    // increment the sender's nonce to avoid duplicated reward claims
+    // Increment the sender's nonce to avoid duplicated reward claims
     nonces[msg.sender]++;
 
     // Mint $POK token
