@@ -12,6 +12,7 @@ export async function signRewards(
   account: string,
   rewards: Partial<RewardsDataStruct>,
   nonce: BigNumberish,
+  data: string,
   signer: Signer,
 ): Promise<[string, RewardsDataStruct]> {
   const fullRewards: RewardsDataStruct = {
@@ -27,8 +28,9 @@ export async function signRewards(
       'address',
       'tuple(uint256 amountNAT, uint256 amountPOK, tuple(uint256 tokenId, uint256 amountPXP)[] pxp, tuple(uint8 rarity, uint256 luxury)[] mints)',
       'uint256',
+      'string',
     ],
-    [account, fullRewards, nonce],
+    [account, fullRewards, nonce, data],
   );
   const hash = utils.keccak256(payload);
   const signature = await signer.signMessage(utils.arrayify(hash));

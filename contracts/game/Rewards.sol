@@ -79,7 +79,7 @@ contract Rewards is AccessControl {
    */
   function claim(RewardsData memory rewards, bytes memory signature, string memory data) external {
     // Generate the signed message from the sender, rewards and nonce
-    bytes32 hash = keccak256(abi.encode(msg.sender, rewards, nonces[msg.sender] + 1)).toEthSignedMessageHash();
+    bytes32 hash = keccak256(abi.encode(msg.sender, rewards, nonces[msg.sender] + 1, data)).toEthSignedMessageHash();
 
     if (!hasRole(REWARDER, hash.recover(signature))) {
       revert InvalidSignature();
