@@ -4,8 +4,6 @@ import 'hardhat-dependency-compiler';
 import 'hardhat-ignore-warnings';
 import { HardhatUserConfig } from 'hardhat/config';
 import set from 'lodash/set';
-import './tasks/clean';
-import './tasks/typechain';
 
 loadConfig();
 

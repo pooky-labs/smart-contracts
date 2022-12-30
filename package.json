@@ -21,6 +21,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "clean": "rimraf coverage coverage.json typechain-types",
     "format": "prettier --write '{**/*,*}.{js,ts,jsx,tsx,sol,json,yml,yaml,md}'",
     "compile": "hardhat compile",
     "node": "hardhat node",
