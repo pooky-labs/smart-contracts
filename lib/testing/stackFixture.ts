@@ -5,7 +5,7 @@ import { GAME, MINTER } from '../roles';
 import getTestAccounts from './getTestAccounts';
 
 export default async function stackFixture() {
-  const { deployer, admin, treasury, rewarder, operator, minter, game } = await getTestAccounts();
+  const { deployer, admin, treasury, backend, operator, minter, game } = await getTestAccounts();
 
   if (testing.log !== false) {
     console.table(
@@ -30,7 +30,7 @@ export default async function stackFixture() {
         primary: treasury.address,
         secondary: treasury.address,
       },
-      backend: rewarder.address,
+      backend: backend.address,
       operators: [operator.address],
     },
     vrf: {
