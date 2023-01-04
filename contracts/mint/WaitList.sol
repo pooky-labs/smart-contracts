@@ -26,9 +26,14 @@ contract WaitList is IWaitList, AccessControl {
   /**
    * @param initialTier The initial required tier. Should be the all-time high tier.
    */
-  constructor(uint256 initialTier) {
+  constructor(uint256 initialTier, address admin, address[] memory operators) {
     requiredTier = initialTier;
-    _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+
+    // Set up the roles
+    _grantRole(DEFAULT_ADMIN_ROLE, admin);
+    for (uint256 i = 0; i < operators.length; i++) {
+      _grantRole(OPERATOR, operators[i]);
+    }
   }
 
   /**

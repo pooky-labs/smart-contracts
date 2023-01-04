@@ -14,7 +14,7 @@ import { POK, Pookyball, Rewards } from '../../typechain-types';
 describe('Rewards', () => {
   // Signers
   let player1: SignerWithAddress;
-  let rewarder: SignerWithAddress;
+  let backend: SignerWithAddress;
   let minter: SignerWithAddress;
 
   // Contracts
@@ -24,7 +24,7 @@ describe('Rewards', () => {
   let data: string;
 
   beforeEach(async () => {
-    ({ player1, rewarder, minter } = await getTestAccounts());
+    ({ player1, backend, minter } = await getTestAccounts());
     ({ Rewards, Pookyball, POK } = await loadFixture(stackFixture));
     await setBalance(Rewards.address, parseEther(1000));
     data = 'test data';
@@ -88,7 +88,7 @@ describe('Rewards', () => {
         { amountNAT, amountPOK },
         nextNonce,
         data,
-        rewarder,
+        backend,
       );
       await expect(Rewards.connect(player1).claim(rewards, signature, data))
         .to.be.revertedWithCustomError(Rewards, 'InsufficientBalance')
@@ -106,7 +106,7 @@ describe('Rewards', () => {
         },
         nextNonce,
         data,
-        rewarder,
+        backend,
       );
 
       await expect(Rewards.connect(player1).claim(rewards, signature, data))
