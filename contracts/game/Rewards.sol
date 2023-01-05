@@ -13,11 +13,6 @@ struct RewardsPXP {
   uint256 amountPXP;
 }
 
-struct RewardsMint {
-  PookyballRarity rarity;
-  uint256 luxury;
-}
-
 struct RewardsData {
   /// The amount of native currency
   uint256 amountNAT;
@@ -25,8 +20,6 @@ struct RewardsData {
   uint256 amountPOK;
   /// The amount of Pookyball PXP to grant to the tokens
   RewardsPXP[] pxp;
-  /// The details of the new Pookyball token
-  RewardsMint[] mints;
 }
 
 /**
@@ -34,6 +27,7 @@ struct RewardsData {
  * @author Mathieu Bour, Claudiu Micu
  * @notice Gameplay contract that allows to claim rewards native, $POK tokens and Pookyball PX rewards.
  * @dev Only authorized REWARDER-role can sign the rewards payload.
+ * This contract does not allow to mint Pookyballs tokens for now.
  */
 contract Rewards is AccessControl {
   using ECDSA for bytes32;
@@ -104,22 +98,6 @@ contract Rewards is AccessControl {
         PookyballMetadata memory metadata = pookyball.metadata(rewards.pxp[i].tokenId);
         pookyball.setPXP(rewards.pxp[i].tokenId, metadata.pxp + rewards.pxp[i].amountPXP);
       }
-    }
-
-    // Mint Pookyballs
-    if (rewards.mints.length > 0) {
-      // Build the arrays for the batched mint
-      address[] memory recipients = new address[](rewards.mints.length);
-      PookyballRarity[] memory rarities = new PookyballRarity[](rewards.mints.length);
-      uint256[] memory luxuries = new uint256[](rewards.mints.length);
-
-      for (uint256 i = 0; i < rarities.length; i++) {
-        recipients[i] = msg.sender;
-        rarities[i] = rewards.mints[i].rarity;
-        luxuries[i] = rewards.mints[i].luxury;
-      }
-
-      pookyball.mint(recipients, rarities, luxuries);
     }
 
     // Transfer native currency

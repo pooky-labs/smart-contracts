@@ -6,6 +6,7 @@ import { RewardsDataStruct } from '../../typechain-types/contracts/game/Rewards'
  * @param account The address of the user who is claiming the reward.
  * @param rewards The rewards object.
  * @param nonce The signature nonce.
+ * @param data Arbitrary string to associate with the rewards.
  * @param signer The ethers.js signer.
  */
 export async function signRewards(
@@ -18,7 +19,6 @@ export async function signRewards(
   const fullRewards: RewardsDataStruct = {
     amountNAT: 0,
     amountPOK: 0,
-    mints: [],
     pxp: [],
     ...rewards,
   };
@@ -26,7 +26,7 @@ export async function signRewards(
   const payload = utils.defaultAbiCoder.encode(
     [
       'address',
-      'tuple(uint256 amountNAT, uint256 amountPOK, tuple(uint256 tokenId, uint256 amountPXP)[] pxp, tuple(uint8 rarity, uint256 luxury)[] mints)',
+      'tuple(uint256 amountNAT, uint256 amountPOK, tuple(uint256 tokenId, uint256 amountPXP)[] pxp)',
       'uint256',
       'string',
     ],
