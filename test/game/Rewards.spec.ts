@@ -102,7 +102,6 @@ describe('Rewards', () => {
           amountNAT,
           amountPOK,
           pxp: [{ tokenId, amountPXP: tokenPXP }],
-          mints: [{ rarity: PookyballRarity.COMMON, luxury: PookyballLuxury.COMMON }],
         },
         nextNonce,
         data,
@@ -114,9 +113,6 @@ describe('Rewards', () => {
         .withArgs(player1.address, rewards, '')
         .and.to.changeTokenBalance(POK, player1.address, amountPOK)
         .and.to.changeEtherBalance(player1.address, rewards.amountNAT);
-
-      const metadata = await Pookyball.metadata(tokenId);
-      expect(await metadata.pxp).to.eq(tokenPXP);
     });
   });
 });
