@@ -1,5 +1,6 @@
 import '@nomicfoundation/hardhat-toolbox';
 import { config as loadConfig } from 'dotenv';
+import 'hardhat-abi-exporter';
 import 'hardhat-dependency-compiler';
 import 'hardhat-ignore-warnings';
 import { HardhatUserConfig } from 'hardhat/config';
@@ -37,6 +38,16 @@ const config: HardhatUserConfig = {
   },
   warnings: {
     '@chainlink/contracts/src/v0.8/mocks/VRFCoordinatorV2Mock.sol': 'off',
+  },
+  abiExporter: {
+    clear: true,
+    runOnCompile: true,
+    pretty: false,
+    only: ['^contracts'],
+    except: ['^contracts/testing'],
+    rename: (sourceName) => {
+      return sourceName.replace(/^contracts\/(.*)\.sol$/, '$1');
+    },
   },
   typechain: {
     target: 'ethers-v5',

@@ -53,7 +53,6 @@
     "@types/lodash": "^4.14.186",
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.7.23",
-    "@types/rimraf": "^3.0.2",
     "@typescript-eslint/eslint-plugin": "^5.39.0",
     "@typescript-eslint/parser": "^5.39.0",
     "chai": "^4.3.6",
@@ -90,5 +89,8 @@
         "@vue/compiler-sfc"
       ]
     }
+  },
+  "devDependencies": {
+    "hardhat-abi-exporter": "^2.10.1"
   }
 }

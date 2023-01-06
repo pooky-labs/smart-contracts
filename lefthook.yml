@@ -1,6 +1,9 @@
 pre-commit:
   parallel: true
   commands:
+    compile:
+      glob: '*.sol'
+      run: ./node_modules/.bin/hardhat compile && git add abi/
     eslint:
       glob: '*.{js,ts,jsx,tsx}'
       run: ./node_modules/.bin/eslint {staged_files}
