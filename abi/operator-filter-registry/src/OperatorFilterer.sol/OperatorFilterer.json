@@ -1,0 +1,26 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      }
+    ],
+    "name": "OperatorNotAllowed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OPERATOR_FILTER_REGISTRY",
+    "outputs": [
+      {
+        "internalType": "contract IOperatorFilterRegistry",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
