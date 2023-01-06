@@ -43,6 +43,11 @@ const config: HardhatUserConfig = {
     clear: true,
     runOnCompile: true,
     pretty: false,
+    only: ['^contracts'],
+    except: ['^contracts/testing'],
+    rename: (sourceName) => {
+      return sourceName.replace(/^contracts\/(.*)\.sol$/, '$1');
+    },
   },
   typechain: {
     target: 'ethers-v5',
