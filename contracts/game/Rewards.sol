@@ -25,7 +25,7 @@ struct RewardsData {
 /**
  * @title Rewards
  * @author Mathieu Bour, Claudiu Micu
- * @notice Gameplay contract that allows to claim rewards native, $POK tokens and Pookyball PX rewards.
+ * @notice Gameplay contract that allows to claim rewards native, $POK tokens and Pookyball PXP rewards.
  * @dev Only authorized REWARDER-role can sign the rewards payload.
  * This contract does not allow to mint Pookyballs tokens for now.
  */
@@ -36,8 +36,8 @@ contract Rewards is AccessControl {
   bytes32 public constant REWARDER = keccak256("REWARDER");
 
   // Contracts
-  IPookyball public pookyball;
-  IPOK public pok;
+  IPookyball public immutable pookyball;
+  IPOK public immutable pok;
 
   /// To prevent users to use the same signature multiple times, a incrementing nonce is required.
   mapping(address => uint256) public nonces;

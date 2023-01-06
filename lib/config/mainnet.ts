@@ -13,7 +13,8 @@ const mainnet: Config = {
     admin: '0x3CC4F4372F83ad3C577eD6e1Aae3D244A1b955D5',
     treasury: {
       primary: '0x96224b6a800294f40c547f7ec0952ea222526040',
-      secondary: '',
+      secondary: '0x598895F50951186eFdCB160764a538f353894027',
+      ingame: '0x703662853D7F9ad9D8c44128222266a736741437',
     },
     backend: constants.AddressZero, // TBD
     operators: [

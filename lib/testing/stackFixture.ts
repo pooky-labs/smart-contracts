@@ -29,6 +29,7 @@ export default async function stackFixture() {
       treasury: {
         primary: treasury.address,
         secondary: treasury.address,
+        ingame: treasury.address,
       },
       backend: backend.address,
       operators: [operator.address],
