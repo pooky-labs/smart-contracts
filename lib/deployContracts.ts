@@ -1,6 +1,7 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
   Airdrop__factory,
+  Energy__factory,
   GenesisMinter__factory,
   Level__factory,
   POK__factory,
@@ -87,6 +88,14 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
   logger.info('Deployed GenesisMinter to', GenesisMinter.address);
 
   // Step 3: deploy game contracts
+  const Airdrop = await deploy(Airdrop__factory, options.accounts.admin, [options.accounts.backend]);
+  await Airdrop.deployed();
+  logger.info('Deployed Airdrop to', Airdrop.address);
+
+  const Energy = await deploy(Energy__factory, POK.address, options.accounts.treasury.primary);
+  await Energy.deployed();
+  logger.info('Deployed Energy to', Energy.address);
+
   const Level = await deploy(Level__factory, POK.address, Pookyball.address);
   await Level.deployed();
   logger.info('Deployed Level to', Level.address);
@@ -97,10 +106,6 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
   await Rewards.deployed();
   logger.info('Deployed Rewards to', Rewards.address);
 
-  const Airdrop = await deploy(Airdrop__factory, options.accounts.admin, [options.accounts.backend]);
-  await Airdrop.deployed();
-  logger.info('Deployed Airdrop to', Airdrop.address);
-
   // Step 4: assign permissions
   // Step 4.1: assign DEFAULT_ADMIN_ROLE to the admin multi signature wallet
   await waitTx(POK.grantRole(DEFAULT_ADMIN_ROLE, options.accounts.admin));
@@ -108,6 +113,7 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
 
   // Step 4.2: assign the required gameplay roles
   await waitTx(POK.grantRole(MINTER, Rewards.address));
+  await waitTx(POK.grantRole(BURNER, Energy.address));
   await waitTx(POK.grantRole(BURNER, Level.address));
   await waitTx(Pookyball.grantRole(MINTER, GenesisMinter.address));
   await waitTx(Pookyball.grantRole(GAME, Level.address));
@@ -121,5 +127,19 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
   const VRFCoordinatorV2 = await VRFCoordinatorV2Interface__factory.connect(options.vrf.coordinator, signer);
   await waitTx(VRFCoordinatorV2.addConsumer(options.vrf.subId, Pookyball.address));
 
-  return { POK, Pookyball, WaitList, GenesisMinter, Level, Rewards, Airdrop };
+  return {
+    // Game
+    Airdrop,
+    Energy,
+    Level,
+    Rewards,
+
+    // Mint
+    WaitList,
+    GenesisMinter,
+
+    // Tokens
+    POK,
+    Pookyball,
+  };
 }
