@@ -1,5 +1,5 @@
 import { BigNumberish, BytesLike } from 'ethers';
-import { ISettingsParam } from 'tslog/src/interfaces';
+import { ISettingsParam } from 'tslog';
 import PookyballLuxury from './PookyballLuxury';
 import PookyballRarity from './PookyballRarity';
 
@@ -7,7 +7,7 @@ import PookyballRarity from './PookyballRarity';
  * Contract stack deployment configuration.
  */
 export default interface Config {
-  log?: ISettingsParam | false;
+  log?: ISettingsParam<unknown> | false;
   confirmations?: number;
   verify?: boolean;
 

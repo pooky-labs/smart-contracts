@@ -15,6 +15,7 @@ Our smart contracts repository is based on a standard Hardhat architecture.
 
 ```
 .
+├── abi             # Pooky contracts ABIs
 ├── artifacts       # (git-ignored) HardHat compile artifacts
 ├── cache           # (git-ignored) HardHat cache
 ├── contracts       # Smart contracts Solidity source code
@@ -40,6 +41,6 @@ etc.
 
 ## Useful resources
 
-- OpenZeppelin Upgradable contracts: [documentation](https://docs.openzeppelin.com/upgrades-plugins/1.x/writing-upgradeable) / [repository](https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable#readme)
+- [OpenZeppelin Contracts 4.x](https://docs.openzeppelin.com/contracts/4.x/)
 - [TypeChain: TypeScript bindings for Ethereum smart contracts](https://github.com/dethcrypto/TypeChain)
 - [Polygon Mumbai Testnet Faucet](https://mumbaifaucet.com/)

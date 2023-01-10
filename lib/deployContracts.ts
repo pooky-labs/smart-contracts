@@ -24,9 +24,9 @@ import waitTx from './waitTx';
  */
 export async function deployContracts(signer: SignerWithAddress, options: Config) {
   if (options.log) {
-    logger.setSettings(options.log);
+    logger.settings = { ...logger.settings, ...options.log };
   } else if (options.log === false) {
-    logger.setSettings({ minLevel: 'error' });
+    logger.settings.minLevel = 5; // error level
   }
 
   // Step 0: prepare data
