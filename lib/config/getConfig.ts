@@ -9,7 +9,7 @@ import mumbai from './mumbai';
 export default function getConfig(): Config {
   switch (network.name) {
     case 'hardhat':
-      return { ...mainnet, verify: false };
+      return { ...mainnet, verify: false, confirmations: 0 };
     case 'local':
       return { ...mumbai, verify: false, confirmations: 0 };
     case 'mumbai':
