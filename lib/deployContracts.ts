@@ -6,6 +6,7 @@ import {
   Level__factory,
   POK__factory,
   Pookyball__factory,
+  Pressure__factory,
   Rewards__factory,
   VRFCoordinatorV2Interface__factory,
   WaitList__factory,
@@ -92,13 +93,17 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
   await Airdrop.deployed();
   logger.info('Deployed Airdrop to', Airdrop.address);
 
-  const Energy = await deploy(Energy__factory, POK.address, options.accounts.treasury.primary);
+  const Energy = await deploy(Energy__factory, POK.address, options.accounts.treasury.ingame);
   await Energy.deployed();
   logger.info('Deployed Energy to', Energy.address);
 
   const Level = await deploy(Level__factory, POK.address, Pookyball.address);
   await Level.deployed();
   logger.info('Deployed Level to', Level.address);
+
+  const Pressure = await deploy(Pressure__factory, POK.address, options.accounts.treasury.ingame);
+  await Pressure.deployed();
+  logger.info('Deployed Pressure to', Pressure.address);
 
   const Rewards = await deploy(Rewards__factory, POK.address, Pookyball.address, options.accounts.admin, [
     options.accounts.backend,
@@ -115,6 +120,7 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
   await waitTx(POK.grantRole(MINTER, Rewards.address));
   await waitTx(POK.grantRole(BURNER, Energy.address));
   await waitTx(POK.grantRole(BURNER, Level.address));
+  await waitTx(POK.grantRole(BURNER, Pressure.address));
   await waitTx(Pookyball.grantRole(MINTER, GenesisMinter.address));
   await waitTx(Pookyball.grantRole(GAME, Level.address));
   await waitTx(Pookyball.grantRole(GAME, Rewards.address));
@@ -132,6 +138,7 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
     Airdrop,
     Energy,
     Level,
+    Pressure,
     Rewards,
 
     // Mint

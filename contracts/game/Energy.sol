@@ -7,7 +7,8 @@ import "../interfaces/IPOK.sol";
 /**
  * @title Energy
  * @author Mathieu Bour
- * @notice Allow to recharge energy by spending $POK tokens and native currency.
+ * @notice Gameplay contract that allow to recharge energy by spending $POK tokens and native currency.
+ * @dev This contract has the POK.BURNER role.
  */
 contract Energy {
   /// Price per energy point in native currency.
