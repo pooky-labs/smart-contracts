@@ -3,7 +3,7 @@ pre-commit:
   commands:
     compile:
       glob: '*.sol'
-      run: ./node_modules/.bin/hardhat compile && git add data/
+      run: ./node_modules/.bin/hardhat compile && git add abi/ bytecode/
     eslint:
       glob: '*.{js,ts,jsx,tsx}'
       run: ./node_modules/.bin/eslint {staged_files}
