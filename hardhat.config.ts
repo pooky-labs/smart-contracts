@@ -45,6 +45,7 @@ const config: HardhatUserConfig = {
     pretty: false,
     only: ['^contracts'],
     except: ['^contracts/testing'],
+    path: 'data/abi',
     rename: (sourceName) => {
       return sourceName.replace(/^contracts\/(.*)\.sol$/, '$1');
     },
