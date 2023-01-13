@@ -16,7 +16,7 @@
   "scripts": {
     "clean": "rimraf coverage coverage.json typechain-types",
     "format": "prettier --write '{**/*,*}.{js,ts,jsx,tsx,sol,json,yml,yaml,md}'",
-    "compile": "hardhat compile && hardhat run  ./scripts/exportBytecode.ts",
+    "compile": "hardhat compile",
     "node": "hardhat node",
     "dev": "hardhat run ./scripts/dev.ts",
     "test": "hardhat test",
@@ -83,5 +83,8 @@
         "@vue/compiler-sfc"
       ]
     }
+  },
+  "devDependencies": {
+    "@solidstate/hardhat-bytecode-exporter": "^1.1.1"
   }
 }

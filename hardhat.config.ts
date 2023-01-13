@@ -1,4 +1,5 @@
 import '@nomicfoundation/hardhat-toolbox';
+import '@solidstate/hardhat-bytecode-exporter';
 import { config as loadConfig } from 'dotenv';
 import 'hardhat-abi-exporter';
 import 'hardhat-dependency-compiler';
@@ -45,7 +46,17 @@ const config: HardhatUserConfig = {
     pretty: false,
     only: ['^contracts'],
     except: ['^contracts/testing'],
-    path: 'data/abi',
+    path: 'abi',
+    rename: (sourceName) => {
+      return sourceName.replace(/^contracts\/(.*)\.sol$/, '$1');
+    },
+  },
+  bytecodeExporter: {
+    clear: true,
+    runOnCompile: true,
+    only: ['^contracts'],
+    except: ['^contracts/testing'],
+    path: 'bytecode',
     rename: (sourceName) => {
       return sourceName.replace(/^contracts\/(.*)\.sol$/, '$1');
     },
