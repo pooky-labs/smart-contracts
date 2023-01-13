@@ -16,7 +16,7 @@
   "scripts": {
     "clean": "rimraf coverage coverage.json typechain-types",
     "format": "prettier --write '{**/*,*}.{js,ts,jsx,tsx,sol,json,yml,yaml,md}'",
-    "compile": "hardhat compile",
+    "compile": "hardhat compile && hardhat run  ./scripts/exportBytecode.ts",
     "node": "hardhat node",
     "dev": "hardhat run ./scripts/dev.ts",
     "test": "hardhat test",
