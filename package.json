@@ -34,7 +34,7 @@
     "@faker-js/faker": "^7.6.0",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.5",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.7",
-    "@nomicfoundation/hardhat-toolbox": "^2.0.0",
+    "@nomicfoundation/hardhat-toolbox": "^2.0.1",
     "@nomiclabs/hardhat-ethers": "^2.2.1",
     "@nomiclabs/hardhat-etherscan": "^3.1.4",
     "@openzeppelin/contracts": "^4.8.0",
@@ -44,6 +44,7 @@
     "@typechain/hardhat": "^6.1.5",
     "@types/chai": "^4.3.4",
     "@types/lodash": "^4.14.191",
+    "@types/mocha": "^10.0.1",
     "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "^5.48.1",
     "@typescript-eslint/parser": "^5.48.1",
@@ -79,7 +80,6 @@
     "peerDependencyRules": {
       "ignoreMissing": [
         "@ethersproject/bytes",
-        "@types/mocha",
         "@vue/compiler-sfc"
       ]
     }

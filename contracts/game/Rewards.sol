@@ -20,6 +20,8 @@ struct RewardsData {
   uint256 amountPOK;
   /// The amount of Pookyball PXP to grant to the tokens
   RewardsPXP[] pxp;
+  /// The hashes that represents the payload. This prevent accounts to claim the same reward twice.
+  bytes32[] hashes;
 }
 
 /**
@@ -39,14 +41,16 @@ contract Rewards is AccessControl {
   IPookyball public immutable pookyball;
   IPOK public immutable pok;
 
-  /// To prevent users to use the same signature multiple times, a incrementing nonce is required.
-  mapping(address => uint256) public nonces;
+  /// To prevent users to use the same signature multiple times, we mark the rewards as claimed.
+  mapping(bytes32 => bool) public claimed;
 
   /// Fired when rewards are claimed.
   event RewardsClaimed(address indexed account, RewardsData rewards, string data);
 
   /// Thrown when an account submits an invalid signature.
   error InvalidSignature();
+  /// Thrown when an account tries to claim rewards twice.
+  error AlreadyClaimed(bytes32 hash);
   /// Thrown when the reward contract does not own enough native currency.
   error InsufficientBalance(uint256 expected, uint256 actual);
   /// Thrown when the native transfer has failed.
@@ -78,14 +82,20 @@ contract Rewards is AccessControl {
    */
   function claim(RewardsData memory rewards, bytes memory signature, string memory data) external {
     // Generate the signed message from the sender, rewards and nonce
-    bytes32 hash = keccak256(abi.encode(msg.sender, rewards, nonces[msg.sender] + 1, data)).toEthSignedMessageHash();
+    bytes32 hash = keccak256(abi.encode(msg.sender, rewards, data)).toEthSignedMessageHash();
+
+    // Ensure that all rewards are claimed only once
+    for (uint256 i = 0; i < rewards.hashes.length; i++) {
+      if (claimed[rewards.hashes[i]]) {
+        revert AlreadyClaimed(rewards.hashes[i]);
+      }
+
+      claimed[rewards.hashes[i]] = true;
+    }
 
     if (!hasRole(REWARDER, hash.recover(signature))) {
       revert InvalidSignature();
     }
-
-    // Increment the sender's nonce to avoid duplicated reward claims
-    nonces[msg.sender]++;
 
     // Mint $POK token
     if (rewards.amountPOK > 0) {

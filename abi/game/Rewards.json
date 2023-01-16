@@ -28,6 +28,17 @@
   {
     "inputs": [
       {
+        "internalType": "bytes32",
+        "name": "hash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "AlreadyClaimed",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "expected",
         "type": "uint256"
@@ -99,6 +110,11 @@
             "internalType": "struct RewardsPXP[]",
             "name": "pxp",
             "type": "tuple[]"
+          },
+          {
+            "internalType": "bytes32[]",
+            "name": "hashes",
+            "type": "bytes32[]"
           }
         ],
         "indexed": false,
@@ -247,6 +263,11 @@
             "internalType": "struct RewardsPXP[]",
             "name": "pxp",
             "type": "tuple[]"
+          },
+          {
+            "internalType": "bytes32[]",
+            "name": "hashes",
+            "type": "bytes32[]"
           }
         ],
         "internalType": "struct RewardsData",
@@ -267,6 +288,25 @@
     "name": "claim",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "claimed",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -325,25 +365,6 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "nonces",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",

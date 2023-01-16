@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { loadFixture, setBalance } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { BigNumber } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
 import { signRewards } from '../../lib/testing/signRewards';
 import stackFixture from '../../lib/testing/stackFixture';
@@ -31,14 +31,12 @@ describe('Rewards', () => {
   });
 
   describe('claim', () => {
-    let nextNonce: number;
     let amountNAT: BigNumber;
     let amountPOK: BigNumber;
     let tokenId: number;
     let tokenPXP: BigNumber;
 
     beforeEach(async () => {
-      nextNonce = (await Rewards.nonces(player1.address)).toNumber() + 1;
       amountNAT = parseEther(faker.datatype.number(5) + 5);
       amountPOK = parseEther(faker.datatype.number(5) + 5);
 
@@ -52,7 +50,6 @@ describe('Rewards', () => {
       const [sig, rewards] = await signRewards(
         player1.address,
         { amountNAT: amountNAT.mul(100), amountPOK },
-        nextNonce,
         data,
         player1,
       );
@@ -62,12 +59,28 @@ describe('Rewards', () => {
         .withArgs();
     });
 
-    it('should revert as data was not passed correctly', async () => {
+    it('should revert if hashes were claimed more that once', async () => {
+      const hash = utils.solidityKeccak256(['string'], [faker.datatype.string(10)]);
+
+      // This simulates an attack where the player attempts to get 100x his rewards
+      const [sig, rewards] = await signRewards(
+        player1.address,
+        { amountNAT, amountPOK, hashes: [hash] },
+        data,
+        backend,
+      );
+
+      await Rewards.connect(player1).claim(rewards, sig, data); // This should pass
+      await expect(Rewards.connect(player1).claim(rewards, sig, data))
+        .to.be.revertedWithCustomError(Rewards, 'AlreadyClaimed')
+        .withArgs(hash);
+    });
+
+    it('should revert if data was not passed correctly', async () => {
       // This simulates an attack where the player attempts to get 100x his rewards
       const [sig, rewards] = await signRewards(
         player1.address,
         { amountNAT: amountNAT.mul(100), amountPOK },
-        nextNonce,
         data,
         player1,
       );
@@ -83,13 +96,7 @@ describe('Rewards', () => {
     it('should revert if contract balance is less that the claimed native currency', async () => {
       await setBalance(Rewards.address, amountNAT.div(2));
 
-      const [signature, rewards] = await signRewards(
-        player1.address,
-        { amountNAT, amountPOK },
-        nextNonce,
-        data,
-        backend,
-      );
+      const [signature, rewards] = await signRewards(player1.address, { amountNAT, amountPOK }, data, backend);
       await expect(Rewards.connect(player1).claim(rewards, signature, data))
         .to.be.revertedWithCustomError(Rewards, 'InsufficientBalance')
         .withArgs(amountNAT, amountNAT.div(2));
@@ -103,7 +110,6 @@ describe('Rewards', () => {
           amountPOK,
           pxp: [{ tokenId, amountPXP: tokenPXP }],
         },
-        nextNonce,
         data,
         backend,
       );
