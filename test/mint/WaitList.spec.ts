@@ -3,14 +3,15 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { Wallet } from 'ethers';
-import { OPERATOR } from '../../lib/roles';
+import { DEFAULT_ADMIN_ROLE, OPERATOR } from '../../lib/roles';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
-import { expectMissingRole } from '../../lib/testing/roles';
+import { expectHasRole, expectMissingRole } from '../../lib/testing/roles';
 import stackFixture from '../../lib/testing/stackFixture';
 import { WaitList } from '../../typechain-types';
 
 describe('WaitList', () => {
   // Signers
+  let admin: SignerWithAddress;
   let operator: SignerWithAddress;
   let player1: SignerWithAddress;
   let player2: SignerWithAddress;
@@ -20,8 +21,18 @@ describe('WaitList', () => {
   let WaitList: WaitList;
 
   beforeEach(async () => {
-    ({ operator, player1, player2, player3 } = await getTestAccounts());
+    ({ admin, operator, player1, player2, player3 } = await getTestAccounts());
     ({ WaitList } = await loadFixture(stackFixture));
+  });
+
+  describe('permissions', () => {
+    it('should have granted the DEFAULT_ADMIN_ROLE to the admin account', async () => {
+      await expectHasRole(WaitList, admin, DEFAULT_ADMIN_ROLE);
+    });
+
+    it('should have granted the OPERATOR role to the operator account', async () => {
+      await expectHasRole(WaitList, operator, OPERATOR);
+    });
   });
 
   describe('setRequiredTier', async () => {

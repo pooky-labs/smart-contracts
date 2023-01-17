@@ -73,6 +73,13 @@ contract Rewards is AccessControl {
   receive() external payable {}
 
   /**
+   * @notice Recover all the funds on the contract.
+   */
+  function withdraw() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    selfdestruct(payable(msg.sender));
+  }
+
+  /**
    * @notice Claim rewards using a signature generated from the Pooky game back-end.
    * Rewards include: native currency, $POK tokens and PXP for the Pookyball tokens.
    * @dev Requirements:

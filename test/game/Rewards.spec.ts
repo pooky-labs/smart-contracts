@@ -3,7 +3,10 @@ import { loadFixture, setBalance } from '@nomicfoundation/hardhat-network-helper
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { BigNumber, utils } from 'ethers';
+import { ethers } from 'hardhat';
+import { DEFAULT_ADMIN_ROLE, REWARDER } from '../../lib/roles';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
+import { expectHasRole, expectMissingRole } from '../../lib/testing/roles';
 import { signRewards } from '../../lib/testing/signRewards';
 import stackFixture from '../../lib/testing/stackFixture';
 import PookyballLuxury from '../../lib/types/PookyballLuxury';
@@ -13,6 +16,7 @@ import { POK, Pookyball, Rewards } from '../../typechain-types';
 
 describe('Rewards', () => {
   // Signers
+  let admin: SignerWithAddress;
   let player1: SignerWithAddress;
   let backend: SignerWithAddress;
   let minter: SignerWithAddress;
@@ -24,10 +28,35 @@ describe('Rewards', () => {
   let data: string;
 
   beforeEach(async () => {
-    ({ player1, backend, minter } = await getTestAccounts());
+    ({ admin, player1, backend, minter } = await getTestAccounts());
     ({ Rewards, Pookyball, POK } = await loadFixture(stackFixture));
     await setBalance(Rewards.address, parseEther(1000));
     data = 'test data';
+  });
+
+  describe('permissions', () => {
+    it('should have granted the DEFAULT_ADMIN_ROLE to the admin account', async () => {
+      await expectHasRole(Rewards, admin, DEFAULT_ADMIN_ROLE);
+    });
+
+    it('should have granted the REWARDER role to the backend account', async () => {
+      await expectHasRole(Rewards, backend, REWARDER);
+    });
+  });
+
+  describe('withdraw', () => {
+    it('should prevent non admin accounts to withdraw', async () => {
+      await expectMissingRole(Rewards.connect(player1).withdraw(), player1, DEFAULT_ADMIN_ROLE);
+      await expectMissingRole(Rewards.connect(backend).withdraw(), backend, DEFAULT_ADMIN_ROLE);
+    });
+
+    it('should allow admin account to withdraw', async () => {
+      const totalAmount = parseEther((faker.datatype.number(10) + 1).toString(10));
+      await setBalance(Rewards.address, totalAmount);
+
+      await expect(Rewards.connect(admin).withdraw()).to.changeEtherBalance(admin, totalAmount);
+      expect(await ethers.provider.getCode(Rewards.address)).to.equal('0x');
+    });
   });
 
   describe('claim', () => {
