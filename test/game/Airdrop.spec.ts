@@ -6,7 +6,7 @@ import { BigNumber, utils } from 'ethers';
 import { ethers } from 'hardhat';
 import { DEFAULT_ADMIN_ROLE } from '../../lib/roles';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
-import { expectMissingRole } from '../../lib/testing/roles';
+import { expectHasRole, expectMissingRole } from '../../lib/testing/roles';
 import stackFixture from '../../lib/testing/stackFixture';
 import { Airdrop } from '../../typechain-types';
 
@@ -31,6 +31,12 @@ describe('Airdrop', () => {
     await setBalance(Airdrop.address, amount.mul(1000));
   });
 
+  describe('permissions', () => {
+    it('should have granted the DEFAULT_ADMIN_ROLE to the admin account', async () => {
+      await expectHasRole(Airdrop, admin, DEFAULT_ADMIN_ROLE);
+    });
+  });
+
   describe('receive', () => {
     it('should allow to receive native currency via a regular transfers', async () => {
       const transfer = amount.mul(faker.datatype.number(1000) + 1);
@@ -38,6 +44,21 @@ describe('Airdrop', () => {
         Airdrop,
         transfer,
       );
+    });
+  });
+
+  describe('withdraw', () => {
+    it('should prevent non admin accounts to withdraw', async () => {
+      await expectMissingRole(Airdrop.connect(player1).withdraw(), player1, DEFAULT_ADMIN_ROLE);
+      await expectMissingRole(Airdrop.connect(backend).withdraw(), backend, DEFAULT_ADMIN_ROLE);
+    });
+
+    it('should allow admin account to withdraw', async () => {
+      const totalAmount = amount.mul(faker.datatype.number(1000) + 1);
+      await setBalance(Airdrop.address, totalAmount);
+
+      await expect(Airdrop.connect(admin).withdraw()).to.changeEtherBalance(admin, totalAmount);
+      expect(await ethers.provider.getCode(Airdrop.address)).to.equal('0x');
     });
   });
 
@@ -68,21 +89,6 @@ describe('Airdrop', () => {
 
     it('should successfully airdrop native currency', async () => {
       await expect(Airdrop.connect(backend).airdrop(player1.address, user)).to.changeEtherBalance(player1, amount);
-    });
-  });
-
-  describe('withdraw', () => {
-    it('should prevent non admin accounts to withdraw', async () => {
-      await expectMissingRole(Airdrop.connect(player1).withdraw(), player1, DEFAULT_ADMIN_ROLE);
-      await expectMissingRole(Airdrop.connect(backend).withdraw(), backend, DEFAULT_ADMIN_ROLE);
-    });
-
-    it('should allow admin account to withdraw', async () => {
-      const totalAmount = amount.mul(faker.datatype.number(1000) + 1);
-      await setBalance(Airdrop.address, totalAmount);
-
-      await expect(Airdrop.connect(admin).withdraw()).to.changeEtherBalance(admin, totalAmount);
-      expect(await ethers.provider.getCode(Airdrop.address)).to.equal('0x');
     });
   });
 });

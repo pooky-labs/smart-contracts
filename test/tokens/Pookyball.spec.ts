@@ -7,7 +7,7 @@ import { BigNumber, utils, Wallet } from 'ethers';
 import range from 'lodash/range';
 import { DEFAULT_ADMIN_ROLE, GAME, MINTER } from '../../lib/roles';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
-import { expectMissingRole } from '../../lib/testing/roles';
+import { expectHasRole, expectMissingRole } from '../../lib/testing/roles';
 import stackFixture from '../../lib/testing/stackFixture';
 import PookyballLuxury from '../../lib/types/PookyballLuxury';
 import PookyballRarity from '../../lib/types/PookyballRarity';
@@ -35,6 +35,12 @@ describe('Pookyball', () => {
 
     await Pookyball.connect(minter).mint([player1.address], [PookyballRarity.COMMON], [PookyballLuxury.COMMON]);
     tokenId = (await Pookyball.lastTokenId()).toNumber();
+  });
+
+  describe('permissions', () => {
+    it('should have granted the DEFAULT_ADMIN_ROLE to the admin account', async () => {
+      await expectHasRole(Pookyball, admin, DEFAULT_ADMIN_ROLE);
+    });
   });
 
   describe('setContractURI', () => {
