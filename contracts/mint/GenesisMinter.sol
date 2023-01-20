@@ -28,7 +28,7 @@ contract GenesisMinter {
   address immutable treasury;
 
   /// The lasted assigned template id, useful to iterate over the templates.
-  uint256 public lastTemplateId;
+  uint256 public nextTemplateId;
   mapping(uint256 => Template) public templates;
 
   /// Fired when a sale is made
@@ -43,14 +43,33 @@ contract GenesisMinter {
   /// Thrown when the native transfer has failed.
   error TransferFailed(address recipient, uint256 amount);
 
+  /**
+   * @param _pookyball The Pookyball ERC721 contract address.
+   * @param _waitlist The WaitList contract.
+   * @param _treasury The account which will receive all the funds.
+   * @param _templates The available mint templates.
+   */
   constructor(IPookyball _pookyball, IWaitList _waitlist, address _treasury, Template[] memory _templates) {
     pookyball = _pookyball;
     waitlist = _waitlist;
     treasury = _treasury;
 
     for (uint i = 0; i < _templates.length; i++) {
-      templates[++lastTemplateId] = _templates[i];
+      templates[nextTemplateId++] = _templates[i];
     }
+  }
+
+  /**
+   * @return The available mint templates (the same as the ones passed in the constructor).
+   */
+  function getTemplates() external view returns (Template[] memory) {
+    Template[] memory _templates = new Template[](nextTemplateId);
+
+    for (uint i = 0; i < nextTemplateId; i++) {
+      _templates[i] = templates[i];
+    }
+
+    return _templates;
   }
 
   /**

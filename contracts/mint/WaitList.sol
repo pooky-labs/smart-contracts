@@ -21,10 +21,12 @@ contract WaitList is IWaitList, AccessControl {
   /// The account addresses tier mapping
   mapping(address => uint256) public tiers;
   /// The minimum required tier to be considered as "eligible".
-  uint public requiredTier;
+  uint256 public requiredTier;
 
   /**
    * @param initialTier The initial required tier. Should be the all-time high tier.
+   * @param admin The AccessControl admin account.
+   * @param operators The initial waitlist OPERATOR accounts.
    */
   constructor(uint256 initialTier, address admin, address[] memory operators) {
     requiredTier = initialTier;
