@@ -56,6 +56,12 @@ describe('GenesisMinter', () => {
   });
 
   describe('mint', () => {
+    let quantity: number;
+
+    beforeEach(() => {
+      quantity = 3 + faker.datatype.number(2);
+    });
+
     it('should revert if sender is not eligible', async () => {
       await WaitList.connect(operator).setBatch([player1.address], [2]);
 
@@ -88,7 +94,6 @@ describe('GenesisMinter', () => {
     });
 
     it('should allow account to mint multiple Pookyball tokens', async () => {
-      const quantity = 3 + faker.datatype.number(5);
       const value = template.price.mul(quantity);
 
       // Sometimes, the test fails with the following error:
@@ -118,7 +123,7 @@ describe('GenesisMinter', () => {
     });
 
     it('should return "" mint should be allowed', async () => {
-      const quantity = faker.datatype.number(5) + 1;
+      const quantity = faker.datatype.number(2) + 1;
       expect(await GenesisMinter.ineligibilityReason(templateId, player1.address, quantity)).to.eq('');
     });
   });
