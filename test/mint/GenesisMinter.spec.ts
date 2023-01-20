@@ -26,7 +26,7 @@ describe('GenesisMinter', () => {
     ({ operator, player1 } = await getTestAccounts());
     ({ GenesisMinter, WaitList, Pookyball } = await loadFixture(stackFixture));
 
-    templateId = faker.datatype.number({ min: 1, max: (await GenesisMinter.lastTemplateId()).toNumber() });
+    templateId = faker.datatype.number((await GenesisMinter.nextTemplateId()).toNumber());
     template = await GenesisMinter.templates(templateId);
     await WaitList.connect(operator).setRequiredTier(3);
     await WaitList.connect(operator).setBatch([player1.address], [3]);
@@ -34,11 +34,23 @@ describe('GenesisMinter', () => {
 
   describe('templates', async () => {
     it('should iterate over the available templates', async () => {
-      const lastTemplateId = (await GenesisMinter.lastTemplateId()).toNumber();
+      const nextTemplateId = (await GenesisMinter.nextTemplateId()).toNumber();
 
-      for (let i = 1; i <= lastTemplateId; i++) {
+      for (let i = 0; i < nextTemplateId; i++) {
         const template = await GenesisMinter.templates(i);
         expect(template.supply).gt(0);
+      }
+    });
+  });
+
+  describe('getTemplates', async () => {
+    it('should return all the available templates', async () => {
+      const templates = await GenesisMinter.getTemplates();
+      const nextTemplateId = (await GenesisMinter.nextTemplateId()).toNumber();
+
+      for (let i = 0; i < nextTemplateId; i++) {
+        const template = await GenesisMinter.templates(i);
+        expect(template).to.deep.eq(templates[i]);
       }
     });
   });

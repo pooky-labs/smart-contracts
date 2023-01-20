@@ -22,30 +22,30 @@ import waitTx from './waitTx';
  * Deploy the full contract stack and configure the access controls and the contracts links properly.
  * This function is used in the deployment scripts AND in the tests to ensure a maximized compatibility and reliability.
  */
-export async function deployContracts(signer: SignerWithAddress, options: Config) {
-  if (options.log) {
-    logger.settings = { ...logger.settings, ...options.log };
-  } else if (options.log === false) {
+export async function deployContracts(signer: SignerWithAddress, config: Config) {
+  if (config.log) {
+    logger.settings = { ...logger.settings, ...config.log };
+  } else if (config.log === false) {
     logger.settings.minLevel = 5; // error level
   }
 
   // Step 0: prepare data
   const templates: TemplateStruct[] = [];
 
-  let supplyCounter = options.mint.totalSupply;
-  for (const template of options.mint.templates) {
+  let supplyCounter = config.mint.totalSupply;
+  for (const template of config.mint.templates) {
     let supply: number;
 
     if (template.supply === null) {
       supply = supplyCounter;
     } else {
-      supply = Math.round((options.mint.totalSupply * template.supply) / 10000);
+      supply = Math.round((config.mint.totalSupply * template.supply) / 10000);
     }
 
     templates.push({
       rarity: template.rarity,
       luxury: template.luxury,
-      supply: supply,
+      supply,
       minted: 0,
       price: template.price,
     });
@@ -55,7 +55,7 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
 
   logger.info('Deployer', signer.address);
 
-  const deploy = deployer(signer, { verify: options.verify, confirmations: options.confirmations });
+  const deploy = deployer(signer, { verify: config.verify, confirmations: config.confirmations });
 
   // Step 1: deploy tokens
   const POK = await deploy(POK__factory);
@@ -63,37 +63,37 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
 
   const Pookyball = await deploy(
     Pookyball__factory,
-    options.metadata.baseURI,
-    options.metadata.contractURI,
-    options.accounts.treasury.secondary,
-    options.vrf.coordinator,
-    options.vrf.keyHash,
-    options.vrf.subId,
-    options.vrf.minimumRequestConfirmations,
-    options.vrf.gasLimit,
+    config.metadata.baseURI,
+    config.metadata.contractURI,
+    config.accounts.treasury.secondary,
+    config.vrf.coordinator,
+    config.vrf.keyHash,
+    config.vrf.subId,
+    config.vrf.minimumRequestConfirmations,
+    config.vrf.gasLimit,
   );
   logger.info('Deployed Pookyball to', Pookyball.address);
 
   // Step 2: deploy mint contracts
-  const WaitList = await deploy(WaitList__factory, 3, options.accounts.admin, options.accounts.operators ?? []);
+  const WaitList = await deploy(WaitList__factory, 3, config.accounts.admin, config.accounts.operators ?? []);
   logger.info('Deployed WaitList to', WaitList.address);
 
   const GenesisMinter = await deploy(
     GenesisMinter__factory,
     Pookyball.address,
     WaitList.address,
-    options.accounts.treasury.primary,
+    config.accounts.treasury.primary,
     templates,
   );
   await GenesisMinter.deployed();
   logger.info('Deployed GenesisMinter to', GenesisMinter.address);
 
   // Step 3: deploy game contracts
-  const Airdrop = await deploy(Airdrop__factory, options.accounts.admin, [options.accounts.backend]);
+  const Airdrop = await deploy(Airdrop__factory, config.accounts.admin, [config.accounts.backend]);
   await Airdrop.deployed();
   logger.info('Deployed Airdrop to', Airdrop.address);
 
-  const Energy = await deploy(Energy__factory, POK.address, options.accounts.treasury.ingame);
+  const Energy = await deploy(Energy__factory, POK.address, config.accounts.treasury.ingame);
   await Energy.deployed();
   logger.info('Deployed Energy to', Energy.address);
 
@@ -101,20 +101,20 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
   await Level.deployed();
   logger.info('Deployed Level to', Level.address);
 
-  const Pressure = await deploy(Pressure__factory, POK.address, options.accounts.treasury.ingame);
+  const Pressure = await deploy(Pressure__factory, POK.address, config.accounts.treasury.ingame);
   await Pressure.deployed();
   logger.info('Deployed Pressure to', Pressure.address);
 
-  const Rewards = await deploy(Rewards__factory, POK.address, Pookyball.address, options.accounts.admin, [
-    options.accounts.backend,
+  const Rewards = await deploy(Rewards__factory, POK.address, Pookyball.address, config.accounts.admin, [
+    config.accounts.backend,
   ]);
   await Rewards.deployed();
   logger.info('Deployed Rewards to', Rewards.address);
 
   // Step 4: assign permissions
   // Step 4.1: assign DEFAULT_ADMIN_ROLE to the admin multi signature wallet
-  await waitTx(POK.grantRole(DEFAULT_ADMIN_ROLE, options.accounts.admin));
-  await waitTx(Pookyball.grantRole(DEFAULT_ADMIN_ROLE, options.accounts.admin));
+  await waitTx(POK.grantRole(DEFAULT_ADMIN_ROLE, config.accounts.admin));
+  await waitTx(Pookyball.grantRole(DEFAULT_ADMIN_ROLE, config.accounts.admin));
 
   // Step 4.2: assign the required gameplay roles
   await waitTx(POK.grantRole(MINTER, Rewards.address));
@@ -130,10 +130,12 @@ export async function deployContracts(signer: SignerWithAddress, options: Config
   await waitTx(Pookyball.renounceRole(DEFAULT_ADMIN_ROLE, signer.address));
 
   // Step 5: wire the VRF contracts
-  const VRFCoordinatorV2 = await VRFCoordinatorV2Interface__factory.connect(options.vrf.coordinator, signer);
-  await waitTx(VRFCoordinatorV2.addConsumer(options.vrf.subId, Pookyball.address));
+  const VRFCoordinatorV2 = await VRFCoordinatorV2Interface__factory.connect(config.vrf.coordinator, signer);
+  await waitTx(VRFCoordinatorV2.addConsumer(config.vrf.subId, Pookyball.address));
 
   return {
+    config,
+
     // Game
     Airdrop,
     Energy,
