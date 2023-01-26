@@ -1,4 +1,3 @@
-import { constants } from 'ethers';
 import Config from '../types/Config';
 import templates from './templates';
 
@@ -16,7 +15,7 @@ const mainnet: Config = {
       secondary: '0x598895F50951186eFdCB160764a538f353894027',
       ingame: '0x703662853D7F9ad9D8c44128222266a736741437',
     },
-    backend: constants.AddressZero, // TBD
+    backend: '0xCAFE3e690bf74Ec274210E1c448130c1f8228513',
     operators: [
       '0xe73b648f6de254101052e126c0499c32ed736a37', // Mathieu Bour (windyy.eth)
       '0x481074326aC46C7BC52f0b25D2F7Aaf40f586472', // Pierre Gerbaud (pierregerbaud.eth)
