@@ -8,6 +8,7 @@ import {
   Pookyball__factory,
   Pressure__factory,
   Rewards__factory,
+  VRFCoordinatorV2Interface__factory,
   WaitList__factory,
 } from '../typechain-types';
 import { TemplateStruct } from '../typechain-types/contracts/mint/GenesisMinter';
@@ -120,7 +121,7 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
   await waitTx(POK.grantRole(BURNER, Energy.address));
   await waitTx(POK.grantRole(BURNER, Level.address));
   await waitTx(POK.grantRole(BURNER, Pressure.address));
-  // await waitTx(Pookyball.grantRole(MINTER, GenesisMinter.address));
+  await waitTx(Pookyball.grantRole(MINTER, GenesisMinter.address));
   await waitTx(Pookyball.grantRole(GAME, Level.address));
   await waitTx(Pookyball.grantRole(GAME, Rewards.address));
 
@@ -129,8 +130,8 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
   await waitTx(Pookyball.renounceRole(DEFAULT_ADMIN_ROLE, signer.address));
 
   // Step 5: wire the VRF contracts
-  // const VRFCoordinatorV2 = await VRFCoordinatorV2Interface__factory.connect(config.vrf.coordinator, signer);
-  // await waitTx(VRFCoordinatorV2.addConsumer(config.vrf.subId, Pookyball.address));
+  const VRFCoordinatorV2 = await VRFCoordinatorV2Interface__factory.connect(config.vrf.coordinator, signer);
+  await waitTx(VRFCoordinatorV2.addConsumer(config.vrf.subId, Pookyball.address));
 
   return {
     config,
@@ -144,7 +145,7 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
 
     // Mint
     WaitList,
-    // GenesisMinter,
+    GenesisMinter,
 
     // Tokens
     POK,
