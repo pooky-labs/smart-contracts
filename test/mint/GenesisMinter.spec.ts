@@ -86,7 +86,7 @@ describe('GenesisMinter', () => {
 
     it('should revert not enough value is sent to cover the mint cost', async () => {
       const quantity = faker.datatype.number(5) + 2;
-      const value = template.price.mul(quantity - 2);
+      const value = template.price.mul(quantity - 1);
 
       await expect(GenesisMinter.connect(player1).mint(templateId, player1.address, quantity, { value }))
         .to.be.revertedWithCustomError(GenesisMinter, 'InsufficientValue')

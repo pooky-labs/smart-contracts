@@ -29,6 +29,9 @@ export default function deployer(signer: Signer, { verify = true, confirmations 
     await contract.deployTransaction.wait(confirmations);
 
     if (verify) {
+      // Artificial delay before attempting to verify the contracts
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+
       try {
         await run('verify:verify', {
           address: contract.address,

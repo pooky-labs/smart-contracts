@@ -1,4 +1,3 @@
-import { constants } from 'ethers';
 import Config from '../types/Config';
 import templates from './templates';
 
@@ -16,10 +15,9 @@ const mainnet: Config = {
       secondary: '0x598895F50951186eFdCB160764a538f353894027',
       ingame: '0x703662853D7F9ad9D8c44128222266a736741437',
     },
-    backend: constants.AddressZero, // TBD
+    backend: '0xCAFE3e690bf74Ec274210E1c448130c1f8228513',
     operators: [
       '0xe73b648f6de254101052e126c0499c32ed736a37', // Mathieu Bour (windyy.eth)
-      '0x3C3Bc507Ff3e4Afb96538d2Bf3f5D421aE3933F4', // Mathieu Bour (Pooky)
       '0x481074326aC46C7BC52f0b25D2F7Aaf40f586472', // Pierre Gerbaud (pierregerbaud.eth)
     ],
   },
@@ -30,7 +28,7 @@ const mainnet: Config = {
   },
 
   mint: {
-    totalSupply: 20000,
+    totalSupply: 2000,
     templates,
   },
 
@@ -44,7 +42,7 @@ const mainnet: Config = {
 
     coordinator: '0xae975071be8f8ee67addbc1a82488f1c24858067',
     keyHash: '0xcc294a196eeeb44da2888d17c0625cc88d70d9760a69d58d853ba6581a9ab0cd', // 500 gwei/gas
-    subId: 0, // TBD
+    subId: 586,
   },
 };
 

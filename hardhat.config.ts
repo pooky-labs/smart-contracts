@@ -72,6 +72,13 @@ const config: HardhatUserConfig = {
   },
 };
 
+if (process.env.POLYGON_RPC_URL) {
+  set(config, 'networks.polygon', {
+    url: process.env.POLYGON_RPC_URL,
+    accounts,
+  });
+}
+
 // Inject the mumbai network details only of the mumbai RPC url is provided
 if (process.env.MUMBAI_RPC_URL) {
   set(config, 'networks.mumbai', {
