@@ -2,12 +2,10 @@ import { BigNumber } from 'ethers';
 import { sumBy } from 'lodash';
 import { TemplateStruct } from '../../typechain-types/contracts/mint/GenesisMinter';
 import Config from '../types/Config';
-import PookyballLuxury from '../types/PookyballLuxury';
 import PookyballRarity from '../types/PookyballRarity';
 
 type Template = {
   rarity: PookyballRarity;
-  luxury: PookyballLuxury.COMMON;
   supply: number;
   minted: number;
   price: BigNumber;
@@ -20,28 +18,24 @@ export default function createTemplates(config: Config['mint']): TemplateStruct[
   const templates: Template[] = [
     {
       rarity: PookyballRarity.COMMON,
-      luxury: PookyballLuxury.COMMON,
       supply: 0,
       minted: 0,
       price: BigNumber.from(config.pricing.base),
     },
     {
       rarity: PookyballRarity.RARE,
-      luxury: PookyballLuxury.COMMON,
       supply: 0,
       minted: 0,
       price: BigNumber.from(0),
     },
     {
       rarity: PookyballRarity.EPIC,
-      luxury: PookyballLuxury.COMMON,
       supply: 0,
       minted: 0,
       price: BigNumber.from(0),
     },
     {
       rarity: PookyballRarity.LEGENDARY,
-      luxury: PookyballLuxury.COMMON,
       supply: config.supply.base,
       minted: 0,
       price: BigNumber.from(0),

@@ -8,7 +8,6 @@ import "../types/PookyballRarity.sol";
 
 struct Template {
   PookyballRarity rarity;
-  uint256 luxury;
   uint256 supply;
   uint256 minted;
   uint256 price;
@@ -97,16 +96,14 @@ contract GenesisMinter {
     // Build the arrays for the batched mint
     address[] memory recipients = new address[](quantity);
     PookyballRarity[] memory rarities = new PookyballRarity[](quantity);
-    uint[] memory luxuries = new uint[](quantity);
 
     for (uint256 i = 0; i < quantity; i++) {
       recipients[i] = recipient;
       rarities[i] = template.rarity;
-      luxuries[i] = template.luxury;
     }
 
     // Actual Pookyball token mint
-    pookyball.mint(recipients, rarities, luxuries);
+    pookyball.mint(recipients, rarities);
 
     templates[templateId].minted += quantity;
 
