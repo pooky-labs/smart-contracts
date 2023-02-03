@@ -27,11 +27,10 @@ const mumbai: Config = {
 
   mint: {
     ...mainnet.mint,
-    templates: mainnet.mint.templates.map((t) => ({
-      ...t,
-      // Price are divided by 1,000,000 on testnet because it is hard to get MATIC test tokens
-      price: BigNumber.from(t.price).div(1e6),
-    })),
+    pricing: {
+      ...mainnet.mint.pricing,
+      base: BigNumber.from(mainnet.mint.pricing.base).div(1e6),
+    },
   },
 
   vrf: {
