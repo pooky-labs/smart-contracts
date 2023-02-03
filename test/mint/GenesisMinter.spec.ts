@@ -26,7 +26,8 @@ describe('GenesisMinter', () => {
     ({ operator, player1 } = await getTestAccounts());
     ({ GenesisMinter, WaitList, Pookyball } = await loadFixture(stackFixture));
 
-    templateId = faker.datatype.number((await GenesisMinter.nextTemplateId()).toNumber());
+    const nextTemplateId = (await GenesisMinter.nextTemplateId()).toNumber();
+    templateId = faker.datatype.number(nextTemplateId - 1);
     template = await GenesisMinter.templates(templateId);
     await WaitList.connect(operator).setRequiredTier(3);
     await WaitList.connect(operator).setBatch([player1.address], [3]);
