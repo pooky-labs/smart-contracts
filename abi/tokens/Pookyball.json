@@ -56,11 +56,6 @@
         "internalType": "uint256",
         "name": "y",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "z",
-        "type": "uint256"
       }
     ],
     "name": "ArgumentSizeMismatch",
@@ -564,11 +559,6 @@
           },
           {
             "internalType": "uint256",
-            "name": "luxury",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
             "name": "level",
             "type": "uint256"
           },
@@ -602,11 +592,6 @@
         "internalType": "enum PookyballRarity[]",
         "name": "rarities",
         "type": "uint8[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "luxuries",
-        "type": "uint256[]"
       }
     ],
     "name": "mint",

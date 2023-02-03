@@ -138,25 +138,24 @@ contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBas
   }
 
   /**
-   * @notice Mint a new Pookyball token with a given rarity and luxury. Level, PXP and seed are set to zero, entropy is
+   * @notice Mint a new Pookyball token with a given rarity. Level, PXP and seed are set to zero, entropy is
    * requested to the VRF coordinator.
    * @dev Requirements:
    * - sender must have the MINTER role.
-   * - `recipients`, `rarities` and `luxuries` arguments must have the same size
+   * - `recipients` and `rarities` arguments must have the same size
    */
   function mint(
     address[] memory recipients,
-    PookyballRarity[] memory rarities,
-    uint256[] memory luxuries
+    PookyballRarity[] memory rarities
   ) external onlyRole(MINTER) returns (uint256) {
     // Check the arguments length
-    if (recipients.length != rarities.length || recipients.length != luxuries.length) {
-      revert ArgumentSizeMismatch(recipients.length, rarities.length, luxuries.length);
+    if (recipients.length != rarities.length) {
+      revert ArgumentSizeMismatch(recipients.length, rarities.length);
     }
 
     for (uint i = 0; i < recipients.length; i++) {
       _mint(recipients[i], ++lastTokenId);
-      _metadata[lastTokenId] = PookyballMetadata(rarities[i], luxuries[i], 0, 0, 0);
+      _metadata[lastTokenId] = PookyballMetadata(rarities[i], 0, 0, 0);
     }
 
     uint256 requestId = vrfCoordinator.requestRandomWords(

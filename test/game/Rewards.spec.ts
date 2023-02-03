@@ -9,7 +9,6 @@ import getTestAccounts from '../../lib/testing/getTestAccounts';
 import { expectHasRole, expectMissingRole } from '../../lib/testing/roles';
 import { signRewards } from '../../lib/testing/signRewards';
 import stackFixture from '../../lib/testing/stackFixture';
-import PookyballLuxury from '../../lib/types/PookyballLuxury';
 import PookyballRarity from '../../lib/types/PookyballRarity';
 import parseEther from '../../lib/utils/parseEther';
 import { POK, Pookyball, Rewards } from '../../typechain-types';
@@ -69,7 +68,7 @@ describe('Rewards', () => {
       amountNAT = parseEther(faker.datatype.number(5) + 5);
       amountPOK = parseEther(faker.datatype.number(5) + 5);
 
-      await Pookyball.connect(minter).mint([player1.address], [PookyballRarity.COMMON], [PookyballLuxury.COMMON]);
+      await Pookyball.connect(minter).mint([player1.address], [PookyballRarity.COMMON]);
       tokenId = (await Pookyball.lastTokenId()).toNumber();
       tokenPXP = parseEther(faker.datatype.number(5) + 5);
     });

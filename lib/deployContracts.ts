@@ -11,8 +11,8 @@ import {
   VRFCoordinatorV2Interface__factory,
   WaitList__factory,
 } from '../typechain-types';
-import { TemplateStruct } from '../typechain-types/contracts/mint/GenesisMinter';
 import deployer from './deployer';
+import createTemplates from './genesis/createTemplates';
 import logger from './logger';
 import { BURNER, DEFAULT_ADMIN_ROLE, GAME, MINTER } from './roles';
 import Config from './types/Config';
@@ -30,31 +30,9 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
   }
 
   // Step 0: prepare data
-  const templates: TemplateStruct[] = [];
-
-  let supplyCounter = config.mint.totalSupply;
-  for (const template of config.mint.templates) {
-    let supply: number;
-
-    if (template.supply === null) {
-      supply = supplyCounter;
-    } else {
-      supply = Math.round((config.mint.totalSupply * template.supply) / 10000);
-    }
-
-    templates.push({
-      rarity: template.rarity,
-      luxury: template.luxury,
-      supply,
-      minted: 0,
-      price: template.price,
-    });
-
-    supplyCounter -= supply;
-  }
-
   logger.info('Deployer', signer.address);
 
+  const templates = createTemplates(config.mint);
   const deploy = deployer(signer, { verify: config.verify, confirmations: config.confirmations });
 
   // Step 1: deploy tokens

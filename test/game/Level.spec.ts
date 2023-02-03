@@ -5,7 +5,6 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
 import stackFixture from '../../lib/testing/stackFixture';
-import PookyballLuxury from '../../lib/types/PookyballLuxury';
 import PookyballRarity from '../../lib/types/PookyballRarity';
 import parseEther from '../../lib/utils/parseEther';
 import { Level, POK, Pookyball } from '../../typechain-types';
@@ -31,7 +30,7 @@ describe('Level', () => {
     ({ Level, POK, Pookyball } = await loadFixture(stackFixture));
 
     nextLevel = faker.datatype.number({ min: 2, max: 15 });
-    await Pookyball.connect(minter).mint([player1.address], [PookyballRarity.COMMON], [PookyballLuxury.COMMON]);
+    await Pookyball.connect(minter).mint([player1.address], [PookyballRarity.COMMON]);
     tokenId = (await Pookyball.lastTokenId()).toNumber();
     await Pookyball.connect(game).setLevel(tokenId, nextLevel - 1);
   });

@@ -1,5 +1,5 @@
 import Config from '../types/Config';
-import templates from './templates';
+import parseEther from '../utils/parseEther';
 
 /**
  * Deploy configuration for Polygon Mainnet.
@@ -28,8 +28,15 @@ const mainnet: Config = {
   },
 
   mint: {
-    totalSupply: 2000,
-    templates,
+    supply: {
+      total: 1000,
+      base: 10,
+      multiplier: 4.5,
+    },
+    pricing: {
+      base: parseEther(25),
+      multiplier: 4,
+    },
   },
 
   /**
