@@ -2,7 +2,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
   Airdrop__factory,
   Energy__factory,
-  GenesisMinter__factory,
+  GenesisSale__factory,
   Level__factory,
   POK__factory,
   Pookyball__factory,
@@ -56,15 +56,15 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
   const WaitList = await deploy(WaitList__factory, 3, config.accounts.admin, config.accounts.operators ?? []);
   logger.info('Deployed WaitList to', WaitList.address);
 
-  const GenesisMinter = await deploy(
-    GenesisMinter__factory,
+  const GenesisSale = await deploy(
+    GenesisSale__factory,
     Pookyball.address,
     WaitList.address,
     config.accounts.treasury.primary,
     templates,
   );
-  await GenesisMinter.deployed();
-  logger.info('Deployed GenesisMinter to', GenesisMinter.address);
+  await GenesisSale.deployed();
+  logger.info('Deployed GenesisSale to', GenesisSale.address);
 
   // Step 3: deploy game contracts
   const Airdrop = await deploy(Airdrop__factory, config.accounts.admin, [config.accounts.backend]);
@@ -99,7 +99,7 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
   await waitTx(POK.grantRole(BURNER, Energy.address));
   await waitTx(POK.grantRole(BURNER, Level.address));
   await waitTx(POK.grantRole(BURNER, Pressure.address));
-  await waitTx(Pookyball.grantRole(MINTER, GenesisMinter.address));
+  await waitTx(Pookyball.grantRole(MINTER, GenesisSale.address));
   await waitTx(Pookyball.grantRole(GAME, Level.address));
   await waitTx(Pookyball.grantRole(GAME, Rewards.address));
 
@@ -123,7 +123,7 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
 
     // Mint
     WaitList,
-    GenesisMinter,
+    GenesisSale,
 
     // Tokens
     POK,

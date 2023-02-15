@@ -1,6 +1,6 @@
 import { BigNumber } from 'ethers';
 import { sumBy } from 'lodash';
-import { TemplateStruct } from '../../typechain-types/contracts/mint/GenesisMinter';
+import { TemplateStruct } from '../../typechain-types/contracts/mint/GenesisSale';
 import Config from '../types/Config';
 import PookyballRarity from '../types/PookyballRarity';
 
@@ -10,6 +10,8 @@ type Template = {
   minted: number;
   price: BigNumber;
 };
+
+const PRICING_BASE = 10_000;
 
 /**
  * Generate the Pooky Genesis Mint templates.
@@ -55,6 +57,11 @@ export default function createTemplates(config: Config['mint']): TemplateStruct[
   templates[PookyballRarity.RARE].price = templates[PookyballRarity.COMMON].price.mul(config.pricing.multiplier);
   templates[PookyballRarity.EPIC].price = templates[PookyballRarity.RARE].price.mul(config.pricing.multiplier);
   templates[PookyballRarity.LEGENDARY].price = templates[PookyballRarity.EPIC].price.mul(config.pricing.multiplier);
+
+  // Apply the discount
+  for (const [i] of templates.entries()) {
+    templates[i].price = templates[i].price.mul(PRICING_BASE - config.pricing.discount).div(PRICING_BASE);
+  }
 
   return templates;
 }

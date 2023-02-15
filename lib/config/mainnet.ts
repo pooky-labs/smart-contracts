@@ -36,6 +36,7 @@ const mainnet: Config = {
     pricing: {
       base: parseEther(25),
       multiplier: 4,
+      discount: 1000,
     },
   },
 

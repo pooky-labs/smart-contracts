@@ -5,16 +5,16 @@ import { expect } from 'chai';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
 import stackFixture from '../../lib/testing/stackFixture';
 import parseEther from '../../lib/utils/parseEther';
-import { GenesisMinter, Pookyball, WaitList } from '../../typechain-types';
-import { TemplateStructOutput } from '../../typechain-types/contracts/mint/GenesisMinter';
+import { GenesisSale, Pookyball, WaitList } from '../../typechain-types';
+import { TemplateStructOutput } from '../../typechain-types/contracts/mint/GenesisSale';
 
-describe('GenesisMinter', () => {
+describe('GenesisSale', () => {
   // Signers
   let operator: SignerWithAddress;
   let player1: SignerWithAddress;
 
   // Contracts
-  let GenesisMinter: GenesisMinter;
+  let GenesisSale: GenesisSale;
   let WaitList: WaitList;
   let Pookyball: Pookyball;
 
@@ -24,21 +24,21 @@ describe('GenesisMinter', () => {
 
   beforeEach(async () => {
     ({ operator, player1 } = await getTestAccounts());
-    ({ GenesisMinter, WaitList, Pookyball } = await loadFixture(stackFixture));
+    ({ GenesisSale, WaitList, Pookyball } = await loadFixture(stackFixture));
 
-    const nextTemplateId = (await GenesisMinter.nextTemplateId()).toNumber();
+    const nextTemplateId = (await GenesisSale.nextTemplateId()).toNumber();
     templateId = faker.datatype.number(nextTemplateId - 1);
-    template = await GenesisMinter.templates(templateId);
+    template = await GenesisSale.templates(templateId);
     await WaitList.connect(operator).setRequiredTier(3);
     await WaitList.connect(operator).setBatch([player1.address], [3]);
   });
 
   describe('templates', async () => {
     it('should iterate over the available templates', async () => {
-      const nextTemplateId = (await GenesisMinter.nextTemplateId()).toNumber();
+      const nextTemplateId = (await GenesisSale.nextTemplateId()).toNumber();
 
       for (let i = 0; i < nextTemplateId; i++) {
-        const template = await GenesisMinter.templates(i);
+        const template = await GenesisSale.templates(i);
         expect(template.supply).gt(0);
       }
     });
@@ -46,11 +46,11 @@ describe('GenesisMinter', () => {
 
   describe('getTemplates', async () => {
     it('should return all the available templates', async () => {
-      const templates = await GenesisMinter.getTemplates();
-      const nextTemplateId = (await GenesisMinter.nextTemplateId()).toNumber();
+      const templates = await GenesisSale.getTemplates();
+      const nextTemplateId = (await GenesisSale.nextTemplateId()).toNumber();
 
       for (let i = 0; i < nextTemplateId; i++) {
-        const template = await GenesisMinter.templates(i);
+        const template = await GenesisSale.templates(i);
         expect(template).to.deep.eq(templates[i]);
       }
     });
@@ -66,8 +66,8 @@ describe('GenesisMinter', () => {
     it('should revert if sender is not eligible', async () => {
       await WaitList.connect(operator).setBatch([player1.address], [2]);
 
-      await expect(GenesisMinter.connect(player1).mint(templateId, player1.address, 1, { value: template.price }))
-        .to.be.revertedWithCustomError(GenesisMinter, 'Ineligible')
+      await expect(GenesisSale.connect(player1).mint(templateId, player1.address, 1, { value: template.price }))
+        .to.be.revertedWithCustomError(GenesisSale, 'Ineligible')
         .withArgs(player1.address);
     });
 
@@ -77,11 +77,11 @@ describe('GenesisMinter', () => {
       const quantity = supply + 1;
 
       await expect(
-        GenesisMinter.connect(player1).mint(templateId, player1.address, quantity, {
+        GenesisSale.connect(player1).mint(templateId, player1.address, quantity, {
           value: template.price.mul(quantity),
         }),
       )
-        .to.be.revertedWithCustomError(GenesisMinter, 'InsufficientSupply')
+        .to.be.revertedWithCustomError(GenesisSale, 'InsufficientSupply')
         .withArgs(templateId, supply);
     });
 
@@ -89,8 +89,8 @@ describe('GenesisMinter', () => {
       const quantity = faker.datatype.number(5) + 2;
       const value = template.price.mul(quantity - 1);
 
-      await expect(GenesisMinter.connect(player1).mint(templateId, player1.address, quantity, { value }))
-        .to.be.revertedWithCustomError(GenesisMinter, 'InsufficientValue')
+      await expect(GenesisSale.connect(player1).mint(templateId, player1.address, quantity, { value }))
+        .to.be.revertedWithCustomError(GenesisSale, 'InsufficientValue')
         .withArgs(template.price.mul(quantity), value);
     });
 
@@ -103,9 +103,9 @@ describe('GenesisMinter', () => {
       // Setting player1's balance to 1,000,000,000 ETH fixes the problem.
       await setBalance(player1.address, parseEther(1e9));
 
-      await expect(GenesisMinter.connect(player1).mint(templateId, player1.address, quantity, { value }))
+      await expect(GenesisSale.connect(player1).mint(templateId, player1.address, quantity, { value }))
         .to.changeTokenBalance(Pookyball, player1.address, quantity)
-        .and.to.emit(GenesisMinter, 'Sale')
+        .and.to.emit(GenesisSale, 'Sale')
         .withArgs(player1.address, templateId, quantity, value);
     });
   });
@@ -113,19 +113,17 @@ describe('GenesisMinter', () => {
   describe('ineligibilityReason', () => {
     it('should return "not eligible yet" if sender is not eligible', async () => {
       await WaitList.connect(operator).setBatch([player1.address], [2]);
-      expect(await GenesisMinter.ineligibilityReason(templateId, player1.address, 1)).to.eq('not eligible yet');
+      expect(await GenesisSale.ineligibilityReason(templateId, player1.address, 1)).to.eq('not eligible yet');
     });
 
     it('should return "insufficient supply" if mint would exhaust the supply', async () => {
       const quantity = template.supply.toNumber() + 1;
-      expect(await GenesisMinter.ineligibilityReason(templateId, player1.address, quantity)).to.eq(
-        'insufficient supply',
-      );
+      expect(await GenesisSale.ineligibilityReason(templateId, player1.address, quantity)).to.eq('insufficient supply');
     });
 
     it('should return "" mint should be allowed', async () => {
       const quantity = faker.datatype.number(2) + 1;
-      expect(await GenesisMinter.ineligibilityReason(templateId, player1.address, quantity)).to.eq('');
+      expect(await GenesisSale.ineligibilityReason(templateId, player1.address, quantity)).to.eq('');
     });
   });
 });

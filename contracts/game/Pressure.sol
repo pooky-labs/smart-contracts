@@ -13,8 +13,8 @@ import "../interfaces/IPOK.sol";
 contract Pressure {
   // Constants
   uint8[] public floors = [10, 20, 30, 40, 50, 60, 75, 100];
-  uint256[] public floorsNAT = [0.08e18, 0.067e18, 0.056e18, 0.047e18, 0.04e18, 0.034e18, 0.028e18, 0.024e18];
-  uint256[] public floorsPOK = [2.143e18, 1.800e18, 1.512e18, 1.270e18, 1.067e18, 0.896e18, 0.753e18, 0.632e18];
+  uint256[] public floorsNAT = [0.064e18, 0.0538e18, 0.0452e18, 0.0379e18, 0.0319e18, 0.0268e18, 0.0225e18, 0.0189e18];
+  uint256[] public floorsPOK = [2.286e18, 1.92e18, 1.613e18, 1.355e18, 1.138e18, 0.956e18, 0.803e18, 0.674e18];
 
   // Contracts
   IPOK immutable pok;
