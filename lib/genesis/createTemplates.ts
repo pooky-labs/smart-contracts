@@ -45,12 +45,12 @@ export default function createTemplates(config: Config['mint']): TemplateStruct[
   ];
 
   // Compute the supplies
-  templates[PookyballRarity.EPIC].supply = Math.floor(
-    templates[PookyballRarity.LEGENDARY].supply * config.supply.multiplier,
-  );
-  templates[PookyballRarity.RARE].supply = Math.floor(
-    templates[PookyballRarity.EPIC].supply * config.supply.multiplier,
-  );
+  templates[PookyballRarity.EPIC].supply = templates[PookyballRarity.LEGENDARY].supply * config.supply.multiplier;
+  templates[PookyballRarity.RARE].supply = templates[PookyballRarity.EPIC].supply * config.supply.multiplier;
+
+  templates[PookyballRarity.EPIC].supply = Math.floor(templates[PookyballRarity.EPIC].supply);
+  templates[PookyballRarity.RARE].supply = Math.floor(templates[PookyballRarity.RARE].supply);
+
   templates[PookyballRarity.COMMON].supply = config.supply.total - sumBy(Object.values(templates), 'supply');
 
   // Compute the pricing

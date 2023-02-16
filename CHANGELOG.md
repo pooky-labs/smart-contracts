@@ -5,6 +5,7 @@
 Contract changes:
 
 - `GenesisMint` has been renamed to `GenesisSale`
+- Genesis sale and supply prices have been adjusted
 
 Gameplay adjustments:
 
@@ -15,7 +16,7 @@ Gameplay adjustments:
 | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | [`POK`](contracts/tokens/POK.sol)               | [`0x7b7E3B03f34b17d70C276C4886467D58867Bbc94`](https://polygonscan.com/address/0x7b7E3B03f34b17d70C276C4886467D58867Bbc94#code) | (unchanged)                                                                                                                     |
 | [`Pookyball`](contracts/tokens/Pookyball.sol)   | [`0xb4859acd9B0A65CA4897c31e5cb5160D9Ff32C0A`](https://polygonscan.com/address/0xb4859acd9B0A65CA4897c31e5cb5160D9Ff32C0A#code) | (unchanged)                                                                                                                     |
-| [`GenesisSale`](contracts/mint/GenesisSale.sol) | none                                                                                                                            | [`0x458d47753182317a6EA16060bF0E40f9B3E8189C`](https://polygonscan.com/address/0x458d47753182317a6EA16060bF0E40f9B3E8189C#code) |
+| [`GenesisSale`](contracts/mint/GenesisSale.sol) | none                                                                                                                            | [`0x04A6609074DAE5FCDd635533dF2143C85155759e`](https://polygonscan.com/address/0x04A6609074DAE5FCDd635533dF2143C85155759e#code) |
 | [`WaitList`](contracts/mint/WaitList.sol)       | [`0xFA6ADc62ce95deD2e4649AFaf89521Cf4fF4A09F`](https://polygonscan.com/address/0xFA6ADc62ce95deD2e4649AFaf89521Cf4fF4A09F#code) | (unchanged)                                                                                                                     |
 | [`Airdrop`](contracts/game/Airdrop.sol)         | [`0xE9d0a2B783e3d9C94E8b92A8De0e7D72458D51d2`](https://polygonscan.com/address/0xE9d0a2B783e3d9C94E8b92A8De0e7D72458D51d2#code) | (unchanged)                                                                                                                     |
 | [`Energy`](contracts/game/Energy.sol)           | [`0x22021D710878c216935C967A49212b38eBe295Fe`](https://polygonscan.com/address/0x22021D710878c216935C967A49212b38eBe295Fe#code) | (unchanged)                                                                                                                     |

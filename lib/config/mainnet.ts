@@ -31,10 +31,10 @@ const mainnet: Config = {
     supply: {
       total: 1000,
       base: 10,
-      multiplier: 4.5,
+      multiplier: 4.25,
     },
     pricing: {
-      base: parseEther(25),
+      base: parseEther(20),
       multiplier: 4,
       discount: 1000,
     },
