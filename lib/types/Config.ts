@@ -35,6 +35,7 @@ export default interface Config {
     pricing: {
       base: BigNumberish;
       multiplier: number;
+      discount: 1000; // over 10,000
     };
   };
 

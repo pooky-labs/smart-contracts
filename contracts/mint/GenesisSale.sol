@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (GenesisMinter.sol)
+// Pooky Game Contracts (GenesisSale.sol)
 pragma solidity ^0.8.17;
 
 import "../interfaces/IPookyball.sol";
@@ -14,11 +14,11 @@ struct Template {
 }
 
 /**
- * @title GenesisMinter
+ * @title GenesisSale
  * @author Mathieu Bour
- * @notice Mint contract for the Pooky "genesis" collection.
+ * @notice Sale contract for the Pooky "genesis" collection.
  */
-contract GenesisMinter {
+contract GenesisSale {
   // Contracts
   IPookyball public immutable pookyball;
   IWaitList public immutable waitlist;
