@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "../interfaces/IPookyball.sol";
 import "../interfaces/IPOK.sol";
 import "../types/PookyballMetadata.sol";
+import "../interfaces/IHashesRegistry.sol";
 
 struct RewardsPXP {
   uint256 tokenId;
@@ -43,7 +44,7 @@ contract Rewards is AccessControl {
   IPOK public immutable pok;
 
   /// To prevent users to use the same signature multiple times, we mark the rewards as claimed.
-  mapping(bytes32 => bool) public claimed;
+  IHashesRegistry public hashes;
 
   /// Fired when rewards are claimed.
   event RewardsClaimed(address indexed account, RewardsData rewards, string data);
@@ -57,9 +58,10 @@ contract Rewards is AccessControl {
   /// Thrown when the native transfer has failed.
   error TransferFailed(address recipient, uint256 amount);
 
-  constructor(IPOK _pok, IPookyball _pookyball, address admin, address[] memory rewarders) {
+  constructor(IPOK _pok, IPookyball _pookyball, IHashesRegistry _hashes, address admin, address[] memory rewarders) {
     pok = _pok;
     pookyball = _pookyball;
+    hashes = _hashes;
 
     // Set up the roles
     _grantRole(DEFAULT_ADMIN_ROLE, admin);
@@ -97,11 +99,11 @@ contract Rewards is AccessControl {
 
     // Ensure that all rewards are claimed only once
     for (uint256 i = 0; i < rewards.hashes.length; i++) {
-      if (claimed[rewards.hashes[i]]) {
+      if (hashes.has(rewards.hashes[i])) {
         revert AlreadyClaimed(rewards.hashes[i]);
       }
 
-      claimed[rewards.hashes[i]] = true;
+      hashes.set(rewards.hashes[i], true);
     }
 
     if (!hasRole(REWARDER, hash.recover(signature))) {

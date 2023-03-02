@@ -3,6 +3,7 @@ import {
   Airdrop__factory,
   Energy__factory,
   GenesisSale__factory,
+  HashesRegistry__factory,
   Level__factory,
   POK__factory,
   Pookyball__factory,
@@ -14,7 +15,7 @@ import {
 import deployer from './deployer';
 import createTemplates from './genesis/createTemplates';
 import logger from './logger';
-import { BURNER, DEFAULT_ADMIN_ROLE, GAME, MINTER } from './roles';
+import { BURNER, DEFAULT_ADMIN_ROLE, GAME, MINTER, OPERATOR } from './roles';
 import Config from './types/Config';
 import waitTx from './waitTx';
 
@@ -83,9 +84,18 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
   await Pressure.deployed();
   logger.info('Deployed Pressure to', Pressure.address);
 
-  const Rewards = await deploy(Rewards__factory, POK.address, Pookyball.address, config.accounts.admin, [
-    config.accounts.backend,
-  ]);
+  const HashesRegistry = await deploy(HashesRegistry__factory, [signer.address, config.accounts.admin], []);
+  await HashesRegistry.deployed();
+  logger.info('Deployed HashesRegistry to', HashesRegistry.address);
+
+  const Rewards = await deploy(
+    Rewards__factory,
+    POK.address,
+    Pookyball.address,
+    HashesRegistry.address,
+    config.accounts.admin,
+    [config.accounts.backend],
+  );
   await Rewards.deployed();
   logger.info('Deployed Rewards to', Rewards.address);
 
@@ -103,10 +113,12 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
   await waitTx(Pookyball.grantRole(MINTER, Rewards.address));
   await waitTx(Pookyball.grantRole(GAME, Level.address));
   await waitTx(Pookyball.grantRole(GAME, Rewards.address));
+  await waitTx(HashesRegistry.grantRole(OPERATOR, Rewards.address));
 
   // Step 4.3: resign all the DEFAULT_ADMIN_ROLE so only the multi signature remains admin
   await waitTx(POK.renounceRole(DEFAULT_ADMIN_ROLE, signer.address));
   await waitTx(Pookyball.renounceRole(DEFAULT_ADMIN_ROLE, signer.address));
+  await waitTx(HashesRegistry.grantRole(OPERATOR, signer.address));
 
   // Step 5: wire the VRF contracts
   const VRFCoordinatorV2 = await VRFCoordinatorV2Interface__factory.connect(config.vrf.coordinator, signer);
@@ -118,6 +130,7 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
     // Game
     Airdrop,
     Energy,
+    HashesRegistry,
     Level,
     Pressure,
     Rewards,

@@ -12,6 +12,11 @@
         "type": "address"
       },
       {
+        "internalType": "contract IHashesRegistry",
+        "name": "_hashes",
+        "type": "address"
+      },
+      {
         "internalType": "address",
         "name": "admin",
         "type": "address"
@@ -304,25 +309,6 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "claimed",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
         "name": "role",
         "type": "bytes32"
       }
@@ -375,6 +361,19 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "hashes",
+    "outputs": [
+      {
+        "internalType": "contract IHashesRegistry",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",

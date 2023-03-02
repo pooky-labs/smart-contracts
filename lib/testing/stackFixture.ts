@@ -1,7 +1,7 @@
 import { InvalidReceiver__factory, VRFCoordinatorV2Mock__factory } from '../../typechain-types';
 import testing from '../config/testing';
 import { deployContracts } from '../deployContracts';
-import { GAME, MINTER } from '../roles';
+import { GAME, MINTER, OPERATOR } from '../roles';
 import getTestAccounts from './getTestAccounts';
 
 export default async function stackFixture() {
@@ -22,7 +22,7 @@ export default async function stackFixture() {
   await VRFCoordinatorV2.createSubscription();
   const subId = 1;
 
-  const { POK, Pookyball, Rewards, WaitList, ...contracts } = await deployContracts(deployer, {
+  const { POK, Pookyball, HashesRegistry, Rewards, WaitList, ...contracts } = await deployContracts(deployer, {
     ...testing,
     accounts: {
       admin: admin.address,
@@ -47,10 +47,11 @@ export default async function stackFixture() {
   await POK.connect(admin).grantRole(MINTER, minter.address);
   await Pookyball.connect(admin).grantRole(MINTER, minter.address);
   await Pookyball.connect(admin).grantRole(GAME, game.address);
+  await HashesRegistry.connect(admin).grantRole(OPERATOR, operator.address);
 
   // Additional contracts deployments
   const InvalidReceiver = await new InvalidReceiver__factory().connect(deployer).deploy();
   await InvalidReceiver.deployed();
 
-  return { POK, Pookyball, Rewards, WaitList, VRFCoordinatorV2, InvalidReceiver, ...contracts };
+  return { POK, Pookyball, HashesRegistry, Rewards, WaitList, VRFCoordinatorV2, InvalidReceiver, ...contracts };
 }
