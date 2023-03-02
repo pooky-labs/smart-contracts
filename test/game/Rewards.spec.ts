@@ -86,12 +86,12 @@ describe('Rewards', () => {
     });
 
     it('should revert if hashes were claimed more that once', async () => {
-      const hash = utils.solidityKeccak256(['string'], [faker.datatype.string(10)]);
+      const nonce = utils.solidityKeccak256(['string'], [faker.datatype.string(10)]);
 
       // This simulates an attack where the player attempts to get 100x his rewards
       const [sig, rewards] = await signRewards(
         player1.address,
-        { amountNAT, amountPOK, hashes: [hash] },
+        { amountNAT, amountPOK, nonces: [nonce] },
         data,
         backend,
       );
@@ -99,7 +99,7 @@ describe('Rewards', () => {
       await Rewards.connect(player1).claim(rewards, sig, data); // This should pass
       await expect(Rewards.connect(player1).claim(rewards, sig, data))
         .to.be.revertedWithCustomError(Rewards, 'AlreadyClaimed')
-        .withArgs(hash);
+        .withArgs(nonce);
     });
 
     it('should revert if data was not passed correctly', async () => {

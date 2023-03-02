@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "../interfaces/IPookyball.sol";
 import "../interfaces/IPOK.sol";
 import "../types/PookyballMetadata.sol";
-import "../interfaces/IHashesRegistry.sol";
+import "../interfaces/INonceRegistry.sol";
 
 struct RewardsPXP {
   uint256 tokenId;
@@ -23,8 +23,8 @@ struct RewardsData {
   RewardsPXP[] pxp;
   /// The rarities of the minted Pookyballs.
   PookyballRarity[] pookyballs;
-  /// The hashes that represents the payload. This prevent accounts to claim the same reward twice.
-  bytes32[] hashes;
+  /// The nonces that represents the payload. This prevent accounts to claim the same reward twice.
+  bytes32[] nonces;
 }
 
 /**
@@ -44,7 +44,7 @@ contract Rewards is AccessControl {
   IPOK public immutable pok;
 
   /// To prevent users to use the same signature multiple times, we mark the rewards as claimed.
-  IHashesRegistry public hashes;
+  INonceRegistry public nonces;
 
   /// Fired when rewards are claimed.
   event RewardsClaimed(address indexed account, RewardsData rewards, string data);
@@ -52,16 +52,16 @@ contract Rewards is AccessControl {
   /// Thrown when an account submits an invalid signature.
   error InvalidSignature();
   /// Thrown when an account tries to claim rewards twice.
-  error AlreadyClaimed(bytes32 hash);
+  error AlreadyClaimed(bytes32 nonce);
   /// Thrown when the reward contract does not own enough native currency.
   error InsufficientBalance(uint256 expected, uint256 actual);
   /// Thrown when the native transfer has failed.
   error TransferFailed(address recipient, uint256 amount);
 
-  constructor(IPOK _pok, IPookyball _pookyball, IHashesRegistry _hashes, address admin, address[] memory rewarders) {
+  constructor(IPOK _pok, IPookyball _pookyball, INonceRegistry _nonces, address admin, address[] memory rewarders) {
     pok = _pok;
     pookyball = _pookyball;
-    hashes = _hashes;
+    nonces = _nonces;
 
     // Set up the roles
     _grantRole(DEFAULT_ADMIN_ROLE, admin);
@@ -98,12 +98,12 @@ contract Rewards is AccessControl {
     bytes32 hash = keccak256(abi.encode(msg.sender, rewards, data)).toEthSignedMessageHash();
 
     // Ensure that all rewards are claimed only once
-    for (uint256 i = 0; i < rewards.hashes.length; i++) {
-      if (hashes.has(rewards.hashes[i])) {
-        revert AlreadyClaimed(rewards.hashes[i]);
+    for (uint256 i = 0; i < rewards.nonces.length; i++) {
+      if (nonces.has(rewards.nonces[i])) {
+        revert AlreadyClaimed(rewards.nonces[i]);
       }
 
-      hashes.set(rewards.hashes[i], true);
+      nonces.set(rewards.nonces[i], true);
     }
 
     if (!hasRole(REWARDER, hash.recover(signature))) {

@@ -12,8 +12,8 @@
         "type": "address"
       },
       {
-        "internalType": "contract IHashesRegistry",
-        "name": "_hashes",
+        "internalType": "contract INonceRegistry",
+        "name": "_nonces",
         "type": "address"
       },
       {
@@ -34,7 +34,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "hash",
+        "name": "nonce",
         "type": "bytes32"
       }
     ],
@@ -123,7 +123,7 @@
           },
           {
             "internalType": "bytes32[]",
-            "name": "hashes",
+            "name": "nonces",
             "type": "bytes32[]"
           }
         ],
@@ -281,7 +281,7 @@
           },
           {
             "internalType": "bytes32[]",
-            "name": "hashes",
+            "name": "nonces",
             "type": "bytes32[]"
           }
         ],
@@ -368,10 +368,10 @@
   },
   {
     "inputs": [],
-    "name": "hashes",
+    "name": "nonces",
     "outputs": [
       {
-        "internalType": "contract IHashesRegistry",
+        "internalType": "contract INonceRegistry",
         "name": "",
         "type": "address"
       }

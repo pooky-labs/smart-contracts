@@ -173,7 +173,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "hash",
+        "name": "nonce",
         "type": "bytes32"
       }
     ],
@@ -252,7 +252,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "hash",
+        "name": "nonce",
         "type": "bytes32"
       },
       {
@@ -270,7 +270,7 @@
     "inputs": [
       {
         "internalType": "bytes32[]",
-        "name": "_hashes",
+        "name": "_nonces",
         "type": "bytes32[]"
       },
       {

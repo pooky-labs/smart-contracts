@@ -3,7 +3,7 @@ import {
   Airdrop__factory,
   Energy__factory,
   GenesisSale__factory,
-  HashesRegistry__factory,
+  NonceRegistry__factory,
   Level__factory,
   POK__factory,
   Pookyball__factory,
@@ -84,15 +84,15 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
   await Pressure.deployed();
   logger.info('Deployed Pressure to', Pressure.address);
 
-  const HashesRegistry = await deploy(HashesRegistry__factory, [signer.address, config.accounts.admin], []);
-  await HashesRegistry.deployed();
-  logger.info('Deployed HashesRegistry to', HashesRegistry.address);
+  const NonceRegistry = await deploy(NonceRegistry__factory, [signer.address, config.accounts.admin], []);
+  await NonceRegistry.deployed();
+  logger.info('Deployed NonceRegistry to', NonceRegistry.address);
 
   const Rewards = await deploy(
     Rewards__factory,
     POK.address,
     Pookyball.address,
-    HashesRegistry.address,
+    NonceRegistry.address,
     config.accounts.admin,
     [config.accounts.backend],
   );
@@ -113,12 +113,12 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
   await waitTx(Pookyball.grantRole(MINTER, Rewards.address));
   await waitTx(Pookyball.grantRole(GAME, Level.address));
   await waitTx(Pookyball.grantRole(GAME, Rewards.address));
-  await waitTx(HashesRegistry.grantRole(OPERATOR, Rewards.address));
+  await waitTx(NonceRegistry.grantRole(OPERATOR, Rewards.address));
 
   // Step 4.3: resign all the DEFAULT_ADMIN_ROLE so only the multi signature remains admin
   await waitTx(POK.renounceRole(DEFAULT_ADMIN_ROLE, signer.address));
   await waitTx(Pookyball.renounceRole(DEFAULT_ADMIN_ROLE, signer.address));
-  await waitTx(HashesRegistry.grantRole(OPERATOR, signer.address));
+  await waitTx(NonceRegistry.grantRole(OPERATOR, signer.address));
 
   // Step 5: wire the VRF contracts
   const VRFCoordinatorV2 = await VRFCoordinatorV2Interface__factory.connect(config.vrf.coordinator, signer);
@@ -130,7 +130,7 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
     // Game
     Airdrop,
     Energy,
-    HashesRegistry,
+    NonceRegistry,
     Level,
     Pressure,
     Rewards,
