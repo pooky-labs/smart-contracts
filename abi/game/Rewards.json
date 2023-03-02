@@ -12,6 +12,11 @@
         "type": "address"
       },
       {
+        "internalType": "contract INonceRegistry",
+        "name": "_nonces",
+        "type": "address"
+      },
+      {
         "internalType": "address",
         "name": "admin",
         "type": "address"
@@ -29,7 +34,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "hash",
+        "name": "nonce",
         "type": "bytes32"
       }
     ],
@@ -112,8 +117,13 @@
             "type": "tuple[]"
           },
           {
+            "internalType": "enum PookyballRarity[]",
+            "name": "pookyballs",
+            "type": "uint8[]"
+          },
+          {
             "internalType": "bytes32[]",
-            "name": "hashes",
+            "name": "nonces",
             "type": "bytes32[]"
           }
         ],
@@ -265,8 +275,13 @@
             "type": "tuple[]"
           },
           {
+            "internalType": "enum PookyballRarity[]",
+            "name": "pookyballs",
+            "type": "uint8[]"
+          },
+          {
             "internalType": "bytes32[]",
-            "name": "hashes",
+            "name": "nonces",
             "type": "bytes32[]"
           }
         ],
@@ -288,25 +303,6 @@
     "name": "claim",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "claimed",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -365,6 +361,19 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "nonces",
+    "outputs": [
+      {
+        "internalType": "contract INonceRegistry",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",

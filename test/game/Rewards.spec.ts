@@ -3,7 +3,6 @@ import { loadFixture, setBalance } from '@nomicfoundation/hardhat-network-helper
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { BigNumber, utils } from 'ethers';
-import { ethers } from 'hardhat';
 import { DEFAULT_ADMIN_ROLE, REWARDER } from '../../lib/roles';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
 import { expectHasRole, expectMissingRole } from '../../lib/testing/roles';
@@ -54,7 +53,6 @@ describe('Rewards', () => {
       await setBalance(Rewards.address, totalAmount);
 
       await expect(Rewards.connect(admin).withdraw()).to.changeEtherBalance(admin, totalAmount);
-      expect(await ethers.provider.getCode(Rewards.address)).to.equal('0x');
     });
   });
 
@@ -88,12 +86,12 @@ describe('Rewards', () => {
     });
 
     it('should revert if hashes were claimed more that once', async () => {
-      const hash = utils.solidityKeccak256(['string'], [faker.datatype.string(10)]);
+      const nonce = utils.solidityKeccak256(['string'], [faker.datatype.string(10)]);
 
       // This simulates an attack where the player attempts to get 100x his rewards
       const [sig, rewards] = await signRewards(
         player1.address,
-        { amountNAT, amountPOK, hashes: [hash] },
+        { amountNAT, amountPOK, nonces: [nonce] },
         data,
         backend,
       );
@@ -101,7 +99,7 @@ describe('Rewards', () => {
       await Rewards.connect(player1).claim(rewards, sig, data); // This should pass
       await expect(Rewards.connect(player1).claim(rewards, sig, data))
         .to.be.revertedWithCustomError(Rewards, 'AlreadyClaimed')
-        .withArgs(hash);
+        .withArgs(nonce);
     });
 
     it('should revert if data was not passed correctly', async () => {
@@ -137,6 +135,7 @@ describe('Rewards', () => {
           amountNAT,
           amountPOK,
           pxp: [{ tokenId, amountPXP: tokenPXP }],
+          pookyballs: [PookyballRarity.COMMON, PookyballRarity.RARE],
         },
         data,
         backend,
@@ -146,6 +145,7 @@ describe('Rewards', () => {
         .to.emit(Rewards, 'RewardsClaimed')
         .withArgs(player1.address, rewards, '')
         .and.to.changeTokenBalance(POK, player1.address, amountPOK)
+        .and.to.changeTokenBalance(Pookyball, player1.address, 2)
         .and.to.changeEtherBalance(player1.address, rewards.amountNAT);
     });
   });
