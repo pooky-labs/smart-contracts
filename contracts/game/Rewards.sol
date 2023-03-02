@@ -20,6 +20,8 @@ struct RewardsData {
   uint256 amountPOK;
   /// The amount of Pookyball PXP to grant to the tokens
   RewardsPXP[] pxp;
+  /// The rarities of the minted Pookyballs.
+  PookyballRarity[] pookyballs;
   /// The hashes that represents the payload. This prevent accounts to claim the same reward twice.
   bytes32[] hashes;
 }
@@ -29,7 +31,6 @@ struct RewardsData {
  * @author Mathieu Bour, Claudiu Micu
  * @notice Gameplay contract that allows to claim rewards native, $POK tokens and Pookyball PXP rewards.
  * @dev Only authorized REWARDER-role can sign the rewards payload.
- * This contract does not allow to mint Pookyballs tokens for now.
  */
 contract Rewards is AccessControl {
   using ECDSA for bytes32;
@@ -76,12 +77,15 @@ contract Rewards is AccessControl {
    * @notice Recover all the funds on the contract.
    */
   function withdraw() external onlyRole(DEFAULT_ADMIN_ROLE) {
-    selfdestruct(payable(msg.sender));
+    (bool sent, ) = address(msg.sender).call{ value: address(this).balance }("");
+    if (!sent) {
+      revert TransferFailed(msg.sender, address(this).balance);
+    }
   }
 
   /**
    * @notice Claim rewards using a signature generated from the Pooky game back-end.
-   * Rewards include: native currency, $POK tokens and PXP for the Pookyball tokens.
+   * Rewards include: native currency, $POK tokens, PXP for the Pookyball tokens and Pookyball tokens.
    * @dev Requirements:
    * - signature is valid
    * - tokenIds and tokenPXP have the same size
@@ -115,6 +119,15 @@ contract Rewards is AccessControl {
         PookyballMetadata memory metadata = pookyball.metadata(rewards.pxp[i].tokenId);
         pookyball.setPXP(rewards.pxp[i].tokenId, metadata.pxp + rewards.pxp[i].amountPXP);
       }
+    }
+
+    if (rewards.pookyballs.length > 0) {
+      address[] memory addresses = new address[](rewards.pookyballs.length);
+      for (uint256 i = 0; i < rewards.pookyballs.length; i++) {
+        addresses[i] = msg.sender;
+      }
+
+      pookyball.mint(addresses, rewards.pookyballs);
     }
 
     // Transfer native currency

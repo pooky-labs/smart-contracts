@@ -18,6 +18,7 @@ export async function signRewards(
     amountNAT: 0,
     amountPOK: 0,
     pxp: [],
+    pookyballs: [],
     hashes: [],
     ...rewards,
   };
@@ -25,7 +26,7 @@ export async function signRewards(
   const payload = utils.defaultAbiCoder.encode(
     [
       'address',
-      'tuple(uint256 amountNAT, uint256 amountPOK, tuple(uint256 tokenId, uint256 amountPXP)[] pxp, bytes32[] hashes)',
+      'tuple(uint256 amountNAT, uint256 amountPOK, tuple(uint256 tokenId, uint256 amountPXP)[] pxp, uint8[] pookyballs, bytes32[] hashes)',
       'string',
     ],
     [account, fullRewards, data],

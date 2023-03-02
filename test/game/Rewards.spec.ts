@@ -3,7 +3,6 @@ import { loadFixture, setBalance } from '@nomicfoundation/hardhat-network-helper
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { BigNumber, utils } from 'ethers';
-import { ethers } from 'hardhat';
 import { DEFAULT_ADMIN_ROLE, REWARDER } from '../../lib/roles';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
 import { expectHasRole, expectMissingRole } from '../../lib/testing/roles';
@@ -54,7 +53,6 @@ describe('Rewards', () => {
       await setBalance(Rewards.address, totalAmount);
 
       await expect(Rewards.connect(admin).withdraw()).to.changeEtherBalance(admin, totalAmount);
-      expect(await ethers.provider.getCode(Rewards.address)).to.equal('0x');
     });
   });
 
@@ -137,6 +135,7 @@ describe('Rewards', () => {
           amountNAT,
           amountPOK,
           pxp: [{ tokenId, amountPXP: tokenPXP }],
+          pookyballs: [PookyballRarity.COMMON, PookyballRarity.RARE],
         },
         data,
         backend,
@@ -146,6 +145,7 @@ describe('Rewards', () => {
         .to.emit(Rewards, 'RewardsClaimed')
         .withArgs(player1.address, rewards, '')
         .and.to.changeTokenBalance(POK, player1.address, amountPOK)
+        .and.to.changeTokenBalance(Pookyball, player1.address, 2)
         .and.to.changeEtherBalance(player1.address, rewards.amountNAT);
     });
   });

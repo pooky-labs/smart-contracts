@@ -100,6 +100,7 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
   await waitTx(POK.grantRole(BURNER, Level.address));
   await waitTx(POK.grantRole(BURNER, Pressure.address));
   await waitTx(Pookyball.grantRole(MINTER, GenesisSale.address));
+  await waitTx(Pookyball.grantRole(MINTER, Rewards.address));
   await waitTx(Pookyball.grantRole(GAME, Level.address));
   await waitTx(Pookyball.grantRole(GAME, Rewards.address));
 
