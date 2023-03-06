@@ -1,5 +1,16 @@
 # Changelog
 
+## 6 March 2023
+
+Contract changes:
+
+- `Rewards` now allow users to claim Pookyballs
+
+| Contract name | Old address                                                                                                                     | New address                                                                                                                     |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| NonceRegistry | none                                                                                                                            | [`0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818`](https://polygonscan.com/address/0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818#code) |
+| Rewards       | [`0x632c95131A4345e5ed5b5448f6c809c956732B6F`](https://polygonscan.com/address/0x632c95131A4345e5ed5b5448f6c809c956732B6F#code) | [`0x64A85fb2Ca5ebdC70cBa233a7Ea94672BeF5B372`](https://polygonscan.com/address/0x64A85fb2Ca5ebdC70cBa233a7Ea94672BeF5B372#code) |
+
 ## 15 February 2022
 
 Contract changes:
