@@ -1,7 +1,6 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
   Airdrop__factory,
-  Energy__factory,
   GenesisSale__factory,
   NonceRegistry__factory,
   Level__factory,
@@ -72,15 +71,11 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
   await Airdrop.deployed();
   logger.info('Deployed Airdrop to', Airdrop.address);
 
-  const Energy = await deploy(Energy__factory, POK.address, config.accounts.treasury.ingame);
-  await Energy.deployed();
-  logger.info('Deployed Energy to', Energy.address);
-
   const Level = await deploy(Level__factory, POK.address, Pookyball.address);
   await Level.deployed();
   logger.info('Deployed Level to', Level.address);
 
-  const Pressure = await deploy(Pressure__factory, POK.address, config.accounts.treasury.ingame);
+  const Pressure = await deploy(Pressure__factory, POK.address);
   await Pressure.deployed();
   logger.info('Deployed Pressure to', Pressure.address);
 
@@ -106,7 +101,6 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
 
   // Step 4.2: assign the required gameplay roles
   await waitTx(POK.grantRole(MINTER, Rewards.address));
-  await waitTx(POK.grantRole(BURNER, Energy.address));
   await waitTx(POK.grantRole(BURNER, Level.address));
   await waitTx(POK.grantRole(BURNER, Pressure.address));
   await waitTx(Pookyball.grantRole(MINTER, GenesisSale.address));
@@ -129,7 +123,6 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
 
     // Game
     Airdrop,
-    Energy,
     NonceRegistry,
     Level,
     Pressure,

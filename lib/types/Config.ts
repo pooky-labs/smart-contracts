@@ -14,7 +14,6 @@ export default interface Config {
     treasury: {
       primary: string;
       secondary: string;
-      ingame: string;
     };
 
     backend: string;
