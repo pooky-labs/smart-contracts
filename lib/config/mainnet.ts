@@ -13,7 +13,6 @@ const mainnet: Config = {
     treasury: {
       primary: '0x96224b6a800294f40c547f7ec0952ea222526040',
       secondary: '0x598895F50951186eFdCB160764a538f353894027',
-      ingame: '0x703662853D7F9ad9D8c44128222266a736741437',
     },
     backend: '0xCAFE3e690bf74Ec274210E1c448130c1f8228513',
     operators: [

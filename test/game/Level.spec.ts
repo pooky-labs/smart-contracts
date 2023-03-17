@@ -39,9 +39,9 @@ describe('Level', () => {
     it('should return coherent level PXP amount', async () => {
       expect(await Level.levelPXP(0)).to.eq(parseEther(0)); // level 0 is 0 PXP
       expect(await Level.levelPXP(1)).to.eq(parseEther(60)); // level 1 is 60 PXP
-      expect(await Level.levelPXP(2)).to.eq(parseEther(64.5)); // level 2 is 64.5 PXP
-      expect(await Level.levelPXP(10)).to.approximately(parseEther(115.1), parseEther(0.1)); // level 10 is 115.1 PXP
-      expect(await Level.levelPXP(20)).to.approximately(parseEther(237.1), parseEther(0.1)); // level 20 is 237.1 PXP
+      expect(await Level.levelPXP(2)).to.eq(parseEther(65.1)); // level 2 is 65.1 PXP
+      expect(await Level.levelPXP(10)).to.approximately(parseEther(125.1), parseEther(0.1)); // level 10 is 125.1 PXP
+      expect(await Level.levelPXP(20)).to.approximately(parseEther(282.7), parseEther(0.1)); // level 20 is 282.7 PXP
     });
   });
 
@@ -49,9 +49,9 @@ describe('Level', () => {
     it('should return coherent level $POK', async () => {
       expect(await Level.levelPOK(0)).to.eq(parseEther(0)); // level 0 is 0 $POK
       expect(await Level.levelPOK(1)).to.eq(parseEther(4.2)); // level 1 is 4.2 $POK
-      expect(await Level.levelPOK(2)).to.approximately(parseEther(4.5), parseEther(0.1)); // level 2 is 4.5 $POK
-      expect(await Level.levelPOK(10)).to.approximately(parseEther(8.1), parseEther(0.1)); // level 10 is 8.1 $POK
-      expect(await Level.levelPOK(20)).to.approximately(parseEther(16.6), parseEther(0.1)); // level 20 is 16.6 $POK
+      expect(await Level.levelPOK(2)).to.approximately(parseEther(4.6), parseEther(0.1)); // level 2 is 4.6 $POK
+      expect(await Level.levelPOK(10)).to.approximately(parseEther(8.8), parseEther(0.1)); // level 10 is 8.8 $POK
+      expect(await Level.levelPOK(20)).to.approximately(parseEther(19.8), parseEther(0.1)); // level 20 is 19.8 $POK
     });
   });
 

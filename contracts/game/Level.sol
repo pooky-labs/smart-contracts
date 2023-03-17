@@ -20,8 +20,8 @@ contract Level {
   /// PXP required to reach the level 1.
   uint256 public constant PXP_BASE = 60 * 10 ** PXP_DECIMALS;
   uint256 public constant RATIO_DECIMALS = 3;
-  /// =1.085: each level costs 1.075 more than the previous one.
-  uint256 public constant RATIO_PXP = 1075;
+  /// =1.085: each level costs 1.085 more than the previous one.
+  uint256 public constant RATIO_PXP = 1085;
   /// =0.070: 7% of PXP cost is required in $POK tokens to confirm level up.
   uint256 public constant RATIO_POK = 70;
 
@@ -37,7 +37,7 @@ contract Level {
   /// Thrown when an account tries to level a ball above its maximum level.
   error MaximumLevelReached(uint256 tokenId, uint256 maxLevel);
   /// Thrown when an account does own enough $POK token to pay the level up fee
-  error InsufficientPOKBalance(uint expected, uint actual);
+  error InsufficientPOKBalance(uint256 expected, uint256 actual);
 
   constructor(IPOK _pok, IPookyball _pookyball) {
     pok = _pok;
@@ -86,12 +86,12 @@ contract Level {
    * @param tokenId The targeted token id.
    * @return The total cost in $POK tokens to pass {levels} levels.
    */
-  function levelPOKCost(uint256 tokenId, uint levels) public view returns (uint256) {
+  function levelPOKCost(uint256 tokenId, uint256 levels) public view returns (uint256) {
     PookyballMetadata memory metadata = pookyball.metadata(tokenId);
     uint256 requiredPXP = 0;
     uint256 requiredPOK = 0;
 
-    for (uint i = 1; i <= levels; i++) {
+    for (uint256 i = 1; i <= levels; i++) {
       requiredPXP += levelPXP(metadata.level + i);
       requiredPOK += levelPOK(metadata.level + i);
     }
@@ -111,13 +111,13 @@ contract Level {
    * - msg.sender must own enough $POK tokens to pay the level up fee.
    * - Pookyball level should be strictly less than the maximum allowed level for its rarity.
    */
-  function levelUp(uint256 tokenId, uint levels) external {
+  function levelUp(uint256 tokenId, uint256 levels) external {
     PookyballMetadata memory metadata = pookyball.metadata(tokenId);
     uint256 nextLevel = metadata.level + levels;
     uint256 remainingPXP = 0;
     uint256 requiredPXP = 0;
 
-    for (uint i = 1; i <= levels; i++) {
+    for (uint256 i = 1; i <= levels; i++) {
       requiredPXP += levelPXP(metadata.level + i);
     }
 
