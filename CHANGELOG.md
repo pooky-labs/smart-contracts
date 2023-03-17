@@ -5,11 +5,13 @@
 Contract changes:
 
 - `Energy` contract has been sunset.
-- `Pressure`: it is not possible to inflate using native currency anymore.
+- `Level.RATIO_PXP` increased from `1075` to `1085`
+- `Pressure` contract: it is not possible to `inflate` using native currency anymore.
 
 | Contract name                                                                                                                     | Old address                                                                                                                     | New address                                                                                                                     |
 | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | [`Energy`](https://github.com/pooky-labs/smart-contracts/blob/6fd0efb6f866b4b40049befd225872a335b44476/contracts/game/Energy.sol) | [`0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818`](https://polygonscan.com/address/0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818#code) | none                                                                                                                            |
+| [`Level`](contracts/game/Level.sol)                                                                                               | [`0x5167ea68F094dD234732dF09B2f66D8357Bbe1D3`](https://polygonscan.com/address/0x5167ea68F094dD234732dF09B2f66D8357Bbe1D3#code) | [`0xAbdE723305803d442dB668E95CaCb189d3eD6130`](https://polygonscan.com/address/0xAbdE723305803d442dB668E95CaCb189d3eD6130#code) |
 | [`Pressure`](contracts/game/Pressure.sol)                                                                                         | [`0xb938630B8bcf67bF4C2e9617a5d288F9a7F817b8`](https://polygonscan.com/address/0xb938630B8bcf67bF4C2e9617a5d288F9a7F817b8#code) | [`0x0Fc57DeA92377257D6228038f9DBfF459c9D62af`](https://polygonscan.com/address/0x0Fc57DeA92377257D6228038f9DBfF459c9D62af#code) |
 
 ## 6 March 2023
@@ -32,7 +34,7 @@ Contract changes:
 
 Gameplay adjustments:
 
-- `Level.RATIO_PXP` reduced from 1085 to `1075`
+- `Level.RATIO_PXP` reduced from `1085` to `1075`
 - `Level.RATIO_POK` from `90` to `70`
 
 | Contract                                                                                                                          | Old address on Polygon                                                                                                          | New address on Polygon                                                                                                          |
