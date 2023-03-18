@@ -1,5 +1,6 @@
 import { BigNumberish, BytesLike } from 'ethers';
 import { ISettingsParam } from 'tslog';
+import PookyballRarity from './PookyballRarity';
 
 /**
  * Contract stack deployment configuration.
@@ -25,18 +26,11 @@ export default interface Config {
     contractURI: string;
   };
 
-  mint: {
-    supply: {
-      total: number;
-      base: number;
-      multiplier: number;
-    };
-    pricing: {
-      base: BigNumberish;
-      multiplier: number;
-      discount: 1000; // over 10,000
-    };
-  };
+  templates: {
+    rarity: PookyballRarity;
+    price: BigNumberish;
+    supply: number;
+  }[];
 
   vrf: {
     coordinator: string;

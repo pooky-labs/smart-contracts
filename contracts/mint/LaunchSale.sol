@@ -3,7 +3,6 @@
 pragma solidity ^0.8.17;
 
 import "../interfaces/IPookyball.sol";
-import "../interfaces/IWaitList.sol";
 import "../types/PookyballRarity.sol";
 
 struct Template {
@@ -13,15 +12,14 @@ struct Template {
   uint256 price;
 }
 
-/**
- * @title GenesisSale
+/*
+ * @title LaunchSale
  * @author Mathieu Bour
- * @notice Sale contract for the Pooky "genesis" collection.
+ * @notice Sale contract to celebrate Pooky Play-to-Earn launch.
  */
-contract GenesisSale {
+contract LaunchSale {
   // Contracts
   IPookyball public immutable pookyball;
-  IWaitList public immutable waitlist;
 
   /// Where the mint funds will be forwarded
   address immutable treasury;
@@ -44,13 +42,11 @@ contract GenesisSale {
 
   /**
    * @param _pookyball The Pookyball ERC721 contract address.
-   * @param _waitlist The WaitList contract.
    * @param _treasury The account which will receive all the funds.
    * @param _templates The available mint templates.
    */
-  constructor(IPookyball _pookyball, IWaitList _waitlist, address _treasury, Template[] memory _templates) {
+  constructor(IPookyball _pookyball, address _treasury, Template[] memory _templates) {
     pookyball = _pookyball;
-    waitlist = _waitlist;
     treasury = _treasury;
 
     for (uint i = 0; i < _templates.length; i++) {
@@ -79,10 +75,6 @@ contract GenesisSale {
    * - enough native currency should be sent to cover the mint price
    */
   function mint(uint256 templateId, address recipient, uint256 quantity) external payable {
-    if (!waitlist.isEligible(recipient)) {
-      revert Ineligible(recipient);
-    }
-
     Template memory template = templates[templateId];
 
     if (template.minted + quantity > template.supply) {
@@ -122,15 +114,7 @@ contract GenesisSale {
    * See https://docs.withpaper.com/reference/eligibilitymethod
    * @return The reason why the parameters are invalid; empty string if teh parameters are valid.
    */
-  function ineligibilityReason(
-    uint256 templateId,
-    address recipient,
-    uint256 quantity
-  ) external view returns (string memory) {
-    if (!waitlist.isEligible(recipient)) {
-      return "not eligible yet";
-    }
-
+  function ineligibilityReason(uint256 templateId, uint256 quantity) external view returns (string memory) {
     if (templates[templateId].minted + quantity > templates[templateId].supply) {
       return "insufficient supply";
     }

@@ -20,10 +20,10 @@ contract Level {
   /// PXP required to reach the level 1.
   uint256 public constant PXP_BASE = 60 * 10 ** PXP_DECIMALS;
   uint256 public constant RATIO_DECIMALS = 3;
-  /// =1.085: each level costs 1.085 more than the previous one.
-  uint256 public constant RATIO_PXP = 1085;
-  /// =0.070: 7% of PXP cost is required in $POK tokens to confirm level up.
-  uint256 public constant RATIO_POK = 70;
+  /// =1.075: each level costs 1.075 more than the previous one.
+  uint256 public constant RATIO_PXP = 1075;
+  /// =0.080: 8% of PXP cost is required in $POK tokens to confirm level up.
+  uint256 public constant RATIO_POK = 80;
 
   // Contracts
   IPookyball public immutable pookyball;

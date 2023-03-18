@@ -12,12 +12,11 @@
 | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | [`POK`](contracts/tokens/POK.sol)                   | [`0x7b7E3B03f34b17d70C276C4886467D58867Bbc94`](https://polygonscan.com/address/0x7b7E3B03f34b17d70C276C4886467D58867Bbc94#code) |
 | [`Pookyball`](contracts/tokens/Pookyball.sol)       | [`0xb4859acd9B0A65CA4897c31e5cb5160D9Ff32C0A`](https://polygonscan.com/address/0xb4859acd9B0A65CA4897c31e5cb5160D9Ff32C0A#code) |
-| [`GenesisSale`](contracts/mint/GenesisSale.sol)     | [`0x458d47753182317a6EA16060bF0E40f9B3E8189C`](https://polygonscan.com/address/0x458d47753182317a6EA16060bF0E40f9B3E8189C#code) |
-| [`WaitList`](contracts/mint/WaitList.sol)           | [`0xFA6ADc62ce95deD2e4649AFaf89521Cf4fF4A09F`](https://polygonscan.com/address/0xFA6ADc62ce95deD2e4649AFaf89521Cf4fF4A09F#code) |
+| [`LaunchSale`](contracts/mint/LaunchSale.sol)       | [`0xb7c1f7b5CCC80929dB9b1276254f37E6268007d7`](https://polygonscan.com/address/0xb7c1f7b5CCC80929dB9b1276254f37E6268007d7#code) |
 | [`Airdrop`](contracts/game/Airdrop.sol)             | [`0xE9d0a2B783e3d9C94E8b92A8De0e7D72458D51d2`](https://polygonscan.com/address/0xE9d0a2B783e3d9C94E8b92A8De0e7D72458D51d2#code) |
-| [`Level`](contracts/game/Level.sol)                 | [`0x5167ea68F094dD234732dF09B2f66D8357Bbe1D3`](https://polygonscan.com/address/0x5167ea68F094dD234732dF09B2f66D8357Bbe1D3#code) |
+| [`Level`](contracts/game/Level.sol)                 | [`0xE7a553E27ecaf3c37005c505abd325a554105077`](https://polygonscan.com/address/0xE7a553E27ecaf3c37005c505abd325a554105077#code) |
 | [`NonceRegistry`](contracts/game/NonceRegistry.sol) | [`0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818`](https://polygonscan.com/address/0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818#code) |
-| [`Pressure`](contracts/game/Pressure.sol)           | [`0xb938630B8bcf67bF4C2e9617a5d288F9a7F817b8`](https://polygonscan.com/address/0xb938630B8bcf67bF4C2e9617a5d288F9a7F817b8#code) |
+| [`Pressure`](contracts/game/Pressure.sol)           | [`0x0Fc57DeA92377257D6228038f9DBfF459c9D62af`](https://polygonscan.com/address/0x0Fc57DeA92377257D6228038f9DBfF459c9D62af#code) |
 | [`Rewards`](contracts/game/Rewards.sol)             | [`0x64A85fb2Ca5ebdC70cBa233a7Ea94672BeF5B372`](https://polygonscan.com/address/0x64A85fb2Ca5ebdC70cBa233a7Ea94672BeF5B372#code) |
 
 ## Governance
