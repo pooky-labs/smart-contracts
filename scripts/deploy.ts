@@ -1,10 +1,14 @@
 import { ethers } from 'hardhat';
 import getConfig from '../lib/config/getConfig';
-import { deployContracts } from '../lib/deployContracts';
+import deployer from '../lib/deployer';
 
 async function main() {
-  const [deployer] = await ethers.getSigners();
-  await deployContracts(deployer, getConfig());
+  const [signer] = await ethers.getSigners();
+  const config = getConfig();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const deploy = deployer(signer, config);
+
+  // Write deployment script here
 }
 
 main().catch((error) => {

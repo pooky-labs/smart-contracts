@@ -22,7 +22,7 @@ export default async function stackFixture() {
   await VRFCoordinatorV2.createSubscription();
   const subId = 1;
 
-  const { POK, Pookyball, NonceRegistry, Rewards, WaitList, ...contracts } = await deployContracts(deployer, {
+  const { POK, Pookyball, NonceRegistry, Rewards, ...contracts } = await deployContracts(deployer, {
     ...testing,
     accounts: {
       admin: admin.address,
@@ -52,5 +52,5 @@ export default async function stackFixture() {
   const InvalidReceiver = await new InvalidReceiver__factory().connect(deployer).deploy();
   await InvalidReceiver.deployed();
 
-  return { POK, Pookyball, NonceRegistry, Rewards, WaitList, VRFCoordinatorV2, InvalidReceiver, ...contracts };
+  return { POK, Pookyball, NonceRegistry, Rewards, VRFCoordinatorV2, InvalidReceiver, ...contracts };
 }

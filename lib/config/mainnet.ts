@@ -1,4 +1,5 @@
 import Config from '../types/Config';
+import PookyballRarity from '../types/PookyballRarity';
 import parseEther from '../utils/parseEther';
 
 /**
@@ -26,18 +27,12 @@ const mainnet: Config = {
     baseURI: 'https://tokens.pooky.gg/',
   },
 
-  mint: {
-    supply: {
-      total: 1000,
-      base: 10,
-      multiplier: 4.25,
-    },
-    pricing: {
-      base: parseEther(20),
-      multiplier: 4,
-      discount: 1000,
-    },
-  },
+  templates: [
+    { rarity: PookyballRarity.COMMON, supply: 77, price: parseEther(20) },
+    { rarity: PookyballRarity.RARE, supply: 28, price: parseEther(80) },
+    { rarity: PookyballRarity.EPIC, supply: 3, price: parseEther(320) },
+    { rarity: PookyballRarity.LEGENDARY, supply: 1, price: parseEther(1280) },
+  ],
 
   /**
    * Chainlink VRF configuration

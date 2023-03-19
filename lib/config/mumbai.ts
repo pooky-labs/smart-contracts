@@ -24,13 +24,10 @@ const mumbai: Config = {
     baseURI: 'https://tokens.pooky.tech/',
   },
 
-  mint: {
-    ...mainnet.mint,
-    pricing: {
-      ...mainnet.mint.pricing,
-      base: BigNumber.from(mainnet.mint.pricing.base).div(1e6),
-    },
-  },
+  templates: mainnet.templates.map((template) => ({
+    ...template,
+    price: BigNumber.from(template.price).div(1e6),
+  })),
 
   vrf: {
     ...mainnet.vrf,
