@@ -31,8 +31,7 @@ describe('LaunchSale', () => {
     ({ deployer, admin, player1, player2 } = await getTestAccounts());
     ({ LaunchSale, Pookyball, InvalidReceiver, config } = await loadFixture(stackFixture));
 
-    const nextTemplateId = (await LaunchSale.nextTemplateId()).toNumber();
-    templateId = faker.datatype.number(nextTemplateId - 1);
+    templateId = faker.datatype.boolean() ? 0 : 1; // common or rare
     template = await LaunchSale.templates(templateId);
   });
 
