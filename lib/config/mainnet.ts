@@ -29,8 +29,8 @@ const mainnet: Config = {
 
   templates: [
     { rarity: PookyballRarity.COMMON, supply: 77, price: parseEther(20) },
-    { rarity: PookyballRarity.RARE, supply: 28, price: parseEther(80) },
-    { rarity: PookyballRarity.EPIC, supply: 3, price: parseEther(320) },
+    { rarity: PookyballRarity.RARE, supply: 18, price: parseEther(80) },
+    { rarity: PookyballRarity.EPIC, supply: 4, price: parseEther(320) },
     { rarity: PookyballRarity.LEGENDARY, supply: 1, price: parseEther(1280) },
   ],
 

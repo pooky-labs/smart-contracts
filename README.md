@@ -12,7 +12,7 @@
 | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | [`POK`](contracts/tokens/POK.sol)                   | [`0x7b7E3B03f34b17d70C276C4886467D58867Bbc94`](https://polygonscan.com/address/0x7b7E3B03f34b17d70C276C4886467D58867Bbc94#code) |
 | [`Pookyball`](contracts/tokens/Pookyball.sol)       | [`0xb4859acd9B0A65CA4897c31e5cb5160D9Ff32C0A`](https://polygonscan.com/address/0xb4859acd9B0A65CA4897c31e5cb5160D9Ff32C0A#code) |
-| [`LaunchSale`](contracts/mint/LaunchSale.sol)       | [`0xb7c1f7b5CCC80929dB9b1276254f37E6268007d7`](https://polygonscan.com/address/0xb7c1f7b5CCC80929dB9b1276254f37E6268007d7#code) |
+| [`LaunchSale`](contracts/mint/LaunchSale.sol)       | [`0x5B60b8776475536E30A65Fe1a9B0C0318dd3532b`](https://polygonscan.com/address/0x5B60b8776475536E30A65Fe1a9B0C0318dd3532b#code) |
 | [`Airdrop`](contracts/game/Airdrop.sol)             | [`0xE9d0a2B783e3d9C94E8b92A8De0e7D72458D51d2`](https://polygonscan.com/address/0xE9d0a2B783e3d9C94E8b92A8De0e7D72458D51d2#code) |
 | [`Level`](contracts/game/Level.sol)                 | [`0xE7a553E27ecaf3c37005c505abd325a554105077`](https://polygonscan.com/address/0xE7a553E27ecaf3c37005c505abd325a554105077#code) |
 | [`NonceRegistry`](contracts/game/NonceRegistry.sol) | [`0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818`](https://polygonscan.com/address/0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818#code) |
