@@ -10,6 +10,7 @@ export interface TypeContractFactory<C extends BaseContract, A extends unknown[]
 interface DeployerOptions {
   confirmations?: number;
   verify?: boolean;
+  silent?: boolean;
 }
 
 /**
@@ -18,14 +19,21 @@ interface DeployerOptions {
  * @param verify If the contract should be verified on Etherscan/Polyscan, etc.
  * @param wait The number of confirmations that we should wait after deployment.
  */
-export default function deployer(signer: Signer, { verify = true, confirmations }: DeployerOptions = {}) {
+export default function deployer(
+  signer: Signer,
+  { verify = true, confirmations, silent = process.env.NODE_ENV === 'test' }: DeployerOptions = {},
+) {
   return async function deploy<C extends BaseContract, A extends unknown[]>(
     factoryClass: { new (): TypeContractFactory<C, A> },
     ...args: A
   ) {
     const factory = new factoryClass();
     const contract = await factory.connect(signer).deploy(...args);
-    console.log(contract.deployTransaction.hash);
+
+    if (!silent) {
+      console.log(factory.constructor.name.replace('__factory', ''), contract.deployTransaction.hash);
+    }
+
     await contract.deployed();
     await contract.deployTransaction.wait(confirmations);
 

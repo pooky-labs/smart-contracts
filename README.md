@@ -16,7 +16,7 @@
 | [`Airdrop`](contracts/game/Airdrop.sol)             | [`0xE9d0a2B783e3d9C94E8b92A8De0e7D72458D51d2`](https://polygonscan.com/address/0xE9d0a2B783e3d9C94E8b92A8De0e7D72458D51d2#code) |
 | [`Level`](contracts/game/Level.sol)                 | [`0xE7a553E27ecaf3c37005c505abd325a554105077`](https://polygonscan.com/address/0xE7a553E27ecaf3c37005c505abd325a554105077#code) |
 | [`NonceRegistry`](contracts/game/NonceRegistry.sol) | [`0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818`](https://polygonscan.com/address/0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818#code) |
-| [`Pressure`](contracts/game/Pressure.sol)           | [`0x0Fc57DeA92377257D6228038f9DBfF459c9D62af`](https://polygonscan.com/address/0x0Fc57DeA92377257D6228038f9DBfF459c9D62af#code) |
+| [`Pressure`](contracts/game/Pressure.sol)           | [`0xa34223AD4d42CB041056287784FE1F91a7e5b21A`](https://polygonscan.com/address/0xa34223AD4d42CB041056287784FE1F91a7e5b21A#code) |
 | [`Rewards`](contracts/game/Rewards.sol)             | [`0x64A85fb2Ca5ebdC70cBa233a7Ea94672BeF5B372`](https://polygonscan.com/address/0x64A85fb2Ca5ebdC70cBa233a7Ea94672BeF5B372#code) |
 
 ## Governance

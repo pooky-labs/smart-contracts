@@ -68,7 +68,7 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
   await Level.deployed();
   logger.info('Deployed Level to', Level.address);
 
-  const Pressure = await deploy(Pressure__factory, POK.address);
+  const Pressure = await deploy(Pressure__factory, POK.address, config.accounts.treasury.ingame);
   await Pressure.deployed();
   logger.info('Deployed Pressure to', Pressure.address);
 

@@ -1,6 +1,6 @@
 # Changelog
 
-## 18 March 2023
+## 22 March 2023 - Plat-to-Earn release
 
 Contract changes:
 
@@ -10,13 +10,13 @@ Contract changes:
 Gameplay balance:
 
 - `Level.RATIO_POK` increased from `70` to `80`
-- `Pressure` contract: it is not possible to `inflate` using native currency anymore.
+- `Pressure` remove some typos
 
 | Contract name                                                                                                                               | Old address                                                                                                                     | New address                                                                                                                     |
 | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | [`Energy`](https://github.com/pooky-labs/smart-contracts/blob/6fd0efb6f866b4b40049befd225872a335b44476/contracts/game/Energy.sol)           | [`0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818`](https://polygonscan.com/address/0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818#code) | none                                                                                                                            |
 | [`Level`](contracts/game/Level.sol)                                                                                                         | [`0x5167ea68F094dD234732dF09B2f66D8357Bbe1D3`](https://polygonscan.com/address/0x5167ea68F094dD234732dF09B2f66D8357Bbe1D3#code) | [`0xE7a553E27ecaf3c37005c505abd325a554105077`](https://polygonscan.com/address/0xE7a553E27ecaf3c37005c505abd325a554105077#code) |
-| [`Pressure`](contracts/game/Pressure.sol)                                                                                                   | [`0xb938630B8bcf67bF4C2e9617a5d288F9a7F817b8`](https://polygonscan.com/address/0xb938630B8bcf67bF4C2e9617a5d288F9a7F817b8#code) | [`0x0Fc57DeA92377257D6228038f9DBfF459c9D62af`](https://polygonscan.com/address/0x0Fc57DeA92377257D6228038f9DBfF459c9D62af#code) |
+| [`Pressure`](contracts/game/Pressure.sol)                                                                                                   | [`0xb938630B8bcf67bF4C2e9617a5d288F9a7F817b8`](https://polygonscan.com/address/0xb938630B8bcf67bF4C2e9617a5d288F9a7F817b8#code) | [`0xa34223AD4d42CB041056287784FE1F91a7e5b21A`](https://polygonscan.com/address/0xa34223AD4d42CB041056287784FE1F91a7e5b21A#code) |
 | [`GenesisSale`](https://github.com/pooky-labs/smart-contracts/blob/08e1b5cc855e319ae376a1499183561eceae37b7/contracts/mint/GenesisSale.sol) | [`0x04A6609074DAE5FCDd635533dF2143C85155759e`](https://polygonscan.com/address/0x04A6609074DAE5FCDd635533dF2143C85155759e#code) | none                                                                                                                            |
 | [`LaunchSale`](contracts/mint/LaunchSale.sol)                                                                                               | none                                                                                                                            | [`0x5B60b8776475536E30A65Fe1a9B0C0318dd3532b`](https://polygonscan.com/address/0x5B60b8776475536E30A65Fe1a9B0C0318dd3532b#code) |
 
