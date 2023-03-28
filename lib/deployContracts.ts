@@ -111,6 +111,10 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
   const VRFCoordinatorV2 = await VRFCoordinatorV2Interface__factory.connect(config.vrf.coordinator, signer);
   await waitTx(VRFCoordinatorV2.addConsumer(config.vrf.subId, Pookyball.address));
 
+  // Step 6: patch config
+  config.tokens.POK = POK.address;
+  config.tokens.Pookyball = Pookyball.address;
+
   return {
     config,
 

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (GenesisSale.sol)
+// Pooky Game Contracts (LaunchSale.sol)
 pragma solidity ^0.8.17;
 
 import "../interfaces/IPookyball.sol";
@@ -15,7 +15,7 @@ struct Template {
 /*
  * @title LaunchSale
  * @author Mathieu Bour
- * @notice Sale contract to celebrate Pooky Play-to-Earn launch.
+ * @notice Extended Sale contract to celebrate Pooky Play-to-Earn launch.
  */
 contract LaunchSale {
   // Contracts
@@ -31,8 +31,6 @@ contract LaunchSale {
   /// Fired when a sale is made
   event Sale(address indexed account, uint256 indexed templateId, uint256 quantity, uint256 value);
 
-  /// Thrown when an account is not eligible from the waitlist point of view.
-  error Ineligible(address account);
   /// Thrown when a mint would exceed the template supply.
   error InsufficientSupply(uint256 templateId, uint256 remaining);
   /// Thrown when the msg.value of the mint function does not cover the mint cost.

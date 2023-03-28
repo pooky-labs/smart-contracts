@@ -1,6 +1,14 @@
 # Changelog
 
-## 22 March 2023 - Plat-to-Earn release
+## 29 March 2023 - Launch Sale #2
+
+We decided to extend the launch sale.
+
+| Contract name                                 | Old address                                                                                                                     | New address                                                                                                                     |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [`LaunchSale`](contracts/mint/LaunchSale.sol) | [`0x5B60b8776475536E30A65Fe1a9B0C0318dd3532b`](https://polygonscan.com/address/0x5B60b8776475536E30A65Fe1a9B0C0318dd3532b#code) | [`0x1beDd116F29737b1dC7FF43F52d5E39b52Cb19f7`](https://polygonscan.com/address/0x1beDd116F29737b1dC7FF43F52d5E39b52Cb19f7#code) |
+
+## 22 March 2023 - Play-to-Earn release
 
 Contract changes:
 

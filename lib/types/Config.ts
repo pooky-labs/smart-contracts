@@ -22,6 +22,11 @@ export default interface Config {
     operators?: string[];
   };
 
+  tokens: {
+    POK: string;
+    Pookyball: string;
+  };
+
   metadata: {
     baseURI: string;
     contractURI: string;

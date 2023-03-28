@@ -39,7 +39,7 @@ export default function deployer(
 
     if (verify) {
       // Artificial delay before attempting to verify the contracts
-      await new Promise((resolve) => setTimeout(resolve, 10000));
+      await new Promise((resolve) => setTimeout(resolve, 20000));
 
       try {
         await run('verify:verify', {
