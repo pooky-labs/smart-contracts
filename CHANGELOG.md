@@ -1,5 +1,13 @@
 # Changelog
 
+## 30 March 2023
+
+We removed the wallet constraint for Pookyball level up.
+
+| Contract name                       | Old address                                                                                                                     | New address                                                                                                                     |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [`Level`](contracts/game/Level.sol) | [`0xE7a553E27ecaf3c37005c505abd325a554105077`](https://polygonscan.com/address/0xE7a553E27ecaf3c37005c505abd325a554105077#code) | [`0x5658F1Adc72c8Eb98e0197fBBc7Ba7e0A8942388`](https://polygonscan.com/address/0x5658F1Adc72c8Eb98e0197fBBc7Ba7e0A8942388#code) |
+
 ## 29 March 2023 - Launch Sale #2
 
 We decided to extend the launch sale.
