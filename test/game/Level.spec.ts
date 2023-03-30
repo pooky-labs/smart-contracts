@@ -14,7 +14,6 @@ describe('Level', () => {
   let minter: SignerWithAddress;
   let game: SignerWithAddress;
   let player1: SignerWithAddress;
-  let player2: SignerWithAddress;
 
   // Contracts
   let Level: Level;
@@ -26,7 +25,7 @@ describe('Level', () => {
   let tokenId: number;
 
   beforeEach(async () => {
-    ({ minter, game, player1, player2 } = await getTestAccounts());
+    ({ minter, game, player1 } = await getTestAccounts());
     ({ Level, POK, Pookyball } = await loadFixture(stackFixture));
 
     nextLevel = faker.datatype.number({ min: 2, max: 15 });
@@ -72,12 +71,6 @@ describe('Level', () => {
   });
 
   describe('levelUp', async () => {
-    it('should revert if the sender is not the owner of the Pookyball token', async () => {
-      await expect(Level.connect(player2).levelUp(tokenId, 1))
-        .to.be.revertedWithCustomError(Level, 'OwnershipRequired')
-        .withArgs(tokenId, player1.address, player2.address);
-    });
-
     it('should revert if the Pookyball token has reached its maximum allowed level', async () => {
       await POK.connect(minter).mint(player1.address, parseEther(1000));
       const maxLevel = (await Level.maxLevels(PookyballRarity.COMMON)).toNumber();

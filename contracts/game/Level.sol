@@ -32,8 +32,6 @@ contract Level {
   /// Each PookyballRarity has a maximum level
   mapping(PookyballRarity => uint256) public maxLevels;
 
-  /// Thrown when an account tries to level up a ball that is not owned the sender.
-  error OwnershipRequired(uint256 tokenId, address expected, address actual);
   /// Thrown when an account tries to level a ball above its maximum level.
   error MaximumLevelReached(uint256 tokenId, uint256 maxLevel);
   /// Thrown when an account does own enough $POK token to pay the level up fee
@@ -119,10 +117,6 @@ contract Level {
 
     for (uint256 i = 1; i <= levels; i++) {
       requiredPXP += levelPXP(metadata.level + i);
-    }
-
-    if (pookyball.ownerOf(tokenId) != msg.sender) {
-      revert OwnershipRequired(tokenId, pookyball.ownerOf(tokenId), msg.sender);
     }
 
     uint256 levelPOKCost_ = levelPOKCost(tokenId, levels);
