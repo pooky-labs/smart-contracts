@@ -1,12 +1,11 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
-  Airdrop__factory,
-  LaunchSale__factory,
   Level__factory,
   NonceRegistry__factory,
   POK__factory,
   Pookyball__factory,
   Pressure__factory,
+  RefillableSale__factory,
   Rewards__factory,
   VRFCoordinatorV2Interface__factory,
 } from '../typechain-types';
@@ -30,7 +29,11 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
   // Step 0: prepare data
   logger.info('Deployer', signer.address);
 
-  const deploy = deployer(signer, { verify: config.verify, confirmations: config.confirmations });
+  const deploy = deployer(signer, {
+    verify: config.verify,
+    confirmations: config.confirmations,
+    silent: config.log === false,
+  });
 
   // Step 1: deploy tokens
   const POK = await deploy(POK__factory);
@@ -50,20 +53,17 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
   logger.info('Deployed Pookyball to', Pookyball.address);
 
   // Step 2: deploy mint contracts
-  const LaunchSale = await deploy(
-    LaunchSale__factory,
+  const RefillableSale = await deploy(
+    RefillableSale__factory,
     Pookyball.address,
     config.accounts.treasury.primary,
-    config.templates.map((t) => ({ ...t, minted: 0 })),
+    config.accounts.admin,
+    [],
   );
-  await LaunchSale.deployed();
-  logger.info('Deployed LaunchSale to', LaunchSale.address);
+  await RefillableSale.deployed();
+  logger.info('Deployed RefillableSale to', RefillableSale.address);
 
   // Step 3: deploy game contracts
-  const Airdrop = await deploy(Airdrop__factory, config.accounts.admin, [config.accounts.backend]);
-  await Airdrop.deployed();
-  logger.info('Deployed Airdrop to', Airdrop.address);
-
   const Level = await deploy(Level__factory, POK.address, Pookyball.address);
   await Level.deployed();
   logger.info('Deployed Level to', Level.address);
@@ -96,7 +96,7 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
   await waitTx(POK.grantRole(MINTER, Rewards.address));
   await waitTx(POK.grantRole(BURNER, Level.address));
   await waitTx(POK.grantRole(BURNER, Pressure.address));
-  await waitTx(Pookyball.grantRole(MINTER, LaunchSale.address));
+  await waitTx(Pookyball.grantRole(MINTER, RefillableSale.address));
   await waitTx(Pookyball.grantRole(MINTER, Rewards.address));
   await waitTx(Pookyball.grantRole(GAME, Level.address));
   await waitTx(Pookyball.grantRole(GAME, Rewards.address));
@@ -119,14 +119,13 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
     config,
 
     // Game
-    Airdrop,
     NonceRegistry,
     Level,
     Pressure,
     Rewards,
 
     // Mint
-    LaunchSale,
+    RefillableSale,
 
     // Tokens
     POK,

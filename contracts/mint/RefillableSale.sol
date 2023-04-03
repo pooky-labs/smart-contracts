@@ -7,14 +7,22 @@ import { IPookyball } from "../interfaces/IPookyball.sol";
 import { PookyballRarity } from "../types/PookyballRarity.sol";
 
 struct Item {
+  /// Supply of the current sale
   uint256 supply;
+  /// Total number of tokens minted during all the sales
   uint256 minted;
+  /// Total supply of all the sales
+  uint256 totalSupply;
+  /// The token price in native currency wei
   uint256 price;
 }
 
 struct Refill {
+  /// The Pookyball rarity (0=COMMON, 1=RARE, 2=EPIC, 3=LEGENDARY)
   PookyballRarity rarity;
+  /// The refill token quantity
   uint256 quantity;
+  /// The token price in native currency wei
   uint256 price;
 }
 
@@ -28,12 +36,18 @@ struct Refill {
  */
 contract RefillableSale is AccessControlEnumerable {
   bytes32 public constant SELLER = keccak256("SELLER");
+  PookyballRarity[] public rarities = [
+    PookyballRarity.COMMON,
+    PookyballRarity.RARE,
+    PookyballRarity.EPIC,
+    PookyballRarity.LEGENDARY
+  ];
 
   /// The available mintable items mapped by rarity.
   mapping(PookyballRarity => Item) public items;
 
   /// The Pookyball ERC721 token (cannot be changed).
-  IPookyball immutable pookyball;
+  IPookyball public immutable pookyball;
   /// The address of Pooky's treasury (cannot be changed).
   address public immutable treasury;
   /// The date when next mint window will open (compared to block.timestamp).
@@ -67,10 +81,29 @@ contract RefillableSale is AccessControlEnumerable {
       _grantRole(SELLER, sellers[i]);
     }
 
-    items[PookyballRarity.COMMON] = Item(0, 0, 20 ether);
-    items[PookyballRarity.RARE] = Item(0, 0, 80 ether);
-    items[PookyballRarity.EPIC] = Item(0, 0, 320 ether);
-    items[PookyballRarity.LEGENDARY] = Item(0, 0, 1280 ether);
+    // Default prices
+    items[PookyballRarity.COMMON] = Item(0, 0, 0, 20 ether);
+    items[PookyballRarity.RARE] = Item(0, 0, 0, 80 ether);
+    items[PookyballRarity.EPIC] = Item(0, 0, 0, 320 ether);
+    items[PookyballRarity.LEGENDARY] = Item(0, 0, 0, 1280 ether);
+  }
+
+  function getTemplates() external view returns (Item[] memory) {
+    uint256 l = rarities.length;
+    Item[] memory output = new Item[](l);
+
+    for (uint256 i = 0; i < l; i++) {
+      output[i] = items[rarities[i]];
+    }
+
+    return output;
+  }
+
+  /**
+   * @notice Checks if the sale is open.
+   */
+  function isClosed() public view returns (bool) {
+    return closedUntil == 0 || block.timestamp < closedUntil;
   }
 
   /**
@@ -80,7 +113,12 @@ contract RefillableSale is AccessControlEnumerable {
    * @return The reason why the parameters are invalid; empty string if teh parameters are valid.
    */
   function eligible(PookyballRarity rarity, uint256 quantity) external view returns (string memory) {
-    if (items[rarity].minted + quantity > items[rarity].supply) {
+    if (isClosed()) {
+      return "sale is closed";
+    }
+
+    Item memory item = items[rarity];
+    if (item.minted + quantity > item.totalSupply) {
       return "insufficient supply";
     }
 
@@ -96,14 +134,14 @@ contract RefillableSale is AccessControlEnumerable {
    * - enough native currency should be sent to cover the mint price
    */
   function mint(PookyballRarity rarity, address recipient, uint256 quantity) external payable {
-    if (closedUntil == 0 || block.timestamp < closedUntil) {
+    if (isClosed()) {
       revert Closed(closedUntil);
     }
 
     Item memory item = items[rarity];
 
-    if (item.minted + quantity > item.supply) {
-      revert InsufficientSupply(rarity, item.supply - item.minted);
+    if (item.minted + quantity > item.totalSupply) {
+      revert InsufficientSupply(rarity, item.totalSupply - item.minted);
     }
 
     if (msg.value < quantity * item.price) {
@@ -112,16 +150,15 @@ contract RefillableSale is AccessControlEnumerable {
 
     // Build the arrays for the batched mint
     address[] memory recipients = new address[](quantity);
-    PookyballRarity[] memory rarities = new PookyballRarity[](quantity);
+    PookyballRarity[] memory rarities_ = new PookyballRarity[](quantity);
 
     for (uint256 i = 0; i < quantity; i++) {
       recipients[i] = recipient;
-      rarities[i] = rarity;
+      rarities_[i] = rarity;
     }
 
     // Actual Pookyball token mint
-    pookyball.mint(recipients, rarities);
-
+    pookyball.mint(recipients, rarities_);
     items[rarity].minted += quantity;
 
     // Forward the funds to the treasury wallet
@@ -144,8 +181,9 @@ contract RefillableSale is AccessControlEnumerable {
     uint256 len = refills.length;
     for (uint256 i = 0; i < len; i++) {
       PookyballRarity rarity = refills[i].rarity;
-      items[rarity].supply = items[rarity].minted + refills[i].quantity;
       items[rarity].price = refills[i].price;
+      items[rarity].totalSupply = items[rarity].minted + refills[i].quantity;
+      items[rarity].supply = refills[i].quantity;
     }
 
     closedUntil = _closedUntil;
