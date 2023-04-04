@@ -58,7 +58,7 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
     Pookyball.address,
     config.accounts.treasury.primary,
     config.accounts.admin,
-    [],
+    config.accounts.operators ?? [],
   );
   await RefillableSale.deployed();
   logger.info('Deployed RefillableSale to', RefillableSale.address);
