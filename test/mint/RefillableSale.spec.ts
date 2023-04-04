@@ -23,9 +23,9 @@ describe('RefillableSale', () => {
 
   const refills: RefillStruct[] = [
     { rarity: PookyballRarity.COMMON, quantity: 77, price: parseEther(20) },
-    { rarity: PookyballRarity.COMMON, quantity: 77, price: parseEther(20) },
-    { rarity: PookyballRarity.COMMON, quantity: 77, price: parseEther(20) },
-    { rarity: PookyballRarity.COMMON, quantity: 77, price: parseEther(20) },
+    { rarity: PookyballRarity.RARE, quantity: 18, price: parseEther(80) },
+    { rarity: PookyballRarity.EPIC, quantity: 4, price: parseEther(320) },
+    { rarity: PookyballRarity.LEGENDARY, quantity: 1, price: parseEther(1280) },
   ];
 
   beforeEach(async () => {
