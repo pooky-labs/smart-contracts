@@ -21,7 +21,7 @@ if (process.env.DEPLOYER_PK) {
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: '0.8.17', // see https://hardhat.org/hardhat-runner/docs/reference/solidity-support#solidity-support
+    version: '0.8.18', // see https://hardhat.org/hardhat-runner/docs/reference/solidity-support#solidity-support
     settings: {
       optimizer: {
         enabled: true,

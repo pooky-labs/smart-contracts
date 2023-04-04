@@ -31,7 +31,7 @@ export default function deployer(
     const contract = await factory.connect(signer).deploy(...args);
 
     if (!silent) {
-      console.log(factory.constructor.name.replace('__factory', ''), contract.deployTransaction.hash);
+      console.log('Deployed', factory.constructor.name.replace('__factory', ''), 'in', contract.deployTransaction.hash);
     }
 
     await contract.deployed();
