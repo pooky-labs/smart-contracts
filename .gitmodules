@@ -7,3 +7,6 @@
 [submodule "lib/operator-filter-registry"]
 	path = lib/operator-filter-registry
 	url = https://github.com/ProjectOpenSea/operator-filter-registry
+[submodule "lib/chainlink"]
+	path = lib/chainlink
+	url = https://github.com/smartcontractkit/chainlink
