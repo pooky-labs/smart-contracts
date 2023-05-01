@@ -1,0 +1,15 @@
+[profile.default]
+src = "src"
+out = "artifacts"
+libs = [
+    "lib",
+    "node_modules",
+]
+remappings = [
+    "@chainlink/=node_modules/@chainlink/",
+    "@openzeppelin/=node_modules/@openzeppelin/",
+    "hardhat/=node_modules/hardhat/",
+    "operator-filter-registry/=node_modules/operator-filter-registry/",
+]
+
+# See more config options https://github.com/foundry-rs/foundry/tree/master/config
