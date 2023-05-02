@@ -1,4 +1,4 @@
-import { Signer, utils } from 'ethers';
+import { AbiCoder, Signer, getBytes, keccak256 } from 'ethers';
 import { RewardsDataStruct } from '../../typechain-types/contracts/game/Rewards';
 
 /**
@@ -23,7 +23,7 @@ export async function signRewards(
     ...rewards,
   };
 
-  const payload = utils.defaultAbiCoder.encode(
+  const payload = AbiCoder.defaultAbiCoder().encode(
     [
       'address',
       'tuple(uint256 amountNAT, uint256 amountPOK, tuple(uint256 tokenId, uint256 amountPXP)[] pxp, uint8[] pookyballs, bytes32[] nonces)',
@@ -31,7 +31,7 @@ export async function signRewards(
     ],
     [account, fullRewards, data],
   );
-  const hash = utils.keccak256(payload);
-  const signature = await signer.signMessage(utils.arrayify(hash));
+  const hash = keccak256(payload);
+  const signature = await signer.signMessage(getBytes(hash));
   return [signature, fullRewards];
 }

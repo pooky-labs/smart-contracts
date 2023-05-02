@@ -1,11 +1,17 @@
-import '@nomicfoundation/hardhat-toolbox';
+import '@nomicfoundation/hardhat-chai-matchers';
+import '@nomiclabs/hardhat-ethers';
+import '@nomiclabs/hardhat-etherscan';
 import '@solidstate/hardhat-bytecode-exporter';
+import '@typechain/hardhat';
 import { config as loadConfig } from 'dotenv';
 import 'hardhat-abi-exporter';
 import 'hardhat-dependency-compiler';
+import 'hardhat-gas-reporter';
 import 'hardhat-ignore-warnings';
 import { HardhatUserConfig } from 'hardhat/config';
 import set from 'lodash/set';
+import 'solidity-coverage';
+import './lib/chai/assertions';
 
 loadConfig();
 
@@ -62,7 +68,7 @@ const config: HardhatUserConfig = {
     },
   },
   typechain: {
-    target: 'ethers-v5',
+    target: 'ethers-v6',
   },
   gasReporter: {
     enabled: Boolean(process.env.REPORT_GAS),

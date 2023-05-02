@@ -34,7 +34,7 @@ export default interface Config {
 
   templates: {
     rarity: PookyballRarity;
-    price: BigNumberish;
+    price: bigint;
     supply: number;
   }[];
 

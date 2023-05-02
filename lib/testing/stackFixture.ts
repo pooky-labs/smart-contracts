@@ -2,6 +2,7 @@ import { InvalidReceiver__factory, VRFCoordinatorV2Mock__factory } from '../../t
 import testing from '../config/testing';
 import { deployContracts } from '../deployContracts';
 import { GAME, MINTER, OPERATOR, SELLER } from '../roles';
+import connect from './connect';
 import getTestAccounts from './getTestAccounts';
 
 export default async function stackFixture() {
@@ -18,7 +19,7 @@ export default async function stackFixture() {
 
   // Set up the VRF coordinator
   const VRFCoordinatorV2 = await new VRFCoordinatorV2Mock__factory().connect(deployer).deploy(0, 0);
-  await VRFCoordinatorV2.deployed();
+  await VRFCoordinatorV2.waitForDeployment();
   await VRFCoordinatorV2.createSubscription();
   const subId = 1;
 
@@ -36,23 +37,23 @@ export default async function stackFixture() {
     },
     vrf: {
       ...testing.vrf,
-      coordinator: VRFCoordinatorV2.address,
+      coordinator: await VRFCoordinatorV2.getAddress(),
       subId,
     },
   });
 
-  await VRFCoordinatorV2.addConsumer(subId, Pookyball.address);
+  await VRFCoordinatorV2.addConsumer(subId, Pookyball.target);
 
   // Additional role setup
-  await POK.connect(admin).grantRole(MINTER, minter.address);
-  await Pookyball.connect(admin).grantRole(MINTER, minter.address);
-  await Pookyball.connect(admin).grantRole(GAME, game.address);
-  await NonceRegistry.connect(admin).grantRole(OPERATOR, operator.address);
-  await RefillableSale.connect(admin).grantRole(SELLER, seller.address);
+  await connect(POK, admin).grantRole(MINTER, minter.address);
+  await connect(Pookyball, admin).grantRole(MINTER, minter.address);
+  await connect(Pookyball, admin).grantRole(GAME, game.address);
+  await connect(NonceRegistry, admin).grantRole(OPERATOR, operator.address);
+  await connect(RefillableSale, admin).grantRole(SELLER, seller.address);
 
   // Additional contracts deployments
   const InvalidReceiver = await new InvalidReceiver__factory().connect(deployer).deploy();
-  await InvalidReceiver.deployed();
+  await InvalidReceiver.waitForDeployment();
 
   return { POK, Pookyball, NonceRegistry, RefillableSale, Rewards, VRFCoordinatorV2, InvalidReceiver, ...contracts };
 }
