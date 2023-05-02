@@ -9,11 +9,11 @@ import {
   Rewards__factory,
   VRFCoordinatorV2Interface__factory,
 } from '../typechain-types';
-import deployer from './deployer';
 import logger from './logger';
 import { BURNER, DEFAULT_ADMIN_ROLE, GAME, MINTER, OPERATOR } from './roles';
 import Config from './types/Config';
-import waitTx from './waitTx';
+import createDeployer from './utils/createDeployer';
+import getAddress from './utils/getAddress';
 
 /**
  * Deploy the full contract stack and configure the access controls and the contracts links properly.
@@ -27,17 +27,17 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
   }
 
   // Step 0: prepare data
-  logger.info('Deployer', signer.address);
+  logger.info('Deployer', signer);
 
-  const deploy = deployer(signer, {
+  const deploy = createDeployer(signer, {
     verify: config.verify,
     confirmations: config.confirmations,
-    silent: config.log === false,
+    log: config.log !== false,
   });
 
   // Step 1: deploy tokens
   const POK = await deploy(POK__factory);
-  logger.info('Deployed POK to', POK.address);
+  logger.info('Deployed POK to', POK.target);
 
   const Pookyball = await deploy(
     Pookyball__factory,
@@ -50,70 +50,65 @@ export async function deployContracts(signer: SignerWithAddress, config: Config)
     config.vrf.minimumRequestConfirmations,
     config.vrf.gasLimit,
   );
-  logger.info('Deployed Pookyball to', Pookyball.address);
+  logger.info('Deployed Pookyball to', Pookyball.target);
 
   // Step 2: deploy mint contracts
   const RefillableSale = await deploy(
     RefillableSale__factory,
-    Pookyball.address,
+    Pookyball.target,
     config.accounts.treasury.primary,
     config.accounts.admin,
     config.accounts.operators ?? [],
   );
-  await RefillableSale.deployed();
-  logger.info('Deployed RefillableSale to', RefillableSale.address);
+  logger.info('Deployed RefillableSale to', RefillableSale.target);
 
   // Step 3: deploy game contracts
-  const Level = await deploy(Level__factory, POK.address, Pookyball.address);
-  await Level.deployed();
-  logger.info('Deployed Level to', Level.address);
+  const Level = await deploy(Level__factory, POK.target, Pookyball.target);
+  logger.info('Deployed Level to', Level.target);
 
-  const Pressure = await deploy(Pressure__factory, POK.address, config.accounts.treasury.ingame);
-  await Pressure.deployed();
-  logger.info('Deployed Pressure to', Pressure.address);
+  const Pressure = await deploy(Pressure__factory, POK.target, config.accounts.treasury.ingame);
+  logger.info('Deployed Pressure to', Pressure.target);
 
-  const NonceRegistry = await deploy(NonceRegistry__factory, [signer.address, config.accounts.admin], []);
-  await NonceRegistry.deployed();
-  logger.info('Deployed NonceRegistry to', NonceRegistry.address);
+  const NonceRegistry = await deploy(NonceRegistry__factory, [signer, config.accounts.admin], []);
+  logger.info('Deployed NonceRegistry to', NonceRegistry.target);
 
   const Rewards = await deploy(
     Rewards__factory,
-    POK.address,
-    Pookyball.address,
-    NonceRegistry.address,
+    POK.target,
+    Pookyball.target,
+    NonceRegistry.target,
     config.accounts.admin,
     [config.accounts.backend],
   );
-  await Rewards.deployed();
-  logger.info('Deployed Rewards to', Rewards.address);
+  logger.info('Deployed Rewards to', Rewards.target);
 
   // Step 4: assign permissions
   // Step 4.1: assign DEFAULT_ADMIN_ROLE to the admin multi signature wallet
-  await waitTx(POK.grantRole(DEFAULT_ADMIN_ROLE, config.accounts.admin));
-  await waitTx(Pookyball.grantRole(DEFAULT_ADMIN_ROLE, config.accounts.admin));
+  await POK.grantRole(DEFAULT_ADMIN_ROLE, config.accounts.admin);
+  await Pookyball.grantRole(DEFAULT_ADMIN_ROLE, config.accounts.admin);
 
   // Step 4.2: assign the required gameplay roles
-  await waitTx(POK.grantRole(MINTER, Rewards.address));
-  await waitTx(POK.grantRole(BURNER, Level.address));
-  await waitTx(POK.grantRole(BURNER, Pressure.address));
-  await waitTx(Pookyball.grantRole(MINTER, RefillableSale.address));
-  await waitTx(Pookyball.grantRole(MINTER, Rewards.address));
-  await waitTx(Pookyball.grantRole(GAME, Level.address));
-  await waitTx(Pookyball.grantRole(GAME, Rewards.address));
-  await waitTx(NonceRegistry.grantRole(OPERATOR, Rewards.address));
+  await POK.grantRole(MINTER, Rewards.target);
+  await POK.grantRole(BURNER, Level.target);
+  await POK.grantRole(BURNER, Pressure.target);
+  await Pookyball.grantRole(MINTER, RefillableSale.target);
+  await Pookyball.grantRole(MINTER, Rewards.target);
+  await Pookyball.grantRole(GAME, Level.target);
+  await Pookyball.grantRole(GAME, Rewards.target);
+  await NonceRegistry.grantRole(OPERATOR, Rewards.target);
 
   // Step 4.3: resign all the DEFAULT_ADMIN_ROLE so only the multi signature remains admin
-  await waitTx(POK.renounceRole(DEFAULT_ADMIN_ROLE, signer.address));
-  await waitTx(Pookyball.renounceRole(DEFAULT_ADMIN_ROLE, signer.address));
-  await waitTx(NonceRegistry.grantRole(OPERATOR, signer.address));
+  await POK.renounceRole(DEFAULT_ADMIN_ROLE, signer.address);
+  await Pookyball.renounceRole(DEFAULT_ADMIN_ROLE, signer.address);
+  await NonceRegistry.grantRole(OPERATOR, signer.address);
 
   // Step 5: wire the VRF contracts
   const VRFCoordinatorV2 = await VRFCoordinatorV2Interface__factory.connect(config.vrf.coordinator, signer);
-  await waitTx(VRFCoordinatorV2.addConsumer(config.vrf.subId, Pookyball.address));
+  await VRFCoordinatorV2.addConsumer(config.vrf.subId, Pookyball.target);
 
   // Step 6: patch config
-  config.tokens.POK = POK.address;
-  config.tokens.Pookyball = Pookyball.address;
+  config.tokens.POK = getAddress(POK);
+  config.tokens.Pookyball = getAddress(Pookyball);
 
   return {
     config,

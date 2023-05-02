@@ -3,14 +3,14 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { randomBytes } from 'crypto';
-import { BigNumber, utils, Wallet } from 'ethers';
+import { Wallet, getBytes, keccak256, parseEther } from 'ethers';
 import range from 'lodash/range';
 import { DEFAULT_ADMIN_ROLE, GAME, MINTER } from '../../lib/roles';
+import connect from '../../lib/testing/connect';
 import getTestAccounts from '../../lib/testing/getTestAccounts';
-import { expectHasRole, expectMissingRole } from '../../lib/testing/roles';
+import { expectHasRole } from '../../lib/testing/roles';
 import stackFixture from '../../lib/testing/stackFixture';
 import PookyballRarity from '../../lib/types/PookyballRarity';
-import parseEther from '../../lib/utils/parseEther';
 import { Pookyball, VRFCoordinatorV2Mock } from '../../typechain-types';
 
 describe('Pookyball', () => {
@@ -26,14 +26,14 @@ describe('Pookyball', () => {
   let VRFCoordinatorV2: VRFCoordinatorV2Mock;
 
   // Internal data
-  let tokenId: number;
+  let tokenId: bigint;
 
   beforeEach(async () => {
     ({ admin, minter, game, player1, player2 } = await getTestAccounts());
     ({ Pookyball, VRFCoordinatorV2 } = await loadFixture(stackFixture));
 
-    await Pookyball.connect(minter).mint([player1.address], [PookyballRarity.COMMON]);
-    tokenId = (await Pookyball.lastTokenId()).toNumber();
+    await connect(Pookyball, minter).mint([player1.address], [PookyballRarity.COMMON]);
+    tokenId = await Pookyball.lastTokenId();
   });
 
   describe('permissions', () => {
@@ -44,24 +44,30 @@ describe('Pookyball', () => {
 
   describe('setContractURI', () => {
     it('should revert if non-DEFAULT_ADMIN_ROLE tries to change the contract URI', async () => {
-      await expectMissingRole(Pookyball.connect(player1).setContractURI('foobar'), player1, DEFAULT_ADMIN_ROLE);
+      await expect(connect(Pookyball, player1).setContractURI('foobar')).to.be.revertedMissingRole(
+        player1,
+        DEFAULT_ADMIN_ROLE,
+      );
     });
 
     it('should allow DEFAULT_ADMIN_ROLE to change the contract URI', async () => {
       const newContractURI = faker.internet.url();
-      await Pookyball.connect(admin).setContractURI(newContractURI);
+      await connect(Pookyball, admin).setContractURI(newContractURI);
       expect(await Pookyball.contractURI()).to.eq(newContractURI);
     });
   });
 
   describe('setBaseURI', () => {
     it('should revert if non-DEFAULT_ADMIN_ROLE tries to change the base URI', async () => {
-      await expectMissingRole(Pookyball.connect(player1).setBaseURI('foobar'), player1, DEFAULT_ADMIN_ROLE);
+      await expect(connect(Pookyball, player1).setBaseURI('foobar')).to.be.revertedMissingRole(
+        player1,
+        DEFAULT_ADMIN_ROLE,
+      );
     });
 
     it('should allow DEFAULT_ADMIN_ROLE to change the base URI', async () => {
       const newBaseURI = faker.internet.url();
-      await Pookyball.connect(admin).setBaseURI(newBaseURI);
+      await connect(Pookyball, admin).setBaseURI(newBaseURI);
       expect(await Pookyball.baseURI()).to.eq(newBaseURI);
     });
   });
@@ -74,17 +80,15 @@ describe('Pookyball', () => {
 
   describe('setERC2981Receiver', () => {
     it('should revert if non-DEFAULT_ADMIN_ROLE tries to change the base URI', async () => {
-      await expectMissingRole(
-        Pookyball.connect(player1).setERC2981Receiver(Wallet.createRandom().address),
-        player1,
-        DEFAULT_ADMIN_ROLE,
-      );
+      await expect(
+        connect(Pookyball, player1).setERC2981Receiver(Wallet.createRandom().address),
+      ).to.be.revertedMissingRole(player1, DEFAULT_ADMIN_ROLE);
     });
 
     it('should allow DEFAULT_ADMIN_ROLE to change the ERC2981 receiver', async () => {
       const newRecipient = Wallet.createRandom().address;
-      await Pookyball.connect(admin).setERC2981Receiver(newRecipient);
-      const [recipient] = await Pookyball.royaltyInfo(1, parseEther(1));
+      await connect(Pookyball, admin).setERC2981Receiver(newRecipient);
+      const [recipient] = await Pookyball.royaltyInfo(1, parseEther('1'));
       expect(recipient).to.eq(newRecipient);
     });
   });
@@ -100,16 +104,14 @@ describe('Pookyball', () => {
 
   describe('mint', async () => {
     it('should revert if non-MINTER role tries to mint a token', async () => {
-      await expectMissingRole(
-        Pookyball.connect(player1).mint([player1.address], [PookyballRarity.LEGENDARY]),
-        player1,
-        MINTER,
-      );
+      await expect(
+        connect(Pookyball, player1).mint([player1.address], [PookyballRarity.LEGENDARY]),
+      ).to.be.revertedMissingRole(player1, MINTER);
     });
 
     it('should revert if argument sizes mismatch', async () => {
       await expect(
-        Pookyball.connect(minter).mint([player1.address], [PookyballRarity.COMMON, PookyballRarity.LEGENDARY]),
+        connect(Pookyball, minter).mint([player1.address], [PookyballRarity.COMMON, PookyballRarity.LEGENDARY]),
       )
         .to.be.revertedWithCustomError(Pookyball, 'ArgumentSizeMismatch')
         .withArgs(1, 2);
@@ -117,7 +119,7 @@ describe('Pookyball', () => {
 
     it('should allow MINTER role to mint a new token', async () => {
       await expect(
-        Pookyball.connect(minter).mint([player1.address], [PookyballRarity.LEGENDARY]),
+        connect(Pookyball, minter).mint([player1.address], [PookyballRarity.LEGENDARY]),
       ).to.changeTokenBalance(Pookyball, player1, 1);
 
       const metadata = await Pookyball.metadata(await Pookyball.lastTokenId());
@@ -129,12 +131,12 @@ describe('Pookyball', () => {
 
   describe('setLevel', async () => {
     it('should revert if non-GAME tries to change the level of a token', async () => {
-      await expectMissingRole(Pookyball.connect(player1).setLevel(tokenId, 10), player1, GAME);
+      await expect(connect(Pookyball, player1).setLevel(tokenId, 10)).to.be.revertedMissingRole(player1, GAME);
     });
 
     it('should allow GAME to change the level of a token', async () => {
       const newLevel = faker.datatype.number(10) + 1;
-      await expect(Pookyball.connect(game).setLevel(tokenId, newLevel))
+      await expect(connect(Pookyball, game).setLevel(tokenId, newLevel))
         .to.emit(Pookyball, 'LevelChanged')
         .withArgs(tokenId, newLevel);
     });
@@ -142,12 +144,12 @@ describe('Pookyball', () => {
 
   describe('setPXP', async () => {
     it('should revert if non-GAME tries to change the PXP of a token', async () => {
-      await expectMissingRole(Pookyball.connect(player1).setPXP(tokenId, 10), player1, GAME);
+      await expect(connect(Pookyball, player1).setPXP(tokenId, 10)).to.be.revertedMissingRole(player1, GAME);
     });
 
     it('should allow GAME to change the pxp of a token', async () => {
       const newPXP = faker.datatype.number(10) + 1;
-      await expect(Pookyball.connect(game).setPXP(tokenId, newPXP))
+      await expect(connect(Pookyball, game).setPXP(tokenId, newPXP))
         .to.emit(Pookyball, 'PXPChanged')
         .withArgs(tokenId, newPXP);
     });
@@ -155,27 +157,27 @@ describe('Pookyball', () => {
 
   describe('fulfillRandomWords', () => {
     it('should set the seed of a Pookyball token via the VRFCoordinatorV2 contract', async () => {
-      const seed = BigNumber.from(utils.keccak256(randomBytes(32)));
-      await expect(VRFCoordinatorV2.fulfillRandomWordsWithOverride(1, Pookyball.address, [seed]))
+      const seed = BigInt(keccak256(randomBytes(32)));
+      await expect(VRFCoordinatorV2.fulfillRandomWordsWithOverride(1, Pookyball.target, [seed]))
         .to.emit(Pookyball, 'SeedSet')
         .withArgs(tokenId, seed);
     });
 
-    it('should set the seed of a Pookyball token via the VRFCoordinatorV2 contract', async () => {
-      await Pookyball.connect(minter).mint(
+    it('should set the seed of multiple Pookyball tokens via the VRFCoordinatorV2 contract', async () => {
+      await connect(Pookyball, minter).mint(
         [player1.address, player1.address, player2.address],
         [PookyballRarity.COMMON, PookyballRarity.COMMON, PookyballRarity.COMMON],
       );
-      const tokenId = (await Pookyball.lastTokenId()).toNumber();
+      const tokenId = await Pookyball.lastTokenId();
 
-      const seeds = range(3).map(() => BigNumber.from(utils.keccak256(randomBytes(32))));
-      await expect(VRFCoordinatorV2.fulfillRandomWordsWithOverride(2, Pookyball.address, seeds))
+      const seeds = range(3).map(() => BigInt(keccak256(randomBytes(32))));
+      await expect(VRFCoordinatorV2.fulfillRandomWordsWithOverride(2, Pookyball.target, seeds))
         .to.emit(Pookyball, 'SeedSet')
         .withArgs(tokenId, seeds[0])
         .and.to.emit(Pookyball, 'SeedSet')
-        .withArgs(tokenId - 1, seeds[1])
+        .withArgs(tokenId - 1n, seeds[1])
         .and.to.emit(Pookyball, 'SeedSet')
-        .withArgs(tokenId - 2, seeds[2]);
+        .withArgs(tokenId - 2n, seeds[2]);
     });
   });
 
@@ -196,20 +198,20 @@ describe('Pookyball', () => {
 
   describe('setApprovalForAll', () => {
     it('should not revert', async () => {
-      await expect(Pookyball.connect(player1).setApprovalForAll(player2.address, true)).to.not.be.reverted;
+      await expect(connect(Pookyball, player1).setApprovalForAll(player2.address, true)).to.not.be.reverted;
     });
   });
 
   describe('approve', () => {
     it('should not revert', async () => {
-      await expect(Pookyball.connect(player1).approve(player2.address, tokenId)).to.not.be.reverted;
+      await expect(connect(Pookyball, player1).approve(player2.address, tokenId)).to.not.be.reverted;
     });
   });
 
   describe('transferFrom', () => {
     it('should not revert', async () => {
       await expect(
-        Pookyball.connect(player1).transferFrom(player1.address, player2.address, tokenId),
+        connect(Pookyball, player1).transferFrom(player1.address, player2.address, tokenId),
       ).to.changeTokenBalances(Pookyball, [player1.address, player2.address], [-1, 1]);
     });
   });
@@ -217,7 +219,7 @@ describe('Pookyball', () => {
   describe('safeTransferFrom', () => {
     it('should not revert without data', async () => {
       await expect(
-        Pookyball.connect(player1)['safeTransferFrom(address,address,uint256)'](
+        connect(Pookyball, player1)['safeTransferFrom(address,address,uint256)'](
           player1.address,
           player2.address,
           tokenId,
@@ -227,11 +229,11 @@ describe('Pookyball', () => {
 
     it('should not revert with data', async () => {
       await expect(
-        Pookyball.connect(player1)['safeTransferFrom(address,address,uint256,bytes)'](
+        connect(Pookyball, player1)['safeTransferFrom(address,address,uint256,bytes)'](
           player1.address,
           player2.address,
           tokenId,
-          utils.arrayify(utils.keccak256(randomBytes(16))),
+          getBytes(keccak256(randomBytes(16))),
         ),
       ).to.changeTokenBalances(Pookyball, [player1.address, player2.address], [-1, 1]);
     });

@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import Config from '../types/Config';
 import mainnet from './mainnet';
 
@@ -32,7 +31,7 @@ const mumbai: Config = {
 
   templates: mainnet.templates.map((template) => ({
     ...template,
-    price: BigNumber.from(template.price).div(1e6),
+    price: template.price / 100000n,
   })),
 
   vrf: {

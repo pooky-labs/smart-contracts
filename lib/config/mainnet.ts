@@ -1,6 +1,6 @@
+import { parseEther } from 'ethers';
 import Config from '../types/Config';
 import PookyballRarity from '../types/PookyballRarity';
-import parseEther from '../utils/parseEther';
 
 /**
  * Deploy configuration for Polygon Mainnet.
@@ -34,10 +34,10 @@ const mainnet: Config = {
   },
 
   templates: [
-    { rarity: PookyballRarity.COMMON, supply: 77, price: parseEther(20) },
-    { rarity: PookyballRarity.RARE, supply: 18, price: parseEther(80) },
-    { rarity: PookyballRarity.EPIC, supply: 4, price: parseEther(320) },
-    { rarity: PookyballRarity.LEGENDARY, supply: 1, price: parseEther(1280) },
+    { rarity: PookyballRarity.COMMON, supply: 77, price: parseEther('20') },
+    { rarity: PookyballRarity.RARE, supply: 18, price: parseEther('80') },
+    { rarity: PookyballRarity.EPIC, supply: 4, price: parseEther('320') },
+    { rarity: PookyballRarity.LEGENDARY, supply: 1, price: parseEther('1280') },
   ],
 
   /**
