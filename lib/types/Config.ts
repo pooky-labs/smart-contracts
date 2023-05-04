@@ -25,6 +25,7 @@ export default interface Config {
   tokens: {
     POK: string;
     Pookyball: string;
+    Stickers: string;
   };
 
   metadata: {

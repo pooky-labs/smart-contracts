@@ -1,6 +1,8 @@
 import { BaseContract, ContractFactory, Signer } from 'ethers';
 import { run } from 'hardhat';
 import { isNativeError } from 'util/types';
+import logger from '../logger';
+import getAddress from './getAddress';
 
 export interface TypeContractFactory<C extends BaseContract, A extends unknown[]> extends ContractFactory {
   connect(signer: Signer): this;
@@ -31,28 +33,28 @@ export default function createDeployer(signer: Signer, { verify = true, log: _lo
     const contract = await factory.connect(signer).deploy(...args);
 
     if (log) {
-      console.log('Deploying', name, 'with', contract.deploymentTransaction()?.hash);
+      logger.info('Deploying', name, 'with', contract.deploymentTransaction()?.hash);
     }
 
     await contract.waitForDeployment();
 
     if (log) {
-      console.log('Deployed', name, 'at', contract.target);
+      logger.info('Deployed', name, 'at', contract.target);
     }
 
     if (verify) {
-      console.log('Waiting 10 seconds before verifiying...');
+      logger.info('Waiting 10 seconds before verifiying...');
       // Artificial delay before attempting to verify the contracts
       await new Promise((resolve) => setTimeout(resolve, 10000));
 
       try {
         await run('verify:verify', {
-          address: contract.target,
+          address: getAddress(contract),
           constructorArguments: args,
         });
       } catch (err) {
         if (!isNativeError(err) || !err.message.includes('Reason: Already Verified')) throw err;
-        console.log('Contract is already verified.');
+        logger.info('Contract is already verified.');
       }
     }
 

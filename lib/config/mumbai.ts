@@ -22,6 +22,7 @@ const mumbai: Config = {
   tokens: {
     POK: '0x3aaB86a3FF752530BbE21a5b5a6A73005f11E348',
     Pookyball: '0x3f64DD5BE5E19dD34744EFcC74c1935004aeB270',
+    Stickers: '0xTBD',
   },
 
   metadata: {

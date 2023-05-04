@@ -3,7 +3,9 @@ ignores:
   - '@chainlink/contracts'
   - '@openzeppelin/contracts'
   - '@typechain/ethers-v6'
+  - erc721a
   - operator-filter-registry
+  - solady
 
   # Prettier
   - '@trivago/prettier-plugin-sort-imports'

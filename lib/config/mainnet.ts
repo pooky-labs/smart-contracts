@@ -26,6 +26,7 @@ const mainnet: Config = {
   tokens: {
     POK: '0x7b7E3B03f34b17d70C276C4886467D58867Bbc94',
     Pookyball: '0xb4859acd9B0A65CA4897c31e5cb5160D9Ff32C0A',
+    Stickers: '0xTBD',
   },
 
   metadata: {
