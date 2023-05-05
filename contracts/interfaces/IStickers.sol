@@ -3,6 +3,8 @@
 pragma solidity =0.8.18;
 
 import { IERC721A } from "erc721a/contracts/IERC721A.sol";
+import { IERC721ABurnable } from "erc721a/contracts/interfaces/IERC721ABurnable.sol";
+import { IERC721AQueryable } from "erc721a/contracts/interfaces/IERC721AQueryable.sol";
 import { StickerMetadata } from "../types/StickerMetadata.sol";
 import { StickerRarity } from "../types/StickerRarity.sol";
 
@@ -11,7 +13,7 @@ import { StickerRarity } from "../types/StickerRarity.sol";
  * @author Mathieu Bour
  * @notice
  */
-interface IStickers is IERC721A {
+interface IStickers is IERC721A, IERC721ABurnable, IERC721AQueryable {
   /// Fired when the seed of a Pookyball token is set by the VRFCoordinator,
   event SeedSet(uint256 indexed tokenId, uint256 seed);
   /// Fired when the level of a Pookyball token is changed,

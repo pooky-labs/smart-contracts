@@ -1,0 +1,76 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "stickerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "pookyballId",
+        "type": "uint256"
+      }
+    ],
+    "name": "attach",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "stickerId",
+        "type": "uint256"
+      }
+    ],
+    "name": "attachedTo",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "stickerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "recepient",
+        "type": "address"
+      }
+    ],
+    "name": "detach",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "pookyballId",
+        "type": "uint256"
+      }
+    ],
+    "name": "slots",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

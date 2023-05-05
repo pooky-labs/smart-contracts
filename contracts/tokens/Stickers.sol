@@ -6,14 +6,25 @@ import { VRFCoordinatorV2Interface } from "@chainlink/contracts/src/v0.8/interfa
 import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import { ERC2981 } from "@openzeppelin/contracts/token/common/ERC2981.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { ERC721AQueryable, ERC721A, IERC721A } from "erc721a/contracts/extensions/ERC721AQueryable.sol";
+import { ERC721A } from "erc721a/contracts/ERC721A.sol";
+import { ERC721ABurnable } from "erc721a/contracts/extensions/ERC721ABurnable.sol";
+import { ERC721AQueryable } from "erc721a/contracts/extensions/ERC721AQueryable.sol";
+import { IERC721A } from "erc721a/contracts/IERC721A.sol";
 import { DefaultOperatorFilterer } from "operator-filter-registry/src/DefaultOperatorFilterer.sol";
 import { OwnableRoles } from "solady/src/auth/OwnableRoles.sol";
 import { IStickers } from "../interfaces/IStickers.sol";
 import { StickerMetadata } from "../types/StickerMetadata.sol";
 import { StickerRarity } from "../types/StickerRarity.sol";
 
-contract Stickers is IStickers, ERC721AQueryable, ERC2981, OwnableRoles, VRFConsumerBaseV2, DefaultOperatorFilterer {
+contract Stickers is
+  IStickers,
+  ERC721ABurnable,
+  ERC721AQueryable,
+  ERC2981,
+  OwnableRoles,
+  VRFConsumerBaseV2,
+  DefaultOperatorFilterer
+{
   // Roles
   uint256 public constant OPERATOR = _ROLE_0;
   uint256 public constant MINTER = _ROLE_1;
