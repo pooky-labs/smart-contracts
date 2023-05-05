@@ -10,3 +10,6 @@
 [submodule "lib/chainlink"]
 	path = lib/chainlink
 	url = https://github.com/smartcontractkit/chainlink
+[submodule "lib/ERC721A"]
+	path = lib/ERC721A
+	url = https://github.com/chiru-labs/ERC721A
