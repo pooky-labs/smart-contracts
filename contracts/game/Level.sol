@@ -1,17 +1,18 @@
 // SPDX-License-Identifier: MIT
 // Pooky Game Contracts (game/Level.sol)
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.18;
 
-import "../interfaces/IPookyball.sol";
-import "../interfaces/IPOK.sol";
-import "../types/PookyballRarity.sol";
+import { IPookyball } from "../interfaces/IPookyball.sol";
+import { IPOK } from "../interfaces/IPOK.sol";
+import { PookyballMetadata } from "../types/PookyballMetadata.sol";
+import { PookyballRarity } from "../types/PookyballRarity.sol";
 
 /**
  * @title Level
  * @author Mathieu Bour
  * @notice Gameplay contract that allow to level up Pookyball tokens.
  * Reference: https://whitepaper.pooky.gg/pookyball-features/levelling-up
- * @dev Level contract is allowed to write the {Pookyball.metadata} mapping using the `setLevel` and `setPXP` functions.
+ * @dev Level contract is allowed to write the {Pookyball-metadata} mapping using the `setLevel` and `setPXP` functions.
  */
 contract Level {
   // Gameplay constants
