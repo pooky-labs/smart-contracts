@@ -1,8 +1,10 @@
+ERC721A/=lib/ERC721A/contracts/
 chainlink/=lib/chainlink/
 ds-test/=lib/forge-std/lib/ds-test/src/
-erc4626-tests/=lib/operator-filter-registry/lib/openzeppelin-contracts/lib/erc4626-tests/
+erc4626-tests/=lib/openzeppelin-contracts/lib/erc4626-tests/
 forge-std/=lib/forge-std/src/
-openzeppelin-contracts-upgradeable/=lib/operator-filter-registry/lib/openzeppelin-contracts-upgradeable/
 openzeppelin-contracts/=lib/openzeppelin-contracts/
 openzeppelin/=lib/openzeppelin-contracts/contracts/
 operator-filter-registry/=lib/operator-filter-registry/
+solady/=lib/solady/src/
+solmate/=lib/solady/lib/solmate/src/
