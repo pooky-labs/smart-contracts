@@ -2,49 +2,26 @@ name: Quality assessment
 on:
   push:
     branches: [main]
-    tags: ['v*']
+    tags: ["v*"]
   pull_request:
     types: [opened, reopened, synchronize]
 jobs:
-  eslint:
-    name: Lint with ESLint
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Setup environment
-        uses: pooky-labs/actions/setup-node@main
-      - name: Lint with ESLint
-        run: pnpm eslint
-
-  solhint:
-    name: Lint with Solhint
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Setup environment
-        uses: pooky-labs/actions/setup-node@main
-      - name: Lint with Solhint
-        run: pnpm solhint
-
-  gas:
-    name: Runs the gas estimator with the tests
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Setup environment
-        uses: pooky-labs/actions/setup-node@main
-      - name: Run the tests
-        run: pnpm test:gas
-        env:
-          COINMARKETCAP_API_KEY: ${{ secrets.COINMARKETCAP_API_KEY }}
-
   coverage:
     name: Compute the coverage with the tests
     runs-on: ubuntu-22.04
     steps:
-      - name: Setup environment
-        uses: pooky-labs/actions/setup-node@main
-      - name: Run the tests in coverage mode
-        run: pnpm test:coverage
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+      - name: Run tests
+        run: forge coverage --report=lcov -vvv
+      - name: Run snapshot
+        run: NO_COLOR=1 forge snapshot >> $GITHUB_STEP_SUMMARY
       - name: Send the coverage results to Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.json
+          files: ./lcov.info
