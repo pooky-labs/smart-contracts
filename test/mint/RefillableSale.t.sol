@@ -1,49 +1,33 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "forge-std/Test.sol";
-import "openzeppelin/token/ERC721/ERC721.sol";
-import "../../src/mint/RefillableSale.sol";
-import "src/tokens/Pookyball.sol";
-import "chainlink/contracts/src/v0.8/mocks/VRFCoordinatorV2Mock.sol";
+import {Test} from "forge-std/Test.sol";
+import {RefillableSale, Item, Refill} from "../../src/mint/RefillableSale.sol";
+import {Pookyball} from "../../src/tokens/Pookyball.sol";
+import {PookyballRarity} from "../../src/types/PookyballRarity.sol";
+import {PookyballSetup} from "../setup/PookyballSetup.sol";
 
-contract RefillableSaleTest is Test {
-    VRFCoordinatorV2Mock vrf;
-    Pookyball pookyball;
+contract RefillableSaleTest is Test, PookyballSetup {
     RefillableSale sale;
-
-    Refill[] refills;
+    Refill[] defaultRefills;
 
     address treasury = makeAddr("treasury");
     address admin = makeAddr("admin");
     address seller = makeAddr("seller");
     address user = makeAddr("user");
 
-    function setUp() public {
-        refills.push(Refill(PookyballRarity.COMMON, 77, 20 ether));
-        refills.push(Refill(PookyballRarity.RARE, 18, 80 ether));
-        refills.push(Refill(PookyballRarity.EPIC, 4, 320 ether));
-        refills.push(Refill(PookyballRarity.LEGENDARY, 1, 1280 ether));
+    function setUp() public override(PookyballSetup) {
+        defaultRefills.push(Refill(PookyballRarity.COMMON, 77, 20 ether));
+        defaultRefills.push(Refill(PookyballRarity.RARE, 18, 80 ether));
+        defaultRefills.push(Refill(PookyballRarity.EPIC, 4, 320 ether));
+        defaultRefills.push(Refill(PookyballRarity.LEGENDARY, 1, 1280 ether));
 
-        vrf = new VRFCoordinatorV2Mock(0, 0);
-        uint64 subId = vrf.createSubscription();
-        pookyball = new Pookyball(
-            "https://tokens.pooky.gg",
-            "https://contracts.pooky.gg/contracts/Pookyball",
-            treasury,
-            address(vrf),
-            0x8af398995b04c28e9951adb9721ef74c74f93e6a478f39e7e0777be13527e7ef,
-            subId,
-            10,
-            2500000
-        );
-        
         address[] memory sellers = new address[](1);
         sellers[0] = seller;
         sale = new RefillableSale(pookyball, treasury, admin, sellers);
 
         vm.prank(seller);
-        sale.restock(refills, 1);
+        sale.restock(defaultRefills, 1);
     }
 
     function testPermissions() public {
@@ -53,29 +37,32 @@ contract RefillableSaleTest is Test {
 
     function testGetTemplates() public {
         Item[] memory templates = sale.getTemplates();
-        assertEq(templates.length, refills.length);
+        assertEq(templates.length, defaultRefills.length);
     }
 
     function testIsClosedClosedUntilIsZero() public {
         vm.prank(seller);
-        sale.restock(refills, 0);
+        sale.restock(defaultRefills, 0);
         assertTrue(sale.isClosed());
     }
 
     function testIsClosedClosedInTheFuture(uint256 future) public {
         vm.assume(future > block.timestamp);
         vm.prank(seller);
-        sale.restock(refills, future);
+        sale.restock(defaultRefills, future);
         assertTrue(sale.isClosed());
     }
 
     function testEligibleSaleIsClosed(uint256 future) public {
         vm.assume(future > block.timestamp);
         vm.prank(seller);
-        sale.restock(refills, future);
+        sale.restock(defaultRefills, future);
 
-        for (uint256 i = 0; i < refills.length; i++) {
-            assertEq(sale.eligible(refills[i].rarity, 1), "sale is closed");
+        for (uint256 i = 0; i < defaultRefills.length; i++) {
+            assertEq(
+                sale.eligible(defaultRefills[i].rarity, 1),
+                "sale is closed"
+            );
         }
     }
 
@@ -88,12 +75,15 @@ contract RefillableSaleTest is Test {
         sale.restock(refills, 1);
 
         vm.prank(user);
-        assertEq(sale.eligible(PookyballRarity.COMMON, quantity), '');
-        assertEq(sale.eligible(PookyballRarity.COMMON, quantity + 1), 'insufficient supply');
+        assertEq(sale.eligible(PookyballRarity.COMMON, quantity), "");
+        assertEq(
+            sale.eligible(PookyballRarity.COMMON, quantity + 1),
+            "insufficient supply"
+        );
     }
 
     function testEligibleInsufficientRemainingSupply() public {
         vm.prank(user);
-        assertEq(sale.eligible(PookyballRarity.COMMON, 1), '');
+        assertEq(sale.eligible(PookyballRarity.COMMON, 1), "");
     }
 }

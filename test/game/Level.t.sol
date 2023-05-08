@@ -2,22 +2,18 @@
 pragma solidity ^0.8.19;
 
 import "forge-std/Test.sol";
-import {Setup} from "../Setup.sol";
-import {Level} from "src/game/Level.sol";
+import {Level} from "../../src/game/Level.sol";
+import {POK} from "../../src/tokens/POK.sol";
+import {Pookyball} from "../../src/tokens/Pookyball.sol";
+import {POKSetup} from "../setup/POKSetup.sol";
+import {PookyballSetup} from "../setup/PookyballSetup.sol";
 
-contract LevelTest is Test, Setup {
-    address admin = makeAddr("admin");
+contract LevelTest is Test, POKSetup, PookyballSetup {
     address user = makeAddr("user");
 
-    POK pok;
-    Pookyball pookyball;
     Level level;
 
-    function setUp() public {
-        pok = new POK();
-        pookyball = new Pookyball(
-            "https://metadata.pooky.gg/pookyballs"
-            );
-        level = new Level();
+    function setUp() public override(POKSetup, PookyballSetup) {
+        level = new Level(pok, pookyball);
     }
 }
