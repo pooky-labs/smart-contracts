@@ -1,5 +1,15 @@
 # Changelog
 
+## May 5 2023
+
+Contract changes:
+
+- Due to a bug with the Pookyball rarities (we swapped the EPIC and LEGENDARY rarities), we have to re-deploy the Level contract.
+
+| Contract name                       | Old address                                                                                                                     | New address                                                                                                                     |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [`Level`](contracts/mint/Level.sol) | [`0x5658F1Adc72c8Eb98e0197fBBc7Ba7e0A8942388`](https://polygonscan.com/address/0x5658F1Adc72c8Eb98e0197fBBc7Ba7e0A8942388#code) | [`0xe05a8312979d65dddd111fca90ee41c2e8c39a6c`](https://polygonscan.com/address/0xe05a8312979d65dddd111fca90ee41c2e8c39a6c#code) |
+
 ## April 3 2023
 
 Contract changes:
