@@ -3,9 +3,9 @@
 pragma solidity ^0.8.17;
 
 enum PookyballRarity {
-    COMMON,
-    RARE,
-    EPIC,
-    LEGENDARY,
-    MYTHIC
+  COMMON,
+  RARE,
+  EPIC,
+  LEGENDARY,
+  MYTHIC
 }

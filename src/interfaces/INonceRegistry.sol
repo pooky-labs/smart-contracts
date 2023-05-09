@@ -9,18 +9,18 @@ import "openzeppelin/access/IAccessControl.sol";
  * @notice Minimal NoncesRegistry interface.
  */
 interface INonceRegistry is IAccessControl {
-    /**
-     * @notice Get the value of a given nonce.
-     */
-    function has(bytes32 nonce) external view returns (bool);
+  /**
+   * @notice Get the value of a given nonce.
+   */
+  function has(bytes32 nonce) external view returns (bool);
 
-    /**
-     * @notice Set the value of a given nonce.
-     */
-    function set(bytes32 nonce, bool value) external;
+  /**
+   * @notice Set the value of a given nonce.
+   */
+  function set(bytes32 nonce, bool value) external;
 
-    /**
-     * @notice Set the value of a multiple nonces.
-     */
-    function setBatch(bytes32[] memory nonces, bool[] memory values) external;
+  /**
+   * @notice Set the value of a multiple nonces.
+   */
+  function setBatch(bytes32[] memory nonces, bool[] memory values) external;
 }

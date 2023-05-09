@@ -14,8 +14,8 @@ import "./PookyballRarity.sol";
  *     back-end to generate the NFT visuals and in-game statistics\.
  */
 struct PookyballMetadata {
-    PookyballRarity rarity;
-    uint256 level;
-    uint256 pxp;
-    uint256 seed;
+  PookyballRarity rarity;
+  uint256 level;
+  uint256 pxp;
+  uint256 seed;
 }

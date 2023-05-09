@@ -3,7 +3,6 @@
 [![Licensed under MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 ![Solidity 0.8.17](https://img.shields.io/badge/Solidity-0.8.17-%23363636?style=flat-square&logo=solidity)
 [![OpenZeppelin 4.x](https://img.shields.io/badge/OpenZeppelin-4.x-%234E5EE4?style=flat-square&logo=openzeppelin)](https://docs.openzeppelin.com/contracts/4.x/)
-![Audit: pending](https://img.shields.io/badge/audit-pending-yellowgreen?style=flat-square)
 [![Code coverage](https://img.shields.io/codecov/c/gh/pooky-labs/smart-contracts?logo=codecov&style=flat-square&token=Ks4qCi1bN3)](https://app.codecov.io/gh/pooky-labs/smart-contracts)
 
 ## Contracts

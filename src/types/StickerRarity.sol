@@ -3,9 +3,9 @@
 pragma solidity ^0.8.19;
 
 enum StickerRarity {
-    COMMON,
-    RARE,
-    EPIC,
-    LEGENDARY,
-    MYTHIC
+  COMMON,
+  RARE,
+  EPIC,
+  LEGENDARY,
+  MYTHIC
 }
