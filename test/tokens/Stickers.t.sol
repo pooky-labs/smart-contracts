@@ -13,14 +13,8 @@ contract StickersTest is Test, StickersSetup {
   address game = makeAddr("game");
   address user = makeAddr("user");
 
-  function setUp() public override(StickersSetup) {
-    super.setUp();
-
+  function setUp() public {
     admin = stickers.owner();
-    vm.startPrank(admin);
-    stickers.grantRoles(minter, stickers.MINTER());
-    stickers.grantRoles(game, stickers.GAME());
-    vm.stopPrank();
   }
 
   function testMintOneCommon() public {

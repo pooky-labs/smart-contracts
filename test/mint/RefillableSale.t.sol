@@ -16,7 +16,7 @@ contract RefillableSaleTest is Test, PookyballSetup {
   address seller = makeAddr("seller");
   address user = makeAddr("user");
 
-  function setUp() public override(PookyballSetup) {
+  function setUp() public {
     defaultRefills.push(Refill(PookyballRarity.COMMON, 77, 20 ether));
     defaultRefills.push(Refill(PookyballRarity.RARE, 18, 80 ether));
     defaultRefills.push(Refill(PookyballRarity.EPIC, 4, 320 ether));

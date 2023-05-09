@@ -8,7 +8,7 @@ import { VRFCoordinatorV2Mock } from "chainlink/contracts/src/v0.8/mocks/VRFCoor
 abstract contract VRFCoordinatorV2Setup is Test {
   VRFCoordinatorV2Interface vrf;
 
-  function setUp() public virtual {
+  constructor() {
     vrf = new VRFCoordinatorV2Mock(0, 0);
   }
 }

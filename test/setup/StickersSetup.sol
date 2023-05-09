@@ -10,18 +10,19 @@ import { VRFCoordinatorV2Setup } from "./VRFCoordinatorV2Setup.sol";
 abstract contract StickersSetup is Test, VRFCoordinatorV2Setup {
   Stickers stickers;
 
-  function setUp() public virtual override(VRFCoordinatorV2Setup) {
-    super.setUp();
-
-    vm.prank(makeAddr("admin"));
+  constructor() {
+    address admin = makeAddr("admin");
+    vm.startPrank(admin);
     uint64 subscriptionId = vrf.createSubscription();
     stickers = new Stickers(
-      makeAddr("admin"),
+      admin,
       makeAddr("treasury"),
       VRFConfig(vrf, keccak256("foobar"), subscriptionId, 10, 2500000)
     );
-
-    vm.prank(makeAddr("admin"));
     vrf.addConsumer(subscriptionId, address(stickers));
+
+    stickers.grantRoles(makeAddr("minter"), stickers.MINTER());
+    stickers.grantRoles(makeAddr("game"), stickers.GAME());
+    vm.stopPrank();
   }
 }
