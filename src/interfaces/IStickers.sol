@@ -5,8 +5,25 @@ pragma solidity ^0.8.19;
 import { IERC721A } from "ERC721A/IERC721A.sol";
 import { IERC721ABurnable } from "ERC721A/interfaces/IERC721ABurnable.sol";
 import { IERC721AQueryable } from "ERC721A/interfaces/IERC721AQueryable.sol";
-import { StickerMetadata } from "../types/StickerMetadata.sol";
-import { StickerRarity } from "../types/StickerRarity.sol";
+
+enum StickerRarity {
+  COMMON,
+  RARE,
+  EPIC,
+  LEGENDARY,
+  MYTHIC
+}
+
+struct StickerMint {
+  StickerRarity rarity;
+  address recipient;
+}
+
+struct StickerMetadata {
+  uint256 seed;
+  uint128 level;
+  StickerRarity rarity;
+}
 
 /**
  * @title IStickers
@@ -23,8 +40,6 @@ interface IStickers is IERC721A, IERC721ABurnable, IERC721AQueryable {
 
   /// Thrown when the token {tokenId} does not exist.
   error NonExistentToken(uint256 tokenId);
-  /// Thrown when the length of two parameters mismatch. Used in the mint batched function.
-  error ArgumentSizeMismatch(uint256 x, uint256 y);
 
   /**
    * @notice PookyballMetadata of the token {tokenId}.
@@ -33,5 +48,5 @@ interface IStickers is IERC721A, IERC721ABurnable, IERC721AQueryable {
    */
   function metadata(uint256 tokenId) external view returns (StickerMetadata memory);
 
-  function mint(address[] memory recipients, StickerRarity[] memory rarities) external returns (uint256);
+  function mint(StickerMint[] memory requests) external returns (uint256);
 }

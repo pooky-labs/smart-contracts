@@ -9,6 +9,7 @@ abstract contract PookyballSetup is Test, VRFCoordinatorV2Setup {
   Pookyball pookyball;
 
   function setUp() public virtual override {
+    super.setUp();
     pookyball = new Pookyball(
       "https://metadata.pooky.gg/pookyballs",
       "https://metadata.pooky.gg/contracts/Pookyball",

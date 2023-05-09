@@ -12,9 +12,8 @@ import { ERC721AQueryable } from "ERC721A/extensions/ERC721AQueryable.sol";
 import { IERC721A } from "ERC721A/IERC721A.sol";
 import { DefaultOperatorFilterer } from "operator-filter-registry/src/DefaultOperatorFilterer.sol";
 import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
-import { IStickers } from "../interfaces/IStickers.sol";
-import { StickerMetadata } from "../types/StickerMetadata.sol";
-import { StickerRarity } from "../types/StickerRarity.sol";
+import { IStickers, StickerMetadata, StickerRarity, StickerMint } from "../interfaces/IStickers.sol";
+import { VRFConfig } from "../types/VRFConfig.sol";
 
 contract Stickers is
   IStickers,
@@ -51,30 +50,16 @@ contract Stickers is
   mapping(uint256 => StickerMetadata) _metadata;
 
   // VRF parameters
-  VRFCoordinatorV2Interface vrfCoordinator;
-  bytes32 public vrfKeyHash;
-  uint64 public vrfSubId;
-  uint16 public vrfMinimumRequestConfirmations;
-  uint32 public vrfCallbackGasLimit;
+  VRFConfig vrf;
   mapping(uint256 => uint256) vrfRequests;
 
-  constructor(
-    address admin,
-    address _receiver,
-    address _vrfCoordinator,
-    bytes32 _vrfKeyHash,
-    uint64 _vrfSubId,
-    uint16 _vrfMinimumRequestConfirmations,
-    uint32 _vrfCallbackGasLimit
-  ) ERC721A("Pooky Stickers", "STK") VRFConsumerBaseV2(_vrfCoordinator) {
-    vrfCoordinator = VRFCoordinatorV2Interface(_vrfCoordinator);
-    vrfKeyHash = _vrfKeyHash;
-    vrfSubId = _vrfSubId;
-    vrfMinimumRequestConfirmations = _vrfMinimumRequestConfirmations;
-    vrfCallbackGasLimit = _vrfCallbackGasLimit;
-
-    _setDefaultRoyalty(_receiver, ROYALTY);
+  constructor(address admin, address _receiver, VRFConfig memory _vrf)
+    ERC721A("Pooky Stickers", "STK")
+    VRFConsumerBaseV2(address(_vrf.coordinator))
+  {
     _initializeOwner(admin);
+    _setDefaultRoyalty(_receiver, ROYALTY);
+    vrf = _vrf;
   }
 
   modifier onlyExists(uint256 tokenId) {
@@ -137,30 +122,21 @@ contract Stickers is
    * requested to the VRF coordinator.
    * @dev Requirements:
    * - sender must have the MINTER role or be the owner.
-   * - `recipients` and `rarities` arguments must have the same size
    */
-  function mint(address[] memory recipients, StickerRarity[] memory rarities)
-    external
-    onlyRolesOrOwner(MINTER)
-    returns (uint256)
-  {
-    uint256 l = recipients.length;
-    // Check the arguments length
-    if (l != rarities.length) {
-      revert ArgumentSizeMismatch(l, rarities.length);
-    }
+  function mint(StickerMint[] memory requests) external onlyRolesOrOwner(MINTER) returns (uint256) {
+    uint256 l = requests.length;
 
     for (uint256 i = 0; i < l;) {
-      _mint(recipients[i], ++lastTokenId);
-      _metadata[lastTokenId] = StickerMetadata(0, 0, rarities[i]);
+      _mint(requests[i].recipient, ++lastTokenId);
+      _metadata[lastTokenId] = StickerMetadata(0, 0, requests[i].rarity);
 
       unchecked {
         i++;
       }
     }
 
-    uint256 requestId = vrfCoordinator.requestRandomWords(
-      vrfKeyHash, vrfSubId, vrfMinimumRequestConfirmations, vrfCallbackGasLimit, uint32(l)
+    uint256 requestId = vrf.coordinator.requestRandomWords(
+      vrf.keyHash, vrf.subcriptionId, vrf.minimumRequestConfirmations, vrf.callbackGasLimit, uint32(l)
     );
     vrfRequests[requestId] = lastTokenId;
 
