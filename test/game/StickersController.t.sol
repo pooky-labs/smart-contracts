@@ -4,26 +4,13 @@ pragma solidity ^0.8.19;
 import { Test } from "forge-std/Test.sol";
 import { StickersController } from "../../src/game/StickersController.sol";
 import { IStickers } from "../../src/interfaces/IStickers.sol";
-import { StickersSetup } from "../setup/StickersSetup.sol";
-import { PookyballSetup } from "../setup/PookyballSetup.sol";
+import { IERC721A } from "ERC721A/IERC721A.sol";
+import { StickersControllerSetup } from "../setup/StickersControllerSetup.t.sol";
 
-contract StickersStorageTest is Test, StickersSetup, PookyballSetup {
-  address admin = makeAddr("admin");
-  address linker = makeAddr("linker");
+contract StickersControllerTest is Test, StickersControllerSetup {
   address user = makeAddr("user");
 
-  StickersController controller;
-
   event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
-
-  function setUp() public {
-    controller = new StickersController(pookyball, stickers, admin);
-
-    vm.startPrank(admin);
-    stickers.grantRoles(address(controller), stickers.OPERATOR());
-    controller.grantRoles(address(linker), controller.LINKER());
-    vm.stopPrank();
-  }
 
   function test_attach(uint256 stickerRaritySeed, uint256 pookyballRaritySeed) public {
     uint256 stickerId = mintSticker(user, randomStickerRarity(stickerRaritySeed));
@@ -35,11 +22,41 @@ contract StickersStorageTest is Test, StickersSetup, PookyballSetup {
 
     vm.expectEmit(true, true, true, true, address(stickers));
     emit Transfer(user, address(controller), stickerId);
+
     controller.attach(stickerId, pookyballId);
 
     assertEq(stickers.ownerOf(stickerId), address(controller));
     uint256[] memory slots = new uint[](1);
     slots[0] = stickerId;
     assertEq(controller.slots(pookyballId), slots);
+    assertEq(controller.attachedTo(stickerId), pookyballId);
+  }
+
+  function test_detach_transfer(uint256 stickerRaritySeed, uint256 pookyballRaritySeed) public {
+    uint256 stickerId = mintSticker(user, randomStickerRarity(stickerRaritySeed));
+    uint256 pookyballId = mintPookyball(user, randomPookyballRarity(pookyballRaritySeed));
+
+    vm.prank(linker);
+    controller.attach(stickerId, pookyballId);
+    assertEq(stickers.ownerOf(stickerId), address(controller));
+
+    vm.prank(remover);
+    controller.detach(stickerId, user);
+    assertEq(stickers.ownerOf(stickerId), user);
+  }
+
+  function test_detach_burn(uint256 stickerRaritySeed, uint256 pookyballRaritySeed) public {
+    uint256 stickerId = mintSticker(user, randomStickerRarity(stickerRaritySeed));
+    uint256 pookyballId = mintPookyball(user, randomPookyballRarity(pookyballRaritySeed));
+
+    vm.prank(linker);
+    controller.attach(stickerId, pookyballId);
+    assertEq(stickers.ownerOf(stickerId), address(controller));
+
+    vm.prank(remover);
+    controller.detach(stickerId, address(0));
+
+    vm.expectRevert(IERC721A.OwnerQueryForNonexistentToken.selector);
+    stickers.ownerOf(stickerId);
   }
 }
