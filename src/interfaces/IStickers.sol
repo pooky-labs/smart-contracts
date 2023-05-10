@@ -15,8 +15,8 @@ enum StickerRarity {
 }
 
 struct StickerMint {
-  StickerRarity rarity;
   address recipient;
+  StickerRarity rarity;
 }
 
 struct StickerMetadata {

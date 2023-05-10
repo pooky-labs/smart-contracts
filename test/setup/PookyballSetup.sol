@@ -31,7 +31,7 @@ abstract contract PookyballSetup is Test, VRFCoordinatorV2Setup {
     vm.stopPrank();
   }
 
-  function boundRarity(uint256 seed) public view returns (PookyballRarity) {
+  function randomPookyballRarity(uint256 seed) public view returns (PookyballRarity) {
     return PookyballRarity(bound(uint256(seed), uint256(PookyballRarity.COMMON), uint256(PookyballRarity.MYTHIC)));
   }
 

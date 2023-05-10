@@ -45,7 +45,7 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
   }
 
   function test_levelPOKCost_equalToLevelPOKIfPookyballHasEnoughPXP(uint256 nextLevel, uint256 rarity256) public {
-    PookyballRarity rarity = boundRarity(rarity256);
+    PookyballRarity rarity = randomPookyballRarity(rarity256);
     nextLevel = bound(nextLevel, 1, level.maxLevels(rarity));
     uint256 tokenId = mintPookyball(user, PookyballRarity.COMMON);
 
@@ -58,7 +58,7 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
   }
 
   function test_levelPOKCost_greaterThanLevelPOKIfPookyballHasNotEnoughPXP(uint256 nextLevel, uint256 rarity256) public {
-    PookyballRarity rarity = boundRarity(rarity256);
+    PookyballRarity rarity = randomPookyballRarity(rarity256);
     nextLevel = bound(nextLevel, 1, level.maxLevels(rarity));
     uint256 tokenId = mintPookyball(user, PookyballRarity.COMMON);
 
@@ -71,7 +71,7 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
   }
 
   function test_levelUp_revertsIfPookyballHasReachedMaximumLevel(uint256 rarity256) public {
-    PookyballRarity rarity = boundRarity(rarity256);
+    PookyballRarity rarity = randomPookyballRarity(rarity256);
     uint256 tokenId = mintPookyball(user, rarity);
     uint256 maxLevel = level.maxLevels(rarity);
 
@@ -88,7 +88,7 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
   }
 
   function test_levelUp_revertsIfInsufficientPOK(uint256 currentLevel, uint256 rarity256) public {
-    PookyballRarity rarity = boundRarity(rarity256);
+    PookyballRarity rarity = randomPookyballRarity(rarity256);
     currentLevel = bound(currentLevel, 0, 39);
 
     uint256 tokenId = mintPookyball(user, rarity);
@@ -105,7 +105,7 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
   }
 
   function test_levelUp_revertIfMultipleLevelsWouldExceedMaximumLevel(uint256 rarity256) public {
-    PookyballRarity rarity = boundRarity(rarity256);
+    PookyballRarity rarity = randomPookyballRarity(rarity256);
     uint256 maxLevel = level.maxLevels(rarity);
     uint256 tokenId = mintPookyball(user, rarity);
 

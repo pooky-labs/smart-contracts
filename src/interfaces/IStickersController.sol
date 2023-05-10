@@ -1,8 +1,14 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (game/StickersStorage.sol)
-pragma solidity ^0.8.18;
+// Pooky Game Contracts (game/StickersController.sol)
+pragma solidity ^0.8.19;
 
-interface IStickersStorage {
+import { IStickers } from "./IStickers.sol";
+import { IPookyball } from "./IPookyball.sol";
+
+interface IStickersController {
+  function stickers() external view returns (IStickers);
+  function pookyball() external view returns (IPookyball);
+
   /**
    * @notice Get the Pookyball token id linked to a Sticker.
    * @param stickerId The Sticker token id.

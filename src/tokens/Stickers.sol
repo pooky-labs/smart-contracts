@@ -78,6 +78,13 @@ contract Stickers is
     return 1;
   }
 
+  /**
+   * @dev This allow to iterate over the token ids.
+   */
+  function nextTokenId() external view returns (uint256) {
+    return _nextTokenId();
+  }
+
   // ----- Metadata -----
   /**
    * @notice Set the URI of the contract-level metadata.

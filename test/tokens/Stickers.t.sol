@@ -20,7 +20,7 @@ contract StickersTest is Test, StickersSetup {
   function testMintOneCommon() public {
     vm.prank(minter);
     StickerMint[] memory requests = new StickerMint[](1);
-    requests[0] = StickerMint(StickerRarity.COMMON, user);
+    requests[0] = StickerMint(user, StickerRarity.COMMON);
     stickers.mint(requests);
   }
 }

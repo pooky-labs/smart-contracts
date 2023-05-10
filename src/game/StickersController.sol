@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (game/StickersStorage.sol)
+// Pooky Game Contracts (game/StickersController.sol)
 pragma solidity ^0.8.19;
 
 import { EnumerableSet } from "openzeppelin/utils/structs/EnumerableSet.sol";
 import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
 import { IPookyball } from "../interfaces/IPookyball.sol";
 import { IStickers } from "../interfaces/IStickers.sol";
-import { IStickersStorage } from "../interfaces/IStickersStorage.sol";
+import { IStickersController } from "../interfaces/IStickersController.sol";
 
 /**
- * @title StickersStorage
+ * @title StickersController
  * @author Mathieu Bour
  * @notice This contract contains the relationship data between the Pookyballs and the Stickers.
  * @dev This contract only handles the Pookyball <=> Sticker association and does not run any check.
@@ -17,7 +17,7 @@ import { IStickersStorage } from "../interfaces/IStickersStorage.sol";
  * When a Sticker is linked to a Pookyball, the Sticker is transfered to this contract so the original
  * owner cannot sell the token anymore on any platform.
  */
-contract StickersStorage is IStickersStorage, OwnableRoles {
+contract StickersController is IStickersController, OwnableRoles {
   using EnumerableSet for EnumerableSet.UintSet;
 
   // Roles
@@ -27,8 +27,8 @@ contract StickersStorage is IStickersStorage, OwnableRoles {
   mapping(uint256 => uint256) private _links;
   mapping(uint256 => EnumerableSet.UintSet) private _slots;
 
-  IPookyball public pookyball;
-  IStickers public stickers;
+  IPookyball public immutable pookyball;
+  IStickers public immutable stickers;
 
   constructor(IPookyball _pookyball, IStickers _stickers, address admin) {
     pookyball = _pookyball;
