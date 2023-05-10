@@ -24,5 +24,6 @@ flattened.txt
 
 broadcast
 
-# Coverage
+# Foundry Coverage / gas
 lcov.info
+.gas-snapshot

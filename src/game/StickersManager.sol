@@ -38,7 +38,7 @@ contract StickersManager {
       total = 12;
     }
 
-    unlocked = (metadata.level / 10) + 1;
+    unlocked = (metadata.level + 1) / 10;
     uint256 used = sstorage.slots(pookyballId).length;
 
     // We might have some promotional offers that allow to unlock the slots before the Pookyball has reached the required level

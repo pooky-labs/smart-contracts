@@ -45,7 +45,7 @@ contract StickersManagerTest is Test, StickersControllerSetup {
     assertEq(free, 1);
 
     // level 19
-    pookyball.setLevel(pookyballId, 10);
+    pookyball.setLevel(pookyballId, 19);
     (total, unlocked, free) = manager.slots(pookyballId);
     assertEq(total, 10);
     assertEq(unlocked, 2);
