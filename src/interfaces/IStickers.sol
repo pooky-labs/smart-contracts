@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (POK.sol)
+// Pooky Game Contracts (interfaces/IStickers.sol)
 pragma solidity ^0.8.19;
 
 import { IERC721A } from "ERC721A/IERC721A.sol";

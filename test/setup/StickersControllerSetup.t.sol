@@ -10,6 +10,7 @@ import { PookyballSetup } from "../setup/PookyballSetup.sol";
 
 abstract contract StickersControllerSetup is Test, StickersSetup, PookyballSetup {
   address linker = makeAddr("linker");
+  address replacer = makeAddr("replacer");
   address remover = makeAddr("remover");
 
   StickersController controller;
@@ -20,8 +21,9 @@ abstract contract StickersControllerSetup is Test, StickersSetup, PookyballSetup
 
     vm.startPrank(admin);
     stickers.grantRoles(address(controller), stickers.OPERATOR());
-    controller.grantRoles(address(linker), controller.LINKER());
-    controller.grantRoles(address(remover), controller.REMOVER());
+    controller.grantRoles(linker, controller.LINKER());
+    controller.grantRoles(replacer, controller.REPLACER());
+    controller.grantRoles(remover, controller.REMOVER());
     vm.stopPrank();
   }
 }

@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (game/StickersController.sol)
+// Pooky Game Contracts (interfaces/IStickersController.sol)
 pragma solidity ^0.8.19;
 
 import { IStickers } from "./IStickers.sol";
 import { IPookyball } from "./IPookyball.sol";
 
 interface IStickersController {
+  error InvalidSticker(uint256 stickerId);
+
   function stickers() external view returns (IStickers);
   function pookyball() external view returns (IPookyball);
 
@@ -22,18 +24,26 @@ interface IStickersController {
   function slots(uint256 pookyballId) external view returns (uint256[] memory);
 
   /**
-   * @notice Attach a Sticker to a Pookyball.
-   * @param stickerId The Sticker token id.
+   * @notice Attach a sticker to a Pookyball.
+   * @param stickerId The sticker token id.
    * @param pookyballId The Pookyball token id.
    * @dev Caution: no ownership checks are run.
    */
   function attach(uint256 stickerId, uint256 pookyballId) external;
 
   /**
+   * @notice Replace a sticker from a Pookyball, burning the previous one.
+   * @param stickerId The sticker token id.
+   * @param previousStickerId The previous sticker token id that will be burned.
+   * @param pookyballId The Pookyball token id.
+   * @dev Caution: no ownership checks are run.
+   */
+  function replace(uint256 stickerId, uint256 previousStickerId, uint256 pookyballId) external;
+
+  /**
    * @notice Detach (remove) a sticker from a Pookyball.
-   * @param stickerId The Sticker token id.
+   * @param stickerId The Sstickerticker token id.
    * @param recepient The address when to send the detached sticker.
-   * If the address is the zero address, the Sticker is burned instead.
    */
   function detach(uint256 stickerId, address recepient) external;
 }
