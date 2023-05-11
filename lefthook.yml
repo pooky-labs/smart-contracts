@@ -1,0 +1,8 @@
+pre-commit:
+  parallel: true
+  commands:
+    test:
+      run: forge test
+    lint:
+      glob: "*.sol"
+      run: pnpm lint

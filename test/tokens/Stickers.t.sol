@@ -3,7 +3,6 @@
 pragma solidity ^0.8.19;
 
 import { Test } from "forge-std/Test.sol";
-import { console2 } from "forge-std/console2.sol";
 import { StickerMint, StickerRarity } from "../../src/interfaces/IStickers.sol";
 import { StickersSetup } from "../setup/StickersSetup.sol";
 
