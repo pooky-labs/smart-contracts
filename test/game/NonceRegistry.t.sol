@@ -69,6 +69,31 @@ contract NonceRegistryTest is Test {
     assertFalse(registry.has(nonce3));
   }
 
+  function test_setBatch_revertArgumentSizeMismatch(bytes32 nonce1, bytes32 nonce2, bytes32 nonce3) public {
+    assertFalse(registry.has(nonce1));
+    assertFalse(registry.has(nonce2));
+    assertFalse(registry.has(nonce3));
+
+    bytes32[] memory nonces = new bytes32[](3);
+    nonces[0] = nonce1;
+    nonces[1] = nonce2;
+    nonces[2] = nonce3;
+
+    bool[] memory values = new bool[](4);
+    values[0] = true;
+    values[1] = true;
+    values[2] = true;
+    values[3] = true;
+
+    vm.prank(operator);
+    vm.expectRevert(abi.encodeWithSelector(NonceRegistry.ArgumentSizeMismatch.selector, 3, 4));
+    registry.setBatch(nonces, values);
+
+    assertFalse(registry.has(nonce1));
+    assertFalse(registry.has(nonce2));
+    assertFalse(registry.has(nonce3));
+  }
+
   function test_setBatch_allowOperators(bytes32 nonce1, bytes32 nonce2, bytes32 nonce3) public {
     assertFalse(registry.has(nonce1));
     assertFalse(registry.has(nonce2));

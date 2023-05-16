@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (mocks/InvalidReceiver.sol)
-
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.19;
 
 /**
  * @title InvalidReceiver
