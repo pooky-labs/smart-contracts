@@ -22,10 +22,14 @@ contract PressureTest is Test, POKSetup {
 
   function setUp() public {
     pressure = new Pressure(pok, treasury);
+
+    vm.startPrank(makeAddr("admin"));
+    pok.grantRole(pok.BURNER(), address(pressure));
+    vm.stopPrank();
   }
 
   function test_priceNAT_revertIfCurrentPlusAmountIsGreaterThan100(uint8 current, uint8 amount) public {
-    vm.assume(current + amount > 100);
+    vm.assume(100 < uint256(current) + uint256(amount) && uint256(current) + uint256(amount) < 256);
 
     vm.expectRevert(abi.encodeWithSelector(Pressure.InvalidParameters.selector, current, amount));
     pressure.priceNAT(current, amount);
@@ -49,7 +53,7 @@ contract PressureTest is Test, POKSetup {
   }
 
   function test_pricePOK_revertIfCurrentPlusAmountIsGreaterThan100(uint8 current, uint8 amount) public {
-    vm.assume(current + amount > 100);
+    vm.assume(100 < uint256(current) + uint256(amount) && uint256(current) + uint256(amount) < 256);
 
     vm.expectRevert(abi.encodeWithSelector(Pressure.InvalidParameters.selector, current, amount));
     pressure.pricePOK(current, amount);
@@ -78,44 +82,44 @@ contract PressureTest is Test, POKSetup {
     uint256 tokenId,
     uint256 delta
   ) public {
-    vm.assume(current + amount <= 100);
+    vm.assume(uint256(current) + uint256(amount) <= 100 && amount > 0);
 
     uint256 priceNAT = pressure.priceNAT(current, amount);
     delta = bound(delta, 1, priceNAT - 1);
     uint256 value = priceNAT - delta;
 
     vm.expectRevert(abi.encodeWithSelector(Pressure.InsufficientValue.selector, value, priceNAT));
-    vm.prank(user);
+    hoax(user, 1000 ether);
     pressure.inflate{ value: value }(tokenId, current, amount);
   }
 
   function test_inflate_nativeCurrency_revertTransferFailed(uint8 current, uint8 amount, uint256 tokenId) public {
-    vm.assume(current + amount <= 100);
+    vm.assume(uint256(current) + uint256(amount) <= 100 && amount > 0);
 
     treasury = address(new InvalidReceiver());
     pressure = new Pressure(pok, treasury);
     uint256 priceNAT = pressure.priceNAT(current, amount);
 
-    vm.expectRevert(abi.encodeWithSelector(Pressure.TransferFailed.selector, treasury, priceNAT));
-    vm.prank(user);
+    vm.expectRevert(abi.encodeWithSelector(Pressure.TransferFailed.selector, user, priceNAT));
+    hoax(user, 1000 ether);
     pressure.inflate{ value: priceNAT }(tokenId, current, amount);
   }
 
   function test_inflate_nativeCurrency_pass(uint8 current, uint8 amount, uint256 tokenId) public {
-    vm.assume(current + amount <= 100);
+    vm.assume(uint256(current) + uint256(amount) <= 100 && amount > 0);
 
     uint256 priceNAT = pressure.priceNAT(current, amount);
 
     vm.expectEmit(true, true, true, true);
     emit Inflated(tokenId, current, amount);
 
-    vm.prank(user);
+    hoax(user, 1000 ether);
     pressure.inflate{ value: priceNAT }(tokenId, current, amount);
     assertGe(treasury.balance, priceNAT);
   }
 
   function test_inflate_POK_revertIfNotEnoughPOK(uint8 current, uint8 amount, uint256 tokenId, uint256 delta) public {
-    vm.assume(current + amount <= 100);
+    vm.assume(uint256(current) + uint256(amount) <= 100 && amount > 0);
 
     uint256 pricePOK = pressure.pricePOK(current, amount);
     delta = bound(delta, 1, pricePOK - 1);
@@ -128,7 +132,7 @@ contract PressureTest is Test, POKSetup {
   }
 
   function test_inflate_POK_pass(uint8 current, uint8 amount, uint256 tokenId) public {
-    vm.assume(current + amount <= 100);
+    vm.assume(uint256(current) + uint256(amount) <= 100 && amount > 0);
 
     uint256 pricePOK = pressure.pricePOK(current, amount);
     mintPOK(user, pricePOK);
