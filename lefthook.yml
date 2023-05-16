@@ -1,8 +1,15 @@
+colors: false
+no_tty: true
+
 pre-commit:
   parallel: true
   commands:
+    artifacts:
+      run: |
+        NO_COLOR=1 forge compile
+        pnpm artifacts
     test:
-      run: forge test
+      run: NO_COLOR=1 forge test
     lint:
-      glob: "*.sol"
-      run: pnpm lint
+      glob: '*.sol'
+      run: ./node_modules/.bin/solhint '{src,test}/**/*.sol'
