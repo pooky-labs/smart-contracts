@@ -205,7 +205,7 @@ contract RewardsTest is Test, POKSetup, PookyballSetup {
     vm.stopPrank();
 
     (RewardsData memory rewardsData, bytes memory signature) =
-      createRewards(user, amountNAT, amountPOK, amountPXP, nonce, data);
+      createRewards(address(receiver), amountNAT, amountPOK, amountPXP, nonce, data);
 
     deal(address(rewards), amountNAT); // Ensure the rewards contract has enough native currency
 
