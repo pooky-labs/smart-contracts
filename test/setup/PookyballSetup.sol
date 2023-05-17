@@ -45,4 +45,8 @@ abstract contract PookyballSetup is Test, VRFCoordinatorV2Setup {
     pookyball.mint(recipients, rarities);
     return pookyball.lastTokenId();
   }
+
+  function mintPookyball(address recipient) public returns (uint256) {
+    return mintPookyball(recipient, PookyballRarity.COMMON);
+  }
 }

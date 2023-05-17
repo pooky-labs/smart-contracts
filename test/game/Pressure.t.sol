@@ -137,7 +137,7 @@ contract PressureTest is Test, POKSetup {
     uint256 pricePOK = pressure.pricePOK(current, amount);
     mintPOK(user, pricePOK);
 
-    vm.expectEmit(true, true, true, true);
+    vm.expectEmit(true, true, true, true, address(pressure));
     emit Inflated(tokenId, current, amount);
 
     vm.prank(user);
