@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+import { VRFConsumerBaseV2 } from "chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 import { Test } from "forge-std/Test.sol";
 import { Strings } from "openzeppelin/utils/Strings.sol";
 import { IPookyball } from "../../src/interfaces/IPookyball.sol";
@@ -15,6 +16,7 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
 
   address public admin = makeAddr("admin");
   address public minter = makeAddr("minter");
+  address public game = makeAddr("game");
   address public user1 = makeAddr("user1");
   address public user2 = makeAddr("user2");
 
@@ -103,5 +105,123 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     uint256 tokenId = mintPookyball(user1, randomPookyballRarity(raritySeed));
 
     assertEq(pookyball.ownerOf(tokenId), user1);
+  }
+
+  function test_setLevel_revertMissingRole(uint256 newLevel) public {
+    uint256 tokenId = mintPookyball(user1);
+
+    expectRevertMissingRole(user1, pookyball.GAME());
+    vm.prank(user1);
+    pookyball.setLevel(tokenId, newLevel);
+  }
+
+  function test_setLevel_pass(uint256 newLevel) public {
+    uint256 tokenId = mintPookyball(user1);
+
+    vm.prank(game);
+    pookyball.setLevel(tokenId, newLevel);
+    assertEq(pookyball.metadata(tokenId).level, newLevel);
+  }
+
+  function test_setPXP_revertMissingRole(uint256 newPXP) public {
+    uint256 tokenId = mintPookyball(user1);
+
+    expectRevertMissingRole(user1, pookyball.GAME());
+    vm.prank(user1);
+    pookyball.setPXP(tokenId, newPXP);
+  }
+
+  function test_setPXP_pass(uint256 newPXP) public {
+    uint256 tokenId = mintPookyball(user1);
+
+    vm.prank(game);
+    pookyball.setPXP(tokenId, newPXP);
+    assertEq(pookyball.metadata(tokenId).pxp, newPXP);
+  }
+
+  function test_fullfillRandomWords_revertOnlyCoordinatorCanFulfill(uint256 seed) public {
+    uint256 tokenId = mintPookyball(user1);
+
+    uint256[] memory words = new uint[](1);
+    words[0] = seed;
+
+    vm.expectRevert(abi.encodeWithSelector(VRFConsumerBaseV2.OnlyCoordinatorCanFulfill.selector, user1, address(vrf)));
+    vm.prank(address(user1));
+    pookyball.rawFulfillRandomWords(1, words);
+
+    assertEq(pookyball.metadata(tokenId).seed, 0);
+  }
+
+  function test_fullfillRandomWords_passSingle(uint256 seed) public {
+    uint256 tokenId = mintPookyball(user1);
+
+    uint256[] memory words = new uint[](1);
+    words[0] = seed;
+
+    vm.prank(address(vrf));
+    pookyball.rawFulfillRandomWords(1, words);
+
+    assertEq(pookyball.metadata(tokenId).seed, seed);
+  }
+
+  function test_fullfillRandomWords_passMulti(uint256 seed1, uint256 seed2) public {
+    address[] memory addresses = new address[](2);
+    addresses[0] = user1;
+    addresses[1] = user1;
+
+    PookyballRarity[] memory rarities = new PookyballRarity[](2);
+    rarities[0] = randomPookyballRarity(seed1);
+    rarities[1] = randomPookyballRarity(seed2);
+
+    vm.prank(minter);
+    uint256 tokenId2 = pookyball.mint(addresses, rarities);
+    uint256 tokenId1 = tokenId2 - 1;
+
+    // seeds are assigned in the reverse order
+    uint256[] memory words = new uint[](2);
+    words[0] = seed2;
+    words[1] = seed1;
+
+    vm.prank(address(vrf));
+    pookyball.rawFulfillRandomWords(1, words);
+
+    assertEq(pookyball.metadata(tokenId1).seed, seed1);
+    assertEq(pookyball.metadata(tokenId2).seed, seed2);
+  }
+
+  function test_supportsInterface() public {
+    assertTrue(pookyball.supportsInterface(0x01ffc9a7)); // IERC165
+    assertTrue(pookyball.supportsInterface(0x80ac58cd)); // IERC721
+    assertTrue(pookyball.supportsInterface(0x5b5e139f)); // IERC721Metadata
+    assertTrue(pookyball.supportsInterface(0x2a55205a)); // IERC2981
+  }
+
+  function test_setApprovalForAll_pass() public {
+    vm.prank(user1);
+    pookyball.setApprovalForAll(user2, true);
+  }
+
+  function test_approve_pass() public {
+    uint256 tokenId = mintPookyball(user1);
+    vm.prank(user1);
+    pookyball.approve(user2, tokenId);
+  }
+
+  function test_transferFrom_pass() public {
+    uint256 tokenId = mintPookyball(user1);
+    vm.prank(user1);
+    pookyball.transferFrom(user1, user2, tokenId);
+  }
+
+  function test_safeTransferFrom_pass() public {
+    uint256 tokenId = mintPookyball(user1);
+    vm.prank(user1);
+    pookyball.safeTransferFrom(user1, user2, tokenId);
+  }
+
+  function test_safeTransferFrom_pass(bytes memory data) public {
+    uint256 tokenId = mintPookyball(user1);
+    vm.prank(user1);
+    pookyball.safeTransferFrom(user1, user2, tokenId, data);
   }
 }
