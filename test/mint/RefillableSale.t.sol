@@ -80,4 +80,17 @@ contract RefillableSaleTest is Test, PookyballSetup {
     vm.prank(user);
     assertEq(sale.eligible(PookyballRarity.COMMON, 1), "");
   }
+
+  function test_mint_revertIfClosed() public {
+    uint256 closedUntil = block.timestamp + 3600;
+
+    vm.prank(seller);
+    sale.restock(defaultRefills, closedUntil);
+
+    (,,, uint256 price) = sale.items(PookyballRarity.COMMON);
+
+    vm.expectRevert(abi.encodePacked(RefillableSale.Closed.selector, closedUntil));
+    hoax(user, price);
+    sale.mint{ value: price }(PookyballRarity.COMMON, user, 1);
+  }
 }
