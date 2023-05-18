@@ -16,12 +16,12 @@ jobs:
         run: pnpm lint
 
   fuzz:
-    name: Compute the gas snapshot
+    name: Test with intense fuzzing
     runs-on: ubuntu-22.04
     steps:
       - name: Setup environment
         uses: pooky-labs/actions/setup-foundry@main
-      - name: Run snapshot
+      - name: Run fuzz testing
         run: forge test
         env:
           FOUNDRY_PROFILE: intense
@@ -41,7 +41,7 @@ jobs:
     steps:
       - name: Setup environment
         uses: pooky-labs/actions/setup-foundry@main
-      - name: Run tests
+      - name: Run tests with coverage
         run: forge coverage --report=lcov -vvv
       - name: Send the coverage results to Codecov
         uses: codecov/codecov-action@v3
