@@ -23,6 +23,7 @@ abstract contract StickersSetup is Test, VRFCoordinatorV2Setup {
 
     stickers.grantRoles(makeAddr("minter"), stickers.MINTER());
     stickers.grantRoles(makeAddr("game"), stickers.GAME());
+    stickers.grantRoles(makeAddr("operator"), stickers.OPERATOR());
     vm.stopPrank();
   }
 

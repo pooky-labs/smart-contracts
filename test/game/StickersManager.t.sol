@@ -99,6 +99,8 @@ contract StickersManagerTest is Test, StickersControllerSetup {
   }
 
   function test_slots_increaseUnlockedGteUsed(address user1) public {
+    vm.assume(user1 != address(0));
+
     uint256 pookyballId = mintPookyball(user1);
     uint256 stickerId1 = mintSticker(user1);
     uint256 stickerId2 = mintSticker(user1);

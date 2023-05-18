@@ -194,16 +194,10 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     assertEq(pookyball.metadata(tokenId2).seed, seed2);
   }
 
-  function test_supportsInterface() public {
-    assertTrue(pookyball.supportsInterface(0x01ffc9a7)); // IERC165
-    assertTrue(pookyball.supportsInterface(0x80ac58cd)); // IERC721
-    assertTrue(pookyball.supportsInterface(0x5b5e139f)); // IERC721Metadata
-    assertTrue(pookyball.supportsInterface(0x2a55205a)); // IERC2981
-  }
-
   function test_setApprovalForAll_pass() public {
     vm.prank(user1);
     pookyball.setApprovalForAll(user2, true);
+    assertTrue(pookyball.isApprovedForAll(user1, user2));
   }
 
   function test_approve_pass() public {
@@ -228,5 +222,12 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     uint256 tokenId = mintPookyball(user1);
     vm.prank(user1);
     pookyball.safeTransferFrom(user1, user2, tokenId, data);
+  }
+
+  function test_supportsInterface() public {
+    assertTrue(pookyball.supportsInterface(0x01ffc9a7)); // IERC165
+    assertTrue(pookyball.supportsInterface(0x80ac58cd)); // IERC721
+    assertTrue(pookyball.supportsInterface(0x5b5e139f)); // IERC721Metadata
+    assertTrue(pookyball.supportsInterface(0x2a55205a)); // IERC2981
   }
 }

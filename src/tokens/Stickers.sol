@@ -288,6 +288,6 @@ contract Stickers is
     override(ERC721A, IERC721A, ERC2981)
     returns (bool)
   {
-    return super.supportsInterface(interfaceId);
+    return super.supportsInterface(interfaceId) || ERC721A.supportsInterface(interfaceId);
   }
 }
