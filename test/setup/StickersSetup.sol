@@ -27,7 +27,9 @@ abstract contract StickersSetup is Test, VRFCoordinatorV2Setup {
   }
 
   function randomStickerRarity(uint256 seed) public view returns (StickerRarity) {
-    return StickerRarity(bound(uint256(seed), uint256(StickerRarity.COMMON), uint256(StickerRarity.MYTHIC)));
+    return StickerRarity(
+      bound(uint256(seed), uint256(StickerRarity.COMMON), uint256(StickerRarity.MYTHIC))
+    );
   }
 
   function mintSticker(address recipient, StickerRarity rarity) public returns (uint256) {
@@ -37,5 +39,9 @@ abstract contract StickersSetup is Test, VRFCoordinatorV2Setup {
     vm.prank(makeAddr("minter"));
     stickers.mint(requests);
     return stickers.nextTokenId() - 1;
+  }
+
+  function mintSticker(address recipient) public returns (uint256) {
+    return mintSticker(recipient, StickerRarity.COMMON);
   }
 }

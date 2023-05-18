@@ -32,7 +32,9 @@ abstract contract PookyballSetup is Test, VRFCoordinatorV2Setup {
   }
 
   function randomPookyballRarity(uint256 seed) public view returns (PookyballRarity) {
-    return PookyballRarity(bound(uint256(seed), uint256(PookyballRarity.COMMON), uint256(PookyballRarity.MYTHIC)));
+    return PookyballRarity(
+      bound(uint256(seed), uint256(PookyballRarity.COMMON), uint256(PookyballRarity.MYTHIC))
+    );
   }
 
   function mintPookyball(address recipient, PookyballRarity rarity) public returns (uint256) {

@@ -58,7 +58,13 @@ contract Rewards is AccessControl {
   /// Thrown when the native transfer has failed.
   error TransferFailed(address recipient, uint256 amount);
 
-  constructor(IPOK _pok, IPookyball _pookyball, INonceRegistry _nonces, address admin, address[] memory rewarders) {
+  constructor(
+    IPOK _pok,
+    IPookyball _pookyball,
+    INonceRegistry _nonces,
+    address admin,
+    address[] memory rewarders
+  ) {
     pok = _pok;
     pookyball = _pookyball;
     nonces = _nonces;

@@ -28,7 +28,9 @@ contract PressureTest is Test, POKSetup {
     vm.stopPrank();
   }
 
-  function test_priceNAT_revertIfCurrentPlusAmountIsGreaterThan100(uint8 current, uint8 amount) public {
+  function test_priceNAT_revertIfCurrentPlusAmountIsGreaterThan100(uint8 current, uint8 amount)
+    public
+  {
     vm.assume(100 < uint256(current) + uint256(amount) && uint256(current) + uint256(amount) < 256);
 
     vm.expectRevert(abi.encodeWithSelector(Pressure.InvalidParameters.selector, current, amount));
@@ -48,11 +50,15 @@ contract PressureTest is Test, POKSetup {
     cases[8] = PriceCase(0, 100, 3.45e18);
 
     for (uint256 i = 0; i < 9; i++) {
-      assertApproxEqAbs(pressure.priceNAT(cases[i].current, cases[i].amount), cases[i].price, 0.01e18);
+      assertApproxEqAbs(
+        pressure.priceNAT(cases[i].current, cases[i].amount), cases[i].price, 0.01e18
+      );
     }
   }
 
-  function test_pricePOK_revertIfCurrentPlusAmountIsGreaterThan100(uint8 current, uint8 amount) public {
+  function test_pricePOK_revertIfCurrentPlusAmountIsGreaterThan100(uint8 current, uint8 amount)
+    public
+  {
     vm.assume(100 < uint256(current) + uint256(amount) && uint256(current) + uint256(amount) < 256);
 
     vm.expectRevert(abi.encodeWithSelector(Pressure.InvalidParameters.selector, current, amount));
@@ -72,7 +78,9 @@ contract PressureTest is Test, POKSetup {
     cases[8] = PriceCase(0, 100, 123.19e18);
 
     for (uint256 i = 0; i < 9; i++) {
-      assertApproxEqAbs(pressure.pricePOK(cases[i].current, cases[i].amount), cases[i].price, 0.01e18);
+      assertApproxEqAbs(
+        pressure.pricePOK(cases[i].current, cases[i].amount), cases[i].price, 0.01e18
+      );
     }
   }
 
@@ -93,7 +101,11 @@ contract PressureTest is Test, POKSetup {
     pressure.inflate{ value: value }(tokenId, current, amount);
   }
 
-  function test_inflate_nativeCurrency_revertTransferFailed(uint8 current, uint8 amount, uint256 tokenId) public {
+  function test_inflate_nativeCurrency_revertTransferFailed(
+    uint8 current,
+    uint8 amount,
+    uint256 tokenId
+  ) public {
     vm.assume(uint256(current) + uint256(amount) <= 100 && amount > 0);
 
     treasury = address(new InvalidReceiver());
@@ -118,7 +130,12 @@ contract PressureTest is Test, POKSetup {
     assertGe(treasury.balance, priceNAT);
   }
 
-  function test_inflate_POK_revertIfNotEnoughPOK(uint8 current, uint8 amount, uint256 tokenId, uint256 delta) public {
+  function test_inflate_POK_revertIfNotEnoughPOK(
+    uint8 current,
+    uint8 amount,
+    uint256 tokenId,
+    uint256 delta
+  ) public {
     vm.assume(uint256(current) + uint256(amount) <= 100 && amount > 0);
 
     uint256 pricePOK = pressure.pricePOK(current, amount);

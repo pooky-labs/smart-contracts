@@ -83,7 +83,10 @@ contract StickersController is IStickersController, OwnableRoles {
    * @param pookyballId The Pookyball token id.
    * @dev Caution: no token ownership checks are run.
    */
-  function replace(uint256 stickerId, uint256 previousStickerId, uint256 pookyballId) public onlyRolesOrOwner(REPLACER) {
+  function replace(uint256 stickerId, uint256 previousStickerId, uint256 pookyballId)
+    public
+    onlyRolesOrOwner(REPLACER)
+  {
     if (!_slots[pookyballId].contains(previousStickerId)) {
       revert InvalidSticker(previousStickerId);
     }

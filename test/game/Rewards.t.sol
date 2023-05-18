@@ -105,7 +105,9 @@ contract RewardsTest is Test, AccessControlAssertions, POKSetup, PookyballSetup 
     rewards.grantRole(rewards.DEFAULT_ADMIN_ROLE(), address(receiver));
     vm.stopPrank();
 
-    vm.expectRevert(abi.encodeWithSelector(Rewards.TransferFailed.selector, address(receiver), amountNAT));
+    vm.expectRevert(
+      abi.encodeWithSelector(Rewards.TransferFailed.selector, address(receiver), amountNAT)
+    );
     vm.prank(address(receiver));
     rewards.withdraw();
   }
@@ -157,7 +159,11 @@ contract RewardsTest is Test, AccessControlAssertions, POKSetup, PookyballSetup 
 
     deal(address(rewards), amountNAT - missingNAT);
 
-    vm.expectRevert(abi.encodeWithSelector(Rewards.InsufficientBalance.selector, amountNAT, amountNAT - missingNAT));
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        Rewards.InsufficientBalance.selector, amountNAT, amountNAT - missingNAT
+      )
+    );
     vm.prank(user);
     rewards.claim(rewardsData, signature, data);
   }
@@ -202,14 +208,20 @@ contract RewardsTest is Test, AccessControlAssertions, POKSetup, PookyballSetup 
 
     deal(address(rewards), amountNAT); // Ensure the rewards contract has enough native currency
 
-    vm.expectRevert(abi.encodeWithSelector(Rewards.TransferFailed.selector, address(receiver), amountNAT));
+    vm.expectRevert(
+      abi.encodeWithSelector(Rewards.TransferFailed.selector, address(receiver), amountNAT)
+    );
     vm.prank(address(receiver));
     rewards.claim(rewardsData, signature, data);
   }
 
-  function test_claim_pass(uint256 amountNAT, uint256 amountPOK, uint256 amountPXP, bytes32 nonce, string memory data)
-    public
-  {
+  function test_claim_pass(
+    uint256 amountNAT,
+    uint256 amountPOK,
+    uint256 amountPXP,
+    bytes32 nonce,
+    string memory data
+  ) public {
     (RewardsData memory rewardsData, bytes memory signature) =
       createRewards(user, amountNAT, amountPOK, amountPXP, nonce, data);
 

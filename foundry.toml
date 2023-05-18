@@ -4,8 +4,14 @@ out = "artifacts"
 libs = ["lib"]
 solc = "0.8.19"
 
+[profile.default.fuzz]
+runs = 256
+
+[profile.intense.fuzz]
+runs = 5_000
+
 [fmt]
-line_length = 120
+line_length = 100
 tab_width = 2
 bracket_spacing = true
 

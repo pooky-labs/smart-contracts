@@ -50,7 +50,9 @@ contract RefillableSale is AccessControlEnumerable {
   uint256 public closedUntil;
 
   /// Fired when a sale is made
-  event Sale(address indexed account, PookyballRarity indexed rarity, uint256 quantity, uint256 value);
+  event Sale(
+    address indexed account, PookyballRarity indexed rarity, uint256 quantity, uint256 value
+  );
 
   /// Thrown when a mint is attempt before the sale opens.
   error Closed(uint256 closedUntil);

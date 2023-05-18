@@ -48,7 +48,8 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     uint256 tokenId = mintPookyball(user1);
 
     assertEq(
-      bytes(pookyball.tokenURI(tokenId)), abi.encodePacked("https://metadata.pooky.gg/pookyballs/", tokenId.toString())
+      bytes(pookyball.tokenURI(tokenId)),
+      abi.encodePacked("https://metadata.pooky.gg/pookyballs/", tokenId.toString())
     );
   }
 
@@ -145,7 +146,11 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     uint256[] memory words = new uint[](1);
     words[0] = seed;
 
-    vm.expectRevert(abi.encodeWithSelector(VRFConsumerBaseV2.OnlyCoordinatorCanFulfill.selector, user1, address(vrf)));
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        VRFConsumerBaseV2.OnlyCoordinatorCanFulfill.selector, user1, address(vrf)
+      )
+    );
     vm.prank(address(user1));
     pookyball.rawFulfillRandomWords(1, words);
 

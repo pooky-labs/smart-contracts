@@ -2,7 +2,8 @@
 // Pooky Game Contracts (POK.sol)
 pragma solidity ^0.8.19;
 
-import { VRFCoordinatorV2Interface } from "chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
+import { VRFCoordinatorV2Interface } from
+  "chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import { VRFConsumerBaseV2 } from "chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 import { ERC2981 } from "openzeppelin/token/common/ERC2981.sol";
 import { IERC165 } from "openzeppelin/utils/introspection/IERC165.sol";
@@ -111,7 +112,12 @@ contract Stickers is
    * @dev Requirements:
    * - Pookyball {tokenId} should exist (minted and not burned).
    */
-  function metadata(uint256 tokenId) external view onlyExists(tokenId) returns (StickerMetadata memory) {
+  function metadata(uint256 tokenId)
+    external
+    view
+    onlyExists(tokenId)
+    returns (StickerMetadata memory)
+  {
     return _metadata[tokenId];
   }
 
@@ -143,7 +149,11 @@ contract Stickers is
     }
 
     uint256 requestId = vrf.coordinator.requestRandomWords(
-      vrf.keyHash, vrf.subcriptionId, vrf.minimumRequestConfirmations, vrf.callbackGasLimit, uint32(l)
+      vrf.keyHash,
+      vrf.subcriptionId,
+      vrf.minimumRequestConfirmations,
+      vrf.callbackGasLimit,
+      uint32(l)
     );
     vrfRequests[requestId] = lastTokenId;
 
@@ -156,7 +166,11 @@ contract Stickers is
    * - sender must have the GAME role.
    * - Pookyball {tokenId} should exist (minted and not burned).
    */
-  function setLevel(uint256 tokenId, uint128 newLevel) external onlyExists(tokenId) onlyRolesOrOwner(GAME) {
+  function setLevel(uint256 tokenId, uint128 newLevel)
+    external
+    onlyExists(tokenId)
+    onlyRolesOrOwner(GAME)
+  {
     _metadata[tokenId].level = newLevel;
     emit LevelChanged(tokenId, newLevel);
   }
@@ -180,7 +194,12 @@ contract Stickers is
    * This behavior might be revoked in the future.
    * @dev See {IERC721A-isApprovedForAll}.
    */
-  function isApprovedForAll(address owner, address operator) public view override(ERC721A, IERC721A) returns (bool) {
+  function isApprovedForAll(address owner, address operator)
+    public
+    view
+    override(ERC721A, IERC721A)
+    returns (bool)
+  {
     if (hasAllRoles(operator, OPERATOR)) {
       return true;
     }

@@ -43,7 +43,10 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
     assertApproxEqAbs(level.levelPOK(20), 19e18, maxDelta);
   }
 
-  function test_levelPOKCost_equalToLevelPOKIfPookyballHasEnoughPXP(uint256 nextLevel, uint256 rarity256) public {
+  function test_levelPOKCost_equalToLevelPOKIfPookyballHasEnoughPXP(
+    uint256 nextLevel,
+    uint256 rarity256
+  ) public {
     PookyballRarity rarity = randomPookyballRarity(rarity256);
     nextLevel = bound(nextLevel, 1, level.maxLevels(rarity));
     uint256 tokenId = mintPookyball(user, PookyballRarity.COMMON);
@@ -56,7 +59,10 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
     assertEq(level.levelPOKCost(tokenId, 1), level.levelPOK(nextLevel));
   }
 
-  function test_levelPOKCost_greaterThanLevelPOKIfPookyballHasNotEnoughPXP(uint256 nextLevel, uint256 rarity256) public {
+  function test_levelPOKCost_greaterThanLevelPOKIfPookyballHasNotEnoughPXP(
+    uint256 nextLevel,
+    uint256 rarity256
+  ) public {
     PookyballRarity rarity = randomPookyballRarity(rarity256);
     nextLevel = bound(nextLevel, 1, level.maxLevels(rarity));
     uint256 tokenId = mintPookyball(user, PookyballRarity.COMMON);
@@ -98,7 +104,9 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
     uint256 pokCost = level.levelPOKCost(tokenId, 1);
     mintPOK(user, pokCost / 2); // Not enough POK to cover the full level PXP
 
-    vm.expectRevert(abi.encodeWithSelector(Level.InsufficientPOKBalance.selector, pokCost, pokCost / 2));
+    vm.expectRevert(
+      abi.encodeWithSelector(Level.InsufficientPOKBalance.selector, pokCost, pokCost / 2)
+    );
     vm.prank(user);
     level.levelUp(tokenId, 1);
   }

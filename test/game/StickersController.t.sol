@@ -47,7 +47,8 @@ contract StickersControllerTest is Test, StickersControllerSetup {
 
   function test_replace(uint256 stickerRaritySeed, uint256 pookyballRaritySeed) public {
     uint256 stickerId1 = mintSticker(user, randomStickerRarity(stickerRaritySeed));
-    uint256 stickerId2 = mintSticker(user, randomStickerRarity(stickerRaritySeed & pookyballRaritySeed));
+    uint256 stickerId2 =
+      mintSticker(user, randomStickerRarity(stickerRaritySeed & pookyballRaritySeed));
     uint256 pookyballId = mintPookyball(user, randomPookyballRarity(pookyballRaritySeed));
 
     vm.prank(linker);

@@ -29,7 +29,14 @@ import "../types/PookyballRarity.sol";
  * - MINTER role can mint new tokens.
  * - GAME role can change the mutable token metadata (level and PXP).
  */
-contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBaseV2, DefaultOperatorFilterer {
+contract Pookyball is
+  IPookyball,
+  ERC721,
+  ERC2981,
+  AccessControl,
+  VRFConsumerBaseV2,
+  DefaultOperatorFilterer
+{
   using Strings for uint256;
 
   // Roles
@@ -160,7 +167,11 @@ contract Pookyball is IPookyball, ERC721, ERC2981, AccessControl, VRFConsumerBas
     }
 
     uint256 requestId = vrfCoordinator.requestRandomWords(
-      vrfKeyHash, vrfSubId, vrfMinimumRequestConfirmations, vrfCallbackGasLimit, uint32(recipients.length)
+      vrfKeyHash,
+      vrfSubId,
+      vrfMinimumRequestConfirmations,
+      vrfCallbackGasLimit,
+      uint32(recipients.length)
     );
     vrfRequests[requestId] = lastTokenId;
 

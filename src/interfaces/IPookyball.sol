@@ -38,7 +38,9 @@ interface IPookyball is IAccessControl, IERC2981, IERC721 {
   /**
    * @notice Mint a new Pookyball token with a given rarity.
    */
-  function mint(address[] memory recipients, PookyballRarity[] memory rarities) external returns (uint256);
+  function mint(address[] memory recipients, PookyballRarity[] memory rarities)
+    external
+    returns (uint256);
 
   /**
    * @notice Change the level of a Pookyball token.

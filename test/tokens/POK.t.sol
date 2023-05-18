@@ -12,8 +12,6 @@ contract POKTest is Test, AccessControlAssertions, POKSetup {
   address public user1 = makeAddr("user1");
   address public user2 = makeAddr("user2");
 
-  function setUp() public { }
-
   function test_mint_revertOnlyRole(uint256 amount) public {
     expectRevertMissingRole(user1, pok.MINTER());
     vm.prank(user1);

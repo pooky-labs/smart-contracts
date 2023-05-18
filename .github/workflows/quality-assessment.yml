@@ -15,6 +15,26 @@ jobs:
       - name: Run Solhint
         run: pnpm lint
 
+  fuzz:
+    name: Compute the gas snapshot
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Setup environment
+        uses: pooky-labs/actions/setup-foundry@main
+      - name: Run snapshot
+        run: forge test
+        env:
+          FOUNDRY_PROFILE: intense
+
+  snapshot:
+    name: Compute the gas snapshot
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Setup environment
+        uses: pooky-labs/actions/setup-foundry@main
+      - name: Run snapshot
+        run: NO_COLOR=1 forge snapshot >> $GITHUB_STEP_SUMMARY
+
   coverage:
     name: Compute the coverage with the tests
     runs-on: ubuntu-22.04
@@ -23,8 +43,6 @@ jobs:
         uses: pooky-labs/actions/setup-foundry@main
       - name: Run tests
         run: forge coverage --report=lcov -vvv
-      - name: Run snapshot
-        run: NO_COLOR=1 forge snapshot >> $GITHUB_STEP_SUMMARY
       - name: Send the coverage results to Codecov
         uses: codecov/codecov-action@v3
         with:

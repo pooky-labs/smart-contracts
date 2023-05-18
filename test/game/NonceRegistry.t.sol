@@ -62,7 +62,9 @@ contract NonceRegistryTest is Test, AccessControlAssertions {
     assertFalse(registry.has(nonce3));
   }
 
-  function test_setBatch_revertArgumentSizeMismatch(bytes32 nonce1, bytes32 nonce2, bytes32 nonce3) public {
+  function test_setBatch_revertArgumentSizeMismatch(bytes32 nonce1, bytes32 nonce2, bytes32 nonce3)
+    public
+  {
     assertFalse(registry.has(nonce1));
     assertFalse(registry.has(nonce2));
     assertFalse(registry.has(nonce3));

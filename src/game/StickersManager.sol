@@ -39,7 +39,11 @@ contract StickersManager {
     _;
   }
 
-  function slots(uint256 pookyballId) public view returns (uint256 total, uint256 unlocked, uint256 free) {
+  function slots(uint256 pookyballId)
+    public
+    view
+    returns (uint256 total, uint256 unlocked, uint256 free)
+  {
     PookyballMetadata memory metadata = pookyball.metadata(pookyballId);
 
     if (metadata.rarity == PookyballRarity.COMMON) {
@@ -65,7 +69,10 @@ contract StickersManager {
     free = unlocked - used;
   }
 
-  function attach(uint256 stickerId, uint256 pookyballId) external checkOwnership(stickerId, pookyballId) {
+  function attach(uint256 stickerId, uint256 pookyballId)
+    external
+    checkOwnership(stickerId, pookyballId)
+  {
     (,, uint256 free) = slots(pookyballId);
 
     if (free == 0) {
