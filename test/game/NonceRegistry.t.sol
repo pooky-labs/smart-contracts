@@ -3,14 +3,14 @@ pragma solidity ^0.8.19;
 
 import { Test } from "forge-std/Test.sol";
 import { NonceRegistry } from "../../src/game/NonceRegistry.sol";
-import { Strings } from "openzeppelin/utils/Strings.sol";
+import { AccessControlAssertions } from "../utils/AccessControlAssertions.sol";
 
-contract NonceRegistryTest is Test {
-  address admin = makeAddr("admin");
-  address operator = makeAddr("operator");
-  address user = makeAddr("user");
+contract NonceRegistryTest is Test, AccessControlAssertions {
+  address public admin = makeAddr("admin");
+  address public operator = makeAddr("operator");
+  address public user = makeAddr("user");
 
-  NonceRegistry registry;
+  NonceRegistry public registry;
 
   function setUp() public {
     address[] memory admins = new address[](1);
@@ -53,14 +53,7 @@ contract NonceRegistryTest is Test {
     values[1] = true;
     values[2] = true;
 
-    vm.expectRevert(
-      abi.encodePacked(
-        "AccessControl: account ",
-        Strings.toHexString(user),
-        " is missing role ",
-        Strings.toHexString(uint256(registry.OPERATOR()), 32)
-      )
-    );
+    expectRevertMissingRole(user, registry.OPERATOR());
     vm.prank(user);
     registry.setBatch(nonces, values);
 

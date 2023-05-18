@@ -5,7 +5,7 @@ import { Test } from "forge-std/Test.sol";
 import { POK } from "../../src/tokens/POK.sol";
 
 abstract contract POKSetup is Test {
-  POK pok;
+  POK public pok;
 
   constructor() {
     vm.startPrank(makeAddr("admin"));

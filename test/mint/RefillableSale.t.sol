@@ -8,13 +8,13 @@ import { PookyballRarity } from "../../src/types/PookyballRarity.sol";
 import { PookyballSetup } from "../setup/PookyballSetup.sol";
 
 contract RefillableSaleTest is Test, PookyballSetup {
-  RefillableSale sale;
-  Refill[] defaultRefills;
+  RefillableSale public sale;
+  Refill[] public defaultRefills;
 
-  address treasury = makeAddr("treasury");
-  address admin = makeAddr("admin");
-  address seller = makeAddr("seller");
-  address user = makeAddr("user");
+  address public treasury = makeAddr("treasury");
+  address public admin = makeAddr("admin");
+  address public seller = makeAddr("seller");
+  address public user = makeAddr("user");
 
   function setUp() public {
     defaultRefills.push(Refill(PookyballRarity.COMMON, 77, 20 ether));
@@ -30,30 +30,30 @@ contract RefillableSaleTest is Test, PookyballSetup {
     sale.restock(defaultRefills, 1);
   }
 
-  function testPermissions() public {
+  function test_permissions() public {
     assertTrue(sale.hasRole(sale.DEFAULT_ADMIN_ROLE(), admin));
     assertTrue(sale.hasRole(sale.SELLER(), seller));
   }
 
-  function testGetTemplates() public {
+  function test_getTemplates() public {
     Item[] memory templates = sale.getTemplates();
     assertEq(templates.length, defaultRefills.length);
   }
 
-  function testIsClosedClosedUntilIsZero() public {
+  function test_isClosed_closedUntilIsZero() public {
     vm.prank(seller);
     sale.restock(defaultRefills, 0);
     assertTrue(sale.isClosed());
   }
 
-  function testIsClosedClosedInTheFuture(uint256 future) public {
+  function test_isClosed_ClosedInTheFuture(uint256 future) public {
     vm.assume(future > block.timestamp);
     vm.prank(seller);
     sale.restock(defaultRefills, future);
     assertTrue(sale.isClosed());
   }
 
-  function testEligibleSaleIsClosed(uint256 future) public {
+  function test_eligible_saleIsClosed(uint256 future) public {
     vm.assume(future > block.timestamp);
     vm.prank(seller);
     sale.restock(defaultRefills, future);
@@ -63,7 +63,7 @@ contract RefillableSaleTest is Test, PookyballSetup {
     }
   }
 
-  function testEligibleInsufficientRemainingSupply(uint256 quantity) public {
+  function test_eligible_insufficientRemainingSupply(uint256 quantity) public {
     vm.assume(0 < quantity && quantity < 100);
 
     vm.prank(seller);
@@ -76,7 +76,7 @@ contract RefillableSaleTest is Test, PookyballSetup {
     assertEq(sale.eligible(PookyballRarity.COMMON, quantity + 1), "insufficient supply");
   }
 
-  function testEligibleInsufficientRemainingSupply() public {
+  function test_eligible_InsufficientRemainingSupply() public {
     vm.prank(user);
     assertEq(sale.eligible(PookyballRarity.COMMON, 1), "");
   }

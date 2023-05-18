@@ -10,8 +10,8 @@ import { POKSetup } from "../setup/POKSetup.sol";
 import { PookyballSetup } from "../setup/PookyballSetup.sol";
 
 contract LevelTest is Test, POKSetup, PookyballSetup {
-  address user = makeAddr("user");
-  PookyballRarity[] rarities = [
+  address public user = makeAddr("user");
+  PookyballRarity[] public rarities = [
     PookyballRarity.COMMON,
     PookyballRarity.RARE,
     PookyballRarity.EPIC,
@@ -19,7 +19,7 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
     PookyballRarity.MYTHIC
   ];
 
-  Level level;
+  Level public level;
 
   function setUp() public {
     level = new Level(pok, pookyball);

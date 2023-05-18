@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (test/tokens/Stickers.t.sol)
 pragma solidity ^0.8.19;
 
 import { Test } from "forge-std/Test.sol";
@@ -7,10 +6,10 @@ import { StickerMint, StickerRarity } from "../../src/interfaces/IStickers.sol";
 import { StickersSetup } from "../setup/StickersSetup.sol";
 
 contract StickersTest is Test, StickersSetup {
-  address admin;
-  address minter = makeAddr("minter");
-  address game = makeAddr("game");
-  address user = makeAddr("user");
+  address public admin;
+  address public minter = makeAddr("minter");
+  address public game = makeAddr("game");
+  address public user = makeAddr("user");
 
   function setUp() public {
     admin = stickers.owner();

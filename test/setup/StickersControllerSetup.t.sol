@@ -9,11 +9,11 @@ import { StickersSetup } from "../setup/StickersSetup.sol";
 import { PookyballSetup } from "../setup/PookyballSetup.sol";
 
 abstract contract StickersControllerSetup is Test, StickersSetup, PookyballSetup {
-  address linker = makeAddr("linker");
-  address replacer = makeAddr("replacer");
-  address remover = makeAddr("remover");
+  address public linker = makeAddr("linker");
+  address public replacer = makeAddr("replacer");
+  address public remover = makeAddr("remover");
 
-  StickersController controller;
+  StickersController public controller;
 
   constructor() {
     address admin = makeAddr("admin");

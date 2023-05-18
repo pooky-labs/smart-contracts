@@ -7,7 +7,7 @@ import { PookyballRarity } from "../../src/types/PookyballRarity.sol";
 import { VRFCoordinatorV2Setup } from "./VRFCoordinatorV2Setup.sol";
 
 abstract contract PookyballSetup is Test, VRFCoordinatorV2Setup {
-  Pookyball pookyball;
+  Pookyball public pookyball;
 
   constructor() {
     address admin = makeAddr("admin");
@@ -15,7 +15,7 @@ abstract contract PookyballSetup is Test, VRFCoordinatorV2Setup {
     vm.startPrank(admin);
     uint64 subscriptionId = vrf.createSubscription();
     pookyball = new Pookyball(
-      "https://metadata.pooky.gg/pookyballs",
+      "https://metadata.pooky.gg/pookyballs/",
       "https://metadata.pooky.gg/contracts/Pookyball",
       makeAddr("treasury"),
       address(vrf),

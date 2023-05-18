@@ -1,6 +1,7 @@
 {
   "extends": "solhint:default",
   "rules": {
-    "max-line-length": ["error", 140]
+    "max-line-length": ["error", 140],
+    "func-name-mixedcase": "off"
   }
 }

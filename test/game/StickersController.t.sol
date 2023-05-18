@@ -8,7 +8,7 @@ import { IERC721A } from "ERC721A/IERC721A.sol";
 import { StickersControllerSetup } from "../setup/StickersControllerSetup.t.sol";
 
 contract StickersControllerTest is Test, StickersControllerSetup {
-  address user = makeAddr("user");
+  address public user = makeAddr("user");
 
   event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 

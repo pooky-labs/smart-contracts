@@ -13,10 +13,10 @@ struct PriceCase {
 }
 
 contract PressureTest is Test, POKSetup {
-  address treasury = makeAddr("treasury");
-  address user = makeAddr("user");
+  address public treasury = makeAddr("treasury");
+  address public user = makeAddr("user");
 
-  Pressure pressure;
+  Pressure public pressure;
 
   event Inflated(uint256 indexed tokenId, uint8 current, uint8 amount);
 

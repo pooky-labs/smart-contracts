@@ -7,11 +7,11 @@ import { PookyballRarity } from "../../src/types/PookyballRarity.sol";
 import { StickersControllerSetup } from "../setup/StickersControllerSetup.t.sol";
 
 contract StickersManagerTest is Test, StickersControllerSetup {
-  address admin = makeAddr("admin");
-  address game = makeAddr("game");
-  address user = makeAddr("user");
+  address public admin = makeAddr("admin");
+  address public game = makeAddr("game");
+  address public user = makeAddr("user");
 
-  StickersManager manager;
+  StickersManager public manager;
 
   function setUp() public {
     manager = new StickersManager(controller);

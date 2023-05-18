@@ -2,26 +2,26 @@
 pragma solidity ^0.8.19;
 
 import { Test } from "forge-std/Test.sol";
-import { Strings } from "openzeppelin/utils/Strings.sol";
 import { ECDSA } from "openzeppelin/utils/cryptography/ECDSA.sol";
 import { NonceRegistry } from "../../src/game/NonceRegistry.sol";
 import { Rewards, RewardsData, RewardsPXP } from "../../src/game/Rewards.sol";
 import { PookyballRarity } from "../../src/types/PookyballRarity.sol";
 import { POKSetup } from "../setup/POKSetup.sol";
 import { PookyballSetup } from "../setup/PookyballSetup.sol";
+import { AccessControlAssertions } from "../utils/AccessControlAssertions.sol";
 import { InvalidReceiver } from "../utils/InvalidReceiver.sol";
 
-contract RewardsTest is Test, POKSetup, PookyballSetup {
+contract RewardsTest is Test, AccessControlAssertions, POKSetup, PookyballSetup {
   using ECDSA for bytes32;
 
-  NonceRegistry registry;
-  Rewards rewards;
+  NonceRegistry public registry;
+  Rewards public rewards;
 
-  address admin = makeAddr("admin");
-  address operator = makeAddr("operator");
-  address rewarder;
-  uint256 privateKey;
-  address user = makeAddr("user");
+  address public admin = makeAddr("admin");
+  address public operator = makeAddr("operator");
+  address public rewarder;
+  uint256 public privateKey;
+  address public user = makeAddr("user");
 
   event RewardsClaimed(address indexed account, RewardsData rewards, string data);
 
@@ -87,17 +87,10 @@ contract RewardsTest is Test, POKSetup, PookyballSetup {
   function test_withdraw_revertNonAdmin(uint256 amount) public {
     deal(address(rewards), amount);
 
-    vm.expectRevert(
-      abi.encodePacked(
-        "AccessControl: account ",
-        Strings.toHexString(user),
-        " is missing role ",
-        Strings.toHexString(uint256(registry.DEFAULT_ADMIN_ROLE()), 32)
-      )
-    );
-
-    hoax(user);
+    expectRevertMissingRole(user, rewards.DEFAULT_ADMIN_ROLE());
     uint256 balanceBefore = user.balance;
+
+    vm.prank(user);
     rewards.withdraw();
 
     assertEq(user.balance, balanceBefore);

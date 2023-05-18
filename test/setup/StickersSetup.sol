@@ -8,7 +8,7 @@ import { VRFConfig } from "../../src/types/VRFConfig.sol";
 import { VRFCoordinatorV2Setup } from "./VRFCoordinatorV2Setup.sol";
 
 abstract contract StickersSetup is Test, VRFCoordinatorV2Setup {
-  Stickers stickers;
+  Stickers public stickers;
 
   constructor() {
     address admin = makeAddr("admin");
