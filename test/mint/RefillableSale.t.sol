@@ -81,8 +81,8 @@ contract RefillableSaleTest is Test, PookyballSetup {
     assertEq(sale.eligible(PookyballRarity.COMMON, 1), "");
   }
 
-  function test_mint_revertIfClosed() public {
-    uint256 closedUntil = block.timestamp + 3600;
+  function test_mint_revertIfClosed(uint256 closedUntil) public {
+    vm.assume(closedUntil > block.timestamp);
 
     vm.prank(seller);
     sale.restock(defaultRefills, closedUntil);
@@ -92,5 +92,35 @@ contract RefillableSaleTest is Test, PookyballSetup {
     vm.expectRevert(abi.encodePacked(RefillableSale.Closed.selector, closedUntil));
     hoax(user, price);
     sale.mint{ value: price }(PookyballRarity.COMMON, user, 1);
+  }
+
+  function test_mint_revertInsufficientSupply(
+    uint256 closedUntil,
+    uint256 now_,
+    uint256 supply,
+    uint8 raritySeed
+  ) public {
+    now_ = bound(now_, 946684800, 32503680000); // between 01-01-2000 and 01-01-3000
+    supply = bound(supply, 1, 1000);
+    PookyballRarity rarity = PookyballRarity(bound(raritySeed, 0, 3));
+
+    vm.assume(0 < closedUntil);
+    vm.assume(closedUntil < now_);
+
+    vm.warp(now_);
+
+    defaultRefills[uint8(rarity)].quantity = supply;
+
+    vm.prank(seller);
+    sale.restock(defaultRefills, now_);
+
+    (,,, uint256 price) = sale.items(rarity);
+    uint256 value = (supply + 1) * price;
+
+    vm.expectRevert(
+      abi.encodePacked(RefillableSale.InsufficientSupply.selector, uint256(rarity), supply)
+    );
+    hoax(user, value);
+    sale.mint{ value: value }(rarity, user, supply + 1);
   }
 }
