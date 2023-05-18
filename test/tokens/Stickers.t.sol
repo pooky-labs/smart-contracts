@@ -51,7 +51,7 @@ contract StickersTest is Test, StickersSetup {
 
     assertEq(
       bytes(stickers.tokenURI(tokenId)),
-      abi.encodePacked("https://metadata.pooky.gg/pookyballs/", tokenId.toString())
+      abi.encodePacked("https://metadata.pooky.gg/stickers/", tokenId.toString())
     );
   }
 

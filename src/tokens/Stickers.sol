@@ -36,7 +36,7 @@ contract Stickers is
   /**
    * @notice The prefix of all the Pookyball metadata.
    */
-  string public baseURI = "https://metadata.pooky.gg/stickers";
+  string public baseURI = "https://metadata.pooky.gg/stickers/";
 
   /**
    * @notice URI of the contract-level metadata.
@@ -95,6 +95,13 @@ contract Stickers is
    */
   function setContractURI(string memory newContractURI) external onlyOwner {
     contractURI = newContractURI;
+  }
+
+  /**
+   * @notice Override the ERC721A _baseURI with a state variable.
+   */
+  function _baseURI() internal view override returns (string memory) {
+    return baseURI;
   }
 
   /**

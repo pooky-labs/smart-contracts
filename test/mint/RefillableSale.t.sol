@@ -46,7 +46,7 @@ contract RefillableSaleTest is Test, PookyballSetup {
     assertTrue(sale.isClosed());
   }
 
-  function test_isClosed_ClosedInTheFuture(uint256 future) public {
+  function test_isClosed_closedInTheFuture(uint256 future) public {
     vm.assume(future > block.timestamp);
     vm.prank(seller);
     sale.restock(defaultRefills, future);
