@@ -69,7 +69,7 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     assertEq(receiver, newReceiver);
   }
 
-  function test_metadata_pass(uint256 raritySeed) public {
+  function test_metadata_pass(uint8 raritySeed) public {
     PookyballRarity rarity = randomPookyballRarity(raritySeed);
     uint256 tokenId = mintPookyball(user1, rarity);
     PookyballMetadata memory metadata = pookyball.metadata(tokenId);
@@ -79,7 +79,7 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     assertEq(metadata.pxp, 0);
   }
 
-  function test_mint_revertMissingRole(uint256 raritySeed) public {
+  function test_mint_revertMissingRole(uint8 raritySeed) public {
     address[] memory addresses = new address[](1);
     addresses[0] = user1;
     PookyballRarity[] memory rarities = new PookyballRarity[](1);
@@ -90,7 +90,7 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     pookyball.mint(addresses, rarities);
   }
 
-  function test_mint_revertArgumentSizeMismatch(uint256 raritySeed) public {
+  function test_mint_revertArgumentSizeMismatch(uint8 raritySeed) public {
     address[] memory addresses = new address[](2);
     addresses[0] = user1;
     addresses[1] = user2;
@@ -102,7 +102,7 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     pookyball.mint(addresses, rarities);
   }
 
-  function test_mint_pass(uint256 raritySeed) public {
+  function test_mint_pass(uint8 raritySeed) public {
     uint256 tokenId = mintPookyball(user1, randomPookyballRarity(raritySeed));
 
     assertEq(pookyball.ownerOf(tokenId), user1);
@@ -169,7 +169,7 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     assertEq(pookyball.metadata(tokenId).seed, seed);
   }
 
-  function test_fullfillRandomWords_passMulti(uint256 seed1, uint256 seed2) public {
+  function test_fullfillRandomWords_passMulti(uint8 seed1, uint8 seed2) public {
     address[] memory addresses = new address[](2);
     addresses[0] = user1;
     addresses[1] = user1;

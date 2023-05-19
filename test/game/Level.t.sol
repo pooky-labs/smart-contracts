@@ -45,9 +45,9 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
 
   function test_levelPOKCost_equalToLevelPOKIfPookyballHasEnoughPXP(
     uint256 nextLevel,
-    uint256 rarity256
+    uint8 rarity8
   ) public {
-    PookyballRarity rarity = randomPookyballRarity(rarity256);
+    PookyballRarity rarity = randomPookyballRarity(rarity8);
     nextLevel = bound(nextLevel, 1, level.maxLevels(rarity));
     uint256 tokenId = mintPookyball(user, PookyballRarity.COMMON);
 
@@ -61,9 +61,9 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
 
   function test_levelPOKCost_greaterThanLevelPOKIfPookyballHasNotEnoughPXP(
     uint256 nextLevel,
-    uint256 rarity256
+    uint8 rarity8
   ) public {
-    PookyballRarity rarity = randomPookyballRarity(rarity256);
+    PookyballRarity rarity = randomPookyballRarity(rarity8);
     nextLevel = bound(nextLevel, 1, level.maxLevels(rarity));
     uint256 tokenId = mintPookyball(user, PookyballRarity.COMMON);
 
@@ -75,8 +75,8 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
     assertGt(level.levelPOKCost(tokenId, 1), level.levelPOK(nextLevel));
   }
 
-  function test_levelUp_revertsIfPookyballHasReachedMaximumLevel(uint256 rarity256) public {
-    PookyballRarity rarity = randomPookyballRarity(rarity256);
+  function test_levelUp_revertsIfPookyballHasReachedMaximumLevel(uint8 rarity8) public {
+    PookyballRarity rarity = randomPookyballRarity(rarity8);
     uint256 tokenId = mintPookyball(user, rarity);
     uint256 maxLevel = level.maxLevels(rarity);
 
@@ -92,8 +92,8 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
     assertEq(currentLevel, maxLevel);
   }
 
-  function test_levelUp_revertsIfInsufficientPOK(uint256 currentLevel, uint256 rarity256) public {
-    PookyballRarity rarity = randomPookyballRarity(rarity256);
+  function test_levelUp_revertsIfInsufficientPOK(uint256 currentLevel, uint8 rarity8) public {
+    PookyballRarity rarity = randomPookyballRarity(rarity8);
     currentLevel = bound(currentLevel, 0, 39);
 
     uint256 tokenId = mintPookyball(user, rarity);
@@ -111,8 +111,8 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
     level.levelUp(tokenId, 1);
   }
 
-  function test_levelUp_revertIfMultipleLevelsWouldExceedMaximumLevel(uint256 rarity256) public {
-    PookyballRarity rarity = randomPookyballRarity(rarity256);
+  function test_levelUp_revertIfMultipleLevelsWouldExceedMaximumLevel(uint8 rarity8) public {
+    PookyballRarity rarity = randomPookyballRarity(rarity8);
     uint256 maxLevel = level.maxLevels(rarity);
     uint256 tokenId = mintPookyball(user, rarity);
 

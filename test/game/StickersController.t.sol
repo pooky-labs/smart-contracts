@@ -12,7 +12,7 @@ contract StickersControllerTest is Test, StickersControllerSetup {
 
   event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 
-  function test_attach(uint256 stickerRaritySeed, uint256 pookyballRaritySeed) public {
+  function test_attach(uint256 stickerRaritySeed, uint8 pookyballRaritySeed) public {
     uint256 stickerId = mintSticker(user, randomStickerRarity(stickerRaritySeed));
     uint256 pookyballId = mintPookyball(user, randomPookyballRarity(pookyballRaritySeed));
 
@@ -32,7 +32,7 @@ contract StickersControllerTest is Test, StickersControllerSetup {
     assertEq(controller.attachedTo(stickerId), pookyballId);
   }
 
-  function test_detach(uint256 stickerRaritySeed, uint256 pookyballRaritySeed) public {
+  function test_detach(uint256 stickerRaritySeed, uint8 pookyballRaritySeed) public {
     uint256 stickerId = mintSticker(user, randomStickerRarity(stickerRaritySeed));
     uint256 pookyballId = mintPookyball(user, randomPookyballRarity(pookyballRaritySeed));
 
@@ -45,7 +45,7 @@ contract StickersControllerTest is Test, StickersControllerSetup {
     assertEq(stickers.ownerOf(stickerId), user);
   }
 
-  function test_replace(uint256 stickerRaritySeed, uint256 pookyballRaritySeed) public {
+  function test_replace(uint256 stickerRaritySeed, uint8 pookyballRaritySeed) public {
     uint256 stickerId1 = mintSticker(user, randomStickerRarity(stickerRaritySeed));
     uint256 stickerId2 =
       mintSticker(user, randomStickerRarity(stickerRaritySeed & pookyballRaritySeed));
@@ -58,8 +58,8 @@ contract StickersControllerTest is Test, StickersControllerSetup {
     vm.prank(replacer);
     controller.replace(stickerId2, stickerId1, pookyballId);
 
-    // // Assert that stickerId1 was burned
-    // vm.expectRevert(IERC721A.OwnerQueryForNonexistentToken.selector);
-    // stickers.ownerOf(stickerId1);
+    // Assert that stickerId1 was burned
+    vm.expectRevert(IERC721A.OwnerQueryForNonexistentToken.selector);
+    stickers.ownerOf(stickerId1);
   }
 }

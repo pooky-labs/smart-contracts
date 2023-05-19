@@ -6,6 +6,7 @@ import { RefillableSale, Item, Refill } from "../../src/mint/RefillableSale.sol"
 import { Pookyball } from "../../src/tokens/Pookyball.sol";
 import { PookyballRarity } from "../../src/types/PookyballRarity.sol";
 import { PookyballSetup } from "../setup/PookyballSetup.sol";
+import { InvalidReceiver } from "../utils/InvalidReceiver.sol";
 
 contract RefillableSaleTest is Test, PookyballSetup {
   RefillableSale public sale;
@@ -25,6 +26,10 @@ contract RefillableSaleTest is Test, PookyballSetup {
     address[] memory sellers = new address[](1);
     sellers[0] = seller;
     sale = new RefillableSale(pookyball, treasury, admin, sellers);
+
+    vm.startPrank(admin);
+    pookyball.grantRole(pookyball.MINTER(), address(sale));
+    vm.stopPrank();
 
     vm.prank(seller);
     sale.restock(defaultRefills, 1);
@@ -102,7 +107,8 @@ contract RefillableSaleTest is Test, PookyballSetup {
   ) public {
     now_ = bound(now_, 946684800, 32503680000); // between 01-01-2000 and 01-01-3000
     supply = bound(supply, 1, 1000);
-    PookyballRarity rarity = PookyballRarity(bound(raritySeed, 0, 3));
+    PookyballRarity rarity =
+      randomPookyballRarity(raritySeed, PookyballRarity.COMMON, PookyballRarity.LEGENDARY);
 
     vm.assume(0 < closedUntil);
     vm.assume(closedUntil < now_);
@@ -122,5 +128,47 @@ contract RefillableSaleTest is Test, PookyballSetup {
     );
     hoax(user, value);
     sale.mint{ value: value }(rarity, user, supply + 1);
+  }
+
+  function test_mint_revertInsufficientValue(uint8 raritySeed, uint256 quantity, uint256 delta)
+    public
+  {
+    PookyballRarity rarity =
+      randomPookyballRarity(raritySeed, PookyballRarity.COMMON, PookyballRarity.LEGENDARY);
+    (uint256 supply,,, uint256 price) = sale.items(rarity);
+    quantity = bound(quantity, 1, supply);
+    uint256 expectedValue = quantity * price;
+    delta = bound(delta, 1, expectedValue);
+    uint256 actualValue = expectedValue - delta;
+
+    vm.expectRevert(
+      abi.encodeWithSelector(RefillableSale.InsufficientValue.selector, expectedValue, actualValue)
+    );
+    hoax(user, expectedValue);
+    sale.mint{ value: actualValue }(rarity, user, quantity);
+  }
+
+  function test_mint_revertTransferFailed(uint8 raritySeed, uint256 quantity) public {
+    InvalidReceiver receiver = new InvalidReceiver();
+    address[] memory sellers = new address[](1);
+    sellers[0] = seller;
+    sale = new RefillableSale(pookyball, address(receiver), admin, sellers);
+
+    vm.startPrank(admin);
+    pookyball.grantRole(pookyball.MINTER(), address(sale));
+    vm.stopPrank();
+
+    vm.prank(seller);
+    sale.restock(defaultRefills, 1);
+
+    PookyballRarity rarity =
+      randomPookyballRarity(raritySeed, PookyballRarity.COMMON, PookyballRarity.LEGENDARY);
+    (uint256 supply,,, uint256 price) = sale.items(rarity);
+    quantity = bound(quantity, 1, supply);
+    uint256 value = quantity * price;
+
+    vm.expectRevert(abi.encodeWithSelector(RefillableSale.TransferFailed.selector, receiver, value));
+    hoax(user, value);
+    sale.mint{ value: value }(rarity, user, quantity);
   }
 }
