@@ -5,6 +5,8 @@
 [![OpenZeppelin 4.x](https://img.shields.io/badge/OpenZeppelin-4.x-%234E5EE4?style=flat-square&logo=openzeppelin)](https://docs.openzeppelin.com/contracts/4.x/)
 [![Code coverage](https://img.shields.io/codecov/c/gh/pooky-labs/smart-contracts?logo=codecov&style=flat-square&token=Ks4qCi1bN3)](https://app.codecov.io/gh/pooky-labs/smart-contracts)
 
+For more details about the internal architecture of the repository, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Contracts
 
 | Contract                                              | Address on Polygon                                                                                                              |

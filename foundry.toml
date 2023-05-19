@@ -1,8 +1,11 @@
+# Foundry config reference: https://github.com/foundry-rs/foundry/tree/master/config
 [profile.default]
 src = "src"
 out = "artifacts"
 libs = ["lib"]
 solc = "0.8.19"
+bytecode_hash = "none"
+cbor_metadata = false
 
 [profile.default.fuzz]
 runs = 256
@@ -14,5 +17,3 @@ runs = 5_000
 line_length = 100
 tab_width = 2
 bracket_spacing = true
-
-# See more config options https://github.com/foundry-rs/foundry/tree/master/config

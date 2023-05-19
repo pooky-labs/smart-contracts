@@ -4,9 +4,9 @@ coverage
 coverage.json
 typechain
 
-# Hardhat files
-cache
-artifacts
+# Foundry files
+cache/
+artifacts/
 cache/
 out/
 
