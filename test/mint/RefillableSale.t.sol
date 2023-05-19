@@ -17,6 +17,10 @@ contract RefillableSaleTest is Test, PookyballSetup {
   address public seller = makeAddr("seller");
   address public user = makeAddr("user");
 
+  event Sale(
+    address indexed account, PookyballRarity indexed rarity, uint256 quantity, uint256 value
+  );
+
   function setUp() public {
     defaultRefills.push(Refill(PookyballRarity.COMMON, 77, 20 ether));
     defaultRefills.push(Refill(PookyballRarity.RARE, 18, 80 ether));
@@ -168,6 +172,20 @@ contract RefillableSaleTest is Test, PookyballSetup {
     uint256 value = quantity * price;
 
     vm.expectRevert(abi.encodeWithSelector(RefillableSale.TransferFailed.selector, receiver, value));
+    hoax(user, value);
+    sale.mint{ value: value }(rarity, user, quantity);
+  }
+
+  function test_mint_pass(uint8 raritySeed, uint256 quantity) public {
+    PookyballRarity rarity =
+      randomPookyballRarity(raritySeed, PookyballRarity.COMMON, PookyballRarity.LEGENDARY);
+    (uint256 supply,,, uint256 price) = sale.items(rarity);
+    quantity = bound(quantity, 1, supply);
+    uint256 value = quantity * price;
+
+    vm.expectEmit(true, true, true, true, address(sale));
+    emit Sale(user, rarity, quantity, value);
+
     hoax(user, value);
     sale.mint{ value: value }(rarity, user, quantity);
   }

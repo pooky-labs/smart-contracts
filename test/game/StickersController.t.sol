@@ -2,6 +2,7 @@
 pragma solidity ^0.8.19;
 
 import { Test } from "forge-std/Test.sol";
+import { IStickersController } from "../../src/interfaces/IStickersController.sol";
 import { StickersController } from "../../src/game/StickersController.sol";
 import { IStickers } from "../../src/interfaces/IStickers.sol";
 import { IERC721A } from "ERC721A/IERC721A.sol";
@@ -45,7 +46,21 @@ contract StickersControllerTest is Test, StickersControllerSetup {
     assertEq(stickers.ownerOf(stickerId), user);
   }
 
-  function test_replace(uint256 stickerRaritySeed, uint8 pookyballRaritySeed) public {
+  function test_replace_revertInvalidSticker(
+    uint256 stickerSeed1,
+    uint256 stickerSeed2,
+    uint8 pookyballSeed
+  ) public {
+    uint256 stickerId1 = mintSticker(user, randomStickerRarity(stickerSeed1));
+    uint256 stickerId2 = mintSticker(user, randomStickerRarity(stickerSeed2));
+    uint256 pookyballId = mintPookyball(user, randomPookyballRarity(pookyballSeed));
+
+    vm.expectRevert(abi.encodeWithSelector(IStickersController.InvalidSticker.selector, stickerId1));
+    vm.prank(replacer);
+    controller.replace(stickerId2, stickerId1, pookyballId);
+  }
+
+  function test_replace_pass(uint256 stickerRaritySeed, uint8 pookyballRaritySeed) public {
     uint256 stickerId1 = mintSticker(user, randomStickerRarity(stickerRaritySeed));
     uint256 stickerId2 =
       mintSticker(user, randomStickerRarity(stickerRaritySeed & pookyballRaritySeed));
