@@ -6,45 +6,45 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 jobs:
-  eslint:
-    name: Lint with ESLint
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Setup environment
-        uses: pooky-labs/actions/setup-node@main
-      - name: Lint with ESLint
-        run: pnpm eslint
-
-  solhint:
+  lint:
     name: Lint with Solhint
     runs-on: ubuntu-22.04
     steps:
       - name: Setup environment
-        uses: pooky-labs/actions/setup-node@main
-      - name: Lint with Solhint
-        run: pnpm solhint
+        uses: pooky-labs/actions/setup-foundry@main
+      - name: Run Solhint
+        run: pnpm lint
 
-  gas:
-    name: Runs the gas estimator with the tests
+  fuzz:
+    name: Test with intense fuzzing
     runs-on: ubuntu-22.04
     steps:
       - name: Setup environment
-        uses: pooky-labs/actions/setup-node@main
-      - name: Run the tests
-        run: pnpm test:gas
+        uses: pooky-labs/actions/setup-foundry@main
+      - name: Run fuzz testing
+        run: forge test
         env:
-          COINMARKETCAP_API_KEY: ${{ secrets.COINMARKETCAP_API_KEY }}
+          FOUNDRY_PROFILE: intense
+
+  snapshot:
+    name: Compute the gas snapshot
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Setup environment
+        uses: pooky-labs/actions/setup-foundry@main
+      - name: Run snapshot
+        run: NO_COLOR=1 forge snapshot >> $GITHUB_STEP_SUMMARY
 
   coverage:
     name: Compute the coverage with the tests
     runs-on: ubuntu-22.04
     steps:
       - name: Setup environment
-        uses: pooky-labs/actions/setup-node@main
-      - name: Run the tests in coverage mode
-        run: pnpm test:coverage
+        uses: pooky-labs/actions/setup-foundry@main
+      - name: Run tests with coverage
+        run: forge coverage --report=lcov -vvv
       - name: Send the coverage results to Codecov
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.json
+          files: ./lcov.info

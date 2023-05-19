@@ -1,15 +1,15 @@
+colors: false
+no_tty: true
+
 pre-commit:
   parallel: true
   commands:
-    compile:
+    artifacts:
+      run: |
+        NO_COLOR=1 forge compile
+        pnpm artifacts
+    test:
+      run: NO_COLOR=1 forge test
+    lint:
       glob: '*.sol'
-      run: ./node_modules/.bin/hardhat compile && git add abi/ bytecode/
-    eslint:
-      glob: '*.{js,ts,jsx,tsx}'
-      run: ./node_modules/.bin/eslint {staged_files}
-    prettier:
-      glob: '*.{js,ts,jsx,tsx,sol,json,yml,yaml,md}'
-      run: ./node_modules/.bin/prettier -w {staged_files}
-    depcheck:
-      glob: '*.{js,ts,jsx,tsx}'
-      run: ./node_modules/.bin/depcheck
+      run: ./node_modules/.bin/solhint '{src,test}/**/*.sol'
