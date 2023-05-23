@@ -98,7 +98,7 @@ contract StickersManagerTest is Test, StickersControllerSetup {
     }
   }
 
-  function test_slots_increaseUnlockedGteUsed(address user1) public {
+  function testFuzz_slots_increaseUnlockedGteUsed(address user1) public {
     vm.assume(user1 != address(0));
 
     uint256 pookyballId = mintPookyball(user1);
@@ -117,7 +117,7 @@ contract StickersManagerTest is Test, StickersControllerSetup {
     assertEq(free, 0);
   }
 
-  function test_attach_revertInsufficientFreeSlot(address user1, uint256 level) public {
+  function testFuzz_attach_revertInsufficientFreeSlot(address user1, uint256 level) public {
     vm.assume(user1 != address(0));
     level = bound(level, 0, 120);
     uint256 pookyballId = mintPookyball(user1);
@@ -141,7 +141,7 @@ contract StickersManagerTest is Test, StickersControllerSetup {
     manager.attach(stickerId, pookyballId);
   }
 
-  function test_replace_pass(address user1) public {
+  function testFuzz_replace_pass(address user1) public {
     vm.assume(user1 != address(0));
 
     uint256 pookyballId = mintPookyball(user1);

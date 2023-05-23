@@ -20,25 +20,25 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
   address public user1 = makeAddr("user1");
   address public user2 = makeAddr("user2");
 
-  function test_setContractURI_revertMissingRole(string memory newURI) public {
+  function testFuzz_setContractURI_revertMissingRole(string memory newURI) public {
     expectRevertMissingRole(user1, pookyball.DEFAULT_ADMIN_ROLE());
     vm.prank(user1);
     pookyball.setContractURI(newURI);
   }
 
-  function test_setContractURI_pass(string memory newURI) public {
+  function testFuzz_setContractURI_pass(string memory newURI) public {
     vm.prank(admin);
     pookyball.setContractURI(newURI);
     assertEq(bytes(pookyball.contractURI()), bytes(newURI));
   }
 
-  function test_setBaseURI_revertMissingRole(string memory newURI) public {
+  function testFuzz_setBaseURI_revertMissingRole(string memory newURI) public {
     expectRevertMissingRole(user1, pookyball.DEFAULT_ADMIN_ROLE());
     vm.prank(user1);
     pookyball.setBaseURI(newURI);
   }
 
-  function test_setBaseURI_pass(string memory newURI) public {
+  function testFuzz_setBaseURI_pass(string memory newURI) public {
     vm.prank(admin);
     pookyball.setBaseURI(newURI);
     assertEq(bytes(pookyball.baseURI()), bytes(newURI));
@@ -53,13 +53,13 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     );
   }
 
-  function test_setERC2981Receiver_revertMissingRole(address newReceiver) public {
+  function testFuzz_setERC2981Receiver_revertMissingRole(address newReceiver) public {
     expectRevertMissingRole(user1, pookyball.DEFAULT_ADMIN_ROLE());
     vm.prank(user1);
     pookyball.setERC2981Receiver(newReceiver);
   }
 
-  function test_setERC2981Receiver_pass(address newReceiver) public {
+  function testFuzz_setERC2981Receiver_pass(address newReceiver) public {
     vm.assume(newReceiver != address(0));
     uint256 tokenId = mintPookyball(user1);
 
@@ -69,7 +69,7 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     assertEq(receiver, newReceiver);
   }
 
-  function test_metadata_pass(uint8 raritySeed) public {
+  function testFuzz_metadata_pass(uint8 raritySeed) public {
     PookyballRarity rarity = randomPookyballRarity(raritySeed);
     uint256 tokenId = mintPookyball(user1, rarity);
     PookyballMetadata memory metadata = pookyball.metadata(tokenId);
@@ -79,7 +79,7 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     assertEq(metadata.pxp, 0);
   }
 
-  function test_mint_revertMissingRole(uint8 raritySeed) public {
+  function testFuzz_mint_revertMissingRole(uint8 raritySeed) public {
     address[] memory addresses = new address[](1);
     addresses[0] = user1;
     PookyballRarity[] memory rarities = new PookyballRarity[](1);
@@ -90,7 +90,7 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     pookyball.mint(addresses, rarities);
   }
 
-  function test_mint_revertArgumentSizeMismatch(uint8 raritySeed) public {
+  function testFuzz_mint_revertArgumentSizeMismatch(uint8 raritySeed) public {
     address[] memory addresses = new address[](2);
     addresses[0] = user1;
     addresses[1] = user2;
@@ -102,13 +102,13 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     pookyball.mint(addresses, rarities);
   }
 
-  function test_mint_pass(uint8 raritySeed) public {
+  function testFuzz_mint_pass(uint8 raritySeed) public {
     uint256 tokenId = mintPookyball(user1, randomPookyballRarity(raritySeed));
 
     assertEq(pookyball.ownerOf(tokenId), user1);
   }
 
-  function test_setLevel_revertMissingRole(uint256 newLevel) public {
+  function testFuzz_setLevel_revertMissingRole(uint256 newLevel) public {
     uint256 tokenId = mintPookyball(user1);
 
     expectRevertMissingRole(user1, pookyball.GAME());
@@ -116,7 +116,7 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     pookyball.setLevel(tokenId, newLevel);
   }
 
-  function test_setLevel_pass(uint256 newLevel) public {
+  function testFuzz_setLevel_pass(uint256 newLevel) public {
     uint256 tokenId = mintPookyball(user1);
 
     vm.prank(game);
@@ -124,7 +124,7 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     assertEq(pookyball.metadata(tokenId).level, newLevel);
   }
 
-  function test_setPXP_revertMissingRole(uint256 newPXP) public {
+  function testFuzz_setPXP_revertMissingRole(uint256 newPXP) public {
     uint256 tokenId = mintPookyball(user1);
 
     expectRevertMissingRole(user1, pookyball.GAME());
@@ -132,7 +132,7 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     pookyball.setPXP(tokenId, newPXP);
   }
 
-  function test_setPXP_pass(uint256 newPXP) public {
+  function testFuzz_setPXP_pass(uint256 newPXP) public {
     uint256 tokenId = mintPookyball(user1);
 
     vm.prank(game);
@@ -140,7 +140,7 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     assertEq(pookyball.metadata(tokenId).pxp, newPXP);
   }
 
-  function test_fullfillRandomWords_revertOnlyCoordinatorCanFulfill(uint256 seed) public {
+  function testFuzz_fullfillRandomWords_revertOnlyCoordinatorCanFulfill(uint256 seed) public {
     uint256 tokenId = mintPookyball(user1);
 
     uint256[] memory words = new uint[](1);
@@ -157,7 +157,7 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     assertEq(pookyball.metadata(tokenId).seed, 0);
   }
 
-  function test_fullfillRandomWords_passSingle(uint256 seed) public {
+  function testFuzz_fullfillRandomWords_passSingle(uint256 seed) public {
     uint256 tokenId = mintPookyball(user1);
 
     uint256[] memory words = new uint[](1);
@@ -169,7 +169,7 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     assertEq(pookyball.metadata(tokenId).seed, seed);
   }
 
-  function test_fullfillRandomWords_passMulti(uint8 seed1, uint8 seed2) public {
+  function testFuzz_fullfillRandomWords_passMulti(uint8 seed1, uint8 seed2) public {
     address[] memory addresses = new address[](2);
     addresses[0] = user1;
     addresses[1] = user1;
@@ -218,7 +218,7 @@ contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
     pookyball.safeTransferFrom(user1, user2, tokenId);
   }
 
-  function test_safeTransferFrom_pass(bytes memory data) public {
+  function testFuzz_safeTransferFrom_pass(bytes memory data) public {
     uint256 tokenId = mintPookyball(user1);
     vm.prank(user1);
     pookyball.safeTransferFrom(user1, user2, tokenId, data);

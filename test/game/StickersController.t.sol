@@ -13,7 +13,7 @@ contract StickersControllerTest is Test, StickersControllerSetup {
 
   event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 
-  function test_attach(uint256 stickerRaritySeed, uint8 pookyballRaritySeed) public {
+  function testFuzz_attach(uint256 stickerRaritySeed, uint8 pookyballRaritySeed) public {
     uint256 stickerId = mintSticker(user, randomStickerRarity(stickerRaritySeed));
     uint256 pookyballId = mintPookyball(user, randomPookyballRarity(pookyballRaritySeed));
 
@@ -33,7 +33,7 @@ contract StickersControllerTest is Test, StickersControllerSetup {
     assertEq(controller.attachedTo(stickerId), pookyballId);
   }
 
-  function test_detach(uint256 stickerRaritySeed, uint8 pookyballRaritySeed) public {
+  function testFuzz_detach(uint256 stickerRaritySeed, uint8 pookyballRaritySeed) public {
     uint256 stickerId = mintSticker(user, randomStickerRarity(stickerRaritySeed));
     uint256 pookyballId = mintPookyball(user, randomPookyballRarity(pookyballRaritySeed));
 
@@ -46,7 +46,7 @@ contract StickersControllerTest is Test, StickersControllerSetup {
     assertEq(stickers.ownerOf(stickerId), user);
   }
 
-  function test_replace_revertInvalidSticker(
+  function testFuzz_replace_revertInvalidSticker(
     uint256 stickerSeed1,
     uint256 stickerSeed2,
     uint8 pookyballSeed
@@ -60,7 +60,7 @@ contract StickersControllerTest is Test, StickersControllerSetup {
     controller.replace(stickerId2, stickerId1, pookyballId);
   }
 
-  function test_replace_pass(uint256 stickerRaritySeed, uint8 pookyballRaritySeed) public {
+  function testFuzz_replace_pass(uint256 stickerRaritySeed, uint8 pookyballRaritySeed) public {
     uint256 stickerId1 = mintSticker(user, randomStickerRarity(stickerRaritySeed));
     uint256 stickerId2 =
       mintSticker(user, randomStickerRarity(stickerRaritySeed & pookyballRaritySeed));

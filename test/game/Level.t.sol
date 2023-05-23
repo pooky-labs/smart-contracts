@@ -51,7 +51,7 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
     assertApproxEqAbs(level.levelPOK(20), 19e18, maxDelta);
   }
 
-  function test_levelPOKCost_equalToLevelPOKIfPookyballHasEnoughPXP(
+  function testFuzz_levelPOKCost_equalToLevelPOKIfPookyballHasEnoughPXP(
     uint256 nextLevel,
     uint8 rarity8
   ) public {
@@ -67,7 +67,7 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
     assertEq(level.levelPOKCost(tokenId, 1), level.levelPOK(nextLevel));
   }
 
-  function test_levelPOKCost_greaterThanLevelPOKIfPookyballHasNotEnoughPXP(
+  function testFuzz_levelPOKCost_greaterThanLevelPOKIfPookyballHasNotEnoughPXP(
     uint256 nextLevel,
     uint8 rarity8
   ) public {
@@ -83,7 +83,7 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
     assertGt(level.levelPOKCost(tokenId, 1), level.levelPOK(nextLevel));
   }
 
-  function test_levelUp_revertsIfPookyballHasReachedMaximumLevel(uint8 rarity8) public {
+  function testFuzz_levelUp_revertsIfPookyballHasReachedMaximumLevel(uint8 rarity8) public {
     PookyballRarity rarity = randomPookyballRarity(rarity8);
     uint256 tokenId = mintPookyball(user, rarity);
     uint256 maxLevel = level.maxLevels(rarity);
@@ -100,7 +100,9 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
     assertEq(currentLevel, maxLevel);
   }
 
-  function test_levelUp_revertInsufficientPOKBalance(uint256 currentLevel, uint8 rarity8) public {
+  function testFuzz_levelUp_revertInsufficientPOKBalance(uint256 currentLevel, uint8 rarity8)
+    public
+  {
     PookyballRarity rarity = randomPookyballRarity(rarity8);
     currentLevel = bound(currentLevel, 0, 39);
 
@@ -119,7 +121,7 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
     level.levelUp(tokenId, 1);
   }
 
-  function test_levelUp_revertMaximumLevelReached(uint8 rarity8) public {
+  function testFuzz_levelUp_revertMaximumLevelReached(uint8 rarity8) public {
     PookyballRarity rarity = randomPookyballRarity(rarity8);
     uint256 maxLevel = level.maxLevels(rarity);
     uint256 tokenId = mintPookyball(user, rarity);
@@ -134,7 +136,7 @@ contract LevelTest is Test, POKSetup, PookyballSetup {
     level.levelUp(tokenId, 3);
   }
 
-  function test_levelUp_passWithPXP(
+  function testFuzz_levelUp_passWithPXP(
     uint8 rarity8,
     uint256 startLevel,
     uint256 deltaLevel,

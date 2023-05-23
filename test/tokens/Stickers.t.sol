@@ -22,25 +22,25 @@ contract StickersTest is Test, StickersSetup {
     admin = stickers.owner();
   }
 
-  function test_setContractURI_revertUnauthorized(string memory newURI) public {
+  function testFuzz_setContractURI_revertUnauthorized(string memory newURI) public {
     vm.expectRevert(Ownable.Unauthorized.selector);
     vm.prank(user1);
     stickers.setContractURI(newURI);
   }
 
-  function test_setContractURI_pass(string memory newURI) public {
+  function testFuzz_setContractURI_pass(string memory newURI) public {
     vm.prank(admin);
     stickers.setContractURI(newURI);
     assertEq(bytes(stickers.contractURI()), bytes(newURI));
   }
 
-  function test_setBaseURI_revertUnauthorized(string memory newURI) public {
+  function testFuzz_setBaseURI_revertUnauthorized(string memory newURI) public {
     vm.expectRevert(Ownable.Unauthorized.selector);
     vm.prank(user1);
     stickers.setBaseURI(newURI);
   }
 
-  function test_setBaseURI_pass(string memory newURI) public {
+  function testFuzz_setBaseURI_pass(string memory newURI) public {
     vm.prank(admin);
     stickers.setBaseURI(newURI);
     assertEq(bytes(stickers.baseURI()), bytes(newURI));
@@ -55,13 +55,13 @@ contract StickersTest is Test, StickersSetup {
     );
   }
 
-  function test_setERC2981Receiver_revertUnauthorized(address newReceiver) public {
+  function testFuzz_setERC2981Receiver_revertUnauthorized(address newReceiver) public {
     vm.expectRevert(Ownable.Unauthorized.selector);
     vm.prank(user1);
     stickers.setERC2981Receiver(newReceiver);
   }
 
-  function test_setERC2981Receiver_pass(address newReceiver) public {
+  function testFuzz_setERC2981Receiver_pass(address newReceiver) public {
     vm.assume(newReceiver != address(0));
     uint256 tokenId = mintSticker(user1);
 
@@ -71,7 +71,7 @@ contract StickersTest is Test, StickersSetup {
     assertEq(receiver, newReceiver);
   }
 
-  function test_metadata_pass(uint256 raritySeed) public {
+  function testFuzz_metadata_pass(uint256 raritySeed) public {
     StickerRarity rarity = randomStickerRarity(raritySeed);
     uint256 tokenId = mintSticker(user1, rarity);
     StickerMetadata memory metadata = stickers.metadata(tokenId);
@@ -96,7 +96,7 @@ contract StickersTest is Test, StickersSetup {
     assertEq(stickers.metadata(tokenId).level, newLevel);
   }
 
-  function test_fullfillRandomWords_revertOnlyCoordinatorCanFulfill(uint256 seed) public {
+  function testFuzz_fullfillRandomWords_revertOnlyCoordinatorCanFulfill(uint256 seed) public {
     uint256 tokenId = mintSticker(user1);
 
     uint256[] memory words = new uint[](1);
@@ -113,7 +113,7 @@ contract StickersTest is Test, StickersSetup {
     assertEq(stickers.metadata(tokenId).seed, 0);
   }
 
-  function test_fullfillRandomWords_passSingle(uint256 seed) public {
+  function testFuzz_fullfillRandomWords_passSingle(uint256 seed) public {
     uint256 tokenId = mintSticker(user1);
 
     uint256[] memory words = new uint[](1);
@@ -125,7 +125,7 @@ contract StickersTest is Test, StickersSetup {
     assertEq(stickers.metadata(tokenId).seed, seed);
   }
 
-  function test_fullfillRandomWords_passMulti(uint256 seed1, uint256 seed2) public {
+  function testFuzz_fullfillRandomWords_passMulti(uint256 seed1, uint256 seed2) public {
     StickerMint[] memory requests = new StickerMint[](2);
     requests[0] = StickerMint(user1, randomStickerRarity(seed1));
     requests[1] = StickerMint(user1, randomStickerRarity(seed2));
@@ -175,7 +175,7 @@ contract StickersTest is Test, StickersSetup {
     stickers.safeTransferFrom(user1, user2, tokenId);
   }
 
-  function test_safeTransferFrom_pass(bytes memory data) public {
+  function testFuzz_safeTransferFrom_pass(bytes memory data) public {
     uint256 tokenId = mintSticker(user1);
     vm.prank(user1);
     stickers.safeTransferFrom(user1, user2, tokenId, data);

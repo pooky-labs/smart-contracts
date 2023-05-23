@@ -55,14 +55,14 @@ contract RefillableSaleTest is Test, PookyballSetup {
     assertTrue(sale.isClosed());
   }
 
-  function test_isClosed_closedInTheFuture(uint256 future) public {
+  function testFuzz_isClosed_closedInTheFuture(uint256 future) public {
     vm.assume(future > block.timestamp);
     vm.prank(seller);
     sale.restock(defaultRefills, future);
     assertTrue(sale.isClosed());
   }
 
-  function test_eligible_saleIsClosed(uint256 future) public {
+  function testFuzz_eligible_saleIsClosed(uint256 future) public {
     vm.assume(future > block.timestamp);
     vm.prank(seller);
     sale.restock(defaultRefills, future);
@@ -72,7 +72,7 @@ contract RefillableSaleTest is Test, PookyballSetup {
     }
   }
 
-  function test_eligible_insufficientRemainingSupply(uint256 quantity) public {
+  function testFuzz_eligible_insufficientRemainingSupply(uint256 quantity) public {
     vm.assume(0 < quantity && quantity < 100);
 
     vm.prank(seller);
@@ -103,7 +103,7 @@ contract RefillableSaleTest is Test, PookyballSetup {
     sale.mint{ value: price }(PookyballRarity.COMMON, user, 1);
   }
 
-  function test_mint_revertInsufficientSupply(
+  function testFuzz_mint_revertInsufficientSupply(
     uint256 closedUntil,
     uint256 now_,
     uint256 supply,
@@ -134,7 +134,7 @@ contract RefillableSaleTest is Test, PookyballSetup {
     sale.mint{ value: value }(rarity, user, supply + 1);
   }
 
-  function test_mint_revertInsufficientValue(uint8 raritySeed, uint256 quantity, uint256 delta)
+  function testFuzz_mint_revertInsufficientValue(uint8 raritySeed, uint256 quantity, uint256 delta)
     public
   {
     PookyballRarity rarity =
@@ -152,7 +152,7 @@ contract RefillableSaleTest is Test, PookyballSetup {
     sale.mint{ value: actualValue }(rarity, user, quantity);
   }
 
-  function test_mint_revertTransferFailed(uint8 raritySeed, uint256 quantity) public {
+  function testFuzz_mint_revertTransferFailed(uint8 raritySeed, uint256 quantity) public {
     InvalidReceiver receiver = new InvalidReceiver();
     address[] memory sellers = new address[](1);
     sellers[0] = seller;
@@ -176,7 +176,7 @@ contract RefillableSaleTest is Test, PookyballSetup {
     sale.mint{ value: value }(rarity, user, quantity);
   }
 
-  function test_mint_pass(uint8 raritySeed, uint256 quantity) public {
+  function testFuzz_mint_pass(uint8 raritySeed, uint256 quantity) public {
     PookyballRarity rarity =
       randomPookyballRarity(raritySeed, PookyballRarity.COMMON, PookyballRarity.LEGENDARY);
     (uint256 supply,,, uint256 price) = sale.items(rarity);

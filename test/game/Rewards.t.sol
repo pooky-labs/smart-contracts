@@ -84,7 +84,7 @@ contract RewardsTest is Test, AccessControlAssertions, POKSetup, PookyballSetup 
     assertTrue(rewards.hasRole(rewards.REWARDER(), rewarder));
   }
 
-  function test_withdraw_revertNonAdmin(uint256 amount) public {
+  function testFuzz_withdraw_revertNonAdmin(uint256 amount) public {
     deal(address(rewards), amount);
 
     expectRevertMissingRole(user, rewards.DEFAULT_ADMIN_ROLE());
@@ -96,7 +96,7 @@ contract RewardsTest is Test, AccessControlAssertions, POKSetup, PookyballSetup 
     assertEq(user.balance, balanceBefore);
   }
 
-  function test_withdraw_revertInvalidReceiver(uint256 amountNAT) public {
+  function testFuzz_withdraw_revertInvalidReceiver(uint256 amountNAT) public {
     vm.assume(amountNAT > 0);
     deal(address(rewards), amountNAT);
 
@@ -112,7 +112,7 @@ contract RewardsTest is Test, AccessControlAssertions, POKSetup, PookyballSetup 
     rewards.withdraw();
   }
 
-  function test_withdraw_pass(uint256 amount) public {
+  function testFuzz_withdraw_pass(uint256 amount) public {
     deal(address(rewards), amount);
 
     hoax(admin, 0);
@@ -122,7 +122,7 @@ contract RewardsTest is Test, AccessControlAssertions, POKSetup, PookyballSetup 
     assertEq(admin.balance, balanceBefore + amount);
   }
 
-  function test_claim_revertInvalidSignature(
+  function testFuzz_claim_revertInvalidSignature(
     uint256 amountNAT,
     uint256 amountPOK,
     uint256 amountPXP,
@@ -143,7 +143,7 @@ contract RewardsTest is Test, AccessControlAssertions, POKSetup, PookyballSetup 
     rewards.claim(rewardsData, signature, data);
   }
 
-  function test_claim_revertInsufficientBalance(
+  function testFuzz_claim_revertInsufficientBalance(
     uint256 amountNAT,
     uint256 missingNAT,
     uint256 amountPOK,
@@ -168,7 +168,7 @@ contract RewardsTest is Test, AccessControlAssertions, POKSetup, PookyballSetup 
     rewards.claim(rewardsData, signature, data);
   }
 
-  function test_claim_revertAlreadyClaimedNonce(
+  function testFuzz_claim_revertAlreadyClaimedNonce(
     uint256 amountNAT,
     uint256 amountPOK,
     uint256 amountPXP,
@@ -189,7 +189,7 @@ contract RewardsTest is Test, AccessControlAssertions, POKSetup, PookyballSetup 
     rewards.claim(rewardsData, signature, data);
   }
 
-  function test_claim_revertTransferFailed(
+  function testFuzz_claim_revertTransferFailed(
     uint256 amountNAT,
     uint256 amountPOK,
     uint256 amountPXP,
@@ -215,7 +215,7 @@ contract RewardsTest is Test, AccessControlAssertions, POKSetup, PookyballSetup 
     rewards.claim(rewardsData, signature, data);
   }
 
-  function test_claim_pass(
+  function testFuzz_claim_pass(
     uint256 amountNAT,
     uint256 amountPOK,
     uint256 amountPXP,

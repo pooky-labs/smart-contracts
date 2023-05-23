@@ -28,7 +28,7 @@ contract PressureTest is Test, POKSetup {
     vm.stopPrank();
   }
 
-  function test_priceNAT_revertIfCurrentPlusAmountIsGreaterThan100(uint8 current, uint8 amount)
+  function testFuzz_priceNAT_revertIfCurrentPlusAmountIsGreaterThan100(uint8 current, uint8 amount)
     public
   {
     vm.assume(100 < uint256(current) + uint256(amount) && uint256(current) + uint256(amount) < 256);
@@ -56,7 +56,7 @@ contract PressureTest is Test, POKSetup {
     }
   }
 
-  function test_pricePOK_revertIfCurrentPlusAmountIsGreaterThan100(uint8 current, uint8 amount)
+  function testFuzz_pricePOK_revertIfCurrentPlusAmountIsGreaterThan100(uint8 current, uint8 amount)
     public
   {
     vm.assume(100 < uint256(current) + uint256(amount) && uint256(current) + uint256(amount) < 256);
@@ -84,7 +84,7 @@ contract PressureTest is Test, POKSetup {
     }
   }
 
-  function test_inflate_nativeCurrency_revertIfInefficientValue(
+  function testFuzz_inflate_nativeCurrency_revertIfInefficientValue(
     uint8 current,
     uint8 amount,
     uint256 tokenId,
@@ -101,7 +101,7 @@ contract PressureTest is Test, POKSetup {
     pressure.inflate{ value: value }(tokenId, current, amount);
   }
 
-  function test_inflate_nativeCurrency_revertTransferFailed(
+  function testFuzz_inflate_nativeCurrency_revertTransferFailed(
     uint8 current,
     uint8 amount,
     uint256 tokenId
@@ -117,7 +117,9 @@ contract PressureTest is Test, POKSetup {
     pressure.inflate{ value: priceNAT }(tokenId, current, amount);
   }
 
-  function test_inflate_nativeCurrency_pass(uint8 current, uint8 amount, uint256 tokenId) public {
+  function testFuzz_inflate_nativeCurrency_pass(uint8 current, uint8 amount, uint256 tokenId)
+    public
+  {
     vm.assume(uint256(current) + uint256(amount) <= 100 && amount > 0);
 
     uint256 priceNAT = pressure.priceNAT(current, amount);
@@ -130,7 +132,7 @@ contract PressureTest is Test, POKSetup {
     assertGe(treasury.balance, priceNAT);
   }
 
-  function test_inflate_POK_revertIfNotEnoughPOK(
+  function testFuzz_inflate_POK_revertIfNotEnoughPOK(
     uint8 current,
     uint8 amount,
     uint256 tokenId,
@@ -148,7 +150,7 @@ contract PressureTest is Test, POKSetup {
     pressure.inflate(tokenId, current, amount);
   }
 
-  function test_inflate_POK_pass(uint8 current, uint8 amount, uint256 tokenId) public {
+  function testFuzz_inflate_POK_pass(uint8 current, uint8 amount, uint256 tokenId) public {
     vm.assume(uint256(current) + uint256(amount) <= 100 && amount > 0);
 
     uint256 pricePOK = pressure.pricePOK(current, amount);

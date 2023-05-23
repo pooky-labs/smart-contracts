@@ -12,19 +12,19 @@ contract POKTest is Test, AccessControlAssertions, POKSetup {
   address public user1 = makeAddr("user1");
   address public user2 = makeAddr("user2");
 
-  function test_mint_revertOnlyRole(uint256 amount) public {
+  function testFuzz_mint_revertOnlyRole(uint256 amount) public {
     expectRevertMissingRole(user1, pok.MINTER());
     vm.prank(user1);
     pok.mint(user1, amount);
   }
 
-  function test_burn_revertOnlyRole(uint256 amount) public {
+  function testFuzz_burn_revertOnlyRole(uint256 amount) public {
     expectRevertMissingRole(user1, pok.BURNER());
     vm.prank(user1);
     pok.burn(user1, amount);
   }
 
-  function test__beforeTokenTransfer_revertSouldbound(uint256 amount) public {
+  function testFuzz__beforeTokenTransfer_revertSouldbound(uint256 amount) public {
     mintPOK(user1, amount);
 
     vm.expectRevert(POK.Soulbounded.selector);

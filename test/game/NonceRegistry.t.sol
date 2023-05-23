@@ -25,20 +25,22 @@ contract NonceRegistryTest is Test, AccessControlAssertions {
     assertTrue(registry.hasRole(registry.OPERATOR(), operator));
   }
 
-  function test_set_revertIfNonOperator(bytes32 nonce) public {
+  function testFuzz_set_revertIfNonOperator(bytes32 nonce) public {
     vm.expectRevert();
     vm.prank(user);
     registry.set(nonce, true);
   }
 
-  function test_set_allowOperators(bytes32 nonce) public {
+  function testFuzz_set_allowOperators(bytes32 nonce) public {
     assertFalse(registry.has(nonce));
     vm.prank(operator);
     registry.set(nonce, true);
     assertTrue(registry.has(nonce));
   }
 
-  function test_setBatch_revertIfNonOperator(bytes32 nonce1, bytes32 nonce2, bytes32 nonce3) public {
+  function testFuzz_setBatch_revertIfNonOperator(bytes32 nonce1, bytes32 nonce2, bytes32 nonce3)
+    public
+  {
     assertFalse(registry.has(nonce1));
     assertFalse(registry.has(nonce2));
     assertFalse(registry.has(nonce3));
@@ -62,9 +64,11 @@ contract NonceRegistryTest is Test, AccessControlAssertions {
     assertFalse(registry.has(nonce3));
   }
 
-  function test_setBatch_revertArgumentSizeMismatch(bytes32 nonce1, bytes32 nonce2, bytes32 nonce3)
-    public
-  {
+  function testFuzz_setBatch_revertArgumentSizeMismatch(
+    bytes32 nonce1,
+    bytes32 nonce2,
+    bytes32 nonce3
+  ) public {
     assertFalse(registry.has(nonce1));
     assertFalse(registry.has(nonce2));
     assertFalse(registry.has(nonce3));
@@ -89,7 +93,7 @@ contract NonceRegistryTest is Test, AccessControlAssertions {
     assertFalse(registry.has(nonce3));
   }
 
-  function test_setBatch_allowOperators(bytes32 nonce1, bytes32 nonce2, bytes32 nonce3) public {
+  function testFuzz_setBatch_allowOperators(bytes32 nonce1, bytes32 nonce2, bytes32 nonce3) public {
     assertFalse(registry.has(nonce1));
     assertFalse(registry.has(nonce2));
     assertFalse(registry.has(nonce3));
