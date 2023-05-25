@@ -10,8 +10,7 @@ import "openzeppelin/token/ERC721/ERC721.sol";
 import "openzeppelin/utils/Strings.sol";
 import "operator-filter-registry/src/DefaultOperatorFilterer.sol";
 import "../interfaces/IPookyball.sol";
-import "../types/PookyballMetadata.sol";
-import "../types/PookyballRarity.sol";
+import { PookyballMetadata, PookyballRarity } from "../../src/interfaces/IPookyball.sol";
 
 /**
  * @title Pookyball

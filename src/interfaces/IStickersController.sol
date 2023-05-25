@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Pooky Game Contracts (interfaces/IStickersController.sol)
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import { IStickers } from "./IStickers.sol";
 import { IPookyball } from "./IPookyball.sol";

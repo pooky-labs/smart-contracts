@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import { Pressure } from "../../src/game/Pressure.sol";
 import { POKSetup } from "../setup/POKSetup.sol";
 import { InvalidReceiver } from "../utils/InvalidReceiver.sol";
-import { Test } from "forge-std/Test.sol";
+import { BaseTest } from "../BaseTest.sol";
 
 struct PriceCase {
   uint8 current;
@@ -12,7 +12,7 @@ struct PriceCase {
   uint256 price;
 }
 
-contract PressureTest is Test, POKSetup {
+contract PressureTest is BaseTest, POKSetup {
   address public treasury = makeAddr("treasury");
   address public user = makeAddr("user");
 

@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Pooky Game Contracts (game/StickersManager.sol)
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import { IPookyball } from "../interfaces/IPookyball.sol";
 import { IStickers } from "../interfaces/IStickers.sol";
+import { PookyballMetadata, PookyballRarity } from "../../src/interfaces/IPookyball.sol";
 import { IStickersController } from "../interfaces/IStickersController.sol";
-import { PookyballMetadata } from "../types/PookyballMetadata.sol";
-import { PookyballRarity } from "../types/PookyballRarity.sol";
 
 /**
  * @title StickersManager

@@ -4,9 +4,8 @@ pragma solidity ^0.8.17;
 
 import "openzeppelin/access/AccessControl.sol";
 import "openzeppelin/utils/cryptography/ECDSA.sol";
-import "../interfaces/IPookyball.sol";
 import "../interfaces/IPOK.sol";
-import "../types/PookyballMetadata.sol";
+import { IPookyball, PookyballMetadata, PookyballRarity } from "../../src/interfaces/IPookyball.sol";
 import "../interfaces/INonceRegistry.sol";
 
 struct RewardsPXP {

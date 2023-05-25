@@ -5,7 +5,34 @@ pragma solidity ^0.8.17;
 import "openzeppelin/access/IAccessControl.sol";
 import "openzeppelin/token/ERC721/IERC721.sol";
 import "openzeppelin/interfaces/IERC2981.sol";
-import "../types/PookyballMetadata.sol";
+
+/**
+ * @title PookyballMetadata
+ * @notice The Pookyball rarities are represented on chain by this enum.
+ */
+enum PookyballRarity {
+  COMMON,
+  RARE,
+  EPIC,
+  LEGENDARY,
+  MYTHIC
+}
+
+/**
+ * @title PookyballMetadata
+ * @notice Pookyballs NFT have the following features:
+ * - rarity: integer enum.
+ * - level: token level, can be increase by spending token experiences points (PXP).
+ * - pxp: token experience points.
+ * - seed: a random uint256 word provided by Chainlink VRF service that will be used by Pooky's NFT generator
+ *     back-end to generate the NFT visuals and in-game statistics\.
+ */
+struct PookyballMetadata {
+  PookyballRarity rarity;
+  uint256 level;
+  uint256 pxp;
+  uint256 seed;
+}
 
 /**
  * @title IPookyball

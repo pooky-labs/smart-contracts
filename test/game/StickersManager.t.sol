@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
-import { Test } from "forge-std/Test.sol";
+import { BaseTest } from "../BaseTest.sol";
 import { StickersManager } from "../../src/game/StickersManager.sol";
-import { PookyballRarity } from "../../src/types/PookyballRarity.sol";
+import { PookyballRarity } from "../../src/interfaces/IPookyball.sol";
 import { StickersControllerSetup } from "../setup/StickersControllerSetup.t.sol";
 
 struct SlotsTest {
@@ -14,7 +14,7 @@ struct SlotsTest {
   uint256 free;
 }
 
-contract StickersManagerTest is Test, StickersControllerSetup {
+contract StickersManagerTest is BaseTest, StickersControllerSetup {
   address public admin = makeAddr("admin");
   address public game = makeAddr("game");
   address public user = makeAddr("user");
