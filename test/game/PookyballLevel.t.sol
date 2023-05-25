@@ -108,9 +108,12 @@ contract PookyballLeveltest is BaseTest, PookyballSetup, POKSetup {
 
     mintPOK(user, data.expectedPOK - 0.01 ether);
 
+    Pricing memory pricing = level.getPricing(tokenId, data.increase, data.value);
     vm.expectRevert(
       abi.encodeWithSelector(
-        PookyballLevel.InsufficientPOK.selector, data.expectedPOK, pok.balanceOf(user)
+        PookyballLevel.InsufficientPOK.selector,
+        pricing.feePOK + pricing.gapPOK,
+        pok.balanceOf(user)
       )
     );
 
