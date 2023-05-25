@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
-import { Test } from "forge-std/Test.sol";
+import { BaseTest } from "../BaseTest.sol";
 import { POKSetup } from "../setup/POKSetup.sol";
 import { POK } from "../../src/tokens/POK.sol";
 import { AccessControlAssertions } from "../utils/AccessControlAssertions.sol";
 
-contract POKTest is Test, AccessControlAssertions, POKSetup {
+contract POKTest is BaseTest, AccessControlAssertions, POKSetup {
   address public admin = makeAddr("admin");
   address public minter = makeAddr("minter");
   address public user1 = makeAddr("user1");

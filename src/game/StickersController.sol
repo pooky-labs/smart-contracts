@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Pooky Game Contracts (game/StickersController.sol)
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import { EnumerableSet } from "openzeppelin/utils/structs/EnumerableSet.sol";
 import { OwnableRoles } from "solady/auth/OwnableRoles.sol";

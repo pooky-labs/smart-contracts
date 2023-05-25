@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Pooky Game Contracts (POK.sol)
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import { VRFCoordinatorV2Interface } from
   "chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";

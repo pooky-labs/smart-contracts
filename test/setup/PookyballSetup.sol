@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
-import { Test } from "forge-std/Test.sol";
+import { BaseTest } from "../BaseTest.sol";
 import { Pookyball } from "../../src/tokens/Pookyball.sol";
-import { PookyballRarity } from "../../src/types/PookyballRarity.sol";
+import { PookyballRarity } from "../../src/interfaces/IPookyball.sol";
 import { VRFCoordinatorV2Setup } from "./VRFCoordinatorV2Setup.sol";
 
-abstract contract PookyballSetup is Test, VRFCoordinatorV2Setup {
+abstract contract PookyballSetup is BaseTest, VRFCoordinatorV2Setup {
   Pookyball public pookyball;
 
   constructor() {

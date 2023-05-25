@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
-import { Test } from "forge-std/Test.sol";
+import { BaseTest } from "../BaseTest.sol";
 import { ECDSA } from "openzeppelin/utils/cryptography/ECDSA.sol";
 import { NonceRegistry } from "../../src/game/NonceRegistry.sol";
 import { Rewards, RewardsData, RewardsPXP } from "../../src/game/Rewards.sol";
-import { PookyballRarity } from "../../src/types/PookyballRarity.sol";
+import { PookyballRarity } from "../../src/interfaces/IPookyball.sol";
 import { POKSetup } from "../setup/POKSetup.sol";
 import { PookyballSetup } from "../setup/PookyballSetup.sol";
 import { AccessControlAssertions } from "../utils/AccessControlAssertions.sol";
 import { InvalidReceiver } from "../utils/InvalidReceiver.sol";
 
-contract RewardsTest is Test, AccessControlAssertions, POKSetup, PookyballSetup {
+contract RewardsTest is BaseTest, AccessControlAssertions, POKSetup, PookyballSetup {
   using ECDSA for bytes32;
 
   NonceRegistry public registry;

@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
-import { Test } from "forge-std/Test.sol";
+import { BaseTest } from "../BaseTest.sol";
 import { RefillableSale, Item, Refill } from "../../src/mint/RefillableSale.sol";
 import { Pookyball } from "../../src/tokens/Pookyball.sol";
-import { PookyballRarity } from "../../src/types/PookyballRarity.sol";
+import { PookyballRarity } from "../../src/interfaces/IPookyball.sol";
 import { PookyballSetup } from "../setup/PookyballSetup.sol";
 import { InvalidReceiver } from "../utils/InvalidReceiver.sol";
 
-contract RefillableSaleTest is Test, PookyballSetup {
+contract RefillableSaleTest is BaseTest, PookyballSetup {
   RefillableSale public sale;
   Refill[] public defaultRefills;
 

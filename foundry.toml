@@ -3,9 +3,10 @@
 src = "src"
 out = "artifacts"
 libs = ["lib"]
-solc = "0.8.19"
+solc = "0.8.20"
 bytecode_hash = "none"
 cbor_metadata = false
+fs_permissions = [{ access = "read", path = "./test/datasets"}]
 
 [profile.default.fuzz]
 runs = 256

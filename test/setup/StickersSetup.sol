@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
-import { Test } from "forge-std/Test.sol";
+import { BaseTest } from "../BaseTest.sol";
 import { StickerMint, StickerRarity } from "../../src/interfaces/IStickers.sol";
 import { Stickers } from "../../src/tokens/Stickers.sol";
 import { VRFConfig } from "../../src/types/VRFConfig.sol";
 import { VRFCoordinatorV2Setup } from "./VRFCoordinatorV2Setup.sol";
 
-abstract contract StickersSetup is Test, VRFCoordinatorV2Setup {
+abstract contract StickersSetup is BaseTest, VRFCoordinatorV2Setup {
   Stickers public stickers;
 
   constructor() {

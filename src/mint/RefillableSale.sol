@@ -3,8 +3,7 @@
 pragma solidity ^0.8.18;
 
 import { AccessControlEnumerable } from "openzeppelin/access/AccessControlEnumerable.sol";
-import { IPookyball } from "../interfaces/IPookyball.sol";
-import { PookyballRarity } from "../types/PookyballRarity.sol";
+import { IPookyball, PookyballRarity } from "../interfaces/IPookyball.sol";
 
 struct Item {
   /// Supply of the current sale

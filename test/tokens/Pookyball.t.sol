@@ -1,17 +1,16 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import { VRFConsumerBaseV2 } from "chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
-import { Test } from "forge-std/Test.sol";
+import { BaseTest } from "../BaseTest.sol";
 import { Strings } from "openzeppelin/utils/Strings.sol";
 import { IPookyball } from "../../src/interfaces/IPookyball.sol";
 import { Pookyball } from "../../src/tokens/Pookyball.sol";
-import { PookyballRarity } from "../../src/types/PookyballRarity.sol";
-import { PookyballMetadata } from "../../src/types/PookyballMetadata.sol";
+import { PookyballMetadata, PookyballRarity } from "../../src/interfaces/IPookyball.sol";
 import { PookyballSetup } from "../setup/PookyballSetup.sol";
 import { AccessControlAssertions } from "../utils/AccessControlAssertions.sol";
 
-contract PookyballTest is Test, AccessControlAssertions, PookyballSetup {
+contract PookyballTest is BaseTest, AccessControlAssertions, PookyballSetup {
   using Strings for uint256;
 
   address public admin = makeAddr("admin");
