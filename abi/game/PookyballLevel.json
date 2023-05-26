@@ -2,13 +2,13 @@
   {
     "inputs": [
       {
-        "internalType": "contract IPOK",
-        "name": "_pok",
+        "internalType": "contract IPookyball",
+        "name": "_pookyball",
         "type": "address"
       },
       {
-        "internalType": "contract IPookyball",
-        "name": "_pookyball",
+        "internalType": "contract IPOK",
+        "name": "_pok",
         "type": "address"
       }
     ],
@@ -28,7 +28,7 @@
         "type": "uint256"
       }
     ],
-    "name": "InsufficientPOKBalance",
+    "name": "InsufficientPOK",
     "type": "error"
   },
   {
@@ -49,7 +49,59 @@
   },
   {
     "inputs": [],
-    "name": "PXP_BASE",
+    "name": "BASE_PXP",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "BASE_RATIO",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "FEE_RATIO",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "LEVEL_RATIO",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "MATIC_POK_RATIO",
     "outputs": [
       {
         "internalType": "uint256",
@@ -75,33 +127,7 @@
   },
   {
     "inputs": [],
-    "name": "RATIO_DECIMALS",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "RATIO_POK",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "RATIO_PXP",
+    "name": "PXP_POK_RATIO",
     "outputs": [
       {
         "internalType": "uint256",
@@ -116,78 +142,16 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "n",
-        "type": "uint256"
-      }
-    ],
-    "name": "levelPOK",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
+        "name": "from",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "levels",
+        "name": "to",
         "type": "uint256"
       }
     ],
-    "name": "levelPOKCost",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "n",
-        "type": "uint256"
-      }
-    ],
-    "name": "levelPXP",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "levels",
-        "type": "uint256"
-      }
-    ],
-    "name": "levelUp",
+    "name": "compute",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -195,43 +159,91 @@
   {
     "inputs": [
       {
-        "internalType": "enum PookyballRarity",
-        "name": "",
-        "type": "uint8"
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "increase",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
       }
     ],
-    "name": "maxLevels",
+    "name": "getPricing",
     "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "requiredPXP",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "remainingPXP",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "newLevel",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "gapPOK",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "feePOK",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct Pricing",
+        "name": "pricing",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "increase",
+        "type": "uint256"
+      }
+    ],
+    "name": "levelUp",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       {
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "pok",
+    "name": "slots",
     "outputs": [
       {
-        "internalType": "contract IPOK",
+        "internalType": "uint256",
         "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "pookyball",
-    "outputs": [
-      {
-        "internalType": "contract IPookyball",
-        "name": "",
-        "type": "address"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
