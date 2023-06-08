@@ -23,11 +23,12 @@ struct LevelData {
 contract PookyballLeveltest is BaseTest, PookyballSetup, POKSetup {
   address admin = makeAddr("admin");
   address game = makeAddr("game");
+  address treasury = makeAddr("treasury");
 
   PookyballLevel level;
 
   function setUp() public {
-    level = new PookyballLevel(pookyball, pok);
+    level = new PookyballLevel(pookyball, pok, treasury);
 
     vm.startPrank(admin);
     pookyball.grantRole(pookyball.GAME(), address(level));
@@ -137,7 +138,11 @@ contract PookyballLeveltest is BaseTest, PookyballSetup, POKSetup {
       mintPOK(user, dataset[i].expectedPOK + 0.01 ether);
 
       hoax(user, dataset[i].value);
+
+      uint256 treasuryBefore = treasury.balance;
       level.levelUp{ value: dataset[i].value }(tokenId, dataset[i].increase);
+      assertEq(treasury.balance, treasuryBefore + dataset[i].value);
+      assertEq(pookyball.metadata(tokenId).level, dataset[i].level + dataset[i].increase);
     }
   }
 }

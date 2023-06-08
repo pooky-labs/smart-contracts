@@ -28,6 +28,7 @@ contract PookyballLevel {
 
   IPookyball immutable pookyball;
   IPOK immutable pok;
+  address immutable treasury;
 
   mapping(uint256 => uint256) public slots;
 
@@ -35,10 +36,13 @@ contract PookyballLevel {
   error MaximumLevelReached(uint256 tokenId, uint256 maxLevel);
   /// Thrown when an account does own enough $POK token to pay the level up fee
   error InsufficientPOK(uint256 expected, uint256 actual);
+  /// Thrown when the native transfer has failed.
+  error TransferFailed(address recipient, uint256 amount);
 
-  constructor(IPookyball _pookyball, IPOK _pok) {
+  constructor(IPookyball _pookyball, IPOK _pok, address _treasury) {
     pookyball = _pookyball;
     pok = _pok;
+    treasury = _treasury;
     slots[1] = BASE_PXP;
     compute(2, 120);
   }
@@ -76,6 +80,8 @@ contract PookyballLevel {
     } else {
       pricing.feePOK = 0;
     }
+
+    pricing.newLevel = metadata.level + increase;
   }
 
   function levelUp(uint256 tokenId, uint256 increase) external payable {
@@ -94,5 +100,13 @@ contract PookyballLevel {
     pookyball.setPXP(tokenId, pricing.remainingPXP);
     // Increment the ball level
     pookyball.setLevel(tokenId, pricing.newLevel);
+
+    if (msg.value > 0) {
+      // Forward the funds to the treasury wallet
+      (bool sent,) = treasury.call{ value: msg.value }("");
+      if (!sent) {
+        revert TransferFailed(treasury, msg.value);
+      }
+    }
   }
 }

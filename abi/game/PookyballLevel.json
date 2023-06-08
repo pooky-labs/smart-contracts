@@ -10,6 +10,11 @@
         "internalType": "contract IPOK",
         "name": "_pok",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_treasury",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -45,6 +50,22 @@
       }
     ],
     "name": "MaximumLevelReached",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "TransferFailed",
     "type": "error"
   },
   {
