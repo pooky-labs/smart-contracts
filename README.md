@@ -14,8 +14,8 @@ For more details about the internal architecture of the repository, see [CONTRIB
 | [`POK`](contracts/tokens/POK.sol)                     | [`0x7b7E3B03f34b17d70C276C4886467D58867Bbc94`](https://polygonscan.com/address/0x7b7E3B03f34b17d70C276C4886467D58867Bbc94#code) |
 | [`Pookyball`](contracts/tokens/Pookyball.sol)         | [`0xb4859acd9B0A65CA4897c31e5cb5160D9Ff32C0A`](https://polygonscan.com/address/0xb4859acd9B0A65CA4897c31e5cb5160D9Ff32C0A#code) |
 | [`RefillableSale`](contracts/mint/RefillableSale.sol) | [`0x57f48000b7573dd55963f15a1bf2490e43fee41c`](https://polygonscan.com/address/0x57f48000b7573dd55963f15a1bf2490e43fee41c#code) |
-| [`Level`](contracts/game/Level.sol)                   | [`0xe05a8312979d65dddd111fca90ee41c2e8c39a6c`](https://polygonscan.com/address/0xe05a8312979d65dddd111fca90ee41c2e8c39a6c#code) |
 | [`NonceRegistry`](contracts/game/NonceRegistry.sol)   | [`0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818`](https://polygonscan.com/address/0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818#code) |
+| [`PookyballLevel`](contracts/game/PookyballLevel.sol) | [`0x2D089721F64036753B28FbF78081dC39d57654d9`](https://polygonscan.com/address/0x2D089721F64036753B28FbF78081dC39d57654d9#code) |
 | [`Pressure`](contracts/game/Pressure.sol)             | [`0xa34223AD4d42CB041056287784FE1F91a7e5b21A`](https://polygonscan.com/address/0xa34223AD4d42CB041056287784FE1F91a7e5b21A#code) |
 | [`Rewards`](contracts/game/Rewards.sol)               | [`0x64A85fb2Ca5ebdC70cBa233a7Ea94672BeF5B372`](https://polygonscan.com/address/0x64A85fb2Ca5ebdC70cBa233a7Ea94672BeF5B372#code) |
 
