@@ -1,15 +1,25 @@
 # Changelog
 
+## July 4 2023
+
+Contract changes:
+
+- [`PookyballLevel`](src/game/PookyballLevel.sol) now limits the maximum level of the Pookyballs, according to the [whitepaper](https://whitepaper.pooky.gg/pookyball-features/levelling-up).
+
+| Contract name                                   | Old address                                                                                                                     | New address                                                                                                                     |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [`PookyballLevel`](src/game/PookyballLevel.sol) | [`0x2D089721F64036753B28FbF78081dC39d57654d9`](https://polygonscan.com/address/0x2D089721F64036753B28FbF78081dC39d57654d9#code) | [`0xeD494677cf1454ac962ECCA5940B2E787f3095Fc`](https://polygonscan.com/address/0xeD494677cf1454ac962ECCA5940B2E787f3095Fc#code) |
+
 ## June 12 2023
 
 Contract changes:
 
 - [`Level`](https://github.com/pooky-labs/smart-contracts/blob/519fd565f036802d6cec4ed18d18fc773f731979/src/game/Level.sol) has been renamed to `PookyballLevel` and now accepts MATIC to pay the levelUp fee
 
-| Contract name                                                                                                                      | Old address                                                                                                                     | New address                                                                                                                     |
-| ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| [`Level`](https://github.com/pooky-labs/smart-contracts/blob/519fd565f036802d6cec4ed18d18fc773f731979/src/game/Level.sol)          | [`0xe05a8312979d65dddd111fca90ee41c2e8c39a6c`](https://polygonscan.com/address/0xe05a8312979d65dddd111fca90ee41c2e8c39a6c#code) | none                                                                                                                            |
-| [`PookyballLevel`](https://github.com/pooky-labs/smart-contracts/blob/519fd565f036802d6cec4ed18d18fc773f731979/src/game/Level.sol) | none                                                                                                                            | [`0x2D089721F64036753B28FbF78081dC39d57654d9`](https://polygonscan.com/address/0x2D089721F64036753B28FbF78081dC39d57654d9#code) |
+| Contract name                                                                                                             | Old address                                                                                                                     | New address                                                                                                                     |
+| ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [`Level`](https://github.com/pooky-labs/smart-contracts/blob/519fd565f036802d6cec4ed18d18fc773f731979/src/game/Level.sol) | [`0xe05a8312979d65dddd111fca90ee41c2e8c39a6c`](https://polygonscan.com/address/0xe05a8312979d65dddd111fca90ee41c2e8c39a6c#code) | none                                                                                                                            |
+| [`PookyballLevel`](src/game/PookyballLevel.sol)                                                                           | none                                                                                                                            | [`0x2D089721F64036753B28FbF78081dC39d57654d9`](https://polygonscan.com/address/0x2D089721F64036753B28FbF78081dC39d57654d9#code) |
 
 ## May 5 2023
 

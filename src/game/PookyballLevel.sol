@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import { IPOK } from "../interfaces/IPOK.sol";
-import { IPookyball, PookyballMetadata } from "../interfaces/IPookyball.sol";
+import { IPookyball, PookyballMetadata, PookyballRarity } from "../interfaces/IPookyball.sol";
 
 struct Pricing {
   uint256 requiredPXP;
@@ -31,6 +31,7 @@ contract PookyballLevel {
   address immutable treasury;
 
   mapping(uint256 => uint256) public slots;
+  mapping(PookyballRarity => uint256) public maxLevel;
 
   /// Thrown when an account tries to level a ball above its maximum level.
   error MaximumLevelReached(uint256 tokenId, uint256 maxLevel);
@@ -43,6 +44,13 @@ contract PookyballLevel {
     pookyball = _pookyball;
     pok = _pok;
     treasury = _treasury;
+
+    maxLevel[PookyballRarity.COMMON] = 40;
+    maxLevel[PookyballRarity.RARE] = 60;
+    maxLevel[PookyballRarity.EPIC] = 80;
+    maxLevel[PookyballRarity.LEGENDARY] = 100;
+    maxLevel[PookyballRarity.MYTHIC] = 120;
+
     slots[1] = BASE_PXP;
     compute(2, 120);
   }
@@ -62,6 +70,12 @@ contract PookyballLevel {
     returns (Pricing memory pricing)
   {
     PookyballMetadata memory metadata = pookyball.metadata(tokenId);
+
+    // Ensure the ball does not go over the maximum allowed level
+    if (metadata.level + increase > maxLevel[metadata.rarity]) {
+      revert MaximumLevelReached(tokenId, maxLevel[metadata.rarity]);
+    }
+
     for (uint256 i = 1; i <= increase; i++) {
       pricing.requiredPXP += slots[metadata.level + i];
     }
