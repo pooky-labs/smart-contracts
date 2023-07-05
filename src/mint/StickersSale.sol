@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Pooky Game Contracts (mint/StickersSale.sol)
-pragma solidity ^0.8.20;
+pragma solidity 0.8.20;
 
 import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
 import { IStickers, StickerMint, StickerRarity } from "../interfaces/IStickers.sol";
