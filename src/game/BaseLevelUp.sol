@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
+// Pooky Game Contracts (game/BaseLevelUp.sol)
 pragma solidity ^0.8.20;
 
-import { IPOK } from "../interfaces/IPOK.sol";
-import { IPookyball, PookyballMetadata } from "../interfaces/IPookyball.sol";
 import { ECDSA } from "openzeppelin/utils/cryptography/ECDSA.sol";
 import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
+import { IPOK } from "../interfaces/IPOK.sol";
+import { IPookyball, PookyballMetadata } from "../interfaces/IPookyball.sol";
+import { Treasury } from "../utils/Treasury.sol";
 
 struct Pricing {
   uint256 requiredPXP;
@@ -19,7 +21,7 @@ struct Pricing {
  * @author Mathieu Bour
  * @notice Base level up contract for tokens using exponential level growth, POK/NAT integration and offchain PXP.
  */
-abstract contract BaseLevelUp is OwnableRoles {
+abstract contract BaseLevelUp is OwnableRoles, Treasury {
   using ECDSA for bytes32;
 
   // Roles
@@ -43,9 +45,6 @@ abstract contract BaseLevelUp is OwnableRoles {
   /// The POK token destination address.
   IPOK public immutable pok;
 
-  /// The native currency destination address.
-  address public treasury;
-
   mapping(uint256 => uint256) public slots;
 
   /// Thrown when the signature is invalid.
@@ -57,10 +56,11 @@ abstract contract BaseLevelUp is OwnableRoles {
   /// Thrown when the native transfer has failed.
   error TransferFailed(address recipient, uint256 amount);
 
-  constructor(IPOK _pok, address admin, address _treasury, uint256 _basePXP, uint256 precompute) {
+  constructor(IPOK _pok, address admin, address _treasury, uint256 _basePXP, uint256 precompute)
+    Treasury(_treasury)
+  {
     pok = _pok;
     _initializeOwner(admin);
-    treasury = _treasury;
     basePXP = _basePXP;
     slots[1] = _basePXP;
     _compute(2, precompute);
@@ -73,14 +73,6 @@ abstract contract BaseLevelUp is OwnableRoles {
         i++;
       }
     }
-  }
-
-  /**
-   * Change the native currency destination address.
-   * @param _treasury The new treasury address.
-   */
-  function changeTreasury(address _treasury) external onlyOwner {
-    treasury = _treasury;
   }
 
   /**

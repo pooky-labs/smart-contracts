@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (Pookyball.sol)
+// Pooky Game Contracts (tokens/Pookyball.sol)
 pragma solidity ^0.8.17;
 
 import "chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";

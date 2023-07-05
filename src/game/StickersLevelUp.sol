@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+// Pooky Game Contracts (game/StickersLevelUp.sol)
 pragma solidity ^0.8.20;
 
 import { IStickers, StickerMetadata, StickerRarity } from "../interfaces/IStickers.sol";
