@@ -1,2 +1,7 @@
+coverage:
+  status:
+    project: false
+    patch: false
+
 ignore:
-  - "./test/"
+  - './test/'

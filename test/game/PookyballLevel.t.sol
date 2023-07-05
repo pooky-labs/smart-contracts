@@ -3,12 +3,18 @@ pragma solidity ^0.8.20;
 
 import { BaseTest } from "../BaseTest.sol";
 import { PookyballLevel, Pricing } from "../../src/game/PookyballLevel.sol";
+import { PookyballRarity } from "../../src/interfaces/IPookyball.sol";
 import { POKSetup } from "../setup/POKSetup.sol";
 import { PookyballSetup } from "../setup/PookyballSetup.sol";
 
 struct SlotData {
   uint256 expected;
   uint256 level;
+}
+
+struct MaxLevelData {
+  PookyballRarity rarity;
+  uint256 maxLevel;
 }
 
 struct LevelData {
@@ -59,7 +65,7 @@ contract PookyballLeveltest is BaseTest, PookyballSetup, POKSetup {
 
     for (uint256 i; i < dataset.length; i++) {
       address user = makeAddr(string(abi.encodePacked(i)));
-      uint256 tokenId = mintPookyball(user);
+      uint256 tokenId = mintPookyball(user, PookyballRarity.LEGENDARY);
 
       vm.startPrank(game);
       pookyball.setLevel(tokenId, dataset[i].level);
@@ -122,13 +128,47 @@ contract PookyballLeveltest is BaseTest, PookyballSetup, POKSetup {
     level.levelUp{ value: data.value }(tokenId, data.increase);
   }
 
+  function test_levelUp_revertMaximumLevelReach() public {
+    MaxLevelData[5] memory dataset = [
+      MaxLevelData(PookyballRarity.COMMON, 40),
+      MaxLevelData(PookyballRarity.RARE, 60),
+      MaxLevelData(PookyballRarity.EPIC, 80),
+      MaxLevelData(PookyballRarity.LEGENDARY, 100),
+      MaxLevelData(PookyballRarity.MYTHIC, 120)
+    ];
+
+    for (uint256 i = 0; i < dataset.length; i++) {
+      address user = makeAddr(string(abi.encodePacked(i)));
+      uint256 tokenId = mintPookyball(user, dataset[i].rarity);
+
+      vm.startPrank(game);
+      pookyball.setLevel(tokenId, dataset[i].maxLevel - 1);
+      pookyball.setPXP(tokenId, 1e9 ether); // Enough PXP to pass any level
+      vm.stopPrank();
+
+      mintPOK(user, 1e9 ether); // Enough POK to pass any level
+
+      vm.prank(user);
+      level.levelUp(tokenId, 1); // First level up should pass => ball is now at the maximum level
+
+      // Second level up should revert
+      vm.expectRevert(
+        abi.encodeWithSelector(
+          PookyballLevel.MaximumLevelReached.selector, tokenId, dataset[i].maxLevel
+        )
+      );
+      vm.prank(user);
+      level.levelUp(tokenId, 1);
+    }
+  }
+
   function test_levelUp_pass() public {
     (LevelData[] memory dataset) =
       abi.decode(loadDataset("PookyballLevel_pricing.json"), (LevelData[]));
 
     for (uint256 i; i < dataset.length; i++) {
       address user = makeAddr(string(abi.encodePacked(i)));
-      uint256 tokenId = mintPookyball(user);
+      uint256 tokenId = mintPookyball(user, PookyballRarity.LEGENDARY);
 
       vm.startPrank(game);
       pookyball.setLevel(tokenId, dataset[i].level);
