@@ -15,7 +15,7 @@ For more details about the internal architecture of the repository, see [CONTRIB
 | [`Pookyball`](contracts/tokens/Pookyball.sol)         | [`0xb4859acd9B0A65CA4897c31e5cb5160D9Ff32C0A`](https://polygonscan.com/address/0xb4859acd9B0A65CA4897c31e5cb5160D9Ff32C0A#code) |
 | [`RefillableSale`](contracts/mint/RefillableSale.sol) | [`0x57f48000b7573dd55963f15a1bf2490e43fee41c`](https://polygonscan.com/address/0x57f48000b7573dd55963f15a1bf2490e43fee41c#code) |
 | [`NonceRegistry`](contracts/game/NonceRegistry.sol)   | [`0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818`](https://polygonscan.com/address/0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818#code) |
-| [`PookyballLevel`](contracts/game/PookyballLevel.sol) | [`0x2D089721F64036753B28FbF78081dC39d57654d9`](https://polygonscan.com/address/0x2D089721F64036753B28FbF78081dC39d57654d9#code) |
+| [`PookyballLevel`](contracts/game/PookyballLevel.sol) | [`0xeD494677cf1454ac962ECCA5940B2E787f3095Fc`](https://polygonscan.com/address/0xeD494677cf1454ac962ECCA5940B2E787f3095Fc#code) |
 | [`Pressure`](contracts/game/Pressure.sol)             | [`0xa34223AD4d42CB041056287784FE1F91a7e5b21A`](https://polygonscan.com/address/0xa34223AD4d42CB041056287784FE1F91a7e5b21A#code) |
 | [`Rewards`](contracts/game/Rewards.sol)               | [`0x64A85fb2Ca5ebdC70cBa233a7Ea94672BeF5B372`](https://polygonscan.com/address/0x64A85fb2Ca5ebdC70cBa233a7Ea94672BeF5B372#code) |
 
@@ -40,7 +40,7 @@ The administrative privilege of granting/revoking roles is handled by a multi-si
 engineers of Pooky Labs.
 The address of the current multi-signature admin wallet is [`0x3CC4F4372F83ad3C577eD6e1Aae3D244A1b955D5`](https://polygonscan.com/address/0x3CC4F4372F83ad3C577eD6e1Aae3D244A1b955D5).
 
-The Pooky dApp [app.pooky.gg](https://app.pooky.gg) serves as reference to the "official" Pooky smart contracts, effectively serving as
+The Pooky dApp [pooky.gg](https://pooky.gg) serves as reference to the "official" Pooky smart contracts, effectively serving as
 smart-contracts proxy.
 Pooky Labs may switch the contract implementation at any time on the app.
 In this scenario, Pooky Labs commits to airdrop the tokens to their owners in the new implementation.
