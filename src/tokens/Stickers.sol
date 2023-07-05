@@ -17,9 +17,10 @@ import { IStickers, StickerMetadata, StickerRarity, StickerMint } from "../inter
 import { VRFConfig } from "../types/VRFConfig.sol";
 
 contract Stickers is
-  IStickers,
+  ERC721A,
   ERC721ABurnable,
   ERC721AQueryable,
+  IStickers,
   ERC2981,
   OwnableRoles,
   VRFConsumerBaseV2,
@@ -173,7 +174,7 @@ contract Stickers is
    * - sender must have the GAME role.
    * - Pookyball {tokenId} should exist (minted and not burned).
    */
-  function setLevel(uint256 tokenId, uint128 newLevel)
+  function setLevel(uint256 tokenId, uint248 newLevel)
     external
     onlyExists(tokenId)
     onlyRolesOrOwner(GAME)

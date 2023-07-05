@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import { BaseTest } from "../BaseTest.sol";
 import { StickersManager } from "../../src/game/StickersManager.sol";
 import { PookyballRarity } from "../../src/interfaces/IPookyball.sol";
-import { StickersControllerSetup } from "../setup/StickersControllerSetup.t.sol";
+import { StickersControllerSetup } from "../setup/StickersControllerSetup.sol";
 
 struct SlotsTest {
   PookyballRarity rarity;

@@ -320,25 +320,6 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "PXPChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
         "internalType": "address",
         "name": "user",
         "type": "address"
@@ -780,9 +761,9 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint128",
+            "internalType": "uint248",
             "name": "level",
-            "type": "uint128"
+            "type": "uint248"
           },
           {
             "internalType": "enum StickerRarity",
@@ -1184,9 +1165,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint128",
+        "internalType": "uint248",
         "name": "newLevel",
-        "type": "uint128"
+        "type": "uint248"
       }
     ],
     "name": "setLevel",

@@ -87,7 +87,7 @@ contract StickersTest is BaseTest, StickersSetup {
     stickers.mint(requests);
   }
 
-  function test_setLevel_pass(uint128 newLevel) public {
+  function test_setLevel_pass(uint248 newLevel) public {
     uint256 tokenId = mintSticker(user1);
 
     vm.prank(game);

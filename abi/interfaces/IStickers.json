@@ -192,25 +192,6 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "PXPChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
         "name": "seed",
         "type": "uint256"
       }
@@ -436,9 +417,9 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint128",
+            "internalType": "uint248",
             "name": "level",
-            "type": "uint128"
+            "type": "uint248"
           },
           {
             "internalType": "enum StickerRarity",
@@ -582,6 +563,24 @@
       }
     ],
     "name": "setApprovalForAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint248",
+        "name": "newLevel",
+        "type": "uint248"
+      }
+    ],
+    "name": "setLevel",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
