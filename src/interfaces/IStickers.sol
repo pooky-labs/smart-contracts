@@ -2,9 +2,7 @@
 // Pooky Game Contracts (interfaces/IStickers.sol)
 pragma solidity ^0.8.20;
 
-import { IERC721A } from "ERC721A/IERC721A.sol";
-import { IERC721ABurnable } from "ERC721A/interfaces/IERC721ABurnable.sol";
-import { IERC721AQueryable } from "ERC721A/interfaces/IERC721AQueryable.sol";
+import { IBaseERC721A } from "../interfaces/IBaseERC721A.sol";
 
 enum StickerRarity {
   COMMON,
@@ -20,7 +18,6 @@ struct StickerMint {
 }
 
 struct StickerMetadata {
-  uint256 seed;
   uint248 level;
   StickerRarity rarity;
 }
@@ -29,14 +26,9 @@ struct StickerMetadata {
  * @title IStickers
  * @author Mathieu Bour
  */
-interface IStickers is IERC721A, IERC721ABurnable, IERC721AQueryable {
-  /// Fired when the seed of a Pookyball token is set by the VRFCoordinator,
-  event SeedSet(uint256 indexed tokenId, uint256 seed);
+interface IStickers is IBaseERC721A {
   /// Fired when the level of a Pookyball token is changed,
   event LevelChanged(uint256 indexed tokenId, uint256 level);
-
-  /// Thrown when the token {tokenId} does not exist.
-  error NonExistentToken(uint256 tokenId);
 
   /**
    * @notice StickerMetadata of the token {tokenId}.
@@ -54,7 +46,8 @@ interface IStickers is IERC721A, IERC721ABurnable, IERC721AQueryable {
 
   /**
    * @notice Mint multiple Stickers at once.
-   * @param requests The recipient and rarities of the Stickers.
+   * @param recipient The mint recipient.
+   * @param rarities The Sticker rarities.
    */
-  function mint(StickerMint[] memory requests) external returns (uint256);
+  function mint(address recipient, StickerRarity[] memory rarities) external;
 }

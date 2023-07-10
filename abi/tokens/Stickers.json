@@ -431,19 +431,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "ROYALTY",
-    "outputs": [
-      {
-        "internalType": "uint96",
-        "name": "",
-        "type": "uint96"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -731,19 +718,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "lastTokenId",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -755,11 +729,6 @@
     "outputs": [
       {
         "components": [
-          {
-            "internalType": "uint256",
-            "name": "seed",
-            "type": "uint256"
-          },
           {
             "internalType": "uint248",
             "name": "level",
@@ -782,31 +751,18 @@
   {
     "inputs": [
       {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "recipient",
-            "type": "address"
-          },
-          {
-            "internalType": "enum StickerRarity",
-            "name": "rarity",
-            "type": "uint8"
-          }
-        ],
-        "internalType": "struct StickerMint[]",
-        "name": "requests",
-        "type": "tuple[]"
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "internalType": "enum StickerRarity[]",
+        "name": "rarities",
+        "type": "uint8[]"
       }
     ],
     "name": "mint",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1103,6 +1059,25 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "seeds",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "operator",
         "type": "address"
@@ -1148,11 +1123,16 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "newReceiver",
+        "name": "_receiver",
         "type": "address"
+      },
+      {
+        "internalType": "uint96",
+        "name": "royalty",
+        "type": "uint96"
       }
     ],
-    "name": "setERC2981Receiver",
+    "name": "setDefaultRoyalty",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1321,6 +1301,58 @@
     "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "vrf",
+    "outputs": [
+      {
+        "internalType": "contract VRFCoordinatorV2Interface",
+        "name": "coordinator",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "keyHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint64",
+        "name": "subcriptionId",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint16",
+        "name": "minimumRequestConfirmations",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint32",
+        "name": "callbackGasLimit",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "vrfRequests",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   }
 ]

@@ -173,25 +173,6 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "level",
-        "type": "uint256"
-      }
-    ],
-    "name": "LevelChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
         "name": "seed",
         "type": "uint256"
       }
@@ -400,55 +381,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "metadata",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint248",
-            "name": "level",
-            "type": "uint248"
-          },
-          {
-            "internalType": "enum StickerRarity",
-            "name": "rarity",
-            "type": "uint8"
-          }
-        ],
-        "internalType": "struct StickerMetadata",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      },
-      {
-        "internalType": "enum StickerRarity[]",
-        "name": "rarities",
-        "type": "uint8[]"
-      }
-    ],
-    "name": "mint",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "name",
     "outputs": [
@@ -574,24 +506,6 @@
       }
     ],
     "name": "setApprovalForAll",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint248",
-        "name": "newLevel",
-        "type": "uint248"
-      }
-    ],
-    "name": "setLevel",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

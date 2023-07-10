@@ -4,9 +4,9 @@ pragma solidity ^0.8.20;
 
 import { ECDSA } from "openzeppelin/utils/cryptography/ECDSA.sol";
 import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
+import { BaseTreasury } from "../base/BaseTreasury.sol";
 import { IPOK } from "../interfaces/IPOK.sol";
 import { IPookyball, PookyballMetadata } from "../interfaces/IPookyball.sol";
-import { Treasury } from "../utils/Treasury.sol";
 
 struct Pricing {
   uint256 requiredPXP;
@@ -21,7 +21,7 @@ struct Pricing {
  * @author Mathieu Bour
  * @notice Base level up contract for tokens using exponential level growth, POK/NAT integration and offchain PXP.
  */
-abstract contract BaseLevelUp is OwnableRoles, Treasury {
+abstract contract BaseLevelUp is OwnableRoles, BaseTreasury {
   using ECDSA for bytes32;
 
   // Roles
@@ -57,7 +57,7 @@ abstract contract BaseLevelUp is OwnableRoles, Treasury {
   error TransferFailed(address recipient, uint256 amount);
 
   constructor(IPOK _pok, address admin, address _treasury, uint256 _basePXP, uint256 precompute)
-    Treasury(_treasury)
+    BaseTreasury(_treasury)
   {
     pok = _pok;
     _initializeOwner(admin);

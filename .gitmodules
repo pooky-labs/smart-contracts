@@ -16,4 +16,4 @@
 	url = https://github.com/chiru-labs/ERC721A
 [submodule "lib/solady"]
 	path = lib/solady
-	url = https://github.com/vectorized/solady
+	url = https://github.com/Vectorized/solady

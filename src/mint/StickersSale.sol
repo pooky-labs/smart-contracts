@@ -4,7 +4,7 @@ pragma solidity 0.8.20;
 
 import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
 import { IStickers, StickerMint, StickerRarity } from "../interfaces/IStickers.sol";
-import { Treasury } from "../utils/Treasury.sol";
+import { BaseTreasury } from "../base/BaseTreasury.sol";
 
 struct Bundle {
   uint256 price;
@@ -40,10 +40,7 @@ struct Refill {
  * @title StickersSale
  * @author Mathieu Bour
  */
-contract StickersSale is OwnableRoles, Treasury {
-  StickerRarity[] public rarities =
-    [StickerRarity.COMMON, StickerRarity.RARE, StickerRarity.EPIC, StickerRarity.LEGENDARY];
-
+contract StickersSale is OwnableRoles, BaseTreasury {
   uint256 public constant SELLER = _ROLE_0;
 
   /// The Stickers contract address.
@@ -68,7 +65,7 @@ contract StickersSale is OwnableRoles, Treasury {
   error TransferFailed(address recipient, uint256 amount);
 
   constructor(IStickers _stickers, address admin, address _treasury, Bundle[] memory _bundles)
-    Treasury(_treasury)
+    BaseTreasury(_treasury)
   {
     stickers = _stickers;
     _initializeOwner(admin);
@@ -123,7 +120,7 @@ contract StickersSale is OwnableRoles, Treasury {
   /**
    * @notice Purchase a Stickers bundle.
    * @dev Requirements:
-   * - Sale mosut be open.
+   * - Sale must be open.
    * - Bundle ID must exist.
    * - Transaction value must be greater or equal than the bundle price.
    */
@@ -149,35 +146,35 @@ contract StickersSale is OwnableRoles, Treasury {
     uint256 quantity =
       bundle.content.common + bundle.content.rare + bundle.content.epic + bundle.content.legendary;
 
-    StickerMint[] memory requests = new StickerMint[](quantity);
+    StickerRarity[] memory rarities = new StickerRarity[](quantity);
 
     uint256 requestId;
     for (uint256 i; i < bundle.content.common;) {
-      requests[requestId++] = StickerMint(msg.sender, StickerRarity.COMMON);
+      rarities[requestId++] = StickerRarity.COMMON;
       unchecked {
         i++;
       }
     }
     for (uint256 i; i < bundle.content.common;) {
-      requests[requestId++] = StickerMint(msg.sender, StickerRarity.RARE);
+      rarities[requestId++] = StickerRarity.RARE;
       unchecked {
         i++;
       }
     }
     for (uint256 i; i < bundle.content.common;) {
-      requests[requestId++] = StickerMint(msg.sender, StickerRarity.EPIC);
+      rarities[requestId++] = StickerRarity.EPIC;
       unchecked {
         i++;
       }
     }
     for (uint256 i; i < bundle.content.common;) {
-      requests[requestId++] = StickerMint(msg.sender, StickerRarity.LEGENDARY);
+      rarities[requestId++] = StickerRarity.LEGENDARY;
       unchecked {
         i++;
       }
     }
 
-    stickers.mint(requests);
+    stickers.mint(msg.sender, rarities);
     bundles[bundleId].minted++;
 
     // Forward the funds to the treasury wallet
