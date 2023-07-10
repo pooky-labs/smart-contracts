@@ -4,6 +4,7 @@ pragma solidity ^0.8.20;
 import { Ownable } from "solady/auth/Ownable.sol";
 import { StickersSale, Bundle, BundleContent, Refill } from "../../src/mint/StickersSale.sol";
 import { StickersSetup } from "../setup/StickersSetup.sol";
+import { InvalidReceiver } from "../utils/InvalidReceiver.sol";
 import { BaseTest } from "../BaseTest.sol";
 
 contract StickersSaleTest is BaseTest, StickersSetup {
@@ -20,6 +21,12 @@ contract StickersSaleTest is BaseTest, StickersSetup {
   Refill[] defaultRefills;
 
   function setUp() public {
+    // Default refills
+    defaultRefills.push(Refill(0, 8 ether, 45));
+    defaultRefills.push(Refill(1, 28 ether, 40));
+    defaultRefills.push(Refill(2, 112 ether, 12));
+    defaultRefills.push(Refill(3, 416 ether, 3));
+
     // Default bundles
     defaultBundles.push(Bundle(8 ether, 45, 0, 45, BundleContent(2, 0, 0, 0)));
     defaultBundles.push(Bundle(28 ether, 40, 0, 40, BundleContent(3, 1, 0, 0)));
@@ -39,6 +46,10 @@ contract StickersSaleTest is BaseTest, StickersSetup {
     vm.stopPrank();
 
     vm.deal(user, 1000000 ether);
+
+    vm.warp(date);
+    vm.prank(seller);
+    sale.restock(defaultRefills, 1);
   }
 
   function test_getBundles() public {
@@ -91,23 +102,30 @@ contract StickersSaleTest is BaseTest, StickersSetup {
   }
 
   function test_purchase_revertInvalidBundle() public {
-    vm.warp(date);
-    vm.prank(seller);
-    sale.restock(defaultRefills, 1);
-    assertFalse(sale.isClosed());
-
     uint256 bundleId = sale.getBundles().length;
     vm.prank(user);
     vm.expectRevert(StickersSale.InvalidBundle.selector);
     sale.purchase(bundleId);
   }
 
-  function test_purchase_revertInsufficientValue() public {
+  function test_purchase_revertInsufficientSupply() public {
     vm.warp(date);
+
+    uint256 bundleId = 0;
+    Refill[] memory faultyRefills = new Refill[](1);
+    faultyRefills[0] = Refill(bundleId, defaultBundles[0].price, 0);
+
     vm.prank(seller);
-    sale.restock(defaultRefills, 1);
+    sale.restock(faultyRefills, 1);
     assertFalse(sale.isClosed());
 
+    Bundle memory bundle = sale.getBundles()[bundleId];
+    vm.prank(user);
+    vm.expectRevert(abi.encodeWithSelector(StickersSale.InsufficientSupply.selector, bundleId));
+    sale.purchase{ value: bundle.price }(bundleId);
+  }
+
+  function test_purchase_revertInsufficientValue() public {
     uint256 bundleId = 0;
     Bundle memory bundle = sale.getBundles()[bundleId];
     vm.prank(user);
@@ -116,5 +134,34 @@ contract StickersSaleTest is BaseTest, StickersSetup {
       abi.encodeWithSelector(StickersSale.InsufficientValue.selector, value, bundle.price)
     );
     sale.purchase{ value: value }(bundleId);
+  }
+
+  function test_purchase_revertTransferFailed() public {
+    InvalidReceiver invalid = new InvalidReceiver();
+    vm.prank(admin);
+    sale.changeTreasury(address(invalid));
+
+    uint256 bundleId = 0;
+    Bundle memory bundle = sale.getBundles()[bundleId];
+
+    vm.prank(user);
+    vm.expectRevert(
+      abi.encodeWithSelector(StickersSale.TransferFailed.selector, address(invalid), bundle.price)
+    );
+    sale.purchase{ value: bundle.price }(bundleId);
+  }
+
+  function test_purchase_pass_legend() public {
+    uint256 bundleId = 3; // legend pack with all sticker rarities
+    Bundle memory bundle = sale.getBundles()[bundleId];
+
+    uint256 stickersBefore = stickers.balanceOf(user);
+    uint256 quantity =
+      bundle.content.common + bundle.content.rare + bundle.content.epic + bundle.content.legendary;
+    uint256 expectedBalance = stickersBefore + quantity;
+
+    vm.prank(user);
+    sale.purchase{ value: bundle.price }(bundleId);
+    assertEq(stickers.balanceOf(user), expectedBalance);
   }
 }

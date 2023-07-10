@@ -155,19 +155,19 @@ contract StickersSale is OwnableRoles, BaseTreasury {
         i++;
       }
     }
-    for (uint256 i; i < bundle.content.common;) {
+    for (uint256 i; i < bundle.content.rare;) {
       rarities[requestId++] = StickerRarity.RARE;
       unchecked {
         i++;
       }
     }
-    for (uint256 i; i < bundle.content.common;) {
+    for (uint256 i; i < bundle.content.epic;) {
       rarities[requestId++] = StickerRarity.EPIC;
       unchecked {
         i++;
       }
     }
-    for (uint256 i; i < bundle.content.common;) {
+    for (uint256 i; i < bundle.content.legendary;) {
       rarities[requestId++] = StickerRarity.LEGENDARY;
       unchecked {
         i++;
