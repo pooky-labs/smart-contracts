@@ -12,6 +12,8 @@ contract StickersSaleTest is BaseTest, StickersSetup {
   address user = makeAddr("user");
   address treasury = makeAddr("treasury");
 
+  uint256 date = 1641070800;
+
   StickersSale sale;
 
   Bundle[] defaultBundles;
@@ -29,6 +31,14 @@ contract StickersSaleTest is BaseTest, StickersSetup {
     }
 
     sale = new StickersSale(stickers, admin, treasury, defaultBundles);
+
+    vm.startPrank(sale.owner());
+    sale.grantRoles(seller, sale.SELLER());
+    vm.startPrank(stickers.owner());
+    stickers.grantRoles(address(sale), stickers.MINTER());
+    vm.stopPrank();
+
+    vm.deal(user, 1000000 ether);
   }
 
   function test_getBundles() public {
@@ -36,6 +46,20 @@ contract StickersSaleTest is BaseTest, StickersSetup {
     assertEq(bundles.length, 4);
     assertEq(bundles[0].price, 8 ether);
     assertEq(bundles[3].price, 416 ether);
+  }
+
+  function test_isClosed_zero() public {
+    vm.prank(seller);
+    sale.restock(defaultRefills, 0); // zero means closed
+    assertTrue(sale.isClosed());
+  }
+
+  function test_isClosed_future() public {
+    vm.warp(date);
+
+    vm.prank(seller);
+    sale.restock(defaultRefills, date + 1); // closeUntil greater than date => sale is closed
+    assertTrue(sale.isClosed());
   }
 
   function test_create_revertOnlyOwner() public {
@@ -52,5 +76,45 @@ contract StickersSaleTest is BaseTest, StickersSetup {
     vm.prank(admin);
     sale.create(defaultBundles[0]);
     assertEq(sale.getBundles().length, defaultBundles.length + 1);
+  }
+
+  function test_purchase_revertClose() public {
+    vm.prank(seller);
+    sale.restock(defaultRefills, 0); // zero means closed
+    assertTrue(sale.isClosed());
+
+    uint256 bundleId = 0;
+    Bundle memory bundle = sale.getBundles()[bundleId];
+    vm.prank(user);
+    vm.expectRevert(abi.encodeWithSelector(StickersSale.Closed.selector, 0));
+    sale.purchase{ value: bundle.price }(bundleId);
+  }
+
+  function test_purchase_revertInvalidBundle() public {
+    vm.warp(date);
+    vm.prank(seller);
+    sale.restock(defaultRefills, 1);
+    assertFalse(sale.isClosed());
+
+    uint256 bundleId = sale.getBundles().length;
+    vm.prank(user);
+    vm.expectRevert(StickersSale.InvalidBundle.selector);
+    sale.purchase(bundleId);
+  }
+
+  function test_purchase_revertInsufficientValue() public {
+    vm.warp(date);
+    vm.prank(seller);
+    sale.restock(defaultRefills, 1);
+    assertFalse(sale.isClosed());
+
+    uint256 bundleId = 0;
+    Bundle memory bundle = sale.getBundles()[bundleId];
+    vm.prank(user);
+    uint256 value = bundle.price - 1;
+    vm.expectRevert(
+      abi.encodeWithSelector(StickersSale.InsufficientValue.selector, value, bundle.price)
+    );
+    sale.purchase{ value: value }(bundleId);
   }
 }
