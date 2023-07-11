@@ -2,26 +2,22 @@
 // Pooky Game Contracts (game/Rewards.sol)
 pragma solidity ^0.8.17;
 
-import "openzeppelin/access/AccessControl.sol";
-import "openzeppelin/utils/cryptography/ECDSA.sol";
-import "../interfaces/IPOK.sol";
-import { IPookyball, PookyballMetadata, PookyballRarity } from "../../src/interfaces/IPookyball.sol";
-import "../interfaces/INonceRegistry.sol";
-
-struct RewardsPXP {
-  uint256 tokenId;
-  uint256 amountPXP;
-}
+import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
+import { ECDSA } from "solady/utils/ECDSA.sol";
+import { INonceRegistry } from "../interfaces/INonceRegistry.sol";
+import { IPOK } from "../interfaces/IPOK.sol";
+import { IPookyball, PookyballMetadata, PookyballRarity } from "../interfaces/IPookyball.sol";
+import { IStickers, StickerMetadata, StickerRarity } from "../interfaces/IStickers.sol";
 
 struct RewardsData {
-  /// The amount of native currency
+  /// The amount of native currency.
   uint256 amountNAT;
-  /// The amount of $POK token
+  /// The amount of $POK token.
   uint256 amountPOK;
-  /// The amount of Pookyball PXP to grant to the tokens
-  RewardsPXP[] pxp;
   /// The rarities of the minted Pookyballs.
   PookyballRarity[] pookyballs;
+  /// The rarities of the minted Stickers.
+  StickerRarity[] stickers;
   /// The nonces that represents the payload. This prevent accounts to claim the same reward twice.
   bytes32[] nonces;
 }
@@ -32,15 +28,16 @@ struct RewardsData {
  * @notice Gameplay contract that allows to claim rewards native, $POK tokens and Pookyball PXP rewards.
  * @dev Only authorized REWARDER-role can sign the rewards payload.
  */
-contract Rewards is AccessControl {
+contract Rewards is OwnableRoles {
   using ECDSA for bytes32;
 
   // Roles
-  bytes32 public constant REWARDER = keccak256("REWARDER");
+  uint256 public constant REWARDER = _ROLE_0;
 
   // Contracts
-  IPookyball public immutable pookyball;
   IPOK public immutable pok;
+  IPookyball public immutable pookyball;
+  IStickers public immutable stickers;
 
   /// To prevent users to use the same signature multiple times, we mark the rewards as claimed.
   INonceRegistry public nonces;
@@ -60,18 +57,24 @@ contract Rewards is AccessControl {
   constructor(
     IPOK _pok,
     IPookyball _pookyball,
+    IStickers _stickers,
     INonceRegistry _nonces,
     address admin,
     address[] memory rewarders
   ) {
     pok = _pok;
     pookyball = _pookyball;
+    stickers = _stickers;
     nonces = _nonces;
 
     // Set up the roles
-    _grantRole(DEFAULT_ADMIN_ROLE, admin);
-    for (uint256 i = 0; i < rewarders.length; i++) {
-      _grantRole(REWARDER, rewarders[i]);
+    _initializeOwner(admin);
+    uint256 length = rewarders.length;
+    for (uint256 i; i < length;) {
+      _grantRoles(rewarders[i], REWARDER);
+      unchecked {
+        i++;
+      }
     }
   }
 
@@ -83,7 +86,7 @@ contract Rewards is AccessControl {
   /**
    * @notice Recover all the funds on the contract.
    */
-  function withdraw() external onlyRole(DEFAULT_ADMIN_ROLE) {
+  function withdraw() external onlyOwner {
     (bool sent,) = address(msg.sender).call{ value: address(this).balance }("");
     if (!sent) {
       revert TransferFailed(msg.sender, address(this).balance);
@@ -103,7 +106,8 @@ contract Rewards is AccessControl {
     bytes32 hash = keccak256(abi.encode(msg.sender, rewards, data)).toEthSignedMessageHash();
 
     // Ensure that all rewards are claimed only once
-    for (uint256 i = 0; i < rewards.nonces.length; i++) {
+    uint256 length = rewards.nonces.length;
+    for (uint256 i; i < length; i++) {
       if (nonces.has(rewards.nonces[i])) {
         revert AlreadyClaimed(rewards.nonces[i]);
       }
@@ -111,7 +115,7 @@ contract Rewards is AccessControl {
       nonces.set(rewards.nonces[i], true);
     }
 
-    if (!hasRole(REWARDER, hash.recover(signature))) {
+    if (!hasAllRoles(hash.recover(signature), REWARDER)) {
       revert InvalidSignature();
     }
 
@@ -120,23 +124,24 @@ contract Rewards is AccessControl {
       pok.mint(msg.sender, rewards.amountPOK);
     }
 
-    // Increase Pookyballs PXP
-    if (rewards.pxp.length > 0) {
-      for (uint256 i = 0; i < rewards.pxp.length; i++) {
-        PookyballMetadata memory metadata = pookyball.metadata(rewards.pxp[i].tokenId);
-        pookyball.setPXP(rewards.pxp[i].tokenId, metadata.pxp + rewards.pxp[i].amountPXP);
-      }
-    }
-
+    // Mint Pookyballs
     if (rewards.pookyballs.length > 0) {
-      address[] memory addresses = new address[](
-                rewards.pookyballs.length
-            );
-      for (uint256 i = 0; i < rewards.pookyballs.length; i++) {
+      uint256 pookyballCount = rewards.pookyballs.length;
+      address[] memory addresses = new address[](pookyballCount);
+
+      for (uint256 i; i < pookyballCount;) {
         addresses[i] = msg.sender;
+        unchecked {
+          i++;
+        }
       }
 
       pookyball.mint(addresses, rewards.pookyballs);
+    }
+
+    // Mint Stickers
+    if (rewards.stickers.length > 0) {
+      stickers.mint(msg.sender, rewards.stickers);
     }
 
     // Transfer native currency

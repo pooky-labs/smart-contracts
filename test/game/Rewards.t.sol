@@ -1,17 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import { BaseTest } from "../BaseTest.sol";
-import { ECDSA } from "openzeppelin/utils/cryptography/ECDSA.sol";
+import { Ownable } from "solady/auth/Ownable.sol";
+import { ECDSA } from "solady/utils/ECDSA.sol";
 import { NonceRegistry } from "../../src/game/NonceRegistry.sol";
-import { Rewards, RewardsData, RewardsPXP } from "../../src/game/Rewards.sol";
+import { Rewards, RewardsData } from "../../src/game/Rewards.sol";
 import { PookyballRarity } from "../../src/interfaces/IPookyball.sol";
+import { StickerRarity } from "../../src/interfaces/IStickers.sol";
+import { BaseTest } from "../BaseTest.sol";
 import { POKSetup } from "../setup/POKSetup.sol";
 import { PookyballSetup } from "../setup/PookyballSetup.sol";
-import { AccessControlAssertions } from "../utils/AccessControlAssertions.sol";
+import { StickersSetup } from "../setup/StickersSetup.sol";
 import { InvalidReceiver } from "../utils/InvalidReceiver.sol";
 
-contract RewardsTest is BaseTest, AccessControlAssertions, POKSetup, PookyballSetup {
+contract RewardsTest is BaseTest, POKSetup, PookyballSetup, StickersSetup {
   using ECDSA for bytes32;
 
   NonceRegistry public registry;
@@ -36,12 +38,12 @@ contract RewardsTest is BaseTest, AccessControlAssertions, POKSetup, PookyballSe
 
     address[] memory rewarders = new address[](1);
     rewarders[0] = rewarder;
-    rewards = new Rewards(pok, pookyball, registry, admin, rewarders);
+    rewards = new Rewards(pok, pookyball, stickers, registry, admin, rewarders);
 
     vm.startPrank(admin);
     pok.grantRole(pok.MINTER(), address(rewards));
     pookyball.grantRole(pookyball.MINTER(), address(rewards));
-    pookyball.grantRole(pookyball.GAME(), address(rewards));
+    stickers.grantRoles(address(rewards), stickers.MINTER());
     registry.grantRole(registry.OPERATOR(), address(rewards));
     vm.stopPrank();
   }
@@ -60,34 +62,31 @@ contract RewardsTest is BaseTest, AccessControlAssertions, POKSetup, PookyballSe
     address to,
     uint256 amountNAT,
     uint256 amountPOK,
-    uint256 amountPXP,
     bytes32 nonce,
     string memory data
-  ) public returns (RewardsData memory rewardsData, bytes memory signature) {
-    uint256 tokenId = mintPookyball(to, PookyballRarity.COMMON);
-
-    RewardsPXP[] memory pxp = new RewardsPXP[](1);
-    pxp[0] = RewardsPXP(tokenId, amountPXP);
-
+  ) public view returns (RewardsData memory rewardsData, bytes memory signature) {
     PookyballRarity[] memory pookyballs = new PookyballRarity[](1);
     pookyballs[0] = PookyballRarity.COMMON;
+
+    StickerRarity[] memory stickers = new StickerRarity[](1);
+    stickers[0] = StickerRarity.COMMON;
 
     bytes32[] memory nonces = new bytes32[](1);
     nonces[0] = nonce;
 
-    rewardsData = RewardsData(amountNAT, amountPOK, pxp, pookyballs, nonces);
+    rewardsData = RewardsData(amountNAT, amountPOK, pookyballs, stickers, nonces);
     signature = signRewards(to, rewardsData, data);
   }
 
   function test_roles() public {
-    assertTrue(rewards.hasRole(rewards.DEFAULT_ADMIN_ROLE(), admin));
-    assertTrue(rewards.hasRole(rewards.REWARDER(), rewarder));
+    assertEq(rewards.owner(), admin);
+    assertTrue(rewards.hasAllRoles(rewarder, rewards.REWARDER()));
   }
 
   function testFuzz_withdraw_revertNonAdmin(uint256 amount) public {
     deal(address(rewards), amount);
 
-    expectRevertMissingRole(user, rewards.DEFAULT_ADMIN_ROLE());
+    vm.expectRevert(Ownable.Unauthorized.selector);
     uint256 balanceBefore = user.balance;
 
     vm.prank(user);
@@ -102,7 +101,7 @@ contract RewardsTest is BaseTest, AccessControlAssertions, POKSetup, PookyballSe
 
     InvalidReceiver receiver = new InvalidReceiver();
     vm.startPrank(admin);
-    rewards.grantRole(rewards.DEFAULT_ADMIN_ROLE(), address(receiver));
+    rewards.transferOwnership(address(receiver));
     vm.stopPrank();
 
     vm.expectRevert(
@@ -125,14 +124,13 @@ contract RewardsTest is BaseTest, AccessControlAssertions, POKSetup, PookyballSe
   function testFuzz_claim_revertInvalidSignature(
     uint256 amountNAT,
     uint256 amountPOK,
-    uint256 amountPXP,
     bytes32 nonce,
     string memory data
   ) public {
     vm.assume(amountNAT < 100000000e18);
 
     (RewardsData memory rewardsData, bytes memory signature) =
-      createRewards(user, amountNAT, amountPOK, amountPXP, nonce, data);
+      createRewards(user, amountNAT, amountPOK, nonce, data);
 
     rewardsData.amountNAT += 100;
 
@@ -147,7 +145,6 @@ contract RewardsTest is BaseTest, AccessControlAssertions, POKSetup, PookyballSe
     uint256 amountNAT,
     uint256 missingNAT,
     uint256 amountPOK,
-    uint256 amountPXP,
     bytes32 nonce,
     string memory data
   ) public {
@@ -155,7 +152,7 @@ contract RewardsTest is BaseTest, AccessControlAssertions, POKSetup, PookyballSe
     missingNAT = bound(missingNAT, 1, amountNAT);
 
     (RewardsData memory rewardsData, bytes memory signature) =
-      createRewards(user, amountNAT, amountPOK, amountPXP, nonce, data);
+      createRewards(user, amountNAT, amountPOK, nonce, data);
 
     deal(address(rewards), amountNAT - missingNAT);
 
@@ -171,12 +168,11 @@ contract RewardsTest is BaseTest, AccessControlAssertions, POKSetup, PookyballSe
   function testFuzz_claim_revertAlreadyClaimedNonce(
     uint256 amountNAT,
     uint256 amountPOK,
-    uint256 amountPXP,
     bytes32 nonce,
     string memory data
   ) public {
     (RewardsData memory rewardsData, bytes memory signature) =
-      createRewards(user, amountNAT, amountPOK, amountPXP, nonce, data);
+      createRewards(user, amountNAT, amountPOK, nonce, data);
 
     deal(address(rewards), amountNAT); // Ensure the rewards contract has enough native currency
 
@@ -192,19 +188,14 @@ contract RewardsTest is BaseTest, AccessControlAssertions, POKSetup, PookyballSe
   function testFuzz_claim_revertTransferFailed(
     uint256 amountNAT,
     uint256 amountPOK,
-    uint256 amountPXP,
     bytes32 nonce,
     string memory data
   ) public {
     vm.assume(amountNAT > 0);
 
     InvalidReceiver receiver = new InvalidReceiver();
-    vm.startPrank(admin);
-    rewards.grantRole(rewards.DEFAULT_ADMIN_ROLE(), address(receiver));
-    vm.stopPrank();
-
     (RewardsData memory rewardsData, bytes memory signature) =
-      createRewards(address(receiver), amountNAT, amountPOK, amountPXP, nonce, data);
+      createRewards(address(receiver), amountNAT, amountPOK, nonce, data);
 
     deal(address(rewards), amountNAT); // Ensure the rewards contract has enough native currency
 
@@ -218,16 +209,15 @@ contract RewardsTest is BaseTest, AccessControlAssertions, POKSetup, PookyballSe
   function testFuzz_claim_pass(
     uint256 amountNAT,
     uint256 amountPOK,
-    uint256 amountPXP,
     bytes32 nonce,
     string memory data
   ) public {
     (RewardsData memory rewardsData, bytes memory signature) =
-      createRewards(user, amountNAT, amountPOK, amountPXP, nonce, data);
+      createRewards(user, amountNAT, amountPOK, nonce, data);
 
     deal(address(rewards), amountNAT); // Ensure the rewards contract has enough native currency
 
-    vm.expectEmit(true, false, false, false, address(rewards));
+    vm.expectEmit(true, true, true, true, address(rewards));
     emit RewardsClaimed(user, rewardsData, data);
 
     vm.prank(user);

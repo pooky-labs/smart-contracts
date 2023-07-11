@@ -2,23 +2,13 @@
   {
     "inputs": [
       {
-        "internalType": "contract IPOK",
-        "name": "_pok",
-        "type": "address"
-      },
-      {
         "internalType": "contract IPookyball",
         "name": "_pookyball",
         "type": "address"
       },
       {
-        "internalType": "contract IStickers",
-        "name": "_stickers",
-        "type": "address"
-      },
-      {
-        "internalType": "contract INonceRegistry",
-        "name": "_nonces",
+        "internalType": "contract IPOK",
+        "name": "_pok",
         "type": "address"
       },
       {
@@ -27,24 +17,13 @@
         "type": "address"
       },
       {
-        "internalType": "address[]",
-        "name": "rewarders",
-        "type": "address[]"
+        "internalType": "address",
+        "name": "_treasury",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "nonce",
-        "type": "bytes32"
-      }
-    ],
-    "name": "AlreadyClaimed",
-    "type": "error"
   },
   {
     "inputs": [
@@ -59,12 +38,28 @@
         "type": "uint256"
       }
     ],
-    "name": "InsufficientBalance",
+    "name": "InsufficientPOK",
     "type": "error"
   },
   {
     "inputs": [],
     "name": "InvalidSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxLevel",
+        "type": "uint256"
+      }
+    ],
+    "name": "MaximumLevelReached",
     "type": "error"
   },
   {
@@ -149,58 +144,6 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "account",
-        "type": "address"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "amountNAT",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amountPOK",
-            "type": "uint256"
-          },
-          {
-            "internalType": "enum PookyballRarity[]",
-            "name": "pookyballs",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "enum StickerRarity[]",
-            "name": "stickers",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "bytes32[]",
-            "name": "nonces",
-            "type": "bytes32[]"
-          }
-        ],
-        "indexed": false,
-        "internalType": "struct RewardsData",
-        "name": "rewards",
-        "type": "tuple"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "data",
-        "type": "string"
-      }
-    ],
-    "name": "RewardsClaimed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
         "name": "user",
         "type": "address"
       },
@@ -216,7 +159,46 @@
   },
   {
     "inputs": [],
-    "name": "REWARDER",
+    "name": "BASE_RATIO",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "PXP_DECIMALS",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "SIGNER",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "basePXP",
     "outputs": [
       {
         "internalType": "uint256",
@@ -237,49 +219,77 @@
   {
     "inputs": [
       {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "amountNAT",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amountPOK",
-            "type": "uint256"
-          },
-          {
-            "internalType": "enum PookyballRarity[]",
-            "name": "pookyballs",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "enum StickerRarity[]",
-            "name": "stickers",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "bytes32[]",
-            "name": "nonces",
-            "type": "bytes32[]"
-          }
-        ],
-        "internalType": "struct RewardsData",
-        "name": "rewards",
-        "type": "tuple"
-      },
-      {
-        "internalType": "bytes",
-        "name": "signature",
-        "type": "bytes"
-      },
-      {
-        "internalType": "string",
-        "name": "data",
-        "type": "string"
+        "internalType": "uint256",
+        "name": "_basePXP",
+        "type": "uint256"
       }
     ],
-    "name": "claim",
+    "name": "changeBasePXP",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_fee",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_growth",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeGrowth",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_rateNAT_POK",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeRateNAT_POK",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_ratePXP_POK",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeRatePXP_POK",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_treasury",
+        "type": "address"
+      }
+    ],
+    "name": "changeTreasury",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -300,6 +310,122 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "from",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "to",
+        "type": "uint256"
+      }
+    ],
+    "name": "compute",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "fee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getParams",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxLevel",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "currentLevel",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "currentPXP",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "increase",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPricing",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "requiredPXP",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "remainingPXP",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "newLevel",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "gapPOK",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "feePOK",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct Pricing",
+        "name": "pricing",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "user",
         "type": "address"
@@ -313,6 +439,19 @@
     "name": "grantRoles",
     "outputs": [],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "growth",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -364,16 +503,31 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "nonces",
-    "outputs": [
+    "inputs": [
       {
-        "internalType": "contract INonceRegistry",
-        "name": "",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "increase",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "currentPXP",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "proof",
+        "type": "bytes"
       }
     ],
-    "stateMutability": "view",
+    "name": "levelUp",
+    "outputs": [],
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -455,12 +609,25 @@
   },
   {
     "inputs": [],
-    "name": "pookyball",
+    "name": "rateNAT_POK",
     "outputs": [
       {
-        "internalType": "contract IPookyball",
+        "internalType": "uint256",
         "name": "",
-        "type": "address"
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "ratePXP_POK",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -550,13 +717,19 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "stickers",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "slots",
     "outputs": [
       {
-        "internalType": "contract IStickers",
+        "internalType": "uint256",
         "name": "",
-        "type": "address"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -577,13 +750,15 @@
   },
   {
     "inputs": [],
-    "name": "withdraw",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "name": "treasury",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
-  },
-  {
-    "stateMutability": "payable",
-    "type": "receive"
   }
 ]
