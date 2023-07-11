@@ -5,6 +5,11 @@ import { ECDSA } from "openzeppelin/utils/cryptography/ECDSA.sol";
 import { BaseTest } from "../BaseTest.sol";
 import { POKSetup } from "./POKSetup.sol";
 
+struct SlotData {
+  uint256 expected;
+  uint256 level;
+}
+
 abstract contract LevelUpSetup is BaseTest, POKSetup {
   using ECDSA for bytes32;
 

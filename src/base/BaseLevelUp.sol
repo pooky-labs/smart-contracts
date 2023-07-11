@@ -2,8 +2,8 @@
 // Pooky Game Contracts (game/BaseLevelUp.sol)
 pragma solidity ^0.8.20;
 
-import { ECDSA } from "openzeppelin/utils/cryptography/ECDSA.sol";
 import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
+import { ECDSA } from "solady/utils/ECDSA.sol";
 import { BaseTreasury } from "../base/BaseTreasury.sol";
 import { IPOK } from "../interfaces/IPOK.sol";
 import { IPookyball, PookyballMetadata } from "../interfaces/IPookyball.sol";
@@ -63,10 +63,10 @@ abstract contract BaseLevelUp is OwnableRoles, BaseTreasury {
     _initializeOwner(admin);
     basePXP = _basePXP;
     slots[1] = _basePXP;
-    _compute(2, precompute);
+    compute(2, precompute);
   }
 
-  function _compute(uint256 from, uint256 to) internal {
+  function compute(uint256 from, uint256 to) public {
     for (uint256 i = from; i <= to;) {
       slots[i] = slots[i - 1] * growth / 10000;
       unchecked {
@@ -118,10 +118,13 @@ abstract contract BaseLevelUp is OwnableRoles, BaseTreasury {
   /**
    * Get the level details of a token.
    * @param tokenId The token id.
-   * @return The current token level.
-   * @return The maximum allowed level.
+   * @return currentLevel The current token level.
+   * @return maxLevel The maximum allowed level.
    */
-  function _getLevel(uint256 tokenId) internal virtual returns (uint256, uint256);
+  function getParams(uint256 tokenId)
+    public
+    virtual
+    returns (uint256 currentLevel, uint256 maxLevel);
 
   /**
    * Apply the new level and PXP change.
@@ -172,18 +175,18 @@ abstract contract BaseLevelUp is OwnableRoles, BaseTreasury {
    * @param currentPXP The token current PXP.
    * @param proof The signature of abi.encode(tokenId, currentPXP).
    */
-  function levelUp(uint256 tokenId, uint256 increase, uint256 currentPXP, bytes memory proof)
+  function levelUp(uint256 tokenId, uint256 increase, uint256 currentPXP, bytes calldata proof)
     external
     payable
   {
     // Generate the signed message from the tokenId and currentPXP
     bytes32 hash = keccak256(abi.encode(tokenId, currentPXP)).toEthSignedMessageHash();
 
-    if (!hasAllRoles(hash.recover(proof), SIGNER)) {
+    if (!hasAllRoles(hash.recoverCalldata(proof), SIGNER)) {
       revert InvalidSignature();
     }
 
-    (uint256 currentLevel, uint256 maxLevel) = _getLevel(tokenId);
+    (uint256 currentLevel, uint256 maxLevel) = getParams(tokenId);
     if (currentLevel + increase > maxLevel) {
       revert MaximumLevelReached(tokenId, maxLevel);
     }

@@ -2,9 +2,9 @@
 // Pooky Game Contracts (game/StickersLevelUp.sol)
 pragma solidity ^0.8.20;
 
-import { IStickers, StickerMetadata, StickerRarity } from "../interfaces/IStickers.sol";
+import { BaseLevelUp } from "../base/BaseLevelUp.sol";
 import { IPOK } from "../interfaces/IPOK.sol";
-import { BaseLevelUp } from "./BaseLevelUp.sol";
+import { IStickers, StickerMetadata, StickerRarity } from "../interfaces/IStickers.sol";
 
 /**
  * @title StickersLevelUp
@@ -21,7 +21,7 @@ contract StickersLevelUp is BaseLevelUp {
     stickers = _stickers;
   }
 
-  function _getLevel(uint256 tokenId) internal virtual override returns (uint256, uint256 maxLevel) {
+  function getParams(uint256 tokenId) public view override returns (uint256, uint256 maxLevel) {
     StickerMetadata memory metadata = stickers.metadata(tokenId);
 
     if (metadata.rarity == StickerRarity.COMMON) {

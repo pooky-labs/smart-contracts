@@ -1,15 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import { ECDSA } from "openzeppelin/utils/cryptography/ECDSA.sol";
 import { Ownable } from "solady/auth/Ownable.sol";
-import { POKSetup } from "../setup/POKSetup.sol";
+import { ECDSA } from "solady/utils/ECDSA.sol";
 import { BaseTest } from "../BaseTest.sol";
 import { LevelUpSetup } from "../setup/LevelUpSetup.sol";
+import { POKSetup } from "../setup/POKSetup.sol";
 import { StickersSetup } from "../setup/StickersSetup.sol";
-import { StickerMetadata } from "../../src/interfaces/IStickers.sol";
+import { BaseLevelUp, Pricing } from "../../src/base/BaseLevelUp.sol";
+import { StickerMetadata, StickerRarity } from "../../src/interfaces/IStickers.sol";
 import { StickersLevelUp } from "../../src/game/StickersLevelUp.sol";
-import { BaseLevelUp } from "../../src/game/BaseLevelUp.sol";
+
+struct SlotData {
+  uint256 expected;
+  uint256 level;
+}
 
 contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
   using ECDSA for bytes32;
@@ -28,6 +33,24 @@ contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
     stickers.grantRoles(address(levelUp), stickers.GAME());
     pok.grantRole(pok.BURNER(), address(levelUp));
     vm.stopPrank();
+  }
+
+  function test_slots() public {
+    // coverage from setUp() function is not counted
+    // see https://github.com/foundry-rs/foundry/issues/3453
+    levelUp.compute(2, 120);
+
+    (SlotData[] memory dataset) =
+      abi.decode(loadDataset("StickersLevelUp_slots.json"), (SlotData[]));
+
+    for (uint256 i; i < dataset.length; i++) {
+      assertApproxEqRelDecimal(
+        levelUp.slots(dataset[i].level),
+        dataset[i].expected * 10 ** (levelUp.PXP_DECIMALS() - 3),
+        1e14, // max 0.01% delta
+        18
+      );
+    }
   }
 
   function test_changeTreasury_revertOnlyOwner() public {
@@ -108,6 +131,28 @@ contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
     assertEq(levelUp.fee(), newFee);
   }
 
+  function test_getParams_pass() public {
+    uint256 commonId = mintSticker(user, StickerRarity.COMMON);
+    (, uint256 maxLevel) = levelUp.getParams(commonId);
+    assertEq(maxLevel, 40);
+
+    uint256 rareId = mintSticker(user, StickerRarity.RARE);
+    (, maxLevel) = levelUp.getParams(rareId);
+    assertEq(maxLevel, 60);
+
+    uint256 epicId = mintSticker(user, StickerRarity.EPIC);
+    (, maxLevel) = levelUp.getParams(epicId);
+    assertEq(maxLevel, 80);
+
+    uint256 legendaryId = mintSticker(user, StickerRarity.LEGENDARY);
+    (, maxLevel) = levelUp.getParams(legendaryId);
+    assertEq(maxLevel, 100);
+
+    uint256 mythicId = mintSticker(user, StickerRarity.MYTHIC);
+    (, maxLevel) = levelUp.getParams(mythicId);
+    assertEq(maxLevel, 120);
+  }
+
   /**
    * Assert that the levelUp function reverts when currentPXP parameter and the one used for signature differ.
    */
@@ -117,10 +162,13 @@ contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
     assertEq(metadata.level, 0);
 
     mintPOK(user, 100e18);
+    // currentPXP and signedPXP mismatch
+    uint256 currentPXP = 1000;
+    uint256 signedPXP = 0;
 
     vm.prank(user);
     vm.expectRevert(BaseLevelUp.InvalidSignature.selector);
-    levelUp.levelUp(tokenId, 1, 1000, sign(tokenId, 0)); // currentPXP and signedPXP mismatch
+    levelUp.levelUp(tokenId, 1, currentPXP, sign(tokenId, signedPXP));
 
     // Assert that level is still zero
     metadata = stickers.metadata(tokenId);
@@ -128,17 +176,56 @@ contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
   }
 
   /**
-   * Assert that a Sticker can be upgrade from level zero to level one using POK.
+   * Assert that the levelUp function reverts if the user has not enough POK tokens.
    */
-  function test_levelUp_zero() public {
+  function test_levelUp_revertInsufficientPOK() public {
+    uint256 tokenId = mintSticker(user, StickerRarity.COMMON);
+
+    // We don't deal POK to user
+    uint256 currentPXP = 0;
+    StickerMetadata memory metadata = stickers.metadata(tokenId);
+    Pricing memory pricing = levelUp.getPricing(uint256(metadata.level), currentPXP, 1, 0);
+
+    vm.prank(user);
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        BaseLevelUp.InsufficientPOK.selector, pricing.feePOK + pricing.gapPOK, 0
+      )
+    );
+    levelUp.levelUp(tokenId, 1, currentPXP, sign(tokenId, currentPXP));
+  }
+
+  /**
+   * Assert that the levelUp function reverts if the Sticker is already at the maximum level.
+   */
+  function test_levelUp_revertMaximumLevelReached() public {
+    uint256 tokenId = mintSticker(user, StickerRarity.COMMON);
+    (, uint256 maxLevel) = levelUp.getParams(tokenId);
+    vm.prank(game);
+    stickers.setLevel(tokenId, uint248(maxLevel));
+
+    mintPOK(user, 100e18);
+
+    vm.prank(user);
+    vm.expectRevert(
+      abi.encodeWithSelector(BaseLevelUp.MaximumLevelReached.selector, tokenId, maxLevel)
+    );
+    levelUp.levelUp(tokenId, 1, 0, sign(tokenId, 0));
+  }
+
+  /**
+   * Assert that a Sticker can be upgraded from level zero to level one using POK.
+   */
+  function test_levelUp_passZeroLevel() public {
     uint256 tokenId = mintSticker(user);
     StickerMetadata memory metadata = stickers.metadata(tokenId);
     assertEq(metadata.level, 0);
 
     mintPOK(user, 100e18);
+    uint256 currentPXP = 0;
 
     vm.prank(user);
-    levelUp.levelUp(tokenId, 1, 0, sign(tokenId, 0));
+    levelUp.levelUp(tokenId, 1, currentPXP, sign(tokenId, currentPXP));
 
     metadata = stickers.metadata(tokenId);
     assertEq(metadata.level, 1);
