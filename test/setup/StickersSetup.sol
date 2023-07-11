@@ -21,9 +21,9 @@ abstract contract StickersSetup is BaseTest, VRFCoordinatorV2Setup {
     );
     vrf.addConsumer(subscriptionId, address(stickers));
 
+    stickers.grantRoles(makeAddr("operator"), stickers.OPERATOR());
     stickers.grantRoles(makeAddr("minter"), stickers.MINTER());
     stickers.grantRoles(makeAddr("game"), stickers.GAME());
-    stickers.grantRoles(makeAddr("operator"), stickers.OPERATOR());
     vm.stopPrank();
   }
 
@@ -34,11 +34,11 @@ abstract contract StickersSetup is BaseTest, VRFCoordinatorV2Setup {
   }
 
   function mintSticker(address recipient, StickerRarity rarity) public returns (uint256) {
-    StickerMint[] memory requests = new StickerMint[](1);
-    requests[0] = StickerMint(recipient, rarity);
+    StickerRarity[] memory rarities = new StickerRarity[](1);
+    rarities[0] = rarity;
 
     vm.prank(makeAddr("minter"));
-    stickers.mint(requests);
+    stickers.mint(recipient, rarities);
     return stickers.nextTokenId() - 1;
   }
 

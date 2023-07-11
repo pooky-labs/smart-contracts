@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+// Pooky Game Contracts (interfaces/INonceRegistry.sol)
 pragma solidity ^0.8.0;
 
 import "openzeppelin/access/IAccessControl.sol";

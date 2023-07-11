@@ -6,7 +6,7 @@ import { IStickersController } from "../../src/interfaces/IStickersController.so
 import { StickersController } from "../../src/game/StickersController.sol";
 import { IStickers } from "../../src/interfaces/IStickers.sol";
 import { IERC721A } from "ERC721A/IERC721A.sol";
-import { StickersControllerSetup } from "../setup/StickersControllerSetup.t.sol";
+import { StickersControllerSetup } from "../setup/StickersControllerSetup.sol";
 
 contract StickersControllerTest is BaseTest, StickersControllerSetup {
   address public user = makeAddr("user");

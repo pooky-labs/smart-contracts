@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (POK.sol)
+// Pooky Game Contracts (tokens/POK.sol)
 pragma solidity ^0.8.17;
 
 import "openzeppelin/token/ERC20/ERC20.sol";

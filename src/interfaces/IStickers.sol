@@ -2,9 +2,7 @@
 // Pooky Game Contracts (interfaces/IStickers.sol)
 pragma solidity ^0.8.20;
 
-import { IERC721A } from "ERC721A/IERC721A.sol";
-import { IERC721ABurnable } from "ERC721A/interfaces/IERC721ABurnable.sol";
-import { IERC721AQueryable } from "ERC721A/interfaces/IERC721AQueryable.sol";
+import { IBaseERC721A } from "../interfaces/IBaseERC721A.sol";
 
 enum StickerRarity {
   COMMON,
@@ -20,33 +18,36 @@ struct StickerMint {
 }
 
 struct StickerMetadata {
-  uint256 seed;
-  uint128 level;
+  uint248 level;
   StickerRarity rarity;
 }
 
 /**
  * @title IStickers
  * @author Mathieu Bour
- * @notice
  */
-interface IStickers is IERC721A, IERC721ABurnable, IERC721AQueryable {
-  /// Fired when the seed of a Pookyball token is set by the VRFCoordinator,
-  event SeedSet(uint256 indexed tokenId, uint256 seed);
+interface IStickers is IBaseERC721A {
   /// Fired when the level of a Pookyball token is changed,
   event LevelChanged(uint256 indexed tokenId, uint256 level);
-  /// Fired when the PXP of a Pookyball token is changed,
-  event PXPChanged(uint256 indexed tokenId, uint256 amount);
-
-  /// Thrown when the token {tokenId} does not exist.
-  error NonExistentToken(uint256 tokenId);
 
   /**
-   * @notice PookyballMetadata of the token {tokenId}.
+   * @notice StickerMetadata of the token {tokenId}.
    * @dev Requirements:
-   * - Pookyball {tokenId} should exist (minted and not burned).
+   * - Sticker {tokenId} should exist (minted and not burned).
    */
   function metadata(uint256 tokenId) external view returns (StickerMetadata memory);
 
-  function mint(StickerMint[] memory requests) external returns (uint256);
+  /**
+   * @notice Change the level of a Sticker token.
+   * @dev Requirements:
+   * - Sticker {tokenId} should exist (minted and not burned).
+   */
+  function setLevel(uint256 tokenId, uint248 newLevel) external;
+
+  /**
+   * @notice Mint multiple Stickers at once.
+   * @param recipient The mint recipient.
+   * @param rarities The Sticker rarities.
+   */
+  function mint(address recipient, StickerRarity[] memory rarities) external;
 }

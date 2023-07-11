@@ -55,18 +55,18 @@ contract StickersTest is BaseTest, StickersSetup {
     );
   }
 
-  function testFuzz_setERC2981Receiver_revertUnauthorized(address newReceiver) public {
+  function testFuzz_setDefaultRoyalty_revertUnauthorized(address newReceiver) public {
     vm.expectRevert(Ownable.Unauthorized.selector);
     vm.prank(user1);
-    stickers.setERC2981Receiver(newReceiver);
+    stickers.setDefaultRoyalty(newReceiver, 700);
   }
 
-  function testFuzz_setERC2981Receiver_pass(address newReceiver) public {
+  function testFuzz_setDefaultRoyalty_pass(address newReceiver) public {
     vm.assume(newReceiver != address(0));
     uint256 tokenId = mintSticker(user1);
 
     vm.prank(admin);
-    stickers.setERC2981Receiver(newReceiver);
+    stickers.setDefaultRoyalty(newReceiver, 700);
     (address receiver,) = stickers.royaltyInfo(tokenId, 1 ether);
     assertEq(receiver, newReceiver);
   }
@@ -82,12 +82,12 @@ contract StickersTest is BaseTest, StickersSetup {
 
   function test_mint_oneCommon() public {
     vm.prank(minter);
-    StickerMint[] memory requests = new StickerMint[](1);
-    requests[0] = StickerMint(user1, StickerRarity.COMMON);
-    stickers.mint(requests);
+    StickerRarity[] memory rarities = new StickerRarity[](1);
+    rarities[0] = StickerRarity.COMMON;
+    stickers.mint(user1, rarities);
   }
 
-  function test_setLevel_pass(uint128 newLevel) public {
+  function test_setLevel_pass(uint248 newLevel) public {
     uint256 tokenId = mintSticker(user1);
 
     vm.prank(game);
@@ -110,7 +110,7 @@ contract StickersTest is BaseTest, StickersSetup {
     vm.prank(address(user1));
     stickers.rawFulfillRandomWords(1, words);
 
-    assertEq(stickers.metadata(tokenId).seed, 0);
+    assertEq(stickers.seeds(tokenId), 0);
   }
 
   function testFuzz_fullfillRandomWords_passSingle(uint256 seed) public {
@@ -122,16 +122,17 @@ contract StickersTest is BaseTest, StickersSetup {
     vm.prank(address(vrf));
     stickers.rawFulfillRandomWords(1, words);
 
-    assertEq(stickers.metadata(tokenId).seed, seed);
+    assertEq(stickers.seeds(tokenId), seed);
   }
 
   function testFuzz_fullfillRandomWords_passMulti(uint256 seed1, uint256 seed2) public {
-    StickerMint[] memory requests = new StickerMint[](2);
-    requests[0] = StickerMint(user1, randomStickerRarity(seed1));
-    requests[1] = StickerMint(user1, randomStickerRarity(seed2));
+    StickerRarity[] memory rarities = new StickerRarity[](2);
+    rarities[0] = randomStickerRarity(seed1);
+    rarities[1] = randomStickerRarity(seed2);
 
     vm.prank(minter);
-    uint256 tokenId2 = stickers.mint(requests);
+    stickers.mint(user1, rarities);
+    uint256 tokenId2 = stickers.nextTokenId() - 1;
     uint256 tokenId1 = tokenId2 - 1;
 
     // seeds are assigned in the reverse order
@@ -142,8 +143,8 @@ contract StickersTest is BaseTest, StickersSetup {
     vm.prank(address(vrf));
     stickers.rawFulfillRandomWords(1, words);
 
-    assertEq(stickers.metadata(tokenId1).seed, seed1);
-    assertEq(stickers.metadata(tokenId2).seed, seed2);
+    assertEq(stickers.seeds(tokenId1), seed1);
+    assertEq(stickers.seeds(tokenId2), seed2);
   }
 
   function test_isApprovedForAll_operator() public {
