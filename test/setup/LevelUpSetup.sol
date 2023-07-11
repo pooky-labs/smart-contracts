@@ -10,6 +10,15 @@ struct SlotData {
   uint256 level;
 }
 
+struct LevelData {
+  uint256 currentPXP;
+  uint256 expectedPOK;
+  uint256 increase;
+  uint256 level;
+  uint256 remainingPXP;
+  uint256 value;
+}
+
 abstract contract LevelUpSetup is BaseTest, POKSetup {
   using ECDSA for bytes32;
 

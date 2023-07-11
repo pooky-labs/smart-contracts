@@ -1,0 +1,178 @@
+[
+  {
+    "level": 2,
+    "increase": 1,
+    "currentPXP": 10000000000000000000001,
+    "value": 30000000000000001,
+    "remainingPXP": 9976890000000000000001,
+    "expectedPOK": 991857100000000001
+  },
+  {
+    "level": 15,
+    "increase": 9,
+    "currentPXP": 100000000000000000001,
+    "value": 2026450900000000001,
+    "remainingPXP": 0,
+    "expectedPOK": 77966556900000000001
+  },
+  {
+    "level": 51,
+    "increase": 4,
+    "currentPXP": 1000000000000000000001,
+    "value": 9000000000000000001,
+    "remainingPXP": 0,
+    "expectedPOK": 351030789700000000001
+  },
+  {
+    "level": 1,
+    "increase": 98,
+    "currentPXP": 100000000000000000000001,
+    "value": 589000000000000000001,
+    "remainingPXP": 0,
+    "expectedPOK": 40945890000000000000001
+  },
+  {
+    "level": 65,
+    "increase": 4,
+    "currentPXP": 1000000000000000000000001,
+    "value": 27000000000000000001,
+    "remainingPXP": 990156000000000000000001,
+    "expectedPOK": 16091210500000000001
+  },
+  {
+    "level": 15,
+    "increase": 5,
+    "currentPXP": 1000000000000000000001,
+    "value": 0,
+    "remainingPXP": 656273667400000000001,
+    "expectedPOK": 27498106600000000001
+  },
+  {
+    "level": 15,
+    "increase": 6,
+    "currentPXP": 5000000000000000000001,
+    "value": 0,
+    "remainingPXP": 4571320000000000000001,
+    "expectedPOK": 34294668400000000001
+  },
+  {
+    "level": 15,
+    "increase": 7,
+    "currentPXP": 10000000000000000000001,
+    "value": 1300000000000000001,
+    "remainingPXP": 9479990000000000000001,
+    "expectedPOK": 4458115100000000001
+  },
+  {
+    "level": 20,
+    "increase": 5,
+    "currentPXP": 5000000000000000000001,
+    "value": 700000000000000001,
+    "remainingPXP": 4506540000000000000001,
+    "expectedPOK": 19477088300000000001
+  },
+  {
+    "level": 20,
+    "increase": 1,
+    "currentPXP": 2000000000000000001,
+    "value": 150000000000000001,
+    "remainingPXP": 0,
+    "expectedPOK": 12880475200000000001
+  },
+  {
+    "level": 30,
+    "increase": 1,
+    "currentPXP": 50000000000000000001,
+    "value": 490000000000000001,
+    "remainingPXP": 0,
+    "expectedPOK": 15645316300000000001
+  },
+  {
+    "level": 32,
+    "increase": 3,
+    "currentPXP": 10000000000000000000001,
+    "value": 1830397600000000001,
+    "remainingPXP": 9346290000000000000001,
+    "expectedPOK": 0
+  },
+  {
+    "level": 50,
+    "increase": 2,
+    "currentPXP": 1500000000000000000001,
+    "value": 3000000000000000001,
+    "remainingPXP": 0,
+    "expectedPOK": 43177478700000000001
+  },
+  {
+    "level": 0,
+    "increase": 1,
+    "currentPXP": 100000000000000000001,
+    "value": 0,
+    "remainingPXP": 80000000000000000001,
+    "expectedPOK": 1600000000000000001
+  },
+  {
+    "level": 0,
+    "increase": 1,
+    "currentPXP": 100000000000000000001,
+    "value": 20000000000000001,
+    "remainingPXP": 80000000000000000001,
+    "expectedPOK": 1028571400000000001
+  },
+  {
+    "level": 0,
+    "increase": 1,
+    "currentPXP": 100000000000000000001,
+    "value": 20000000000000001,
+    "remainingPXP": 80000000000000000001,
+    "expectedPOK": 1028571400000000001
+  },
+  {
+    "level": 0,
+    "increase": 1,
+    "currentPXP": 30000000000000000001,
+    "value": 0,
+    "remainingPXP": 10000000000000000001,
+    "expectedPOK": 1600000000000000001
+  },
+  {
+    "level": 0,
+    "increase": 1,
+    "currentPXP": 30000000000000000001,
+    "value": 20000000000000001,
+    "remainingPXP": 10000000000000000001,
+    "expectedPOK": 1028571400000000001
+  },
+  {
+    "level": 0,
+    "increase": 1,
+    "currentPXP": 30000000000000000001,
+    "value": 56000000000000001,
+    "remainingPXP": 10000000000000000001,
+    "expectedPOK": 0
+  },
+  {
+    "level": 0,
+    "increase": 1,
+    "currentPXP": 0,
+    "value": 0,
+    "remainingPXP": 0,
+    "expectedPOK": 4100000000000000001
+  },
+  {
+    "level": 0,
+    "increase": 1,
+    "currentPXP": 0,
+    "value": 20000000000000001,
+    "remainingPXP": 0,
+    "expectedPOK": 3528571400000000001
+  },
+  {
+    "level": 0,
+    "increase": 1,
+    "currentPXP": 0,
+    "value": 56000000000000001,
+    "remainingPXP": 0,
+    "expectedPOK": 2500000000000000001
+  }
+]

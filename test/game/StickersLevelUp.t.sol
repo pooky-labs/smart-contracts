@@ -4,17 +4,13 @@ pragma solidity ^0.8.20;
 import { Ownable } from "solady/auth/Ownable.sol";
 import { ECDSA } from "solady/utils/ECDSA.sol";
 import { BaseTest } from "../BaseTest.sol";
-import { LevelUpSetup } from "../setup/LevelUpSetup.sol";
+import { LevelUpSetup, SlotData, LevelData } from "../setup/LevelUpSetup.sol";
 import { POKSetup } from "../setup/POKSetup.sol";
 import { StickersSetup } from "../setup/StickersSetup.sol";
+import { InvalidReceiver } from "../utils/InvalidReceiver.sol";
 import { BaseLevelUp, Pricing } from "../../src/base/BaseLevelUp.sol";
 import { StickerMetadata, StickerRarity } from "../../src/interfaces/IStickers.sol";
 import { StickersLevelUp } from "../../src/game/StickersLevelUp.sol";
-
-struct SlotData {
-  uint256 expected;
-  uint256 level;
-}
 
 contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
   using ECDSA for bytes32;
@@ -49,6 +45,39 @@ contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
         dataset[i].expected * 10 ** (levelUp.PXP_DECIMALS() - 3),
         1e14, // max 0.01% delta
         18
+      );
+    }
+  }
+
+  function test_getPricing() public {
+    (LevelData[] memory dataset) =
+      abi.decode(loadDataset("StickersLevelUp_pricing.json"), (LevelData[]));
+
+    for (uint256 i; i < dataset.length; i++) {
+      address recipient = makeAddr(string(abi.encodePacked(i)));
+      uint256 tokenId = mintSticker(recipient, StickerRarity.LEGENDARY);
+
+      vm.prank(game);
+      stickers.setLevel(tokenId, uint248(dataset[i].level));
+
+      Pricing memory pricing = levelUp.getPricing(
+        dataset[i].level, dataset[i].currentPXP, dataset[i].increase, dataset[i].value
+      );
+
+      assertApproxEqRelDecimal(
+        pricing.remainingPXP,
+        dataset[i].remainingPXP,
+        1e14, // max 0.01% delta
+        18,
+        "remainingPXP"
+      );
+
+      assertApproxEqRelDecimal(
+        pricing.gapPOK + pricing.feePOK,
+        dataset[i].expectedPOK,
+        1e14, // max 0.01% delta
+        18,
+        "expectedPOK"
       );
     }
   }
@@ -204,13 +233,37 @@ contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
     vm.prank(game);
     stickers.setLevel(tokenId, uint248(maxLevel));
 
-    mintPOK(user, 100e18);
+    uint256 currentPXP = 0;
+    mintPOK(user, 100e18); // Enough POK
 
     vm.prank(user);
     vm.expectRevert(
       abi.encodeWithSelector(BaseLevelUp.MaximumLevelReached.selector, tokenId, maxLevel)
     );
-    levelUp.levelUp(tokenId, 1, 0, sign(tokenId, 0));
+    levelUp.levelUp(tokenId, 1, currentPXP, sign(tokenId, currentPXP));
+  }
+
+  /**
+   * Assert that the levelUp function reverts if the native transfer fails.
+   */
+  function test_levelUp_revertTransferFailed() public {
+    InvalidReceiver invalid = new InvalidReceiver();
+
+    // Change treasury to an InvalidReceiver contract
+    vm.prank(admin);
+    levelUp.changeTreasury(address(invalid));
+
+    uint256 currentPXP = 0;
+    uint256 value = 1 ether;
+    mintPOK(user, 100e18); // Enough POK
+    vm.deal(user, value);
+
+    uint256 tokenId = mintSticker(user, StickerRarity.COMMON);
+    vm.prank(user);
+    vm.expectRevert(
+      abi.encodeWithSelector(BaseLevelUp.TransferFailed.selector, address(invalid), value)
+    );
+    levelUp.levelUp{ value: value }(tokenId, 1, currentPXP, sign(tokenId, currentPXP));
   }
 
   /**
