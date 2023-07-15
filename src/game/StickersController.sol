@@ -47,7 +47,7 @@ contract StickersController is IStickersController, OwnableRoles {
   }
 
   /**
-   * @notice Get the sticker token ids attached to a Pookyball.
+   * @notice Get the Sticker token ids attached to a Pookyball.
    * @param pookyballId The Pookyball token id.
    */
   function slots(uint256 pookyballId) external view returns (uint256[] memory) {
@@ -55,8 +55,8 @@ contract StickersController is IStickersController, OwnableRoles {
   }
 
   /**
-   * @notice Attach a sticker to a Pookyball (internal).
-   * @param stickerId The sticker token id.
+   * @notice Attach a Sticker to a Pookyball (internal).
+   * @param stickerId The Sticker token id.
    * @param pookyballId The Pookyball token id.
    * @dev Caution: no role/ownership checks are run.
    */
@@ -67,19 +67,20 @@ contract StickersController is IStickersController, OwnableRoles {
   }
 
   /**
-   * @notice Attach a sticker to a Pookyball.
-   * @param stickerId The sticker token id.
+   * @notice Attach a Sticker to a Pookyball.
+   * @param stickerId The Sticker token id.
    * @param pookyballId The Pookyball token id.
    * @dev Caution: no token ownership checks are run.
    */
   function attach(uint256 stickerId, uint256 pookyballId) public onlyRolesOrOwner(LINKER) {
     _attach(stickerId, pookyballId);
+    emit StickerAttached(stickerId, pookyballId);
   }
 
   /**
    * @notice Replace a sticker from a Pookyball, burning the previous one.
-   * @param stickerId The sticker token id.
-   * @param previousStickerId The previous sticker token id that will be burned.
+   * @param stickerId The Sticker token id.
+   * @param previousStickerId The previous Sticker token id that will be burned.
    * @param pookyballId The Pookyball token id.
    * @dev Caution: no token ownership checks are run.
    */
@@ -95,12 +96,13 @@ contract StickersController is IStickersController, OwnableRoles {
     delete _links[previousStickerId];
     stickers.burn(previousStickerId);
     _attach(stickerId, pookyballId);
+    emit StickerReplaced(stickerId, previousStickerId, pookyballId);
   }
 
   /**
-   * @notice Detach (remove) a sticker from a Pookyball.
-   * @param stickerId The Sstickerticker token id.
-   * @param recepient The address when to send the detached sticker.
+   * @notice Detach (remove) a Sticker from a Pookyball.
+   * @param stickerId The Sticker token id.
+   * @param recepient The address when to send the detached Sticker.
    * @dev Caution: no token ownership checks are run.
    */
   function detach(uint256 stickerId, address recepient) external onlyRolesOrOwner(REMOVER) {
@@ -108,5 +110,6 @@ contract StickersController is IStickersController, OwnableRoles {
     _slots[pookyballId].remove(stickerId);
     delete _links[stickerId];
     stickers.transferFrom(address(this), recepient, stickerId);
+    emit StickerDetached(stickerId, pookyballId);
   }
 }

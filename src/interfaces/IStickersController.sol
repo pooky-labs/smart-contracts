@@ -6,6 +6,10 @@ import { IStickers } from "./IStickers.sol";
 import { IPookyball } from "./IPookyball.sol";
 
 interface IStickersController {
+  event StickerAttached(uint256 stickerId, uint256 pookyballId);
+  event StickerReplaced(uint256 stickerId, uint256 previousStickerId, uint256 pookyballId);
+  event StickerDetached(uint256 stickerId, uint256 pookyballId);
+
   error InvalidSticker(uint256 stickerId);
 
   function stickers() external view returns (IStickers);
