@@ -13,7 +13,14 @@ import { IBaseERC721A } from "../interfaces/IBaseERC721A.sol";
 import { VRFConfig } from "../types/VRFConfig.sol";
 
 /**
- * Opiniated ERC721 implementation with Chainlink VRF v2.
+ * @title BaseERC721A
+ * @author Mathieu Bour for Pooky Games Ltd.
+ * @notice Opiniated ERC721 implementation base on ERC721A
+ * Features:
+ * - `Ownable` via Solady.
+ * - Chainlink VRF v2 to assign a random seed to each token id.
+ * - Burnable, queryable via the ERC721A extensions.
+ * - Royalties enforced on OpenSea using the `DefaultOperatorFilterer`.
  */
 contract BaseERC721A is
   ERC721A,
@@ -26,7 +33,7 @@ contract BaseERC721A is
   IBaseERC721A
 {
   /**
-   * @notice The prefix of all the Pookyball metadata.
+   * @notice The prefix URI of all the token metadata.
    */
   string public baseURI;
 
@@ -88,11 +95,22 @@ contract BaseERC721A is
 
   // ----- Metadata -----
   /**
+   * @notice Change the base URI of the tokens URI.
+   * @dev We keep this function as an escape hatch in case of a migration to another token metadata platform.
+   * Requirements:
+   * - Only owner can set can set base URI.
+   */
+  function setBaseURI(string memory newBaseURI) external onlyOwner {
+    baseURI = newBaseURI;
+  }
+
+  /**
    * @notice Set the URI of the contract-level metadata.
    * @dev We keep this function as an escape hatch in case of a migration to another token metadata platform.
    * Requirements:
    * - Only owner can set the contract URI.
    */
+
   function setContractURI(string memory newContractURI) external onlyOwner {
     contractURI = newContractURI;
   }
@@ -137,16 +155,6 @@ contract BaseERC721A is
       seeds[tokenId - i] = randomWords[i];
       emit SeedSet(tokenId - i, randomWords[i]);
     }
-  }
-
-  /**
-   * @notice Change the base URI of the tokens URI.
-   * @dev We keep this function as an escape hatch in case of a migration to another token metadata platform.
-   * Requirements:
-   * - Only owner can set can set base URI.
-   */
-  function setBaseURI(string memory newBaseURI) external onlyOwner {
-    baseURI = newBaseURI;
   }
 
   // ---- ERC2981 ----

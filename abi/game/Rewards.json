@@ -332,7 +332,7 @@
     "outputs": [
       {
         "internalType": "bool",
-        "name": "result",
+        "name": "",
         "type": "bool"
       }
     ],
@@ -356,7 +356,7 @@
     "outputs": [
       {
         "internalType": "bool",
-        "name": "result",
+        "name": "",
         "type": "bool"
       }
     ],
@@ -374,25 +374,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "roles",
-        "type": "uint256"
-      }
-    ],
-    "name": "ordinalsFromRoles",
-    "outputs": [
-      {
-        "internalType": "uint8[]",
-        "name": "ordinals",
-        "type": "uint8[]"
-      }
-    ],
-    "stateMutability": "pure",
     "type": "function"
   },
   {
@@ -422,19 +403,6 @@
         "internalType": "uint256",
         "name": "result",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "ownershipHandoverValidFor",
-    "outputs": [
-      {
-        "internalType": "uint64",
-        "name": "",
-        "type": "uint64"
       }
     ],
     "stateMutability": "view",
@@ -509,25 +477,6 @@
     "name": "revokeRoles",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint8[]",
-        "name": "ordinals",
-        "type": "uint8[]"
-      }
-    ],
-    "name": "rolesFromOrdinals",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "roles",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "pure",
     "type": "function"
   },
   {

@@ -18,7 +18,7 @@ struct Pricing {
 
 /**
  * @title BaseLevelUp
- * @author Mathieu Bour
+ * @author Mathieu Bour for Pooky Games Ltd.
  * @notice Base level up contract for tokens using exponential level growth, POK/NAT integration and offchain PXP.
  */
 abstract contract BaseLevelUp is OwnableRoles, BaseTreasury {

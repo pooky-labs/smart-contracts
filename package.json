@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "artifacts": "ts-node --esm scripts/artifacts.ts",
+    "artifacts": "ts-node --esm script/artifacts.ts",
     "test": "forge test",
     "coverage": "forge coverage --report lcov --report summary",
     "lint": "solhint '{src,test}/**/*.sol'"

@@ -2,15 +2,14 @@
 // Pooky Game Contracts (game/StickersManager.sol)
 pragma solidity ^0.8.20;
 
-import { IPookyball } from "../interfaces/IPookyball.sol";
 import { IStickers } from "../interfaces/IStickers.sol";
-import { PookyballMetadata, PookyballRarity } from "../../src/interfaces/IPookyball.sol";
+import { IPookyball, PookyballMetadata, PookyballRarity } from "../interfaces/IPookyball.sol";
 import { IStickersController } from "../interfaces/IStickersController.sol";
 
 /**
  * @title StickersManager
  * @author Mathieu Bour
- * @dev Implementation of the manager that allows end users to attach or replace stickedrs to Pookyballs.
+ * @dev Implementation of the manager that allows end users to attach or replace stickers to Pookyballs.
  */
 contract StickersManager {
   IStickers public immutable stickers;
