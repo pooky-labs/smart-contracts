@@ -2,6 +2,7 @@
 pragma solidity ^0.8.20;
 
 import { Ownable } from "solady/auth/Ownable.sol";
+import { IBaseTreasury } from "../../src/interfaces/IBaseTreasury.sol";
 import { StickersSale, Bundle, BundleContent, Refill } from "../../src/mint/StickersSale.sol";
 import { StickersSetup } from "../setup/StickersSetup.sol";
 import { InvalidReceiver } from "../utils/InvalidReceiver.sol";
@@ -131,7 +132,7 @@ contract StickersSaleTest is BaseTest, StickersSetup {
     vm.prank(user);
     uint256 value = bundle.price - 1;
     vm.expectRevert(
-      abi.encodeWithSelector(StickersSale.InsufficientValue.selector, value, bundle.price)
+      abi.encodeWithSelector(IBaseTreasury.InsufficientValue.selector, value, bundle.price)
     );
     sale.purchase{ value: value }(bundleId);
   }
@@ -146,7 +147,7 @@ contract StickersSaleTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(
-      abi.encodeWithSelector(StickersSale.TransferFailed.selector, address(invalid), bundle.price)
+      abi.encodeWithSelector(IBaseTreasury.TransferFailed.selector, address(invalid), bundle.price)
     );
     sale.purchase{ value: bundle.price }(bundleId);
   }

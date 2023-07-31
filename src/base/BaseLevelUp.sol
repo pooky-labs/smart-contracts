@@ -18,7 +18,7 @@ struct Pricing {
 
 /**
  * @title BaseLevelUp
- * @author Mathieu Bour for Pooky Games Ltd.
+ * @author Mathieu Bour for Pooky Labs Ltd.
  * @notice Base level up contract for tokens using exponential level growth, POK/NAT integration and offchain PXP.
  */
 abstract contract BaseLevelUp is OwnableRoles, BaseTreasury {
@@ -53,8 +53,6 @@ abstract contract BaseLevelUp is OwnableRoles, BaseTreasury {
   error MaximumLevelReached(uint256 tokenId, uint256 maxLevel);
   /// Thrown when an account does own enough $POK token to pay the level up fee
   error InsufficientPOK(uint256 expected, uint256 actual);
-  /// Thrown when the native transfer has failed.
-  error TransferFailed(address recipient, uint256 amount);
 
   constructor(IPOK _pok, address admin, address _treasury, uint256 _basePXP, uint256 precompute)
     BaseTreasury(_treasury)

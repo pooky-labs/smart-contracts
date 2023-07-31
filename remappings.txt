@@ -8,3 +8,4 @@ openzeppelin/=lib/openzeppelin-contracts/contracts/
 operator-filter-registry/=lib/operator-filter-registry/
 solady/=lib/solady/src/
 solmate/=lib/solady/lib/solmate/src/
+@/=src/

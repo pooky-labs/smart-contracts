@@ -9,6 +9,7 @@ import { POKSetup } from "../setup/POKSetup.sol";
 import { PookyballSetup } from "../setup/PookyballSetup.sol";
 import { InvalidReceiver } from "../utils/InvalidReceiver.sol";
 import { BaseLevelUp, Pricing } from "../../src/base/BaseLevelUp.sol";
+import { IBaseTreasury } from "../../src/interfaces/IBaseTreasury.sol";
 import { PookyballMetadata, PookyballRarity } from "../../src/interfaces/IPookyball.sol";
 import { PookyballLevelUp } from "../../src/game/PookyballLevelUp.sol";
 
@@ -261,7 +262,7 @@ contract PookyballLevelUpTest is BaseTest, PookyballSetup, LevelUpSetup {
     uint256 tokenId = mintPookyball(user, PookyballRarity.COMMON);
     vm.prank(user);
     vm.expectRevert(
-      abi.encodeWithSelector(BaseLevelUp.TransferFailed.selector, address(invalid), value)
+      abi.encodeWithSelector(IBaseTreasury.TransferFailed.selector, address(invalid), value)
     );
     levelUp.levelUp{ value: value }(tokenId, 1, currentPXP, sign(tokenId, currentPXP));
   }

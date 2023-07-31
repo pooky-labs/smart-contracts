@@ -9,6 +9,7 @@ import { POKSetup } from "../setup/POKSetup.sol";
 import { StickersSetup } from "../setup/StickersSetup.sol";
 import { InvalidReceiver } from "../utils/InvalidReceiver.sol";
 import { BaseLevelUp, Pricing } from "../../src/base/BaseLevelUp.sol";
+import { IBaseTreasury } from "../../src/interfaces/IBaseTreasury.sol";
 import { StickerMetadata, StickerRarity } from "../../src/interfaces/IStickers.sol";
 import { StickersLevelUp } from "../../src/game/StickersLevelUp.sol";
 
@@ -261,7 +262,7 @@ contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
     uint256 tokenId = mintSticker(user, StickerRarity.COMMON);
     vm.prank(user);
     vm.expectRevert(
-      abi.encodeWithSelector(BaseLevelUp.TransferFailed.selector, address(invalid), value)
+      abi.encodeWithSelector(IBaseTreasury.TransferFailed.selector, address(invalid), value)
     );
     levelUp.levelUp{ value: value }(tokenId, 1, currentPXP, sign(tokenId, currentPXP));
   }

@@ -20,10 +20,26 @@
         "internalType": "address",
         "name": "_treasury",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "signer",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "Ineligible",
+    "type": "error"
   },
   {
     "inputs": [
@@ -63,22 +79,6 @@
     "type": "error"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "maxLevel",
-        "type": "uint256"
-      }
-    ],
-    "name": "MaximumLevelReached",
-    "type": "error"
-  },
-  {
     "inputs": [],
     "name": "NewOwnerIsZeroAddress",
     "type": "error"
@@ -86,6 +86,22 @@
   {
     "inputs": [],
     "name": "NoHandoverRequest",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "left",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "right",
+        "type": "uint8"
+      }
+    ],
+    "name": "RarityMismatch",
     "type": "error"
   },
   {
@@ -108,6 +124,37 @@
     "inputs": [],
     "name": "Unauthorized",
     "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "rarity",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "left",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "right",
+        "type": "uint256"
+      }
+    ],
+    "name": "Ascended",
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -175,32 +222,6 @@
   },
   {
     "inputs": [],
-    "name": "BASE_RATIO",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "PXP_DECIMALS",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "SIGNER",
     "outputs": [
       {
@@ -213,13 +234,57 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "basePXP",
-    "outputs": [
+    "inputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "left",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "right",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "priceNAT",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "pricePOK",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "proof",
+        "type": "bytes"
+      }
+    ],
+    "name": "ascend",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ascendable",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
       }
     ],
     "stateMutability": "view",
@@ -230,71 +295,6 @@
     "name": "cancelOwnershipHandover",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_basePXP",
-        "type": "uint256"
-      }
-    ],
-    "name": "changeBasePXP",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_fee",
-        "type": "uint256"
-      }
-    ],
-    "name": "changeFee",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_growth",
-        "type": "uint256"
-      }
-    ],
-    "name": "changeGrowth",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_rateNAT_POK",
-        "type": "uint256"
-      }
-    ],
-    "name": "changeRateNAT_POK",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_ratePXP_POK",
-        "type": "uint256"
-      }
-    ],
-    "name": "changeRatePXP_POK",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -324,116 +324,13 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "from",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "to",
-        "type": "uint256"
-      }
-    ],
-    "name": "compute",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
-    "name": "fee",
+    "name": "dead",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "address",
         "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getParams",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "maxLevel",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "currentLevel",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "currentPXP",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "increase",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
-      }
-    ],
-    "name": "getPricing",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "requiredPXP",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "remainingPXP",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "newLevel",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "gapPOK",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "feePOK",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct Pricing",
-        "name": "pricing",
-        "type": "tuple"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -455,19 +352,6 @@
     "name": "grantRoles",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "growth",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -519,34 +403,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "increase",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "currentPXP",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes",
-        "name": "proof",
-        "type": "bytes"
-      }
-    ],
-    "name": "levelUp",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "owner",
     "outputs": [
@@ -593,25 +449,12 @@
   },
   {
     "inputs": [],
-    "name": "rateNAT_POK",
+    "name": "pookyball",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "contract IPookyball",
         "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "ratePXP_POK",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -675,25 +518,6 @@
       {
         "internalType": "uint256",
         "name": "roles",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "slots",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
         "type": "uint256"
       }
     ],

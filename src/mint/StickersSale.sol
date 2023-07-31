@@ -59,10 +59,6 @@ contract StickersSale is OwnableRoles, BaseTreasury {
   error InvalidBundle();
   /// Thrown when a mint would exceed the bundle supply.
   error InsufficientSupply(uint256 bundleId);
-  /// Thrown when the msg.value of the mint function does not cover the mint cost.
-  error InsufficientValue(uint256 actual, uint256 expected);
-  /// Thrown when the native transfer has failed.
-  error TransferFailed(address recipient, uint256 amount);
 
   constructor(IStickers _stickers, address admin, address _treasury, Bundle[] memory _bundles)
     BaseTreasury(_treasury)

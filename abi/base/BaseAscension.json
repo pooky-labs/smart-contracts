@@ -3,6 +3,17 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "Ineligible",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "expected",
         "type": "uint256"
       },
@@ -12,7 +23,7 @@
         "type": "uint256"
       }
     ],
-    "name": "InsufficientValue",
+    "name": "InsufficientPOK",
     "type": "error"
   },
   {
@@ -28,23 +39,54 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
+        "internalType": "uint8",
+        "name": "left",
+        "type": "uint8"
       },
       {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
+        "internalType": "uint8",
+        "name": "right",
+        "type": "uint8"
       }
     ],
-    "name": "TransferFailed",
+    "name": "RarityMismatch",
     "type": "error"
   },
   {
     "inputs": [],
     "name": "Unauthorized",
     "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "rarity",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "left",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "right",
+        "type": "uint256"
+      }
+    ],
+    "name": "Ascended",
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -92,23 +134,34 @@
     "type": "event"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ascendable",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "cancelOwnershipHandover",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_treasury",
-        "type": "address"
-      }
-    ],
-    "name": "changeTreasury",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -181,19 +234,6 @@
     "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "treasury",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   }
 ]

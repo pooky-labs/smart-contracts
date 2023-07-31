@@ -14,7 +14,7 @@ import { VRFConfig } from "../types/VRFConfig.sol";
 
 /**
  * @title BaseERC721A
- * @author Mathieu Bour for Pooky Games Ltd.
+ * @author Mathieu Bour for Pooky Labs Ltd.
  * @notice Opiniated ERC721 implementation base on ERC721A
  * Features:
  * - `Ownable` via Solady.
