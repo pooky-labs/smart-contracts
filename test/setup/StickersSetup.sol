@@ -21,7 +21,6 @@ abstract contract StickersSetup is BaseTest, VRFCoordinatorV2Setup {
     );
     vrf.addConsumer(subscriptionId, address(stickers));
 
-    stickers.grantRoles(makeAddr("operator"), stickers.OPERATOR());
     stickers.grantRoles(makeAddr("minter"), stickers.MINTER());
     stickers.grantRoles(makeAddr("game"), stickers.GAME());
     vm.stopPrank();

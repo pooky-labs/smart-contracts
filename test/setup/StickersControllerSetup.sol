@@ -20,7 +20,6 @@ abstract contract StickersControllerSetup is BaseTest, StickersSetup, PookyballS
     controller = new StickersController(pookyball, stickers, admin);
 
     vm.startPrank(admin);
-    stickers.grantRoles(address(controller), stickers.OPERATOR());
     controller.grantRoles(linker, controller.LINKER());
     controller.grantRoles(replacer, controller.REPLACER());
     controller.grantRoles(remover, controller.REMOVER());

@@ -19,11 +19,12 @@ contract StickersControllerTest is BaseTest, StickersControllerSetup {
 
     assertEq(controller.slots(pookyballId), new uint[](0));
 
-    vm.prank(linker);
+    vm.prank(user);
+    stickers.setApprovalForAll(address(controller), true);
 
+    vm.prank(linker);
     vm.expectEmit(true, true, true, true, address(stickers));
     emit Transfer(user, address(controller), stickerId);
-
     controller.attach(stickerId, pookyballId);
 
     assertEq(stickers.ownerOf(stickerId), address(controller));
@@ -36,6 +37,9 @@ contract StickersControllerTest is BaseTest, StickersControllerSetup {
   function testFuzz_detach(uint256 stickerRaritySeed, uint8 pookyballRaritySeed) public {
     uint256 stickerId = mintSticker(user, randomStickerRarity(stickerRaritySeed));
     uint256 pookyballId = mintPookyball(user, randomPookyballRarity(pookyballRaritySeed));
+
+    vm.prank(user);
+    stickers.setApprovalForAll(address(controller), true);
 
     vm.prank(linker);
     controller.attach(stickerId, pookyballId);
@@ -65,6 +69,9 @@ contract StickersControllerTest is BaseTest, StickersControllerSetup {
     uint256 stickerId2 =
       mintSticker(user, randomStickerRarity(stickerRaritySeed & pookyballRaritySeed));
     uint256 pookyballId = mintPookyball(user, randomPookyballRarity(pookyballRaritySeed));
+
+    vm.prank(user);
+    stickers.setApprovalForAll(address(controller), true);
 
     vm.prank(linker);
     controller.attach(stickerId1, pookyballId);

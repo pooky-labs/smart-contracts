@@ -14,7 +14,6 @@ contract StickersTest is BaseTest, StickersSetup {
   address public admin;
   address public minter = makeAddr("minter");
   address public game = makeAddr("game");
-  address public operator = makeAddr("operator");
   address public user1 = makeAddr("user1");
   address public user2 = makeAddr("user2");
 
@@ -145,11 +144,6 @@ contract StickersTest is BaseTest, StickersSetup {
 
     assertEq(stickers.seeds(tokenId1), seed1);
     assertEq(stickers.seeds(tokenId2), seed2);
-  }
-
-  function test_isApprovedForAll_operator() public {
-    assertTrue(stickers.isApprovedForAll(user1, operator));
-    assertTrue(stickers.isApprovedForAll(user2, operator));
   }
 
   function test_setApprovalForAll_pass() public {

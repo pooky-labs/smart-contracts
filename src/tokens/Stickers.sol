@@ -12,11 +12,12 @@ import { VRFConfig } from "../types/VRFConfig.sol";
 
 contract Stickers is IStickers, BaseERC721A, OwnableRoles {
   // Roles
-  uint256 public constant OPERATOR = _ROLE_0;
-  uint256 public constant MINTER = _ROLE_1;
-  uint256 public constant GAME = _ROLE_2;
+  uint256 public constant MINTER = _ROLE_0;
+  uint256 public constant GAME = _ROLE_1;
 
-  /// Tokens gameplay metadata, see {PookyballMetadata}
+  /**
+   * @notice Tokens gameplay metadata, see `StickerMetadata`
+   */
   mapping(uint256 => StickerMetadata) _metadata;
 
   constructor(address admin, address _receiver, VRFConfig memory _vrf)
@@ -31,19 +32,6 @@ contract Stickers is IStickers, BaseERC721A, OwnableRoles {
       500 // 5% royalties by default
     )
   { }
-
-  /**
-   * @param owner The token owner.
-   * @param operator The operator.
-   */
-  function isApprovedForAll(address owner, address operator)
-    public
-    view
-    override(ERC721A, IERC721A)
-    returns (bool)
-  {
-    return hasAllRoles(operator, OPERATOR) || super.isApprovedForAll(owner, operator);
-  }
 
   /**
    * @notice PookyballMetadata of the token {tokenId}.

@@ -105,6 +105,9 @@ contract StickersManagerTest is BaseTest, StickersControllerSetup {
     uint256 stickerId1 = mintSticker(user1);
     uint256 stickerId2 = mintSticker(user1);
 
+    vm.prank(user1);
+    stickers.setApprovalForAll(address(controller), true);
+
     vm.startPrank(linker);
     controller.attach(stickerId1, pookyballId);
     controller.attach(stickerId2, pookyballId);
@@ -121,6 +124,9 @@ contract StickersManagerTest is BaseTest, StickersControllerSetup {
     vm.assume(user1 != address(0));
     level = bound(level, 0, 120);
     uint256 pookyballId = mintPookyball(user1);
+
+    vm.prank(user1);
+    stickers.setApprovalForAll(address(controller), true);
 
     vm.prank(game);
     pookyball.setLevel(pookyballId, level);
@@ -151,6 +157,9 @@ contract StickersManagerTest is BaseTest, StickersControllerSetup {
 
     uint256 stickerId1 = mintSticker(user1);
     uint256 stickerId2 = mintSticker(user1);
+
+    vm.prank(user1);
+    stickers.setApprovalForAll(address(controller), true);
 
     vm.startPrank(user1);
     manager.attach(stickerId1, pookyballId);

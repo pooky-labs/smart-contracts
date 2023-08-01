@@ -406,19 +406,6 @@
   },
   {
     "inputs": [],
-    "name": "OPERATOR",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "OPERATOR_FILTER_REGISTRY",
     "outputs": [
       {
