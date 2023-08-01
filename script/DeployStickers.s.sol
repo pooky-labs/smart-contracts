@@ -32,13 +32,11 @@ struct Config {
   StickersConfig st;
 }
 
-/**
- * @notice This is a temporary script to speed up the deployments on Mumbai.
- * This code should not be used on production in any way.
- *
- * Usage:
- * SALT=mysalt forge script ./script/DeployStickers.s.sol --rpc-url mumbai --broadcast --verify
- */
+/// @notice This is a temporary script to speed up the deployments on Mumbai.
+/// This code should not be used on production in any way.
+///
+/// Usage:
+/// SALT=mysalt forge script ./script/DeployStickers.s.sol --rpc-url mumbai --broadcast --verify
 contract DeployStickers is Script {
   function mumbai() internal pure returns (Config memory) {
     Pack[] memory packs = new Pack[](4);

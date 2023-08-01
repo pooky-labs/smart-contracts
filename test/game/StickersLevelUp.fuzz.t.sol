@@ -34,9 +34,7 @@ contract StickersLevelUpFuzzTest is BaseTest, StickersSetup, LevelUpSetup {
     vm.stopPrank();
   }
 
-  /**
-   * Assert that the levelUp function reverts if the user has not enough POK tokens.
-   */
+  /// Assert that the levelUp function reverts if the user has not enough POK tokens.
   function testFuzz_levelUp_revertInsufficientPOK(uint256 raritySeed, uint256 balancePOK) public {
     StickerRarity rarity = randomStickerRarity(raritySeed);
     uint256 tokenId = mintSticker(user, rarity);
@@ -54,9 +52,7 @@ contract StickersLevelUpFuzzTest is BaseTest, StickersSetup, LevelUpSetup {
     );
   }
 
-  /**
-   * Assert that the levelUp function reverts if the Sticker is already at the maximum level.
-   */
+  /// Assert that the levelUp function reverts if the Sticker is already at the maximum level.
   function testFuzz_levelUp_revertMaximumLevelReached(uint256 raritySeed) public {
     StickerRarity rarity = randomStickerRarity(raritySeed);
     uint256 tokenId = mintSticker(user, rarity);
@@ -100,9 +96,7 @@ contract StickersLevelUpFuzzTest is BaseTest, StickersSetup, LevelUpSetup {
     value = bound(valueSeed, 0, 1000 ether);
   }
 
-  /**
-   * Assert that a Sticker can be upgraded from level zero to level one using POK.
-   */
+  /// Assert that a Sticker can be upgraded from level zero to level one using POK.
   function testFuzz_levelUp_pass(
     uint256 raritySeed,
     uint256 levelSeed,

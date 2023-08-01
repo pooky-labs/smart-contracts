@@ -184,9 +184,7 @@ contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
     assertEq(maxLevel, 120);
   }
 
-  /**
-   * Assert that the levelUp function reverts when currentPXP parameter and the one used for signature differ.
-   */
+  /// Assert that the levelUp function reverts when currentPXP parameter and the one used for signature differ.
   function test_levelUp_revertInvalidSignature() public {
     uint256 tokenId = mintSticker(user);
     StickerMetadata memory metadata = stickers.metadata(tokenId);
@@ -208,9 +206,7 @@ contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
     assertEq(metadata.level, 0);
   }
 
-  /**
-   * Assert that the levelUp function reverts if the user has not enough POK tokens.
-   */
+  /// Assert that the levelUp function reverts if the user has not enough POK tokens.
   function test_levelUp_revertInsufficientPOK() public {
     uint256 tokenId = mintSticker(user, StickerRarity.COMMON);
 
@@ -230,9 +226,7 @@ contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
     );
   }
 
-  /**
-   * Assert that the levelUp function reverts if the Sticker is already at the maximum level.
-   */
+  /// Assert that the levelUp function reverts if the Sticker is already at the maximum level.
   function test_levelUp_revertMaximumLevelReached() public {
     uint256 tokenId = mintSticker(user, StickerRarity.COMMON);
     (, uint256 maxLevel) = levelUp.getParams(tokenId);
@@ -252,9 +246,7 @@ contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
     );
   }
 
-  /**
-   * Assert that the levelUp function reverts if the native transfer fails.
-   */
+  /// Assert that the levelUp function reverts if the native transfer fails.
   function test_levelUp_revertTransferFailed() public {
     InvalidReceiver invalid = new InvalidReceiver();
 
@@ -279,9 +271,7 @@ contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
     );
   }
 
-  /**
-   * Assert that a Sticker can be upgraded from level zero to level one using POK.
-   */
+  /// Assert that a Sticker can be upgraded from level zero to level one using POK.
   function test_levelUp_passZeroLevel() public {
     uint256 tokenId = mintSticker(user);
     StickerMetadata memory metadata = stickers.metadata(tokenId);

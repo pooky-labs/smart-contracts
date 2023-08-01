@@ -6,11 +6,9 @@ import { BaseLevelUp } from "../base/BaseLevelUp.sol";
 import { IPOK } from "../interfaces/IPOK.sol";
 import { IPookyball, PookyballMetadata, PookyballRarity } from "../interfaces/IPookyball.sol";
 
-/**
- * @title PookyballLevelUp
- * @author Mathieu Bour
- * @notice Allow to level up Pooky Pookyball tokens.
- */
+/// @title PookyballLevelUp
+/// @author Mathieu Bour
+/// @notice Allow to level up Pooky Pookyball tokens.
 contract PookyballLevelUp is BaseLevelUp {
   /// The Pookyball contract.
   IPookyball pookyball;

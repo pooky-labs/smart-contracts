@@ -36,14 +36,12 @@ struct Refill {
   uint256 quantity;
 }
 
-/**
- * @title StickersSale
- * @author Mathieu Bour for Pooky Labs Ltd.
- * @notice Sticker Sale contract that can be refilled by an admin.
- * @dev Roles:
- * - Owner: allowd to create new packs
- * - Seller: allowed to refill the sale
- */
+/// @title StickersSale
+/// @author Mathieu Bour for Pooky Labs Ltd.
+/// @notice Sticker Sale contract that can be refilled by an admin.
+/// @dev Roles:
+/// - Owner: allowd to create new packs
+/// - Seller: allowed to refill the sale
 contract StickersSale is OwnableRoles, BaseTreasury {
   uint256 public constant SELLER = _ROLE_0;
 
@@ -79,9 +77,7 @@ contract StickersSale is OwnableRoles, BaseTreasury {
     }
   }
 
-  /**
-   * @notice List available packs.
-   */
+  /// @notice List available packs.
   function getPacks() external view returns (Pack[] memory) {
     Pack[] memory output = new Pack[](size);
     for (uint256 i; i < size;) {
@@ -94,36 +90,28 @@ contract StickersSale is OwnableRoles, BaseTreasury {
     return output;
   }
 
-  /**
-   * @notice Checks if the sale is open.
-   */
+  /// @notice Checks if the sale is open.
   function isClosed() public view returns (bool) {
     return closedUntil == 0 || block.timestamp < closedUntil;
   }
 
-  /**
-   * @dev Internal unprotected pack creation.
-   */
+  /// @dev Internal unprotected pack creation.
   function _create(Pack memory _pack) internal {
     packs[size++] = _pack;
   }
 
-  /**
-   * @notice Create a new pack.
-   * @dev Requirements:
-   * - Only owner can create new packs.
-   */
+  /// @notice Create a new pack.
+  /// @dev Requirements:
+  /// - Only owner can create new packs.
   function create(Pack memory _pack) external onlyOwner {
     _create(_pack);
   }
 
-  /**
-   * @notice Purchase a Stickers pack.
-   * @dev Requirements:
-   * - Sale must be open.
-   * - Pack ID must exist.
-   * - Transaction value must be greater or equal than the pack price.
-   */
+  /// @notice Purchase a Stickers pack.
+  /// @dev Requirements:
+  /// - Sale must be open.
+  /// - Pack ID must exist.
+  /// - Transaction value must be greater or equal than the pack price.
   function purchase(uint256 packId) external payable forwarder {
     if (isClosed()) {
       revert Closed(closedUntil);
@@ -178,13 +166,11 @@ contract StickersSale is OwnableRoles, BaseTreasury {
     packs[packId].minted++;
   }
 
-  /**
-   * @notice Restock the sale items.
-   * @param refills Array of the modifications to apply.
-   * @param _closedUntil Update the opening of the sale; a date in the past opens the sale immediately.
-   * @dev Requirements:
-   * - msg.sender must have the `SELLER` role or be the owner
-   */
+  /// @notice Restock the sale items.
+  /// @param refills Array of the modifications to apply.
+  /// @param _closedUntil Update the opening of the sale; a date in the past opens the sale immediately.
+  /// @dev Requirements:
+  /// - msg.sender must have the `SELLER` role or be the owner
   function restock(Refill[] memory refills, uint256 _closedUntil) external onlyRolesOrOwner(SELLER) {
     uint256 length = refills.length;
     for (uint256 i = 0; i < length; i++) {

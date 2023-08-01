@@ -8,31 +8,23 @@ import { BaseSigner } from "@/base/BaseSigner.sol";
 import { IPOK } from "@/interfaces/IPOK.sol";
 import { IPookyball, PookyballMetadata, PookyballRarity } from "@/interfaces/IPookyball.sol";
 
-/**
- * @title PookyballAscension
- * @author Mathieu Bour for Pooky Labs Ltd.
- * @notice This contract allow Pooky players to upgrade their Pookyballs by merging two Pookyballs into a better single Pookyball.
- * @dev This contract requires the following roles:
- * - `Pookyball.MINTER`
- * - `StickersController.REMOVER` to unslot all Stickers attached to ascended Pookyballs.
- */
+/// @title PookyballAscension
+/// @author Mathieu Bour for Pooky Labs Ltd.
+/// @notice This contract allow Pooky players to upgrade their Pookyballs by merging two Pookyballs into a better single Pookyball.
+/// @dev This contract requires the following roles:
+/// - `Pookyball.MINTER`
+/// - `StickersController.REMOVER` to unslot all Stickers attached to ascended Pookyballs.
 contract PookyballAscension is OwnableRoles, BaseAscension, BaseTreasury, BaseSigner {
-  /**
-   * @notice Since Pookyball are not burnable by design, we will use the "0xdead" address instead.
-   */
+  /// @notice Since Pookyball are not burnable by design, we will use the "0xdead" address instead.
   address public constant dead = 0x000000000000000000000000000000000000dEaD;
 
-  /**
-   * @notice The Pookyball ERC-721 smart contract.
-   */
+  /// @notice The Pookyball ERC-721 smart contract.
   IPookyball public immutable pookyball;
 
-  /**
-   * @param _pookyball The Pookyball ERC-721 smart contract.
-   * @param admin The initial contract admin.
-   * @param _treasury The initial treasury.
-   * @param signer The initial signer.
-   */
+  /// @param _pookyball The Pookyball ERC-721 smart contract.
+  /// @param admin The initial contract admin.
+  /// @param _treasury The initial treasury.
+  /// @param signer The initial signer.
   constructor(IPookyball _pookyball, address admin, address _treasury, address signer)
     BaseTreasury(_treasury)
     BaseSigner(signer)
@@ -41,12 +33,10 @@ contract PookyballAscension is OwnableRoles, BaseAscension, BaseTreasury, BaseSi
     pookyball = _pookyball;
   }
 
-  /**
-   * @notice Check if the `tokenId` is at its maximum level.
-   * @param sender The account that want to ascend the stickers, used for ownership test.
-   * @param tokenId The token id to check.
-   * @return The ascended rarity.
-   */
+  /// @notice Check if the `tokenId` is at its maximum level.
+  /// @param sender The account that want to ascend the stickers, used for ownership test.
+  /// @param tokenId The token id to check.
+  /// @return The ascended rarity.
   function ascendable(address sender, uint256 tokenId) public view override returns (uint8) {
     if (pookyball.ownerOf(tokenId) != sender) {
       revert Ineligible(tokenId);
@@ -69,20 +59,16 @@ contract PookyballAscension is OwnableRoles, BaseAscension, BaseTreasury, BaseSi
     revert Ineligible(tokenId);
   }
 
-  /**
-   * @notice Burn the Pookyball `tokenId` by sending it to the `dead` address.
-   * @dev This burn requires the use to approve this contract as operator for the Pookyball collection.
-   */
+  /// @notice Burn the Pookyball `tokenId` by sending it to the `dead` address.
+  /// @dev This burn requires the use to approve this contract as operator for the Pookyball collection.
   function _burn(uint256 tokenId) internal override {
     pookyball.transferFrom(msg.sender, dead, tokenId);
   }
 
-  /**
-   * @notice Mint the new ascended Pookyball.
-   * @param rarity The ascended Pookyball rarity.
-   * @param recipient The recipient of the Pookyball.
-   * @return The ascended Pookyball token id.
-   */
+  /// @notice Mint the new ascended Pookyball.
+  /// @param rarity The ascended Pookyball rarity.
+  /// @param recipient The recipient of the Pookyball.
+  /// @return The ascended Pookyball token id.
   function _mint(uint8 rarity, address recipient) internal override returns (uint256) {
     address[] memory recipients = new address[](1);
     recipients[0] = recipient;
@@ -91,14 +77,12 @@ contract PookyballAscension is OwnableRoles, BaseAscension, BaseTreasury, BaseSi
     return pookyball.mint(recipients, rarities);
   }
 
-  /**
-   * @notice Ascend Pookyballs `left` and `right` into a new Pookyball.
-   * @dev The signer has all autority on the pricing, since the formula requires off-chain data.
-   * @param left The first Pookyball token id.
-   * @param right The second Pookyball token id.
-   * @param priceNAT The price in native currency.
-   * @param proof The proof of `abi.encode(left, right, priceNAT)`.
-   */
+  /// @notice Ascend Pookyballs `left` and `right` into a new Pookyball.
+  /// @dev The signer has all autority on the pricing, since the formula requires off-chain data.
+  /// @param left The first Pookyball token id.
+  /// @param right The second Pookyball token id.
+  /// @param priceNAT The price in native currency.
+  /// @param proof The proof of `abi.encode(left, right, priceNAT)`.
   function ascend(uint256 left, uint256 right, uint256 priceNAT, bytes calldata proof)
     external
     payable

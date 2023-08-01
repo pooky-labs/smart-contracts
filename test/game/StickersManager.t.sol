@@ -28,9 +28,7 @@ contract StickersManagerTest is BaseTest, StickersControllerSetup {
     vm.stopPrank();
   }
 
-  /**
-   * Ensure that the unlocked/free slots increase with Pookyball level.
-   */
+  /// Ensure that the unlocked/free slots increase with Pookyball level.
   function test_slots_increaseWithLevel() public {
     address user1 = makeAddr("user1");
     SlotsTest[45] memory dataset = [

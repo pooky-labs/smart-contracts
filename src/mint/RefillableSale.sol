@@ -25,14 +25,12 @@ struct Refill {
   uint256 price;
 }
 
-/**
- * @title RefillableSale
- * @author Mathieu Bour
- * @notice Allow Pookyball players to mint one or multiple Pookyball tokens.
- * This contract is refillable, meaning that an authorized SELLER account is allowed to change the available
- * balls/rarities.
- * The sale might also be closed at some point, see `closedUntil` for the next mint window!
- */
+/// @title RefillableSale
+/// @author Mathieu Bour
+/// @notice Allow Pookyball players to mint one or multiple Pookyball tokens.
+/// This contract is refillable, meaning that an authorized SELLER account is allowed to change the available
+/// balls/rarities.
+/// The sale might also be closed at some point, see `closedUntil` for the next mint window!
 contract RefillableSale is AccessControlEnumerable {
   bytes32 public constant SELLER = keccak256("SELLER");
   PookyballRarity[] public rarities =
@@ -62,12 +60,10 @@ contract RefillableSale is AccessControlEnumerable {
   /// Thrown when the native transfer has failed.
   error TransferFailed(address recipient, uint256 amount);
 
-  /**
-   * @param _pookyball The Pookyball ERC721 token address.
-   * @param _treasury The Pooky's treasury address.
-   * @param admin The AccessControl admin address.
-   * @param sellers The initial SELLER addresses.
-   */
+  /// @param _pookyball The Pookyball ERC721 token address.
+  /// @param _treasury The Pooky's treasury address.
+  /// @param admin The AccessControl admin address.
+  /// @param sellers The initial SELLER addresses.
   constructor(IPookyball _pookyball, address _treasury, address admin, address[] memory sellers) {
     pookyball = _pookyball;
     treasury = _treasury;
@@ -96,19 +92,15 @@ contract RefillableSale is AccessControlEnumerable {
     return output;
   }
 
-  /**
-   * @notice Checks if the sale is open.
-   */
+  /// @notice Checks if the sale is open.
   function isClosed() public view returns (bool) {
     return closedUntil == 0 || block.timestamp < closedUntil;
   }
 
-  /**
-   * @notice return the ineligibility reason of a set of parameters.
-   * Required for Paper.xyz custom contract integrations.
-   * See https://docs.withpaper.com/reference/eligibilitymethod
-   * @return The reason why the parameters are invalid; empty string if teh parameters are valid.
-   */
+  /// @notice return the ineligibility reason of a set of parameters.
+  /// Required for Paper.xyz custom contract integrations.
+  /// See https://docs.withpaper.com/reference/eligibilitymethod
+  /// @return The reason why the parameters are invalid; empty string if teh parameters are valid.
   function eligible(PookyballRarity rarity, uint256 quantity) external view returns (string memory) {
     if (isClosed()) {
       return "sale is closed";
@@ -122,14 +114,12 @@ contract RefillableSale is AccessControlEnumerable {
     return "";
   }
 
-  /**
-   * @notice Mint one or more Pookyball token to a account.
-   * @dev Requirements:
-   * - sale must be open
-   * - item should exists (check with the InsufficientSupply error)
-   * - item should have enough supply
-   * - enough native currency should be sent to cover the mint price
-   */
+  /// @notice Mint one or more Pookyball token to a account.
+  /// @dev Requirements:
+  /// - sale must be open
+  /// - item should exists (check with the InsufficientSupply error)
+  /// - item should have enough supply
+  /// - enough native currency should be sent to cover the mint price
   function mint(PookyballRarity rarity, address recipient, uint256 quantity) external payable {
     if (isClosed()) {
       revert Closed(closedUntil);
@@ -167,13 +157,11 @@ contract RefillableSale is AccessControlEnumerable {
     emit Sale(recipient, rarity, quantity, msg.value);
   }
 
-  /**
-   * @notice Restock the sale items.
-   * @param refills Array of the modifications to apply.
-   * @param _closedUntil Update the opening of the sale; a date in the past opens the sale immediately.
-   * @dev Requirements:
-   * - msg.sender must have the SELLER role
-   */
+  /// @notice Restock the sale items.
+  /// @param refills Array of the modifications to apply.
+  /// @param _closedUntil Update the opening of the sale; a date in the past opens the sale immediately.
+  /// @dev Requirements:
+  /// - msg.sender must have the SELLER role
   function restock(Refill[] memory refills, uint256 _closedUntil) external onlyRole(SELLER) {
     uint256 len = refills.length;
     for (uint256 i = 0; i < len; i++) {

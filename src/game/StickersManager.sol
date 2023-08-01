@@ -6,11 +6,9 @@ import { IStickers } from "../interfaces/IStickers.sol";
 import { IPookyball, PookyballMetadata, PookyballRarity } from "../interfaces/IPookyball.sol";
 import { IStickersController } from "../interfaces/IStickersController.sol";
 
-/**
- * @title StickersManager
- * @author Mathieu Bour
- * @dev Implementation of the manager that allows end users to attach or replace stickers to Pookyballs.
- */
+/// @title StickersManager
+/// @author Mathieu Bour
+/// @dev Implementation of the manager that allows end users to attach or replace stickers to Pookyballs.
 contract StickersManager {
   IStickers public immutable stickers;
   IPookyball public immutable pookyball;

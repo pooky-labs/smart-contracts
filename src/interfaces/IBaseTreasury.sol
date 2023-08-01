@@ -7,9 +7,7 @@ interface IBaseTreasury {
   /// Thrown when the native transfer has failed.
   error TransferFailed(address recipient, uint256 amount);
 
-  /**
-   * Change the native currency destination address.
-   * @param _treasury The new treasury address.
-   */
+  /// Change the native currency destination address.
+  /// @param _treasury The new treasury address.
   function changeTreasury(address _treasury) external;
 }

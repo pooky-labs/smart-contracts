@@ -29,9 +29,7 @@ abstract contract LevelUpSetup is BaseTest, POKSetup {
     (signer, privateKey) = makeAddrAndKey("signer");
   }
 
-  /**
-   * Sign the tokenId and the currentPXP for a level up.
-   */
+  /// Sign the tokenId and the currentPXP for a level up.
   function sign(uint256 tokenId, uint256 currentLevel, uint256 currentPXP, address target)
     internal
     view

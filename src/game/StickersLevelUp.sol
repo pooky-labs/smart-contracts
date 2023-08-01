@@ -6,11 +6,9 @@ import { BaseLevelUp } from "../base/BaseLevelUp.sol";
 import { IPOK } from "../interfaces/IPOK.sol";
 import { IStickers, StickerMetadata, StickerRarity } from "../interfaces/IStickers.sol";
 
-/**
- * @title StickersLevelUp
- * @author Mathieu Bour
- * @notice Allow to level up Pooky Stickers tokens.
- */
+/// @title StickersLevelUp
+/// @author Mathieu Bour
+/// @notice Allow to level up Pooky Stickers tokens.
 contract StickersLevelUp is BaseLevelUp {
   /// The Stickers contract.
   IStickers stickers;

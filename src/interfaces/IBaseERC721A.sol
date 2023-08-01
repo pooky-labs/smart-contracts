@@ -15,9 +15,7 @@ interface IBaseERC721A is IERC165, IERC721A, IERC721ABurnable, IERC721AQueryable
   error NonExistentToken(uint256 tokenId);
 
   // ----- ERC721A patches -----
-  /**
-   * @dev This allow to iterate over the token ids.
-   */
+  /// @dev This allow to iterate over the token ids.
   function nextTokenId() external view returns (uint256);
 
   function supportsInterface(bytes4 interfaceId)

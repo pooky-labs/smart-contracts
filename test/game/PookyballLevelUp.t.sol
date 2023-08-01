@@ -184,9 +184,7 @@ contract PookyballLevelUpTest is BaseTest, PookyballSetup, LevelUpSetup {
     assertEq(maxLevel, 120);
   }
 
-  /**
-   * Assert that the levelUp function reverts when currentPXP parameter and the one used for signature differ.
-   */
+  /// Assert that the levelUp function reverts when currentPXP parameter and the one used for signature differ.
   function test_levelUp_revertInvalidSignature() public {
     uint256 tokenId = mintPookyball(user);
     PookyballMetadata memory metadata = pookyball.metadata(tokenId);
@@ -208,9 +206,7 @@ contract PookyballLevelUpTest is BaseTest, PookyballSetup, LevelUpSetup {
     assertEq(metadata.level, 0);
   }
 
-  /**
-   * Assert that the levelUp function reverts if the user has not enough POK tokens.
-   */
+  /// Assert that the levelUp function reverts if the user has not enough POK tokens.
   function test_levelUp_revertInsufficientPOK() public {
     uint256 tokenId = mintPookyball(user, PookyballRarity.COMMON);
 
@@ -230,9 +226,7 @@ contract PookyballLevelUpTest is BaseTest, PookyballSetup, LevelUpSetup {
     );
   }
 
-  /**
-   * Assert that the levelUp function reverts if the Pookyball is already at the maximum level.
-   */
+  /// Assert that the levelUp function reverts if the Pookyball is already at the maximum level.
   function test_levelUp_revertMaximumLevelReached() public {
     uint256 tokenId = mintPookyball(user, PookyballRarity.COMMON);
     (, uint256 maxLevel) = levelUp.getParams(tokenId);
@@ -249,9 +243,7 @@ contract PookyballLevelUpTest is BaseTest, PookyballSetup, LevelUpSetup {
     levelUp.levelUp(tokenId, 1, currentPXP, sign(tokenId, maxLevel, currentPXP, address(levelUp)));
   }
 
-  /**
-   * Assert that the levelUp function reverts if the native transfer fails.
-   */
+  /// Assert that the levelUp function reverts if the native transfer fails.
   function test_levelUp_revertTransferFailed() public {
     InvalidReceiver invalid = new InvalidReceiver();
 
@@ -276,9 +268,7 @@ contract PookyballLevelUpTest is BaseTest, PookyballSetup, LevelUpSetup {
     );
   }
 
-  /**
-   * Assert that a Pookyball can be upgraded from level zero to level one using POK.
-   */
+  /// Assert that a Pookyball can be upgraded from level zero to level one using POK.
   function test_levelUp_passZeroLevel() public {
     uint256 tokenId = mintPookyball(user);
     PookyballMetadata memory metadata = pookyball.metadata(tokenId);

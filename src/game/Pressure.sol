@@ -4,12 +4,10 @@ pragma solidity ^0.8.17;
 
 import "../interfaces/IPOK.sol";
 
-/**
- * @title Pressure
- * @author Mathieu Bour
- * @notice Gameplay contract that allow to inflate/repair Pookyball tokens by spending $POK tokens and native currency.
- * @dev This contract has the POK.BURNER role.
- */
+/// @title Pressure
+/// @author Mathieu Bour
+/// @notice Gameplay contract that allow to inflate/repair Pookyball tokens by spending $POK tokens and native currency.
+/// @dev This contract has the POK.BURNER role.
 contract Pressure {
   // Constants
   uint8[] public floors = [10, 20, 30, 40, 50, 60, 75, 100];
@@ -39,12 +37,10 @@ contract Pressure {
     treasury = _treasury;
   }
 
-  /**
-   * @notice Compute the cost using the floors.
-   * @param current The current token pressure.
-   * @param amount The desired pressure increase.
-   * @param values The floor values.
-   */
+  /// @notice Compute the cost using the floors.
+  /// @param current The current token pressure.
+  /// @param amount The desired pressure increase.
+  /// @param values The floor values.
   function compute(uint8 current, uint8 amount, uint256[] memory values)
     internal
     view
@@ -71,30 +67,24 @@ contract Pressure {
     return sum;
   }
 
-  /**
-   * @notice Get the price to inflate a Pookyball token in native currency.
-   * @param current The current token pressure.
-   * @param amount The desired pressure increase.
-   */
+  /// @notice Get the price to inflate a Pookyball token in native currency.
+  /// @param current The current token pressure.
+  /// @param amount The desired pressure increase.
   function priceNAT(uint8 current, uint8 amount) public view returns (uint256) {
     return compute(current, amount, floorsNAT);
   }
 
-  /**
-   * @notice Get the price to inflate a Pookyball token in $POK tokens.
-   * @param current The current token pressure.
-   * @param amount The desired pressure increase.
-   */
+  /// @notice Get the price to inflate a Pookyball token in $POK tokens.
+  /// @param current The current token pressure.
+  /// @param amount The desired pressure increase.
   function pricePOK(uint8 current, uint8 amount) public view returns (uint256) {
     return compute(current, amount, floorsPOK);
   }
 
-  /**
-   * @notice Compute the cost using the floors.
-   * @param tokenId The Pookyball token id to inflate.
-   * @param current The current token pressure.
-   * @param amount The desired pressure increase.
-   */
+  /// @notice Compute the cost using the floors.
+  /// @param tokenId The Pookyball token id to inflate.
+  /// @param current The current token pressure.
+  /// @param amount The desired pressure increase.
   function inflate(uint256 tokenId, uint8 current, uint8 amount) external payable {
     if (msg.value > 0) {
       // Sender is paying with native currency

@@ -22,12 +22,10 @@ struct RewardsData {
   bytes32[] nonces;
 }
 
-/**
- * @title Rewards
- * @author Mathieu Bour, Claudiu Micu
- * @notice Gameplay contract that allows to claim rewards native, $POK tokens and Pookyball PXP rewards.
- * @dev Only authorized REWARDER-role can sign the rewards payload.
- */
+/// @title Rewards
+/// @author Mathieu Bour, Claudiu Micu
+/// @notice Gameplay contract that allows to claim rewards native, $POK tokens and Pookyball PXP rewards.
+/// @dev Only authorized REWARDER-role can sign the rewards payload.
 contract Rewards is OwnableRoles {
   using ECDSA for bytes32;
 
@@ -78,14 +76,10 @@ contract Rewards is OwnableRoles {
     }
   }
 
-  /**
-   * @notice Receive funds that will be used for native token reward.
-   */
+  /// @notice Receive funds that will be used for native token reward.
   receive() external payable { }
 
-  /**
-   * @notice Recover all the funds on the contract.
-   */
+  /// @notice Recover all the funds on the contract.
   function withdraw() external onlyOwner {
     (bool sent,) = address(msg.sender).call{ value: address(this).balance }("");
     if (!sent) {
@@ -93,14 +87,12 @@ contract Rewards is OwnableRoles {
     }
   }
 
-  /**
-   * @notice Claim rewards using a signature generated from the Pooky game back-end.
-   * Rewards include: native currency, $POK tokens, PXP for the Pookyball tokens and Pookyball tokens.
-   * @dev Requirements:
-   * - signature is valid
-   * - tokenIds and tokenPXP have the same size
-   * - contract has enough native currency to reward player
-   */
+  /// @notice Claim rewards using a signature generated from the Pooky game back-end.
+  /// Rewards include: native currency, $POK tokens, PXP for the Pookyball tokens and Pookyball tokens.
+  /// @dev Requirements:
+  /// - signature is valid
+  /// - tokenIds and tokenPXP have the same size
+  /// - contract has enough native currency to reward player
   function claim(RewardsData memory rewards, bytes memory signature, string memory data) external {
     // Generate the signed message from the sender, rewards and nonce
     bytes32 hash = keccak256(abi.encode(msg.sender, rewards, data)).toEthSignedMessageHash();

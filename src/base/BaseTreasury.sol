@@ -5,12 +5,10 @@ pragma solidity ^0.8.20;
 import { Ownable } from "solady/auth/Ownable.sol";
 import { IBaseTreasury } from "../interfaces/IBaseTreasury.sol";
 
-/**
- * @title BaseTreasury
- * @author Mathieu Bour
- * @notice Base class for contracts that are made to receive native currency.
- * The destination address is controller by the contract owner.
- */
+/// @title BaseTreasury
+/// @author Mathieu Bour
+/// @notice Base class for contracts that are made to receive native currency.
+/// The destination address is controller by the contract owner.
 abstract contract BaseTreasury is Ownable, IBaseTreasury {
   /// The native currency destination address.
   address public treasury;
@@ -19,10 +17,8 @@ abstract contract BaseTreasury is Ownable, IBaseTreasury {
     treasury = _treasury;
   }
 
-  /**
-   * @notice Forward the funds to the treasury wallet at the end of the transaction.
-   * Since `treasury` is a trusted address, this modifier should not lead to any re-entrancy issue.
-   */
+  /// @notice Forward the funds to the treasury wallet at the end of the transaction.
+  /// Since `treasury` is a trusted address, this modifier should not lead to any re-entrancy issue.
   modifier forwarder() {
     _;
 
@@ -33,10 +29,8 @@ abstract contract BaseTreasury is Ownable, IBaseTreasury {
     }
   }
 
-  /**
-   * Change the native currency destination address.
-   * @param _treasury The new treasury address.
-   */
+  /// Change the native currency destination address.
+  /// @param _treasury The new treasury address.
   function changeTreasury(address _treasury) external onlyOwner {
     treasury = _treasury;
   }

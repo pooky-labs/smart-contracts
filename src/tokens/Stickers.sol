@@ -10,14 +10,12 @@ import { IBaseERC721A } from "@/interfaces/IBaseERC721A.sol";
 import { IStickers, StickerMetadata, StickerRarity, StickerMint } from "@/interfaces/IStickers.sol";
 import { VRFConfig } from "@/types/VRFConfig.sol";
 
-/**
- * @title Stickers
- * @author Mathieu Bour for Pooky Labs Ltd.
- * @dev Implemented roles:
- * - Owner: allowed to change metadata of the Stickers
- * - MINTER: allowed to mint new Stickers
- * - GAME: allowed to change the game attributes of the Stickers
- */
+/// @title Stickers
+/// @author Mathieu Bour for Pooky Labs Ltd.
+/// @dev Implemented roles:
+/// - Owner: allowed to change metadata of the Stickers
+/// - MINTER: allowed to mint new Stickers
+/// - GAME: allowed to change the game attributes of the Stickers
 contract Stickers is IStickers, BaseERC721A, OwnableRoles {
   uint248 constant DEFAULT_LEVEL = 0;
 
@@ -25,9 +23,7 @@ contract Stickers is IStickers, BaseERC721A, OwnableRoles {
   uint256 public constant MINTER = _ROLE_0;
   uint256 public constant GAME = _ROLE_1;
 
-  /**
-   * @notice Tokens gameplay metadata, see `StickerMetadata`
-   */
+  /// @notice Tokens gameplay metadata, see `StickerMetadata`
   mapping(uint256 => StickerMetadata) _metadata;
 
   constructor(address admin, address _receiver, VRFConfig memory _vrf)
@@ -43,11 +39,9 @@ contract Stickers is IStickers, BaseERC721A, OwnableRoles {
     )
   { }
 
-  /**
-   * @notice Get the StickerMetadata of the token `tokenId`.
-   * @dev Requirements:
-   * - Sticker `tokenId` should exist (minted and not burned).
-   */
+  /// @notice Get the StickerMetadata of the token `tokenId`.
+  /// @dev Requirements:
+  /// - Sticker `tokenId` should exist (minted and not burned).
   function metadata(uint256 tokenId)
     external
     view
@@ -57,12 +51,10 @@ contract Stickers is IStickers, BaseERC721A, OwnableRoles {
     return _metadata[tokenId];
   }
 
-  /**
-   * @notice Change the level of a Sticker token.
-   * @dev Requirements:
-   * - sender must have the `GAME` role or be the owner.
-   * - Sticker `tokenId` should exist (minted and not burned).
-   */
+  /// @notice Change the level of a Sticker token.
+  /// @dev Requirements:
+  /// - sender must have the `GAME` role or be the owner.
+  /// - Sticker `tokenId` should exist (minted and not burned).
   function setLevel(uint256 tokenId, uint248 newLevel)
     external
     onlyExists(tokenId)
@@ -72,12 +64,10 @@ contract Stickers is IStickers, BaseERC721A, OwnableRoles {
     emit LevelChanged(tokenId, newLevel);
   }
 
-  /**
-   * @notice Mint a new Sticker token with a given rarity.
-   * Level and seed are set to zero, entropy is requested to the VRF coordinator.
-   * @dev Requirements:
-   * - sender must have the `MINTER` role or be the owner.
-   */
+  /// @notice Mint a new Sticker token with a given rarity.
+  /// Level and seed are set to zero, entropy is requested to the VRF coordinator.
+  /// @dev Requirements:
+  /// - sender must have the `MINTER` role or be the owner.
   function mint(address recipient, StickerRarity[] memory rarities)
     external
     onlyRolesOrOwner(MINTER)
@@ -100,14 +90,12 @@ contract Stickers is IStickers, BaseERC721A, OwnableRoles {
   }
 
   // ----- ERC165 -----
-  /**
-   * @notice IERC165 declaration.
-   * @dev Supports the following `interfaceId`s:
-   * - IERC165: 0x01ffc9a7
-   * - IERC721: 0x80ac58cd
-   * - IERC721Metadata: 0x5b5e139f
-   * - IERC2981: 0x2a55205a
-   */
+  /// @notice IERC165 declaration.
+  /// @dev Supports the following `interfaceId`s:
+  /// - IERC165: 0x01ffc9a7
+  /// - IERC721: 0x80ac58cd
+  /// - IERC721Metadata: 0x5b5e139f
+  /// - IERC2981: 0x2a55205a
   function supportsInterface(bytes4 interfaceId)
     public
     view
