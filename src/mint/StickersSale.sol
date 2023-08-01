@@ -3,10 +3,10 @@
 pragma solidity 0.8.20;
 
 import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
-import { IStickers, StickerMint, StickerRarity } from "../interfaces/IStickers.sol";
-import { BaseTreasury } from "../base/BaseTreasury.sol";
+import { BaseTreasury } from "@/base/BaseTreasury.sol";
+import { IStickers, StickerMint, StickerRarity } from "@/interfaces/IStickers.sol";
 
-struct Bundle {
+struct Pack {
   uint256 price;
   /// Supply of the current sale
   uint256 supply;
@@ -14,22 +14,22 @@ struct Bundle {
   uint256 minted;
   /// Total supply of all the sales
   uint256 totalSupply;
-  BundleContent content;
+  PackContent content;
 }
 
-struct BundleContent {
-  /// How many common stickers are in the bundle.
+struct PackContent {
+  /// How many common stickers are in the pack.
   uint256 common;
-  /// How many rare stickers are in the bundle.
+  /// How many rare stickers are in the pack.
   uint256 rare;
-  /// How many epic stickers are in the bundle.
+  /// How many epic stickers are in the pack.
   uint256 epic;
-  /// How many legendary stickers are in the bundle.
+  /// How many legendary stickers are in the pack.
   uint256 legendary;
 }
 
 struct Refill {
-  uint256 bundleId;
+  uint256 packId;
   /// The token price in native currency wei.
   uint256 price;
   /// The refill token quantity.
@@ -38,7 +38,11 @@ struct Refill {
 
 /**
  * @title StickersSale
- * @author Mathieu Bour
+ * @author Mathieu Bour for Pooky Labs Ltd.
+ * @notice Sticker Sale contract that can be refilled by an admin.
+ * @dev Roles:
+ * - Owner: allowd to create new packs
+ * - Seller: allowed to refill the sale
  */
 contract StickersSale is OwnableRoles, BaseTreasury {
   uint256 public constant SELLER = _ROLE_0;
@@ -49,26 +53,26 @@ contract StickersSale is OwnableRoles, BaseTreasury {
   /// The date when next mint window will open (compared to block.timestamp).
   uint256 public closedUntil;
 
-  mapping(uint256 => Bundle) private bundles;
-  /// The number of created bundles.
+  mapping(uint256 => Pack) private packs;
+  /// The number of created packs.
   uint256 size;
 
   /// Thrown when a mint is attempt before the sale opens.
   error Closed(uint256 closedUntil);
-  /// Thrown when the passed bundle id is invalid (greter or equal than `size`).
-  error InvalidBundle();
-  /// Thrown when a mint would exceed the bundle supply.
-  error InsufficientSupply(uint256 bundleId);
+  /// Thrown when the passed pack id is invalid (greater or equal than `size`).
+  error InvalidPack();
+  /// Thrown when a mint would exceed the pack supply.
+  error InsufficientSupply(uint256 packId);
 
-  constructor(IStickers _stickers, address admin, address _treasury, Bundle[] memory _bundles)
+  constructor(IStickers _stickers, address admin, address _treasury, Pack[] memory _packs)
     BaseTreasury(_treasury)
   {
     stickers = _stickers;
     _initializeOwner(admin);
 
-    uint256 length = _bundles.length;
+    uint256 length = _packs.length;
     for (uint256 i; i < length;) {
-      _create(_bundles[i]);
+      _create(_packs[i]);
       unchecked {
         i++;
       }
@@ -76,12 +80,12 @@ contract StickersSale is OwnableRoles, BaseTreasury {
   }
 
   /**
-   * @notice List available bundles.
+   * @notice List available packs.
    */
-  function getBundles() external view returns (Bundle[] memory) {
-    Bundle[] memory output = new Bundle[](size);
+  function getPacks() external view returns (Pack[] memory) {
+    Pack[] memory output = new Pack[](size);
     for (uint256 i; i < size;) {
-      output[i] = bundles[i];
+      output[i] = packs[i];
       unchecked {
         i++;
       }
@@ -98,72 +102,72 @@ contract StickersSale is OwnableRoles, BaseTreasury {
   }
 
   /**
-   * @dev Internal unprotected bundle creation.
+   * @dev Internal unprotected pack creation.
    */
-  function _create(Bundle memory _bundle) internal {
-    bundles[size++] = _bundle;
+  function _create(Pack memory _pack) internal {
+    packs[size++] = _pack;
   }
 
   /**
-   * @notice Create a new bundle.
+   * @notice Create a new pack.
    * @dev Requirements:
-   * - Only owner can create new bundles.
+   * - Only owner can create new packs.
    */
-  function create(Bundle memory _bundle) external onlyOwner {
-    _create(_bundle);
+  function create(Pack memory _pack) external onlyOwner {
+    _create(_pack);
   }
 
   /**
-   * @notice Purchase a Stickers bundle.
+   * @notice Purchase a Stickers pack.
    * @dev Requirements:
    * - Sale must be open.
-   * - Bundle ID must exist.
-   * - Transaction value must be greater or equal than the bundle price.
+   * - Pack ID must exist.
+   * - Transaction value must be greater or equal than the pack price.
    */
-  function purchase(uint256 bundleId) external payable {
+  function purchase(uint256 packId) external payable forwarder {
     if (isClosed()) {
       revert Closed(closedUntil);
     }
 
-    if (bundleId >= size) {
-      revert InvalidBundle();
+    if (packId >= size) {
+      revert InvalidPack();
     }
 
-    Bundle memory bundle = bundles[bundleId];
+    Pack memory pack = packs[packId];
 
-    if (bundle.minted + 1 > bundle.totalSupply) {
-      revert InsufficientSupply(bundleId);
+    if (pack.minted + 1 > pack.totalSupply) {
+      revert InsufficientSupply(packId);
     }
 
-    if (msg.value < bundle.price) {
-      revert InsufficientValue(msg.value, bundle.price);
+    if (msg.value < pack.price) {
+      revert InsufficientValue(msg.value, pack.price);
     }
 
     uint256 quantity =
-      bundle.content.common + bundle.content.rare + bundle.content.epic + bundle.content.legendary;
+      pack.content.common + pack.content.rare + pack.content.epic + pack.content.legendary;
 
     StickerRarity[] memory rarities = new StickerRarity[](quantity);
 
     uint256 requestId;
-    for (uint256 i; i < bundle.content.common;) {
+    for (uint256 i; i < pack.content.common;) {
       rarities[requestId++] = StickerRarity.COMMON;
       unchecked {
         i++;
       }
     }
-    for (uint256 i; i < bundle.content.rare;) {
+    for (uint256 i; i < pack.content.rare;) {
       rarities[requestId++] = StickerRarity.RARE;
       unchecked {
         i++;
       }
     }
-    for (uint256 i; i < bundle.content.epic;) {
+    for (uint256 i; i < pack.content.epic;) {
       rarities[requestId++] = StickerRarity.EPIC;
       unchecked {
         i++;
       }
     }
-    for (uint256 i; i < bundle.content.legendary;) {
+    for (uint256 i; i < pack.content.legendary;) {
       rarities[requestId++] = StickerRarity.LEGENDARY;
       unchecked {
         i++;
@@ -171,13 +175,7 @@ contract StickersSale is OwnableRoles, BaseTreasury {
     }
 
     stickers.mint(msg.sender, rarities);
-    bundles[bundleId].minted++;
-
-    // Forward the funds to the treasury wallet
-    (bool sent,) = treasury.call{ value: msg.value }("");
-    if (!sent) {
-      revert TransferFailed(treasury, msg.value);
-    }
+    packs[packId].minted++;
   }
 
   /**
@@ -185,16 +183,16 @@ contract StickersSale is OwnableRoles, BaseTreasury {
    * @param refills Array of the modifications to apply.
    * @param _closedUntil Update the opening of the sale; a date in the past opens the sale immediately.
    * @dev Requirements:
-   * - msg.sender must have the SELLER role or be the owner
+   * - msg.sender must have the `SELLER` role or be the owner
    */
   function restock(Refill[] memory refills, uint256 _closedUntil) external onlyRolesOrOwner(SELLER) {
     uint256 length = refills.length;
     for (uint256 i = 0; i < length; i++) {
-      Bundle memory current = bundles[refills[i].bundleId];
+      Pack memory current = packs[refills[i].packId];
       current.price = refills[i].price;
       current.totalSupply = current.minted + refills[i].quantity;
       current.supply = refills[i].quantity;
-      bundles[refills[i].bundleId] = current;
+      packs[refills[i].packId] = current;
     }
 
     closedUntil = _closedUntil;

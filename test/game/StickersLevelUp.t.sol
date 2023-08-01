@@ -8,10 +8,11 @@ import { LevelUpSetup, SlotData, LevelData } from "../setup/LevelUpSetup.sol";
 import { POKSetup } from "../setup/POKSetup.sol";
 import { StickersSetup } from "../setup/StickersSetup.sol";
 import { InvalidReceiver } from "../utils/InvalidReceiver.sol";
-import { BaseLevelUp, Pricing } from "../../src/base/BaseLevelUp.sol";
-import { IBaseTreasury } from "../../src/interfaces/IBaseTreasury.sol";
-import { StickerMetadata, StickerRarity } from "../../src/interfaces/IStickers.sol";
-import { StickersLevelUp } from "../../src/game/StickersLevelUp.sol";
+import { BaseLevelUp, Pricing } from "@/base/BaseLevelUp.sol";
+import { BaseSigner } from "@/base/BaseSigner.sol";
+import { IBaseTreasury } from "@/interfaces/IBaseTreasury.sol";
+import { StickerMetadata, StickerRarity } from "@/interfaces/IStickers.sol";
+import { StickersLevelUp } from "@/game/StickersLevelUp.sol";
 
 contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
   using ECDSA for bytes32;
@@ -25,7 +26,7 @@ contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
 
   function setUp() public {
     vm.startPrank(admin);
-    levelUp = new StickersLevelUp(stickers, pok, admin, treasury);
+    levelUp = new StickersLevelUp(stickers, pok, admin, signer, treasury);
     levelUp.grantRoles(signer, levelUp.SIGNER());
     stickers.grantRoles(address(levelUp), stickers.GAME());
     pok.grantRole(pok.BURNER(), address(levelUp));
@@ -197,8 +198,10 @@ contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
     uint256 signedPXP = 0;
 
     vm.prank(user);
-    vm.expectRevert(BaseLevelUp.InvalidSignature.selector);
-    levelUp.levelUp(tokenId, 1, currentPXP, sign(tokenId, signedPXP));
+    vm.expectRevert(BaseSigner.InvalidSignature.selector);
+    levelUp.levelUp(
+      tokenId, 1, currentPXP, sign(tokenId, metadata.level, signedPXP, address(levelUp))
+    );
 
     // Assert that level is still zero
     metadata = stickers.metadata(tokenId);
@@ -222,7 +225,9 @@ contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
         BaseLevelUp.InsufficientPOK.selector, pricing.feePOK + pricing.gapPOK, 0
       )
     );
-    levelUp.levelUp(tokenId, 1, currentPXP, sign(tokenId, currentPXP));
+    levelUp.levelUp(
+      tokenId, 1, currentPXP, sign(tokenId, metadata.level, currentPXP, address(levelUp))
+    );
   }
 
   /**
@@ -233,6 +238,7 @@ contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
     (, uint256 maxLevel) = levelUp.getParams(tokenId);
     vm.prank(game);
     stickers.setLevel(tokenId, uint248(maxLevel));
+    StickerMetadata memory metadata = stickers.metadata(tokenId);
 
     uint256 currentPXP = 0;
     mintPOK(user, 100e18); // Enough POK
@@ -241,7 +247,9 @@ contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
     vm.expectRevert(
       abi.encodeWithSelector(BaseLevelUp.MaximumLevelReached.selector, tokenId, maxLevel)
     );
-    levelUp.levelUp(tokenId, 1, currentPXP, sign(tokenId, currentPXP));
+    levelUp.levelUp(
+      tokenId, 1, currentPXP, sign(tokenId, metadata.level, currentPXP, address(levelUp))
+    );
   }
 
   /**
@@ -260,11 +268,15 @@ contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
     vm.deal(user, value);
 
     uint256 tokenId = mintSticker(user, StickerRarity.COMMON);
+    StickerMetadata memory metadata = stickers.metadata(tokenId);
+
     vm.prank(user);
     vm.expectRevert(
       abi.encodeWithSelector(IBaseTreasury.TransferFailed.selector, address(invalid), value)
     );
-    levelUp.levelUp{ value: value }(tokenId, 1, currentPXP, sign(tokenId, currentPXP));
+    levelUp.levelUp{ value: value }(
+      tokenId, 1, currentPXP, sign(tokenId, metadata.level, currentPXP, address(levelUp))
+    );
   }
 
   /**
@@ -279,7 +291,9 @@ contract StickersLevelUpTest is BaseTest, StickersSetup, LevelUpSetup {
     uint256 currentPXP = 0;
 
     vm.prank(user);
-    levelUp.levelUp(tokenId, 1, currentPXP, sign(tokenId, currentPXP));
+    levelUp.levelUp(
+      tokenId, 1, currentPXP, sign(tokenId, metadata.level, currentPXP, address(levelUp))
+    );
 
     metadata = stickers.metadata(tokenId);
     assertEq(metadata.level, 1);

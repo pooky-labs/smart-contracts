@@ -15,8 +15,8 @@ contract PookyballLevelUp is BaseLevelUp {
   /// The Pookyball contract.
   IPookyball pookyball;
 
-  constructor(IPookyball _pookyball, IPOK _pok, address admin, address _treasury)
-    BaseLevelUp(_pok, admin, _treasury, 60e18, 120)
+  constructor(IPookyball _pookyball, IPOK _pok, address admin, address _signer, address _treasury)
+    BaseLevelUp(_pok, admin, _signer, _treasury, 60e18, 120)
   {
     pookyball = _pookyball;
   }

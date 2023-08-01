@@ -15,8 +15,8 @@ contract StickersLevelUp is BaseLevelUp {
   /// The Stickers contract.
   IStickers stickers;
 
-  constructor(IStickers _stickers, IPOK _pok, address admin, address _treasury)
-    BaseLevelUp(_pok, admin, _treasury, 20e18, 120)
+  constructor(IStickers _stickers, IPOK _pok, address admin, address _signer, address _treasury)
+    BaseLevelUp(_pok, admin, _signer, _treasury, 20e18, 120)
   {
     stickers = _stickers;
   }

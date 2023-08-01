@@ -4,9 +4,10 @@ pragma solidity ^0.8.20;
 
 import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
 import { ECDSA } from "solady/utils/ECDSA.sol";
-import { BaseTreasury } from "../base/BaseTreasury.sol";
-import { IPOK } from "../interfaces/IPOK.sol";
-import { IPookyball, PookyballMetadata } from "../interfaces/IPookyball.sol";
+import { BaseSigner } from "@/base/BaseSigner.sol";
+import { BaseTreasury } from "@/base/BaseTreasury.sol";
+import { IPOK } from "@/interfaces/IPOK.sol";
+import { IPookyball, PookyballMetadata } from "@/interfaces/IPookyball.sol";
 
 struct Pricing {
   uint256 requiredPXP;
@@ -20,43 +21,61 @@ struct Pricing {
  * @title BaseLevelUp
  * @author Mathieu Bour for Pooky Labs Ltd.
  * @notice Base level up contract for tokens using exponential level growth, POK/NAT integration and offchain PXP.
+ * @dev Implemented roles:
+ * - Owner: allowed to change the pricing
+ * - `SIGNER`: allowed to sign the current PXP
  */
-abstract contract BaseLevelUp is OwnableRoles, BaseTreasury {
-  using ECDSA for bytes32;
-
-  // Roles
-  uint256 public constant SIGNER = _ROLE_0;
-
+abstract contract BaseLevelUp is OwnableRoles, BaseSigner, BaseTreasury {
   uint256 public constant PXP_DECIMALS = 18;
   uint256 public constant BASE_RATIO = 10000;
-  /// @dev How much PXP is necessary is required to pass to the level 0 => 1.
+
+  /**
+   * @notice How much PXP is necessary is required to pass to the level 0 => 1.
+   */
   uint256 public basePXP;
-  /// @dev How much POK is 1 PXP point (over 10000).
+
+  /**
+   * @notice How much POK is 1 PXP point (over 10000).
+   */
   uint256 public ratePXP_POK = 1250;
-  /// @dev How much POK is 1 native currency (over 10000).
+
+  /**
+   * @notice How much POK is 1 native currency (over 10000).
+   */
   uint256 public rateNAT_POK = 350;
-  /// @dev Level PXP growth factor (over 10000).
-  /// Example: 10750 means that every level requires 7.5% more PXP that the previous one.
+
+  /**
+   * @notice Level PXP growth factor (over 10000).
+   * Example: 10750 means that every level requires 7.5% more PXP that the previous one.
+   */
   uint256 public growth = 10750;
-  /// @dev The POK fee required to pass the level (over 10000).
-  /// Example: 800 means that every level requires 8% of the level PXP in POK.
+
+  /**
+   * @notice The POK fee required to pass the level (over 10000).
+   * Example: 800 means that every level requires 8% of the level PXP in POK.
+   */
   uint256 public fee = 800;
 
-  /// The POK token destination address.
+  /**
+   * @notice The POK token destination address.
+   */
   IPOK public immutable pok;
 
   mapping(uint256 => uint256) public slots;
 
-  /// Thrown when the signature is invalid.
-  error InvalidSignature();
   /// Thrown when an account tries to level a ball above its maximum level.
   error MaximumLevelReached(uint256 tokenId, uint256 maxLevel);
   /// Thrown when an account does own enough $POK token to pay the level up fee
   error InsufficientPOK(uint256 expected, uint256 actual);
 
-  constructor(IPOK _pok, address admin, address _treasury, uint256 _basePXP, uint256 precompute)
-    BaseTreasury(_treasury)
-  {
+  constructor(
+    IPOK _pok,
+    address admin,
+    address _signer,
+    address _treasury,
+    uint256 _basePXP,
+    uint256 precompute
+  ) BaseSigner(_signer) BaseTreasury(_treasury) {
     pok = _pok;
     _initializeOwner(admin);
     basePXP = _basePXP;
@@ -176,18 +195,14 @@ abstract contract BaseLevelUp is OwnableRoles, BaseTreasury {
   function levelUp(uint256 tokenId, uint256 increase, uint256 currentPXP, bytes calldata proof)
     external
     payable
+    forwarder
   {
-    // Generate the signed message from the tokenId and currentPXP
-    bytes32 hash = keccak256(abi.encode(tokenId, currentPXP)).toEthSignedMessageHash();
-
-    if (!hasAllRoles(hash.recoverCalldata(proof), SIGNER)) {
-      revert InvalidSignature();
-    }
-
     (uint256 currentLevel, uint256 maxLevel) = getParams(tokenId);
     if (currentLevel + increase > maxLevel) {
       revert MaximumLevelReached(tokenId, maxLevel);
     }
+
+    verify(abi.encode(tokenId, currentLevel, currentPXP, address(this)), proof);
 
     Pricing memory pricing = getPricing(currentLevel, currentPXP, increase, msg.value);
     uint256 requiredPOK = pricing.gapPOK + pricing.feePOK;
@@ -201,13 +216,5 @@ abstract contract BaseLevelUp is OwnableRoles, BaseTreasury {
     pok.burn(msg.sender, requiredPOK);
 
     _apply(tokenId, pricing.newLevel, pricing.remainingPXP);
-
-    if (msg.value > 0) {
-      // Forward the funds to the treasury wallet
-      (bool sent,) = treasury.call{ value: msg.value }("");
-      if (!sent) {
-        revert TransferFailed(treasury, msg.value);
-      }
-    }
   }
 }

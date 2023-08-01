@@ -61,13 +61,13 @@
                 "type": "uint256"
               }
             ],
-            "internalType": "struct BundleContent",
+            "internalType": "struct PackContent",
             "name": "content",
             "type": "tuple"
           }
         ],
-        "internalType": "struct Bundle[]",
-        "name": "_bundles",
+        "internalType": "struct Pack[]",
+        "name": "_packs",
         "type": "tuple[]"
       }
     ],
@@ -89,7 +89,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "bundleId",
+        "name": "packId",
         "type": "uint256"
       }
     ],
@@ -114,7 +114,7 @@
   },
   {
     "inputs": [],
-    "name": "InvalidBundle",
+    "name": "InvalidPack",
     "type": "error"
   },
   {
@@ -318,13 +318,13 @@
                 "type": "uint256"
               }
             ],
-            "internalType": "struct BundleContent",
+            "internalType": "struct PackContent",
             "name": "content",
             "type": "tuple"
           }
         ],
-        "internalType": "struct Bundle",
-        "name": "_bundle",
+        "internalType": "struct Pack",
+        "name": "_pack",
         "type": "tuple"
       }
     ],
@@ -335,7 +335,7 @@
   },
   {
     "inputs": [],
-    "name": "getBundles",
+    "name": "getPacks",
     "outputs": [
       {
         "components": [
@@ -382,12 +382,12 @@
                 "type": "uint256"
               }
             ],
-            "internalType": "struct BundleContent",
+            "internalType": "struct PackContent",
             "name": "content",
             "type": "tuple"
           }
         ],
-        "internalType": "struct Bundle[]",
+        "internalType": "struct Pack[]",
         "name": "",
         "type": "tuple[]"
       }
@@ -510,7 +510,7 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "bundleId",
+        "name": "packId",
         "type": "uint256"
       }
     ],
@@ -552,7 +552,7 @@
         "components": [
           {
             "internalType": "uint256",
-            "name": "bundleId",
+            "name": "packId",
             "type": "uint256"
           },
           {

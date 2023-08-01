@@ -13,7 +13,6 @@ import { IPookyball, PookyballMetadata, PookyballRarity } from "@/interfaces/IPo
  * @author Mathieu Bour for Pooky Labs Ltd.
  * @notice This contract allow Pooky players to upgrade their Pookyballs by merging two Pookyballs into a better single Pookyball.
  * @dev This contract requires the following roles:
- * - `POK.BURNER`
  * - `Pookyball.MINTER`
  * - `StickersController.REMOVER` to unslot all Stickers attached to ascended Pookyballs.
  */
@@ -29,23 +28,16 @@ contract PookyballAscension is OwnableRoles, BaseAscension, BaseTreasury, BaseSi
   IPookyball public immutable pookyball;
 
   /**
-   * @notice The POK ERC-20 smart contract.
-   */
-  IPOK public immutable pok;
-
-  /**
    * @param _pookyball The Pookyball ERC-721 smart contract.
-   * @param _pok The POK ERC-20 smart contract.
    * @param admin The initial contract admin.
    * @param _treasury The initial treasury.
    * @param signer The initial signer.
    */
-  constructor(IPookyball _pookyball, IPOK _pok, address admin, address _treasury, address signer)
+  constructor(IPookyball _pookyball, address admin, address _treasury, address signer)
     BaseTreasury(_treasury)
     BaseSigner(signer)
   {
     _initializeOwner(admin);
-    pok = _pok;
     pookyball = _pookyball;
   }
 
@@ -105,23 +97,16 @@ contract PookyballAscension is OwnableRoles, BaseAscension, BaseTreasury, BaseSi
    * @param left The first Pookyball token id.
    * @param right The second Pookyball token id.
    * @param priceNAT The price in native currency.
-   * @param pricePOK The price in $POK tokens.
-   * @param proof The proof of `abi.encode(left, right, priceNAT, pricePOK)`.
+   * @param proof The proof of `abi.encode(left, right, priceNAT)`.
    */
-  function ascend(
-    uint256 left,
-    uint256 right,
-    uint256 priceNAT,
-    uint256 pricePOK,
-    bytes calldata proof
-  ) external payable onlyVerify(abi.encode(left, right, priceNAT, pricePOK), proof) forwarder {
+  function ascend(uint256 left, uint256 right, uint256 priceNAT, bytes calldata proof)
+    external
+    payable
+    onlyVerify(abi.encode(left, right, priceNAT), proof)
+    forwarder
+  {
     if (priceNAT > msg.value) {
       revert InsufficientValue(priceNAT, msg.value);
-    }
-
-    uint256 balancePOK = pok.balanceOf(msg.sender);
-    if (pricePOK > balancePOK) {
-      revert InsufficientPOK(pricePOK, balancePOK);
     }
 
     _ascend(left, right);

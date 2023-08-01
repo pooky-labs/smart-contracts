@@ -7,11 +7,6 @@
         "type": "address"
       },
       {
-        "internalType": "contract IPOK",
-        "name": "_pok",
-        "type": "address"
-      },
-      {
         "internalType": "address",
         "name": "admin",
         "type": "address"
@@ -39,22 +34,6 @@
       }
     ],
     "name": "Ineligible",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "expected",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "actual",
-        "type": "uint256"
-      }
-    ],
-    "name": "InsufficientPOK",
     "type": "error"
   },
   {
@@ -141,13 +120,13 @@
         "type": "uint8"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "uint256",
         "name": "left",
         "type": "uint256"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "uint256",
         "name": "right",
         "type": "uint256"
@@ -248,11 +227,6 @@
       {
         "internalType": "uint256",
         "name": "priceNAT",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "pricePOK",
         "type": "uint256"
       },
       {
@@ -429,19 +403,6 @@
         "internalType": "uint256",
         "name": "result",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "pok",
-    "outputs": [
-      {
-        "internalType": "contract IPOK",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",

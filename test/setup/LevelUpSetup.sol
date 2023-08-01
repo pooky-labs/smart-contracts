@@ -32,8 +32,13 @@ abstract contract LevelUpSetup is BaseTest, POKSetup {
   /**
    * Sign the tokenId and the currentPXP for a level up.
    */
-  function sign(uint256 tokenId, uint256 currentPXP) internal view returns (bytes memory) {
-    bytes32 hash = keccak256(abi.encode(tokenId, currentPXP)).toEthSignedMessageHash();
+  function sign(uint256 tokenId, uint256 currentLevel, uint256 currentPXP, address target)
+    internal
+    view
+    returns (bytes memory)
+  {
+    bytes32 hash =
+      keccak256(abi.encode(tokenId, currentLevel, currentPXP, target)).toEthSignedMessageHash();
     (uint8 v, bytes32 r, bytes32 s) = vm.sign(privateKey, hash);
     return abi.encodePacked(r, s, v);
   }

@@ -8,10 +8,11 @@ import { LevelUpSetup, SlotData, LevelData } from "../setup/LevelUpSetup.sol";
 import { POKSetup } from "../setup/POKSetup.sol";
 import { PookyballSetup } from "../setup/PookyballSetup.sol";
 import { InvalidReceiver } from "../utils/InvalidReceiver.sol";
-import { BaseLevelUp, Pricing } from "../../src/base/BaseLevelUp.sol";
-import { IBaseTreasury } from "../../src/interfaces/IBaseTreasury.sol";
-import { PookyballMetadata, PookyballRarity } from "../../src/interfaces/IPookyball.sol";
-import { PookyballLevelUp } from "../../src/game/PookyballLevelUp.sol";
+import { BaseLevelUp, Pricing } from "@/base/BaseLevelUp.sol";
+import { BaseSigner } from "@/base/BaseSigner.sol";
+import { IBaseTreasury } from "@/interfaces/IBaseTreasury.sol";
+import { PookyballMetadata, PookyballRarity } from "@/interfaces/IPookyball.sol";
+import { PookyballLevelUp } from "@/game/PookyballLevelUp.sol";
 
 contract PookyballLevelUpTest is BaseTest, PookyballSetup, LevelUpSetup {
   using ECDSA for bytes32;
@@ -25,7 +26,7 @@ contract PookyballLevelUpTest is BaseTest, PookyballSetup, LevelUpSetup {
 
   function setUp() public {
     vm.startPrank(admin);
-    levelUp = new PookyballLevelUp(pookyball, pok, admin, treasury);
+    levelUp = new PookyballLevelUp(pookyball, pok, admin, signer, treasury);
     levelUp.grantRoles(signer, levelUp.SIGNER());
     pookyball.grantRole(pookyball.GAME(), address(levelUp));
     pok.grantRole(pok.BURNER(), address(levelUp));
@@ -197,8 +198,10 @@ contract PookyballLevelUpTest is BaseTest, PookyballSetup, LevelUpSetup {
     uint256 signedPXP = 0;
 
     vm.prank(user);
-    vm.expectRevert(BaseLevelUp.InvalidSignature.selector);
-    levelUp.levelUp(tokenId, 1, currentPXP, sign(tokenId, signedPXP));
+    vm.expectRevert(BaseSigner.InvalidSignature.selector);
+    levelUp.levelUp(
+      tokenId, 1, currentPXP, sign(tokenId, metadata.level, signedPXP, address(levelUp))
+    );
 
     // Assert that level is still zero
     metadata = pookyball.metadata(tokenId);
@@ -222,7 +225,9 @@ contract PookyballLevelUpTest is BaseTest, PookyballSetup, LevelUpSetup {
         BaseLevelUp.InsufficientPOK.selector, pricing.feePOK + pricing.gapPOK, 0
       )
     );
-    levelUp.levelUp(tokenId, 1, currentPXP, sign(tokenId, currentPXP));
+    levelUp.levelUp(
+      tokenId, 1, currentPXP, sign(tokenId, metadata.level, currentPXP, address(levelUp))
+    );
   }
 
   /**
@@ -232,7 +237,7 @@ contract PookyballLevelUpTest is BaseTest, PookyballSetup, LevelUpSetup {
     uint256 tokenId = mintPookyball(user, PookyballRarity.COMMON);
     (, uint256 maxLevel) = levelUp.getParams(tokenId);
     vm.prank(game);
-    pookyball.setLevel(tokenId, uint248(maxLevel));
+    pookyball.setLevel(tokenId, maxLevel);
 
     uint256 currentPXP = 0;
     mintPOK(user, 100e18); // Enough POK
@@ -241,7 +246,7 @@ contract PookyballLevelUpTest is BaseTest, PookyballSetup, LevelUpSetup {
     vm.expectRevert(
       abi.encodeWithSelector(BaseLevelUp.MaximumLevelReached.selector, tokenId, maxLevel)
     );
-    levelUp.levelUp(tokenId, 1, currentPXP, sign(tokenId, currentPXP));
+    levelUp.levelUp(tokenId, 1, currentPXP, sign(tokenId, maxLevel, currentPXP, address(levelUp)));
   }
 
   /**
@@ -260,11 +265,15 @@ contract PookyballLevelUpTest is BaseTest, PookyballSetup, LevelUpSetup {
     vm.deal(user, value);
 
     uint256 tokenId = mintPookyball(user, PookyballRarity.COMMON);
+    PookyballMetadata memory metadata = pookyball.metadata(tokenId);
+
     vm.prank(user);
     vm.expectRevert(
       abi.encodeWithSelector(IBaseTreasury.TransferFailed.selector, address(invalid), value)
     );
-    levelUp.levelUp{ value: value }(tokenId, 1, currentPXP, sign(tokenId, currentPXP));
+    levelUp.levelUp{ value: value }(
+      tokenId, 1, currentPXP, sign(tokenId, metadata.level, currentPXP, address(levelUp))
+    );
   }
 
   /**
@@ -279,7 +288,9 @@ contract PookyballLevelUpTest is BaseTest, PookyballSetup, LevelUpSetup {
     uint256 currentPXP = 0;
 
     vm.prank(user);
-    levelUp.levelUp(tokenId, 1, currentPXP, sign(tokenId, currentPXP));
+    levelUp.levelUp(
+      tokenId, 1, currentPXP, sign(tokenId, metadata.level, currentPXP, address(levelUp))
+    );
 
     metadata = pookyball.metadata(tokenId);
     assertEq(metadata.level, 1);

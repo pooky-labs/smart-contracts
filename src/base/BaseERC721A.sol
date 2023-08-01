@@ -9,8 +9,8 @@ import { IERC721A } from "ERC721A/IERC721A.sol";
 import { ERC2981 } from "openzeppelin/token/common/ERC2981.sol";
 import { DefaultOperatorFilterer } from "operator-filter-registry/src/DefaultOperatorFilterer.sol";
 import { Ownable } from "solady/auth/Ownable.sol";
-import { IBaseERC721A } from "../interfaces/IBaseERC721A.sol";
-import { VRFConfig } from "../types/VRFConfig.sol";
+import { IBaseERC721A } from "@/interfaces/IBaseERC721A.sol";
+import { VRFConfig } from "@/types/VRFConfig.sol";
 
 /**
  * @title BaseERC721A

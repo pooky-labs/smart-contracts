@@ -1,16 +1,26 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (tokens/POK.sol)
+// Pooky Game Contracts (tokens/Stickers.sol)
 pragma solidity ^0.8.20;
 
 import { ERC721A } from "ERC721A/ERC721A.sol";
 import { IERC721A } from "ERC721A/IERC721A.sol";
 import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
-import { BaseERC721A } from "../base/BaseERC721A.sol";
-import { IBaseERC721A } from "../interfaces/IBaseERC721A.sol";
-import { IStickers, StickerMetadata, StickerRarity, StickerMint } from "../interfaces/IStickers.sol";
-import { VRFConfig } from "../types/VRFConfig.sol";
+import { BaseERC721A } from "@/base/BaseERC721A.sol";
+import { IBaseERC721A } from "@/interfaces/IBaseERC721A.sol";
+import { IStickers, StickerMetadata, StickerRarity, StickerMint } from "@/interfaces/IStickers.sol";
+import { VRFConfig } from "@/types/VRFConfig.sol";
 
+/**
+ * @title Stickers
+ * @author Mathieu Bour for Pooky Labs Ltd.
+ * @dev Implemented roles:
+ * - Owner: allowed to change metadata of the Stickers
+ * - MINTER: allowed to mint new Stickers
+ * - GAME: allowed to change the game attributes of the Stickers
+ */
 contract Stickers is IStickers, BaseERC721A, OwnableRoles {
+  uint248 constant DEFAULT_LEVEL = 0;
+
   // Roles
   uint256 public constant MINTER = _ROLE_0;
   uint256 public constant GAME = _ROLE_1;
@@ -34,9 +44,9 @@ contract Stickers is IStickers, BaseERC721A, OwnableRoles {
   { }
 
   /**
-   * @notice PookyballMetadata of the token {tokenId}.
+   * @notice Get the StickerMetadata of the token `tokenId`.
    * @dev Requirements:
-   * - Sticker {tokenId} should exist (minted and not burned).
+   * - Sticker `tokenId` should exist (minted and not burned).
    */
   function metadata(uint256 tokenId)
     external
@@ -48,10 +58,10 @@ contract Stickers is IStickers, BaseERC721A, OwnableRoles {
   }
 
   /**
-   * @notice Change the level of a Pookyball token.
+   * @notice Change the level of a Sticker token.
    * @dev Requirements:
-   * - sender must have the GAME role or be the owner.
-   * - Sticker {tokenId} should exist (minted and not burned).
+   * - sender must have the `GAME` role or be the owner.
+   * - Sticker `tokenId` should exist (minted and not burned).
    */
   function setLevel(uint256 tokenId, uint248 newLevel)
     external
@@ -63,10 +73,10 @@ contract Stickers is IStickers, BaseERC721A, OwnableRoles {
   }
 
   /**
-   * @notice Mint a new Pookyball token with a given rarity.
+   * @notice Mint a new Sticker token with a given rarity.
    * Level and seed are set to zero, entropy is requested to the VRF coordinator.
    * @dev Requirements:
-   * - sender must have the MINTER role or be the owner.
+   * - sender must have the `MINTER` role or be the owner.
    */
   function mint(address recipient, StickerRarity[] memory rarities)
     external
@@ -79,7 +89,7 @@ contract Stickers is IStickers, BaseERC721A, OwnableRoles {
 
     for (uint256 i = 0; i < quantity;) {
       _metadata[start + i] = StickerMetadata(
-        0, // Stickers are level 0 by default
+        DEFAULT_LEVEL, // Stickers are level 0 by default
         rarities[i]
       );
 
