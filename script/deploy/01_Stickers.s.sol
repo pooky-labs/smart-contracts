@@ -33,7 +33,7 @@ struct Config {
 /// This code should not be used on production in any way.
 ///
 /// Usage:
-/// SALT=mysalt forge script ./script/DeployStickers.s.sol --rpc-url mumbai --broadcast --verify
+/// SALT=uranium forge script ./script/deploy/01_Stickers.s.sol --rpc-url mumbai --broadcast --verify
 contract DeployStickers is Script {
   function mumbai() internal pure returns (Config memory) {
     Pack[] memory packs = new Pack[](4);
