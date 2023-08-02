@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
 import { ECDSA } from "openzeppelin/utils/cryptography/ECDSA.sol";
-import { BaseTest } from "../BaseTest.sol";
-import { POKSetup } from "./POKSetup.sol";
+import { BaseTest } from "@test/BaseTest.sol";
+import { POKSetup } from "@test/setup/POKSetup.sol";
 
 struct SlotData {
   uint256 expected;

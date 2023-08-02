@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
-import { VRFConsumerBaseV2 } from "chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
-import { BaseTest } from "../BaseTest.sol";
+import { VRFConsumerBaseV2 } from "chainlink/vrf/VRFConsumerBaseV2.sol";
+import { BaseTest } from "@test/BaseTest.sol";
 import { Strings } from "openzeppelin/utils/Strings.sol";
 import { Ownable } from "solady/auth/Ownable.sol";
-import { StickerMetadata, StickerMint, StickerRarity } from "../../src/interfaces/IStickers.sol";
-import { StickersSetup } from "../setup/StickersSetup.sol";
+import { StickerMetadata, StickerMint, StickerRarity } from "@/interfaces/IStickers.sol";
+import { StickersSetup } from "@test/setup/StickersSetup.sol";
 
 contract StickersTest is BaseTest, StickersSetup {
   using Strings for uint256;

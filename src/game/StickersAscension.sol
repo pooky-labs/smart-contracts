@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.20;
+pragma solidity ^0.8.21;
 
 import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
 import { BaseAscension } from "@/base/BaseAscension.sol";
@@ -10,6 +10,7 @@ import { IStickers, StickerMetadata, StickerRarity } from "@/interfaces/ISticker
 
 /// @title StickersAscension
 /// @author Mathieu Bour for Pooky Labs Ltd.
+///
 /// @notice This contract allow Pooky players to upgrade their Stickers by merging two Stickers into a better single Sticker.
 contract StickersAscension is OwnableRoles, BaseAscension {
   /// @notice The Stickers ERC-721 smart contract.

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.20;
+pragma solidity ^0.8.21;
 
 import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
 import { BaseAscension } from "@/base/BaseAscension.sol";
@@ -10,6 +10,7 @@ import { IPookyball, PookyballMetadata, PookyballRarity } from "@/interfaces/IPo
 
 /// @title PookyballAscension
 /// @author Mathieu Bour for Pooky Labs Ltd.
+///
 /// @notice This contract allow Pooky players to upgrade their Pookyballs by merging two Pookyballs into a better single Pookyball.
 /// @dev This contract requires the following roles:
 /// - `Pookyball.MINTER`

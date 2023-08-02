@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
-import { VRFConsumerBaseV2 } from "chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
-import { BaseTest } from "../BaseTest.sol";
+import { VRFConsumerBaseV2 } from "chainlink/vrf/VRFConsumerBaseV2.sol";
+import { BaseTest } from "@test/BaseTest.sol";
 import { Strings } from "openzeppelin/utils/Strings.sol";
-import { IPookyball } from "../../src/interfaces/IPookyball.sol";
-import { Pookyball } from "../../src/tokens/Pookyball.sol";
-import { PookyballMetadata, PookyballRarity } from "../../src/interfaces/IPookyball.sol";
-import { PookyballSetup } from "../setup/PookyballSetup.sol";
-import { AccessControlAssertions } from "../utils/AccessControlAssertions.sol";
+import { IPookyball } from "@/interfaces/IPookyball.sol";
+import { Pookyball } from "@/tokens/Pookyball.sol";
+import { PookyballMetadata, PookyballRarity } from "@/interfaces/IPookyball.sol";
+import { PookyballSetup } from "@test/setup/PookyballSetup.sol";
+import { AccessControlAssertions } from "@test/utils/AccessControlAssertions.sol";
 
 contract PookyballTest is BaseTest, AccessControlAssertions, PookyballSetup {
   using Strings for uint256;

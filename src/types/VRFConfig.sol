@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (types/VRFConfig.sol)
 pragma solidity ^0.8.20;
 
-import { VRFCoordinatorV2Interface } from
-  "chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
+import { VRFCoordinatorV2Interface } from "chainlink/interfaces/VRFCoordinatorV2Interface.sol";
 
 struct VRFConfig {
   VRFCoordinatorV2Interface coordinator;

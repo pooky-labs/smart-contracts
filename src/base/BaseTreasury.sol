@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (utils/Treasury.sol)
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
 import { Ownable } from "solady/auth/Ownable.sol";
-import { IBaseTreasury } from "../interfaces/IBaseTreasury.sol";
+import { IBaseTreasury } from "@/interfaces/IBaseTreasury.sol";
 
 /// @title BaseTreasury
-/// @author Mathieu Bour
+/// @author Mathieu Bour for Pooky Labs Ltd.
+///
 /// @notice Base class for contracts that are made to receive native currency.
 /// The destination address is controller by the contract owner.
 abstract contract BaseTreasury is Ownable, IBaseTreasury {

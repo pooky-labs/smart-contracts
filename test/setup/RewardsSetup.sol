@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
 import { Ownable } from "solady/auth/Ownable.sol";
 import { ECDSA } from "solady/utils/ECDSA.sol";
-import { NonceRegistry } from "../../src/game/NonceRegistry.sol";
-import { Rewards, RewardsData } from "../../src/game/Rewards.sol";
-import { PookyballRarity } from "../../src/interfaces/IPookyball.sol";
-import { StickerRarity } from "../../src/interfaces/IStickers.sol";
-import { BaseTest } from "../BaseTest.sol";
-import { POKSetup } from "../setup/POKSetup.sol";
-import { PookyballSetup } from "../setup/PookyballSetup.sol";
-import { StickersSetup } from "../setup/StickersSetup.sol";
-import { InvalidReceiver } from "../utils/InvalidReceiver.sol";
+import { NonceRegistry } from "@/game/NonceRegistry.sol";
+import { Rewards, RewardsData } from "@/game/Rewards.sol";
+import { PookyballRarity } from "@/interfaces/IPookyball.sol";
+import { StickerRarity } from "@/interfaces/IStickers.sol";
+import { BaseTest } from "@test/BaseTest.sol";
+import { POKSetup } from "@test/setup/POKSetup.sol";
+import { PookyballSetup } from "@test/setup/PookyballSetup.sol";
+import { StickersSetup } from "@test/setup/StickersSetup.sol";
+import { InvalidReceiver } from "@test/utils/InvalidReceiver.sol";
 
 contract RewardsSetup is BaseTest, POKSetup, PookyballSetup, StickersSetup {
   using ECDSA for bytes32;

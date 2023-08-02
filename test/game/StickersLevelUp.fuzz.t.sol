@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
 import { ECDSA } from "solady/utils/ECDSA.sol";
-import { BaseTest } from "../BaseTest.sol";
-import { LevelUpSetup } from "../setup/LevelUpSetup.sol";
-import { POKSetup } from "../setup/POKSetup.sol";
-import { StickersSetup } from "../setup/StickersSetup.sol";
-import { BaseLevelUp, Pricing } from "../../src/base/BaseLevelUp.sol";
-import { StickerMetadata, StickerRarity } from "../../src/interfaces/IStickers.sol";
-import { StickersLevelUp } from "../../src/game/StickersLevelUp.sol";
+import { BaseTest } from "@test/BaseTest.sol";
+import { LevelUpSetup } from "@test/setup/LevelUpSetup.sol";
+import { POKSetup } from "@test/setup/POKSetup.sol";
+import { StickersSetup } from "@test/setup/StickersSetup.sol";
+import { BaseLevelUp, Pricing } from "@/base/BaseLevelUp.sol";
+import { StickerMetadata, StickerRarity } from "@/interfaces/IStickers.sol";
+import { StickersLevelUp } from "@/game/StickersLevelUp.sol";
 
 struct SlotData {
   uint256 expected;

@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (game/StickersController.sol)
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
 import { EnumerableSet } from "openzeppelin/utils/structs/EnumerableSet.sol";
 import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
-import { IPookyball } from "../interfaces/IPookyball.sol";
-import { IStickers } from "../interfaces/IStickers.sol";
-import { IStickersController } from "../interfaces/IStickersController.sol";
+import { IPookyball } from "@/interfaces/IPookyball.sol";
+import { IStickers } from "@/interfaces/IStickers.sol";
+import { IStickersController } from "@/interfaces/IStickersController.sol";
 
 /// @title StickersController
-/// @author Mathieu Bour
+/// @author Mathieu Bour for Pooky Labs Ltd.
+///
 /// @notice This contract contains the relationship data between the Pookyballs and the Stickers.
 /// @dev This contract only handles the Pookyball <=> Sticker association and does not run any check.
 /// It also have the {Stickers-OPERATOR} role, allowing to freely move the Stickers tokens.

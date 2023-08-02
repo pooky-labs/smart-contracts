@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
-import { BaseTest } from "../BaseTest.sol";
-import { RefillableSale, Item, Refill } from "../../src/mint/RefillableSale.sol";
-import { Pookyball } from "../../src/tokens/Pookyball.sol";
-import { PookyballRarity } from "../../src/interfaces/IPookyball.sol";
-import { PookyballSetup } from "../setup/PookyballSetup.sol";
-import { InvalidReceiver } from "../utils/InvalidReceiver.sol";
+import { BaseTest } from "@test/BaseTest.sol";
+import { RefillableSale, Item, Refill } from "@/mint/RefillableSale.sol";
+import { Pookyball } from "@/tokens/Pookyball.sol";
+import { PookyballRarity } from "@/interfaces/IPookyball.sol";
+import { PookyballSetup } from "@test/setup/PookyballSetup.sol";
+import { InvalidReceiver } from "@test/utils/InvalidReceiver.sol";
 
 contract RefillableSaleTest is BaseTest, PookyballSetup {
   RefillableSale public sale;

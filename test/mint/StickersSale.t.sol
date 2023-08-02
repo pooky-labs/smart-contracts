@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
 import { Ownable } from "solady/auth/Ownable.sol";
-import { IBaseTreasury } from "../../src/interfaces/IBaseTreasury.sol";
-import { StickersSale, Pack, PackContent, Refill } from "../../src/mint/StickersSale.sol";
-import { StickersSetup } from "../setup/StickersSetup.sol";
-import { InvalidReceiver } from "../utils/InvalidReceiver.sol";
-import { BaseTest } from "../BaseTest.sol";
+import { IBaseTreasury } from "@/interfaces/IBaseTreasury.sol";
+import { StickersSale, Pack, PackContent, Refill } from "@/mint/StickersSale.sol";
+import { StickersSetup } from "@test/setup/StickersSetup.sol";
+import { InvalidReceiver } from "@test/utils/InvalidReceiver.sol";
+import { BaseTest } from "@test/BaseTest.sol";
 
 contract StickersSaleTest is BaseTest, StickersSetup {
   address admin = makeAddr("admin");

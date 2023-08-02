@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (interfaces/IPookyball.sol)
 pragma solidity ^0.8.17;
 
-import "openzeppelin/access/IAccessControl.sol";
-import "openzeppelin/token/ERC721/IERC721.sol";
-import "openzeppelin/interfaces/IERC2981.sol";
+import { IAccessControl } from "openzeppelin/access/IAccessControl.sol";
+import { IERC721 } from "openzeppelin/token/ERC721/IERC721.sol";
+import { IERC2981 } from "openzeppelin/interfaces/IERC2981.sol";
 
 /// @title PookyballMetadata
 /// @notice The Pookyball rarities are represented on chain by this enum.
@@ -31,7 +30,7 @@ struct PookyballMetadata {
 }
 
 /// @title IPookyball
-/// @author Mathieu Bour
+/// @author Mathieu Bour for Pooky Labs Ltd.
 /// @notice Minimal Pookyball interface.
 interface IPookyball is IAccessControl, IERC2981, IERC721 {
   /// Fired when the seed of a Pookyball token is set by the VRFCoordinator

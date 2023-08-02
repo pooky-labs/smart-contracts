@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (game/NonceRegistry.sol)
 pragma solidity ^0.8.0;
 
-import "openzeppelin/access/AccessControl.sol";
-import "../interfaces/INonceRegistry.sol";
+import { AccessControl } from "openzeppelin/access/AccessControl.sol";
+import { INonceRegistry } from "@/interfaces/INonceRegistry.sol";
 
 /// @title NonceRegistry
-/// @author Mathieu Bour
+/// @author Mathieu Bour for Pooky Labs Ltd.
+///
 /// @notice A nonce registry is just a mapping shared between multiple contracts.
 /// @dev Only OPERATOR role can set the nonces.
 contract NonceRegistry is INonceRegistry, AccessControl {

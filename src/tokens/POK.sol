@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (tokens/POK.sol)
 pragma solidity ^0.8.17;
 
-import "openzeppelin/token/ERC20/ERC20.sol";
-import "openzeppelin/access/AccessControl.sol";
-import "../interfaces/IPOK.sol";
+import { ERC20 } from "openzeppelin/token/ERC20/ERC20.sol";
+import { AccessControl } from "openzeppelin/access/AccessControl.sol";
+import { IPOK } from "@/interfaces/IPOK.sol";
 
 /// @title Pookyball
 /// @author Mathieu Bour, Dusan Zdravkovic

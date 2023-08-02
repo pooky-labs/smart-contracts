@@ -371,7 +371,7 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "currentLevel",
         "type": "uint256"
       },
       {

@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (game/StickersLevelUp.sol)
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
-import { BaseLevelUp } from "../base/BaseLevelUp.sol";
-import { IPOK } from "../interfaces/IPOK.sol";
-import { IStickers, StickerMetadata, StickerRarity } from "../interfaces/IStickers.sol";
+import { BaseLevelUp } from "@/base/BaseLevelUp.sol";
+import { IPOK } from "@/interfaces/IPOK.sol";
+import { IStickers, StickerMetadata, StickerRarity } from "@/interfaces/IStickers.sol";
 
 /// @title StickersLevelUp
-/// @author Mathieu Bour
+/// @author Mathieu Bour for Pooky Labs Ltd.
+///
 /// @notice Allow to level up Pooky Stickers tokens.
 contract StickersLevelUp is BaseLevelUp {
   /// The Stickers contract.
@@ -19,6 +19,10 @@ contract StickersLevelUp is BaseLevelUp {
     stickers = _stickers;
   }
 
+  /// @notice Get the levelling parameters for a given token.
+  /// @param tokenId The token id.
+  /// @return currentLevel The current token level.
+  /// @return maxLevel The maximum allowed level.
   function getParams(uint256 tokenId) public view override returns (uint256, uint256 maxLevel) {
     StickerMetadata memory metadata = stickers.metadata(tokenId);
 

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (interfaces/INonceRegistry.sol)
 pragma solidity ^0.8.0;
 
-import "openzeppelin/access/IAccessControl.sol";
+import { IAccessControl } from "openzeppelin/access/IAccessControl.sol";
 
 /// @title INoncesRegistry
-/// @author Mathieu Bour
+/// @author Mathieu Bour for Pooky Labs Ltd.
+///
 /// @notice Minimal NoncesRegistry interface.
 interface INonceRegistry is IAccessControl {
   /// @notice Get the value of a given nonce.

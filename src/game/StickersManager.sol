@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (game/StickersManager.sol)
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
-import { IStickers } from "../interfaces/IStickers.sol";
-import { IPookyball, PookyballMetadata, PookyballRarity } from "../interfaces/IPookyball.sol";
-import { IStickersController } from "../interfaces/IStickersController.sol";
+import { IPookyball, PookyballMetadata, PookyballRarity } from "@/interfaces/IPookyball.sol";
+import { IStickers } from "@/interfaces/IStickers.sol";
+import { IStickersController } from "@/interfaces/IStickersController.sol";
 
 /// @title StickersManager
-/// @author Mathieu Bour
+/// @author Mathieu Bour for Pooky Labs Ltd.
+///
 /// @dev Implementation of the manager that allows end users to attach or replace stickers to Pookyballs.
 contract StickersManager {
   IStickers public immutable stickers;

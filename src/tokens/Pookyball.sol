@@ -1,19 +1,20 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (tokens/Pookyball.sol)
 pragma solidity ^0.8.17;
 
-import "chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
-import "chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
-import "openzeppelin/access/AccessControl.sol";
-import "openzeppelin/token/common/ERC2981.sol";
-import "openzeppelin/token/ERC721/ERC721.sol";
-import "openzeppelin/utils/Strings.sol";
-import "operator-filter-registry/src/DefaultOperatorFilterer.sol";
-import "../interfaces/IPookyball.sol";
-import { PookyballMetadata, PookyballRarity } from "../../src/interfaces/IPookyball.sol";
+import { VRFCoordinatorV2Interface } from "chainlink/interfaces/VRFCoordinatorV2Interface.sol";
+import { VRFConsumerBaseV2 } from "chainlink/vrf/VRFConsumerBaseV2.sol";
+import { AccessControl } from "openzeppelin/access/AccessControl.sol";
+import { ERC2981 } from "openzeppelin/token/common/ERC2981.sol";
+import { ERC721 } from "openzeppelin/token/ERC721/ERC721.sol";
+import { IERC721 } from "openzeppelin/token/ERC721/IERC721.sol";
+import { IERC165 } from "openzeppelin/utils/introspection/IERC165.sol";
+import { Strings } from "openzeppelin/utils/Strings.sol";
+import { DefaultOperatorFilterer } from "operator-filter-registry/DefaultOperatorFilterer.sol";
+import { IPookyball } from "@/interfaces/IPookyball.sol";
+import { PookyballMetadata, PookyballRarity } from "@/interfaces/IPookyball.sol";
 
 /// @title Pookyball
-/// @author Pooky Engineering Team
+/// @author Mathieu Bour for Pooky Labs Ltd.
 ///
 /// @notice Pookyball is ERC721 token representing Pookyball NFTs. Balls are mintable by other Pooky game contracts.
 /// This contract does not hold any aspect of the Pooky gameplay and only serves as Pookyball information storage.

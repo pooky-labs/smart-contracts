@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (mint/RefillableSale.sol)
 pragma solidity ^0.8.18;
 
 import { AccessControlEnumerable } from "openzeppelin/access/AccessControlEnumerable.sol";
@@ -26,7 +25,8 @@ struct Refill {
 }
 
 /// @title RefillableSale
-/// @author Mathieu Bour
+/// @author Mathieu Bour for Pooky Labs Ltd.
+///
 /// @notice Allow Pookyball players to mint one or multiple Pookyball tokens.
 /// This contract is refillable, meaning that an authorized SELLER account is allowed to change the available
 /// balls/rarities.

@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
 import { Ownable } from "solady/auth/Ownable.sol";
 import { ECDSA } from "solady/utils/ECDSA.sol";
-import { BaseTest } from "../BaseTest.sol";
-import { LevelUpSetup, SlotData, LevelData } from "../setup/LevelUpSetup.sol";
-import { POKSetup } from "../setup/POKSetup.sol";
-import { StickersSetup } from "../setup/StickersSetup.sol";
-import { InvalidReceiver } from "../utils/InvalidReceiver.sol";
+import { BaseTest } from "@test/BaseTest.sol";
+import { LevelUpSetup, SlotData, LevelData } from "@test/setup/LevelUpSetup.sol";
+import { POKSetup } from "@test/setup/POKSetup.sol";
+import { StickersSetup } from "@test/setup/StickersSetup.sol";
+import { InvalidReceiver } from "@test/utils/InvalidReceiver.sol";
 import { BaseLevelUp, Pricing } from "@/base/BaseLevelUp.sol";
 import { BaseSigner } from "@/base/BaseSigner.sol";
 import { IBaseTreasury } from "@/interfaces/IBaseTreasury.sol";

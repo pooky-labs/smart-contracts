@@ -5,6 +5,7 @@ This document briefly describes how we have organized the [pooky-labs/smart-cont
 
 This repository uses the following environment:
 
+- [Foundry](https://book.getfoundry.sh/)
 - Node.js LTS (18.x since October 2022)
 - pnpm 7.x ([learn how to install pnpm](https://pnpm.io/installation))
 
@@ -19,9 +20,9 @@ Our smart contracts repository is based on a standard Foundry architecture.
 ├── artifacts       # (git-ignored) Foundry compile artifacts
 ├── cache           # (git-ignored) Foundry cache
 ├── coverage        # (git-ignored) Code-coverage reports
-├── lib             # TypeScript source code
+├── lib             # Foundry dependencies
 ├── node_modules    # (git-ignored) Project Node dependencies
-├── scripts         # Runnable Foundry scripts
+├── script          # Runnable Foundry scripts
 ├── src             # Smart contracts Solidity source code
 └── test            # Smart contracts tests
 ```
@@ -32,8 +33,8 @@ Contract unit tests are located inside the [`test/`](./test) directory.
 Each contract has it own test file that contains its unit tests.
 
 ```
-src/tokens/POK.sol       => test/tokens/POK.spec.ts
-src/tokens/Pookyball.sol => test/tokens/Pookyball.spec.ts
+src/tokens/POK.sol       => test/tokens/POK.t.sol
+src/tokens/Pookyball.sol => test/tokens/Pookyball.t.sol
 etc.
 ```
 

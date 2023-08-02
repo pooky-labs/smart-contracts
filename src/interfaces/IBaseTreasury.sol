@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
+/// @title IBaseTreasury
+/// @author Mathieu Bour for Pooky Labs Ltd.
 interface IBaseTreasury {
   /// Thrown when the msg.value of the mint function does not cover the mint cost.
   error InsufficientValue(uint256 expected, uint256 actual);

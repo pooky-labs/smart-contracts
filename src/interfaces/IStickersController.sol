@@ -1,18 +1,25 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (interfaces/IStickersController.sol)
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
-import { IStickers } from "./IStickers.sol";
-import { IPookyball } from "./IPookyball.sol";
+import { IStickers } from "@/interfaces/IStickers.sol";
+import { IPookyball } from "@/interfaces/IPookyball.sol";
 
+/// @author Mathieu Bour for Pooky Labs Ltd.
 interface IStickersController {
+  /// @notice Fired when a sticker is attached to a Pookyball.
   event StickerAttached(uint256 stickerId, uint256 pookyballId);
+  /// @notice Fired when a sticker is replace from a Pookyball.
   event StickerReplaced(uint256 stickerId, uint256 previousStickerId, uint256 pookyballId);
+  /// @notice Fired when a sticker is detached from a Pookyball.
   event StickerDetached(uint256 stickerId, uint256 pookyballId);
 
+  /// @notice Thrown when a sticker is invalid.
   error InvalidSticker(uint256 stickerId);
 
+  /// @notice The Stickers ERC-721 contract.
   function stickers() external view returns (IStickers);
+
+  /// @notice The Pookyball ERC-721 contract.
   function pookyball() external view returns (IPookyball);
 
   /// @notice Get the Pookyball token id linked to a Sticker.

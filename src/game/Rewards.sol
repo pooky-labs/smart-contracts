@@ -1,29 +1,30 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (game/Rewards.sol)
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.21;
 
 import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
 import { ECDSA } from "solady/utils/ECDSA.sol";
-import { INonceRegistry } from "../interfaces/INonceRegistry.sol";
-import { IPOK } from "../interfaces/IPOK.sol";
-import { IPookyball, PookyballMetadata, PookyballRarity } from "../interfaces/IPookyball.sol";
-import { IStickers, StickerMetadata, StickerRarity } from "../interfaces/IStickers.sol";
+import { INonceRegistry } from "@/interfaces/INonceRegistry.sol";
+import { IPOK } from "@/interfaces/IPOK.sol";
+import { IPookyball, PookyballMetadata, PookyballRarity } from "@/interfaces/IPookyball.sol";
+import { IStickers, StickerMetadata, StickerRarity } from "@/interfaces/IStickers.sol";
 
+/// @notice Input rewards data, signed by the Pooky back-end.
 struct RewardsData {
-  /// The amount of native currency.
+  /// @notice The amount of native currency.
   uint256 amountNAT;
-  /// The amount of $POK token.
+  /// @notice The amount of $POK token.
   uint256 amountPOK;
-  /// The rarities of the minted Pookyballs.
+  /// @notice The rarities of the minted Pookyballs.
   PookyballRarity[] pookyballs;
-  /// The rarities of the minted Stickers.
+  /// @notice The rarities of the minted Stickers.
   StickerRarity[] stickers;
-  /// The nonces that represents the payload. This prevent accounts to claim the same reward twice.
+  /// @notice The nonces that represents the payload. This prevent accounts to claim the same reward twice.
   bytes32[] nonces;
 }
 
 /// @title Rewards
-/// @author Mathieu Bour, Claudiu Micu
+/// @author Mathieu Bour, Claudiu Micu for Pooky Labs Ltd.
+///
 /// @notice Gameplay contract that allows to claim rewards native, $POK tokens and Pookyball PXP rewards.
 /// @dev Only authorized REWARDER-role can sign the rewards payload.
 contract Rewards is OwnableRoles {

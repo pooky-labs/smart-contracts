@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (interfaces/IStickers.sol)
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
-import { IBaseERC721A } from "../interfaces/IBaseERC721A.sol";
+import { IBaseERC721A } from "@/interfaces/IBaseERC721A.sol";
 
 enum StickerRarity {
   COMMON,
@@ -23,7 +22,7 @@ struct StickerMetadata {
 }
 
 /// @title IStickers
-/// @author Mathieu Bour
+/// @author Mathieu Bour for Pooky Labs Ltd.
 interface IStickers is IBaseERC721A {
   /// Fired when the level of a Pookyball token is changed,
   event LevelChanged(uint256 indexed tokenId, uint256 level);

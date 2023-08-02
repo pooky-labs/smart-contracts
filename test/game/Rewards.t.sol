@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
 import { Ownable } from "solady/auth/Ownable.sol";
 import { ECDSA } from "solady/utils/ECDSA.sol";
-import { NonceRegistry } from "../../src/game/NonceRegistry.sol";
-import { Rewards, RewardsData } from "../../src/game/Rewards.sol";
-import { PookyballRarity } from "../../src/interfaces/IPookyball.sol";
-import { StickerRarity } from "../../src/interfaces/IStickers.sol";
-import { BaseTest } from "../BaseTest.sol";
-import { RewardsSetup } from "../setup/RewardsSetup.sol";
-import { InvalidReceiver } from "../utils/InvalidReceiver.sol";
+import { NonceRegistry } from "@/game/NonceRegistry.sol";
+import { Rewards, RewardsData } from "@/game/Rewards.sol";
+import { PookyballRarity } from "@/interfaces/IPookyball.sol";
+import { StickerRarity } from "@/interfaces/IStickers.sol";
+import { BaseTest } from "@test/BaseTest.sol";
+import { RewardsSetup } from "@test/setup/RewardsSetup.sol";
+import { InvalidReceiver } from "@test/utils/InvalidReceiver.sol";
 
 contract RewardsTest is BaseTest, RewardsSetup {
   function test_roles() public {

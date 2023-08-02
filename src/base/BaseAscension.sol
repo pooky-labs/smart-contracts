@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (base/BaseAscension.sol)
-pragma solidity 0.8.20;
+pragma solidity ^0.8.21;
 
 import { Ownable } from "solady/auth/Ownable.sol";
 import { IPOK } from "@/interfaces/IPOK.sol";
 
 /// @title BaseAscension
 /// @author Mathieu Bour for Pooky Labs Ltd.
+///
 /// @notice Ascension is the process of combining two tokens of the same rarity to create a new token with a higher rarity.
 /// @dev Base contract for ascendable tokens.
 abstract contract BaseAscension is Ownable {

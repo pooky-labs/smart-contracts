@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
-import { BaseTest } from "../BaseTest.sol";
-import { NonceRegistry } from "../../src/game/NonceRegistry.sol";
-import { AccessControlAssertions } from "../utils/AccessControlAssertions.sol";
+import { BaseTest } from "@test/BaseTest.sol";
+import { NonceRegistry } from "@/game/NonceRegistry.sol";
+import { AccessControlAssertions } from "@test/utils/AccessControlAssertions.sol";
 
 contract NonceRegistryTest is BaseTest, AccessControlAssertions {
   address public admin = makeAddr("admin");

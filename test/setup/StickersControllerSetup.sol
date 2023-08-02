@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
-import { BaseTest } from "../BaseTest.sol";
-import { StickersController } from "../../src/game/StickersController.sol";
-import { IStickers } from "../../src/interfaces/IStickers.sol";
+import { BaseTest } from "@test/BaseTest.sol";
+import { StickersController } from "@/game/StickersController.sol";
+import { IStickers } from "@/interfaces/IStickers.sol";
 import { IERC721A } from "ERC721A/IERC721A.sol";
-import { StickersSetup } from "../setup/StickersSetup.sol";
-import { PookyballSetup } from "../setup/PookyballSetup.sol";
+import { StickersSetup } from "@test/setup/StickersSetup.sol";
+import { PookyballSetup } from "@test/setup/PookyballSetup.sol";
 
 abstract contract StickersControllerSetup is BaseTest, StickersSetup, PookyballSetup {
   address public linker = makeAddr("linker");

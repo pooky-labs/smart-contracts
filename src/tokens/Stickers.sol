@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (tokens/Stickers.sol)
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
 import { ERC721A } from "ERC721A/ERC721A.sol";
 import { IERC721A } from "ERC721A/IERC721A.sol";

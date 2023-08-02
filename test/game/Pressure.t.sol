@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
-import { Pressure } from "../../src/game/Pressure.sol";
-import { POKSetup } from "../setup/POKSetup.sol";
-import { InvalidReceiver } from "../utils/InvalidReceiver.sol";
-import { BaseTest } from "../BaseTest.sol";
+import { Pressure } from "@/game/Pressure.sol";
+import { BaseTest } from "@test/BaseTest.sol";
+import { POKSetup } from "@test/setup/POKSetup.sol";
+import { InvalidReceiver } from "@test/utils/InvalidReceiver.sol";
 
 struct PriceCase {
   uint8 current;

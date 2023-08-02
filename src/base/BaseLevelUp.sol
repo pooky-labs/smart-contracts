@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (game/BaseLevelUp.sol)
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
 import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
 import { ECDSA } from "solady/utils/ECDSA.sol";
@@ -19,6 +18,7 @@ struct Pricing {
 
 /// @title BaseLevelUp
 /// @author Mathieu Bour for Pooky Labs Ltd.
+///
 /// @notice Base level up contract for tokens using exponential level growth, POK/NAT integration and offchain PXP.
 /// @dev Implemented roles:
 /// - Owner: allowed to change the pricing
@@ -108,7 +108,7 @@ abstract contract BaseLevelUp is OwnableRoles, BaseSigner, BaseTreasury {
     fee = _fee;
   }
 
-  /// Get the level details of a token.
+  /// @notice Get the levelling parameters for a given token.
   /// @param tokenId The token id.
   /// @return currentLevel The current token level.
   /// @return maxLevel The maximum allowed level.

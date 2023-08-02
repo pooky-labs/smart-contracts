@@ -1,19 +1,20 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
-import { VRFConsumerBaseV2 } from "chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
+import { VRFConsumerBaseV2 } from "chainlink/vrf/VRFConsumerBaseV2.sol";
 import { ERC721A } from "ERC721A/ERC721A.sol";
 import { ERC721ABurnable } from "ERC721A/extensions/ERC721ABurnable.sol";
 import { ERC721AQueryable } from "ERC721A/extensions/ERC721AQueryable.sol";
 import { IERC721A } from "ERC721A/IERC721A.sol";
 import { ERC2981 } from "openzeppelin/token/common/ERC2981.sol";
-import { DefaultOperatorFilterer } from "operator-filter-registry/src/DefaultOperatorFilterer.sol";
+import { DefaultOperatorFilterer } from "operator-filter-registry/DefaultOperatorFilterer.sol";
 import { Ownable } from "solady/auth/Ownable.sol";
 import { IBaseERC721A } from "@/interfaces/IBaseERC721A.sol";
 import { VRFConfig } from "@/types/VRFConfig.sol";
 
 /// @title BaseERC721A
 /// @author Mathieu Bour for Pooky Labs Ltd.
+///
 /// @notice Opiniated ERC721 implementation base on ERC721A
 /// Features:
 /// - `Ownable` via Solady.

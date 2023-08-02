@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (game/Pressure.sol)
 pragma solidity ^0.8.17;
 
-import "../interfaces/IPOK.sol";
+import { IPOK } from "@/interfaces/IPOK.sol";
 
 /// @title Pressure
-/// @author Mathieu Bour
+/// @author Mathieu Bour for Pooky Labs Ltd.
+///
 /// @notice Gameplay contract that allow to inflate/repair Pookyball tokens by spending $POK tokens and native currency.
 /// @dev This contract has the POK.BURNER role.
 contract Pressure {

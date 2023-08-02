@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
-import { BaseTest } from "../BaseTest.sol";
-import { StickersManager } from "../../src/game/StickersManager.sol";
-import { PookyballRarity } from "../../src/interfaces/IPookyball.sol";
-import { StickersControllerSetup } from "../setup/StickersControllerSetup.sol";
+import { BaseTest } from "@test/BaseTest.sol";
+import { StickersManager } from "@/game/StickersManager.sol";
+import { PookyballRarity } from "@/interfaces/IPookyball.sol";
+import { StickersControllerSetup } from "@test/setup/StickersControllerSetup.sol";
 
 struct SlotsTest {
   PookyballRarity rarity;

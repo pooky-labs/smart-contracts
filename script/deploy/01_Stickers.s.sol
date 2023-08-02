@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.20;
+pragma solidity ^0.8.21;
 
-import { VRFCoordinatorV2Interface } from
-  "chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
+import { VRFCoordinatorV2Interface } from "chainlink/interfaces/VRFCoordinatorV2Interface.sol";
 import { Script } from "forge-std/Script.sol";
 import { PookyballLevelUp } from "@/game/PookyballLevelUp.sol";
 import { Rewards } from "@/game/Rewards.sol";
@@ -32,7 +31,7 @@ struct Config {
   StickersConfig st;
 }
 
-/// @notice This is a temporary script to speed up the deployments on Mumbai.
+/// @dev This is a temporary script to speed up the deployments on Mumbai.
 /// This code should not be used on production in any way.
 ///
 /// Usage:

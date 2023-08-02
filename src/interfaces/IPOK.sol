@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-// Pooky Game Contracts (interfaces/IPOK.sol)
 pragma solidity ^0.8.17;
 
-import "openzeppelin/access/IAccessControl.sol";
-import "openzeppelin/token/ERC20/IERC20.sol";
+import { IAccessControl } from "openzeppelin/access/IAccessControl.sol";
+import { IERC20 } from "openzeppelin/token/ERC20/IERC20.sol";
 
 /// @title IPOK
-/// @author Mathieu Bour
+/// @author Mathieu Bour for Pooky Labs Ltd.
+///
 /// @notice Minimal $POK ERC20 token interface.
 interface IPOK is IAccessControl, IERC20 {
   /// @notice Mint an arbitrary amount of $POK to an account.
