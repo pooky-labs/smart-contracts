@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.21;
 
+import { Pookyball } from "@/pookyball/Pookyball.sol";
+import { PookyballRarity } from "@/pookyball/IPookyball.sol";
 import { BaseTest } from "@test/BaseTest.sol";
-import { Pookyball } from "@/tokens/Pookyball.sol";
-import { PookyballRarity } from "@/interfaces/IPookyball.sol";
 import { VRFCoordinatorV2Setup } from "@test/setup/VRFCoordinatorV2Setup.sol";
 
 abstract contract PookyballSetup is BaseTest, VRFCoordinatorV2Setup {

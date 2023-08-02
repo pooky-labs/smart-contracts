@@ -3,10 +3,10 @@ pragma solidity ^0.8.17;
 
 import { ERC20 } from "openzeppelin/token/ERC20/ERC20.sol";
 import { AccessControl } from "openzeppelin/access/AccessControl.sol";
-import { IPOK } from "@/interfaces/IPOK.sol";
+import { IPOK } from "@/tokens/IPOK.sol";
 
-/// @title Pookyball
-/// @author Mathieu Bour, Dusan Zdravkovic
+/// @title POK
+/// @author Mathieu Bour, Dusan Zdravkovic for Pooky Labs Ltd.
 ///
 /// @notice POK is ERC20 token used inside of the game, $POK is soul-bounded and serves as in-game currency.
 /// Mintable by other Pooky game contracts.

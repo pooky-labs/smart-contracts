@@ -3,10 +3,10 @@ pragma solidity ^0.8.21;
 
 import { Ownable } from "solady/auth/Ownable.sol";
 import { ECDSA } from "solady/utils/ECDSA.sol";
-import { NonceRegistry } from "@/game/NonceRegistry.sol";
-import { Rewards, RewardsData } from "@/game/Rewards.sol";
-import { PookyballRarity } from "@/interfaces/IPookyball.sol";
-import { StickerRarity } from "@/interfaces/IStickers.sol";
+import { NonceRegistry } from "@/common/NonceRegistry.sol";
+import { Rewards, RewardsData } from "@/common/Rewards.sol";
+import { PookyballRarity } from "@/pookyball/IPookyball.sol";
+import { StickerRarity } from "@/stickers/IStickers.sol";
 import { BaseTest } from "@test/BaseTest.sol";
 import { POKSetup } from "@test/setup/POKSetup.sol";
 import { PookyballSetup } from "@test/setup/PookyballSetup.sol";

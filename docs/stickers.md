@@ -62,7 +62,7 @@ Currently, the `StickersManager`:
 ### [`StickersLevelUp.sol`](../src/game/StickersLevelUp.sol)
 
 Stickers can be leveled up using the `StickersLevelUp` contract.
-`StickersLevelUp` is based on our [`BaseLevelUpContract`](../src/base/BaseLevelUp.sol).
+`StickersLevelUp` is based on our [`LevelUpContract`](../src/base/LevelUp.sol).
 
 Since the we don't store the Stickers PXP on chain to save gas, users will have to query the back-end to get a signature that certify the PXP amount they pass to the `levelUp` function.
 

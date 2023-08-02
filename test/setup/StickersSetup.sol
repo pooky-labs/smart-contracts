@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.21;
 
-import { BaseTest } from "@test/BaseTest.sol";
-import { StickerMint, StickerRarity } from "@/interfaces/IStickers.sol";
-import { Stickers } from "@/tokens/Stickers.sol";
+import { StickerMint, StickerRarity } from "@/stickers/IStickers.sol";
+import { Stickers } from "@/stickers/Stickers.sol";
 import { VRFConfig } from "@/types/VRFConfig.sol";
 import { VRFCoordinatorV2Setup } from "@test/setup/VRFCoordinatorV2Setup.sol";
+import { BaseTest } from "@test/BaseTest.sol";
 
 abstract contract StickersSetup is BaseTest, VRFCoordinatorV2Setup {
   Stickers public stickers;

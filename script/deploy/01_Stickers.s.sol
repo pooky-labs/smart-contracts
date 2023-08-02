@@ -3,16 +3,14 @@ pragma solidity ^0.8.21;
 
 import { VRFCoordinatorV2Interface } from "chainlink/interfaces/VRFCoordinatorV2Interface.sol";
 import { Script } from "forge-std/Script.sol";
-import { PookyballLevelUp } from "@/game/PookyballLevelUp.sol";
-import { Rewards } from "@/game/Rewards.sol";
-import { StickersController } from "@/game/StickersController.sol";
-import { StickersLevelUp } from "@/game/StickersLevelUp.sol";
-import { StickersManager } from "@/game/StickersManager.sol";
-import { StickersSale, Pack, PackContent } from "@/mint/StickersSale.sol";
-import { INonceRegistry } from "@/interfaces/INonceRegistry.sol";
-import { Pookyball } from "@/tokens/Pookyball.sol";
+import { INonceRegistry } from "@/common/INonceRegistry.sol";
+import { IPookyball } from "@/pookyball/IPookyball.sol";
+import { Stickers } from "@/stickers/Stickers.sol";
+import { StickersController } from "@/stickers/StickersController.sol";
+import { StickersLevelUp } from "@/stickers/StickersLevelUp.sol";
+import { StickersManager } from "@/stickers/StickersManager.sol";
+import { StickersSale, Pack, PackContent } from "@/stickers/StickersSale.sol";
 import { POK } from "@/tokens/POK.sol";
-import { Stickers } from "@/tokens/Stickers.sol";
 import { VRFConfig } from "@/types/VRFConfig.sol";
 
 struct StickersConfig {
@@ -24,7 +22,7 @@ struct StickersConfig {
 }
 
 struct Config {
-  Pookyball pookyball;
+  IPookyball pookyball;
   POK pok;
   address admin;
   address signer;
@@ -69,7 +67,7 @@ contract DeployStickers is Script {
     });
 
     return Config({
-      pookyball: Pookyball(0x3f64DD5BE5E19dD34744EFcC74c1935004aeB270),
+      pookyball: IPookyball(0x3f64DD5BE5E19dD34744EFcC74c1935004aeB270),
       pok: POK(0x3aaB86a3FF752530BbE21a5b5a6A73005f11E348),
       admin: 0xF00Db2f08D1F6b3f6089573085B5826Bb358e319,
       signer: 0xCAFE3e690bf74Ec274210E1c448130c1f8228513,
