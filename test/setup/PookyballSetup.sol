@@ -57,4 +57,9 @@ abstract contract PookyballSetup is BaseTest, VRFCoordinatorV2Setup {
   function mintPookyball(address recipient) public returns (uint256) {
     return mintPookyball(recipient, PookyballRarity.COMMON);
   }
+
+  function setPookyballLevel(uint256 tokenId, uint256 level) internal {
+    vm.prank(makeAddr("game"));
+    pookyball.setLevel(tokenId, level);
+  }
 }

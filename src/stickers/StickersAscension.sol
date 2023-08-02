@@ -67,7 +67,7 @@ contract StickersAscension is OwnableRoles, Ascension {
   /// @notice Ascend Stickers `left` and `right` into a new Sticker.
   /// @param left The first Sticker token id.
   /// @param right The second Sticker token id.
-  function ascend(uint256 left, uint256 right) external {
-    _ascend(left, right);
+  function ascend(uint256 left, uint256 right) external returns (uint256) {
+    return _ascend(left, right);
   }
 }

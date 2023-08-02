@@ -43,7 +43,7 @@ abstract contract Ascension is Ownable {
   /// @dev Technically speaking, ascending is equivalent to burning two tokens and minting another one.
   /// @param left The first token id.
   /// @param right The second token id.
-  function _ascend(uint256 left, uint256 right) internal {
+  function _ascend(uint256 left, uint256 right) internal returns (uint256) {
     uint8 rarity = ascendable(msg.sender, left);
     uint8 rarity2 = ascendable(msg.sender, right);
 
@@ -57,5 +57,6 @@ abstract contract Ascension is Ownable {
     uint256 ascendedId = _mint(rarity, msg.sender);
 
     emit Ascended(ascendedId, rarity, left, right);
+    return ascendedId;
   }
 }

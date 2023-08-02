@@ -13,12 +13,12 @@
       },
       {
         "internalType": "address",
-        "name": "_treasury",
+        "name": "signer",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "signer",
+        "name": "_treasury",
         "type": "address"
       }
     ],
@@ -236,7 +236,13 @@
       }
     ],
     "name": "ascend",
-    "outputs": [],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "payable",
     "type": "function"
   },

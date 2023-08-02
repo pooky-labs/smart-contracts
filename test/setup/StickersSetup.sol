@@ -44,4 +44,9 @@ abstract contract StickersSetup is BaseTest, VRFCoordinatorV2Setup {
   function mintSticker(address recipient) public returns (uint256) {
     return mintSticker(recipient, StickerRarity.COMMON);
   }
+
+  function setPookyballLevel(uint256 tokenId, uint248 level) internal {
+    vm.prank(makeAddr("game"));
+    stickers.setLevel(tokenId, level);
+  }
 }

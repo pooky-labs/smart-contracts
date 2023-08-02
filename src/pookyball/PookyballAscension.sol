@@ -26,9 +26,9 @@ contract PookyballAscension is OwnableRoles, Ascension, Treasury, Signer {
   /// @param admin The initial contract admin.
   /// @param _treasury The initial treasury.
   /// @param signer The initial signer.
-  constructor(IPookyball _pookyball, address admin, address _treasury, address signer)
-    Treasury(_treasury)
+  constructor(IPookyball _pookyball, address admin, address signer, address _treasury)
     Signer(signer)
+    Treasury(_treasury)
   {
     _initializeOwner(admin);
     pookyball = _pookyball;
@@ -89,11 +89,12 @@ contract PookyballAscension is OwnableRoles, Ascension, Treasury, Signer {
     payable
     onlyVerify(abi.encode(left, right, priceNAT), proof)
     forwarder
+    returns (uint256)
   {
     if (priceNAT > msg.value) {
       revert InsufficientValue(priceNAT, msg.value);
     }
 
-    _ascend(left, right);
+    return _ascend(left, right);
   }
 }
