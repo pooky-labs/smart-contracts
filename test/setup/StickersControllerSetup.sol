@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
-import { BaseTest } from "../BaseTest.sol";
-import { StickersController } from "../../src/game/StickersController.sol";
-import { IStickers } from "../../src/interfaces/IStickers.sol";
-import { IERC721A } from "ERC721A/IERC721A.sol";
-import { StickersSetup } from "../setup/StickersSetup.sol";
-import { PookyballSetup } from "../setup/PookyballSetup.sol";
+import { StickersController } from "@/stickers/StickersController.sol";
+import { IStickers } from "@/stickers/IStickers.sol";
+import { BaseTest } from "@test/BaseTest.sol";
+import { PookyballSetup } from "@test/setup/PookyballSetup.sol";
+import { StickersSetup } from "@test/setup/StickersSetup.sol";
 
 abstract contract StickersControllerSetup is BaseTest, StickersSetup, PookyballSetup {
   address public linker = makeAddr("linker");
@@ -20,7 +19,6 @@ abstract contract StickersControllerSetup is BaseTest, StickersSetup, PookyballS
     controller = new StickersController(pookyball, stickers, admin);
 
     vm.startPrank(admin);
-    stickers.grantRoles(address(controller), stickers.OPERATOR());
     controller.grantRoles(linker, controller.LINKER());
     controller.grantRoles(replacer, controller.REPLACER());
     controller.grantRoles(remover, controller.REMOVER());

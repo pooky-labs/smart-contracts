@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
-import { BaseTest } from "../BaseTest.sol";
-import { StickerMint, StickerRarity } from "../../src/interfaces/IStickers.sol";
-import { Stickers } from "../../src/tokens/Stickers.sol";
-import { VRFConfig } from "../../src/types/VRFConfig.sol";
-import { VRFCoordinatorV2Setup } from "./VRFCoordinatorV2Setup.sol";
+import { StickerMint, StickerRarity } from "@/stickers/IStickers.sol";
+import { Stickers } from "@/stickers/Stickers.sol";
+import { VRFConfig } from "@/types/VRFConfig.sol";
+import { VRFCoordinatorV2Setup } from "@test/setup/VRFCoordinatorV2Setup.sol";
+import { BaseTest } from "@test/BaseTest.sol";
 
 abstract contract StickersSetup is BaseTest, VRFCoordinatorV2Setup {
   Stickers public stickers;
@@ -21,7 +21,6 @@ abstract contract StickersSetup is BaseTest, VRFCoordinatorV2Setup {
     );
     vrf.addConsumer(subscriptionId, address(stickers));
 
-    stickers.grantRoles(makeAddr("operator"), stickers.OPERATOR());
     stickers.grantRoles(makeAddr("minter"), stickers.MINTER());
     stickers.grantRoles(makeAddr("game"), stickers.GAME());
     vm.stopPrank();
@@ -44,5 +43,10 @@ abstract contract StickersSetup is BaseTest, VRFCoordinatorV2Setup {
 
   function mintSticker(address recipient) public returns (uint256) {
     return mintSticker(recipient, StickerRarity.COMMON);
+  }
+
+  function setPookyballLevel(uint256 tokenId, uint248 level) internal {
+    vm.prank(makeAddr("game"));
+    stickers.setLevel(tokenId, level);
   }
 }

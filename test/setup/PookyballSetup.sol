@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
-import { BaseTest } from "../BaseTest.sol";
-import { Pookyball } from "../../src/tokens/Pookyball.sol";
-import { PookyballRarity } from "../../src/interfaces/IPookyball.sol";
-import { VRFCoordinatorV2Setup } from "./VRFCoordinatorV2Setup.sol";
+import { Pookyball } from "@/pookyball/Pookyball.sol";
+import { PookyballRarity } from "@/pookyball/IPookyball.sol";
+import { BaseTest } from "@test/BaseTest.sol";
+import { VRFCoordinatorV2Setup } from "@test/setup/VRFCoordinatorV2Setup.sol";
 
 abstract contract PookyballSetup is BaseTest, VRFCoordinatorV2Setup {
   Pookyball public pookyball;
@@ -56,5 +56,10 @@ abstract contract PookyballSetup is BaseTest, VRFCoordinatorV2Setup {
 
   function mintPookyball(address recipient) public returns (uint256) {
     return mintPookyball(recipient, PookyballRarity.COMMON);
+  }
+
+  function setPookyballLevel(uint256 tokenId, uint256 level) internal {
+    vm.prank(makeAddr("game"));
+    pookyball.setLevel(tokenId, level);
   }
 }

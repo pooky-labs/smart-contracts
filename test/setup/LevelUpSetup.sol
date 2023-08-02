@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
 import { ECDSA } from "openzeppelin/utils/cryptography/ECDSA.sol";
-import { BaseTest } from "../BaseTest.sol";
-import { POKSetup } from "./POKSetup.sol";
+import { BaseTest } from "@test/BaseTest.sol";
+import { POKSetup } from "@test/setup/POKSetup.sol";
 
 struct SlotData {
   uint256 expected;
@@ -29,11 +29,14 @@ abstract contract LevelUpSetup is BaseTest, POKSetup {
     (signer, privateKey) = makeAddrAndKey("signer");
   }
 
-  /**
-   * Sign the tokenId and the currentPXP for a level up.
-   */
-  function sign(uint256 tokenId, uint256 currentPXP) internal view returns (bytes memory) {
-    bytes32 hash = keccak256(abi.encode(tokenId, currentPXP)).toEthSignedMessageHash();
+  /// Sign the tokenId and the currentPXP for a level up.
+  function sign(uint256 tokenId, uint256 currentLevel, uint256 currentPXP, address target)
+    internal
+    view
+    returns (bytes memory)
+  {
+    bytes32 hash =
+      keccak256(abi.encode(tokenId, currentLevel, currentPXP, target)).toEthSignedMessageHash();
     (uint8 v, bytes32 r, bytes32 s) = vm.sign(privateKey, hash);
     return abi.encodePacked(r, s, v);
   }
