@@ -99,14 +99,14 @@ contract StickersSaleTest is BaseTest, StickersSetup {
     Pack memory pack = sale.getPacks()[packId];
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersSale.Closed.selector, 0));
-    sale.purchase{ value: pack.price }(packId);
+    sale.purchase{ value: pack.price }(packId, user);
   }
 
   function test_purchase_revertInvalidPack() public {
     uint256 packId = sale.getPacks().length;
     vm.prank(user);
     vm.expectRevert(StickersSale.InvalidPack.selector);
-    sale.purchase(packId);
+    sale.purchase(packId, user);
   }
 
   function test_purchase_revertInsufficientSupply() public {
@@ -123,7 +123,7 @@ contract StickersSaleTest is BaseTest, StickersSetup {
     Pack memory pack = sale.getPacks()[packId];
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersSale.InsufficientSupply.selector, packId));
-    sale.purchase{ value: pack.price }(packId);
+    sale.purchase{ value: pack.price }(packId, user);
   }
 
   function test_purchase_revertInsufficientValue() public {
@@ -132,7 +132,7 @@ contract StickersSaleTest is BaseTest, StickersSetup {
     vm.prank(user);
     uint256 value = pack.price - 1;
     vm.expectRevert(abi.encodeWithSelector(ITreasury.InsufficientValue.selector, value, pack.price));
-    sale.purchase{ value: value }(packId);
+    sale.purchase{ value: value }(packId, user);
   }
 
   function test_purchase_revertTransferFailed() public {
@@ -147,7 +147,7 @@ contract StickersSaleTest is BaseTest, StickersSetup {
     vm.expectRevert(
       abi.encodeWithSelector(ITreasury.TransferFailed.selector, address(invalid), pack.price)
     );
-    sale.purchase{ value: pack.price }(packId);
+    sale.purchase{ value: pack.price }(packId, user);
   }
 
   function test_purchase_pass_legend() public {
@@ -160,7 +160,7 @@ contract StickersSaleTest is BaseTest, StickersSetup {
     uint256 expectedBalance = stickersBefore + quantity;
 
     vm.prank(user);
-    sale.purchase{ value: pack.price }(packId);
+    sale.purchase{ value: pack.price }(packId, user);
     assertEq(stickers.balanceOf(user), expectedBalance);
   }
 }

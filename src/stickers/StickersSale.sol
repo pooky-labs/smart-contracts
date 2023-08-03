@@ -111,7 +111,7 @@ contract StickersSale is OwnableRoles, Treasury {
   /// - Sale must be open.
   /// - Pack ID must exist.
   /// - Transaction value must be greater or equal than the pack price.
-  function purchase(uint256 packId) external payable forwarder {
+  function purchase(uint256 packId, address recipient) external payable forwarder {
     if (isClosed()) {
       revert Closed(closedUntil);
     }
@@ -161,7 +161,7 @@ contract StickersSale is OwnableRoles, Treasury {
       }
     }
 
-    stickers.mint(msg.sender, rarities);
+    stickers.mint(recipient, rarities);
     packs[packId].minted++;
   }
 

@@ -512,6 +512,11 @@
         "internalType": "uint256",
         "name": "packId",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
       }
     ],
     "name": "purchase",
