@@ -510,6 +510,67 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "packs",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "supply",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "minted",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalSupply",
+        "type": "uint256"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "common",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rare",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "epic",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "legendary",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct PackContent",
+        "name": "content",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "packId",
         "type": "uint256"
       },

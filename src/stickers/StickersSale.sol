@@ -50,7 +50,7 @@ contract StickersSale is OwnableRoles, Treasury {
   /// The date when next mint window will open (compared to block.timestamp).
   uint256 public closedUntil;
 
-  mapping(uint256 => Pack) private packs;
+  mapping(uint256 => Pack) public packs;
   /// The number of created packs.
   uint256 size;
 

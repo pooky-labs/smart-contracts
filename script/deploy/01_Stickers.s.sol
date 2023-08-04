@@ -38,31 +38,31 @@ contract DeployStickers is Script {
   function mumbai() internal pure returns (Config memory) {
     Pack[] memory packs = new Pack[](4);
     packs[0] = Pack({
-      price: 8 ether,
+      price: 8 ether / 1e6,
       supply: 45,
       minted: 0,
-      totalSupply: 0,
+      totalSupply: 45,
       content: PackContent({ common: 2, rare: 0, epic: 0, legendary: 0 })
     });
     packs[1] = Pack({
-      price: 28 ether,
+      price: 28 ether / 1e6,
       supply: 40,
       minted: 0,
-      totalSupply: 0,
+      totalSupply: 40,
       content: PackContent({ common: 3, rare: 1, epic: 0, legendary: 0 })
     });
     packs[2] = Pack({
-      price: 112 ether,
+      price: 112 ether / 1e6,
       supply: 12,
       minted: 0,
-      totalSupply: 0,
+      totalSupply: 12,
       content: PackContent({ common: 8, rare: 1, epic: 1, legendary: 0 })
     });
     packs[3] = Pack({
-      price: 416 ether,
+      price: 416 ether / 1e6,
       supply: 3,
       minted: 0,
-      totalSupply: 0,
+      totalSupply: 3,
       content: PackContent({ common: 16, rare: 2, epic: 1, legendary: 1 })
     });
 
