@@ -5,6 +5,16 @@
         "internalType": "contract IStickers",
         "name": "_stickers",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "admin",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_signer",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -23,6 +33,11 @@
   },
   {
     "inputs": [],
+    "name": "InvalidSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NewOwnerIsZeroAddress",
     "type": "error"
   },
@@ -34,13 +49,13 @@
   {
     "inputs": [
       {
-        "internalType": "uint8",
-        "name": "left",
+        "internalType": "enum StickerRarity",
+        "name": "source",
         "type": "uint8"
       },
       {
-        "internalType": "uint8",
-        "name": "right",
+        "internalType": "enum StickerRarity",
+        "name": "other",
         "type": "uint8"
       }
     ],
@@ -53,6 +68,17 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "enum StickerRarity",
+        "name": "rarity",
+        "type": "uint8"
+      }
+    ],
+    "name": "UnsupportedRarity",
+    "type": "error"
+  },
+  {
     "anonymous": false,
     "inputs": [
       {
@@ -62,22 +88,16 @@
         "type": "uint256"
       },
       {
-        "indexed": false,
-        "internalType": "uint8",
+        "indexed": true,
+        "internalType": "enum StickerRarity",
         "name": "rarity",
         "type": "uint8"
       },
       {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "left",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "right",
-        "type": "uint256"
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "parts",
+        "type": "uint256[]"
       }
     ],
     "name": "Ascended",
@@ -148,16 +168,34 @@
     "type": "event"
   },
   {
+    "inputs": [],
+    "name": "SIGNER",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "left",
+        "name": "source",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "right",
+        "name": "other",
         "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "proof",
+        "type": "bytes"
       }
     ],
     "name": "ascend",
@@ -174,25 +212,49 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "source",
+        "type": "uint256"
       },
       {
+        "internalType": "uint256[5]",
+        "name": "parts",
+        "type": "uint256[5]"
+      }
+    ],
+    "name": "ascend",
+    "outputs": [
+      {
         "internalType": "uint256",
-        "name": "tokenId",
+        "name": "",
         "type": "uint256"
       }
     ],
-    "name": "ascendable",
-    "outputs": [
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
+        "internalType": "uint256",
+        "name": "source",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[2]",
+        "name": "parts",
+        "type": "uint256[2]"
       }
     ],
-    "stateMutability": "view",
+    "name": "ascend",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -279,6 +341,37 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint248",
+            "name": "level",
+            "type": "uint248"
+          },
+          {
+            "internalType": "enum StickerRarity",
+            "name": "rarity",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct StickerMetadata",
+        "name": "m",
+        "type": "tuple"
+      }
+    ],
+    "name": "isLevelMax",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "pure",
     "type": "function"
   },
   {

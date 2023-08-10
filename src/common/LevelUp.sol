@@ -159,7 +159,7 @@ abstract contract LevelUp is OwnableRoles, Signer, Treasury {
   /// @param tokenId The token id.
   /// @param increase The number of levels to increase.
   /// @param currentPXP The token current PXP.
-  /// @param proof The signature of abi.encode(tokenId, currentPXP).
+  /// @param proof The signature of `abi.encode(tokenId, currentLevel, currentPXP, address(this))`.
   function levelUp(uint256 tokenId, uint256 increase, uint256 currentPXP, bytes calldata proof)
     external
     payable
