@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.21;
 
-import { Ascension } from "@/common/Ascension.sol";
 import { ITreasury } from "@/common/ITreasury.sol";
 import { PookyballRarity } from "@/pookyball/IPookyball.sol";
 import { PookyballAscension } from "@/pookyball/PookyballAscension.sol";
@@ -40,7 +39,7 @@ contract PookyballAscensionTest is BaseTest, PookyballSetup, AscensionSetup {
       uint256 tokenId = mintPookyball(user, data[i].rarity);
       setPookyballLevel(tokenId, data[i].level);
 
-      vm.expectRevert(abi.encodeWithSelector(Ascension.Ineligible.selector, tokenId));
+      vm.expectRevert(abi.encodeWithSelector(PookyballAscension.Ineligible.selector, tokenId));
       ascension.ascendable(user, tokenId);
     }
   }
@@ -49,7 +48,7 @@ contract PookyballAscensionTest is BaseTest, PookyballSetup, AscensionSetup {
     uint256 tokenId = mintPookyball(user, PookyballRarity.LEGENDARY);
     setPookyballLevel(tokenId, 100);
 
-    vm.expectRevert(abi.encodeWithSelector(Ascension.Ineligible.selector, tokenId));
+    vm.expectRevert(abi.encodeWithSelector(PookyballAscension.Ineligible.selector, tokenId));
     ascension.ascendable(user, tokenId);
   }
 
@@ -69,7 +68,7 @@ contract PookyballAscensionTest is BaseTest, PookyballSetup, AscensionSetup {
     for (uint256 i; i < data.length; i++) {
       uint256 tokenId = mintPookyball(user, data[i].input);
       setPookyballLevel(tokenId, data[i].level);
-      assertEq(ascension.ascendable(user, tokenId), uint8(data[i].output));
+      assertTrue(ascension.ascendable(user, tokenId) == data[i].output);
     }
   }
 
@@ -86,7 +85,7 @@ contract PookyballAscensionTest is BaseTest, PookyballSetup, AscensionSetup {
     pookyball.setApprovalForAll(address(ascension), true);
     bytes memory signature = sign(left, right, priceNAT);
 
-    vm.expectRevert(abi.encodeWithSelector(Ascension.Ineligible.selector, right));
+    vm.expectRevert(abi.encodeWithSelector(PookyballAscension.Ineligible.selector, right));
     ascension.ascend{ value: priceNAT }(left, right, priceNAT, signature);
     vm.stopPrank();
 
@@ -107,7 +106,7 @@ contract PookyballAscensionTest is BaseTest, PookyballSetup, AscensionSetup {
     pookyball.setApprovalForAll(address(ascension), true);
     bytes memory signature = sign(left, right, priceNAT);
 
-    vm.expectRevert(abi.encodeWithSelector(Ascension.Ineligible.selector, right));
+    vm.expectRevert(abi.encodeWithSelector(PookyballAscension.Ineligible.selector, right));
     ascension.ascend{ value: priceNAT }(left, right, priceNAT, signature);
     vm.stopPrank();
 
@@ -128,7 +127,7 @@ contract PookyballAscensionTest is BaseTest, PookyballSetup, AscensionSetup {
     pookyball.setApprovalForAll(address(ascension), true);
     bytes memory signature = sign(left, right, priceNAT);
 
-    vm.expectRevert(abi.encodeWithSelector(Ascension.Ineligible.selector, left));
+    vm.expectRevert(abi.encodeWithSelector(PookyballAscension.Ineligible.selector, left));
     ascension.ascend{ value: priceNAT }(left, right, priceNAT, signature);
     vm.stopPrank();
 
@@ -151,7 +150,7 @@ contract PookyballAscensionTest is BaseTest, PookyballSetup, AscensionSetup {
 
     vm.expectRevert(
       abi.encodeWithSelector(
-        Ascension.RarityMismatch.selector, PookyballRarity.RARE, PookyballRarity.EPIC
+        PookyballAscension.RarityMismatch.selector, PookyballRarity.RARE, PookyballRarity.EPIC
       )
     );
     ascension.ascend{ value: priceNAT }(left, right, priceNAT, signature);

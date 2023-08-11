@@ -172,12 +172,15 @@ contract StickersSale is OwnableRoles, Treasury {
   /// - msg.sender must have the `SELLER` role or be the owner
   function restock(Refill[] memory refills, uint256 _closedUntil) external onlyRolesOrOwner(SELLER) {
     uint256 length = refills.length;
-    for (uint256 i = 0; i < length; i++) {
+    for (uint256 i; i < length;) {
       Pack memory current = packs[refills[i].packId];
       current.price = refills[i].price;
       current.totalSupply = current.minted + refills[i].quantity;
       current.supply = refills[i].quantity;
       packs[refills[i].packId] = current;
+      unchecked {
+        i++;
+      }
     }
 
     closedUntil = _closedUntil;

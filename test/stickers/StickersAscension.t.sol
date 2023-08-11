@@ -2,57 +2,25 @@
 pragma solidity ^0.8.21;
 
 import { IERC721A } from "ERC721A/IERC721A.sol";
-import { Ascension } from "@/common/Ascension.sol";
+import { ECDSA } from "solady/utils/ECDSA.sol";
 import { ITreasury } from "@/common/ITreasury.sol";
-import { StickerRarity } from "@/stickers/IStickers.sol";
+import { Signer } from "@/common/Signer.sol";
+import { StickerMetadata, StickerRarity } from "@/stickers/IStickers.sol";
 import { StickersAscension } from "@/stickers/StickersAscension.sol";
 import { BaseTest } from "@test/BaseTest.sol";
-import { AscensionSetup } from "@test/setup/AscensionSetup.sol";
 import { StickersSetup } from "@test/setup/StickersSetup.sol";
 
-contract StickersAscensionTest is BaseTest, StickersSetup, AscensionSetup {
+contract StickersAscensionTest is BaseTest, StickersSetup {
+  using ECDSA for bytes32;
+
   address public admin = makeAddr("admin");
   address public user = makeAddr("user");
   address public user2 = makeAddr("user2");
 
+  address internal signer;
+  uint256 internal privateKey;
+
   StickersAscension ascension;
-
-  function setUp() public {
-    ascension = new StickersAscension(stickers);
-
-    vm.startPrank(admin);
-    stickers.grantRoles(address(ascension), stickers.MINTER());
-    vm.stopPrank();
-  }
-
-  struct AscendableLevelInsufficientLevel {
-    StickerRarity rarity;
-    uint248 level;
-  }
-
-  function test_ascendable_revertIneligible_insufficientLevel() public {
-    AscendableLevelInsufficientLevel[3] memory data = [
-      AscendableLevelInsufficientLevel(StickerRarity.COMMON, 39),
-      AscendableLevelInsufficientLevel(StickerRarity.RARE, 59),
-      AscendableLevelInsufficientLevel(StickerRarity.EPIC, 79)
-    ];
-
-    for (uint256 i; i < data.length; i++) {
-      uint256 tokenId = mintSticker(user, data[i].rarity);
-      setPookyballLevel(tokenId, data[i].level);
-
-      vm.expectRevert(abi.encodeWithSelector(Ascension.Ineligible.selector, tokenId));
-      ascension.ascendable(user, tokenId);
-    }
-  }
-
-  function test_ascendable_revertLegendary() public {
-    uint256 tokenId = mintSticker(user, StickerRarity.LEGENDARY);
-    setPookyballLevel(tokenId, 100);
-
-    vm.expectRevert(abi.encodeWithSelector(Ascension.Ineligible.selector, tokenId));
-    ascension.ascendable(user, tokenId);
-  }
 
   struct AscendablePass {
     StickerRarity input;
@@ -60,135 +28,356 @@ contract StickersAscensionTest is BaseTest, StickersSetup, AscensionSetup {
     uint248 level;
   }
 
-  function test_ascendable_pass() public {
-    AscendablePass[3] memory data = [
-      AscendablePass(StickerRarity.COMMON, StickerRarity.RARE, 40),
-      AscendablePass(StickerRarity.RARE, StickerRarity.EPIC, 60),
-      AscendablePass(StickerRarity.EPIC, StickerRarity.LEGENDARY, 80)
-    ];
+  AscendablePass[] pass;
 
-    for (uint256 i; i < data.length; i++) {
-      uint256 tokenId = mintSticker(user, data[i].input);
-      setPookyballLevel(tokenId, data[i].level);
-      assertEq(ascension.ascendable(user, tokenId), uint8(data[i].output));
+  function setUp() public {
+    (signer, privateKey) = makeAddrAndKey("signer");
+    ascension = new StickersAscension(stickers, admin, signer);
+
+    vm.startPrank(admin);
+    stickers.grantRoles(address(ascension), stickers.MINTER());
+    vm.stopPrank();
+
+    vm.prank(user);
+    stickers.setApprovalForAll(address(ascension), true);
+
+    pass.push(AscendablePass(StickerRarity.COMMON, StickerRarity.RARE, 40));
+    pass.push(AscendablePass(StickerRarity.RARE, StickerRarity.EPIC, 60));
+    pass.push(AscendablePass(StickerRarity.EPIC, StickerRarity.LEGENDARY, 80));
+    pass.push(AscendablePass(StickerRarity.LEGENDARY, StickerRarity.MYTHIC, 100));
+  }
+
+  function test_isLevelMax() public {
+    assertFalse(ascension.isLevelMax(StickerMetadata(39, StickerRarity.COMMON)));
+    assertTrue(ascension.isLevelMax(StickerMetadata(40, StickerRarity.COMMON)));
+
+    assertFalse(ascension.isLevelMax(StickerMetadata(59, StickerRarity.RARE)));
+    assertTrue(ascension.isLevelMax(StickerMetadata(60, StickerRarity.RARE)));
+
+    assertFalse(ascension.isLevelMax(StickerMetadata(79, StickerRarity.EPIC)));
+    assertTrue(ascension.isLevelMax(StickerMetadata(80, StickerRarity.EPIC)));
+
+    assertFalse(ascension.isLevelMax(StickerMetadata(99, StickerRarity.LEGENDARY)));
+    assertTrue(ascension.isLevelMax(StickerMetadata(100, StickerRarity.LEGENDARY)));
+  }
+
+  function test_nextRarity_revertUnsupportedRarity() public {
+    vm.expectRevert(
+      abi.encodeWithSelector(StickersAscension.UnsupportedRarity.selector, StickerRarity.MYTHIC)
+    );
+    ascension.nextRarity(StickerRarity.MYTHIC);
+  }
+
+  function test_nextRarity_pass() public {
+    assertTrue(ascension.nextRarity(StickerRarity.COMMON) == StickerRarity.RARE);
+    assertTrue(ascension.nextRarity(StickerRarity.RARE) == StickerRarity.EPIC);
+    assertTrue(ascension.nextRarity(StickerRarity.EPIC) == StickerRarity.LEGENDARY);
+    assertTrue(ascension.nextRarity(StickerRarity.LEGENDARY) == StickerRarity.MYTHIC);
+  }
+
+  // ascend with two identical Stickers
+  // ----------------------------------
+  function _sign(uint256 sourceId, uint256 otherId) internal view returns (bytes memory) {
+    bytes32 hash =
+      keccak256(abi.encode(sourceId, otherId, address(ascension))).toEthSignedMessageHash();
+    (uint8 v, bytes32 r, bytes32 s) = vm.sign(privateKey, hash);
+    return abi.encodePacked(r, s, v);
+  }
+
+  function test_ascend_identical_revertSourceNotMax() public {
+    uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
+    setStickerLevel(sourceId, 39);
+    uint256 otherId = mintSticker(user, StickerRarity.COMMON);
+    setStickerLevel(otherId, 40);
+
+    vm.prank(user);
+    vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, sourceId));
+    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId));
+  }
+
+  function test_ascend_identical_revertSourceNotOwner() public {
+    uint256 sourceId = mintSticker(user2, StickerRarity.COMMON);
+    setStickerLevel(sourceId, 40);
+    uint256 otherId = mintSticker(user, StickerRarity.COMMON);
+    setStickerLevel(otherId, 40);
+
+    vm.prank(user);
+    vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, sourceId));
+    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId));
+  }
+
+  function test_ascend_identical_revertOtherNotMax() public {
+    uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
+    setStickerLevel(sourceId, 40);
+    uint256 otherId = mintSticker(user, StickerRarity.COMMON);
+    setStickerLevel(otherId, 39);
+
+    vm.prank(user);
+    vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, otherId));
+    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId));
+  }
+
+  function test_ascend_identical_revertOtherNotOwner() public {
+    uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
+    setStickerLevel(sourceId, 40);
+    uint256 otherId = mintSticker(user2, StickerRarity.COMMON);
+    setStickerLevel(otherId, 40);
+
+    vm.prank(user);
+    vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, otherId));
+    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId));
+  }
+
+  function test_ascend_identical_revertRarityMismatch() public {
+    uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
+    setStickerLevel(sourceId, 40);
+    uint256 otherId = mintSticker(user, StickerRarity.RARE);
+    setStickerLevel(otherId, 60);
+
+    vm.prank(user);
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        StickersAscension.RarityMismatch.selector, StickerRarity.COMMON, StickerRarity.RARE
+      )
+    );
+    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId));
+  }
+
+  function test_ascend_identical_revertInvalidSignature() public {
+    uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
+    setStickerLevel(sourceId, 40);
+    uint256 otherId = mintSticker(user, StickerRarity.RARE);
+    setStickerLevel(otherId, 40);
+
+    vm.prank(user);
+    vm.expectRevert(Signer.InvalidSignature.selector);
+    ascension.ascend(sourceId, otherId, _sign(sourceId, 1000));
+  }
+
+  function test_ascend_identical_pass() public {
+    for (uint256 i; i < pass.length; i++) {
+      uint256 sourceId = mintSticker(user, pass[i].input);
+      setStickerLevel(sourceId, pass[i].level);
+
+      uint256 otherId = mintSticker(user, pass[i].input);
+      setStickerLevel(otherId, pass[i].level);
+
+      vm.prank(user);
+      uint256 ascendedId = ascension.ascend(sourceId, otherId, _sign(sourceId, otherId));
+
+      assertEq(stickers.ownerOf(ascendedId), user);
+
+      vm.expectRevert(IERC721A.OwnerQueryForNonexistentToken.selector);
+      stickers.ownerOf(sourceId);
+      vm.expectRevert(IERC721A.OwnerQueryForNonexistentToken.selector);
+      stickers.ownerOf(otherId);
     }
   }
 
-  /// Assert the ascend fails if one of the Pookyballs is not owned by the user
-  function test_ascend_revertIneligible_nonOwner() public {
-    uint256 left = mintSticker(user, StickerRarity.COMMON);
-    uint256 right = mintSticker(user2, StickerRarity.COMMON);
+  // ascend with three maxed Stickers
+  // --------------------------------
+  function test_ascend_three_revertSourceNotMax() public {
+    uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
+    setStickerLevel(sourceId, 39);
 
-    uint256 priceNAT = 10 ether;
-    setPookyballLevel(left, 40);
-    setPookyballLevel(right, 40);
+    uint256[2] memory parts;
+    for (uint256 i; i < parts.length; i++) {
+      parts[i] = mintSticker(user, StickerRarity.COMMON);
+      setStickerLevel(parts[i], 40);
+    }
 
-    startHoax(user, priceNAT);
-    stickers.setApprovalForAll(address(ascension), true);
-
-    vm.expectRevert(abi.encodeWithSelector(Ascension.Ineligible.selector, right));
-    ascension.ascend(left, right);
-    vm.stopPrank();
-
-    assertEq(stickers.ownerOf(left), user);
-    assertEq(stickers.ownerOf(right), user2);
+    vm.prank(user);
+    vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, sourceId));
+    ascension.ascend(sourceId, parts);
   }
 
-  /// Assert the ascend fails if one of the Pookyballs is not at the maximum level
-  function test_ascend_revertIneligible_notMaxLevel() public {
-    uint256 left = mintSticker(user, StickerRarity.COMMON);
-    uint256 right = mintSticker(user, StickerRarity.COMMON);
+  function test_ascend_three_revertSourceNotOwner() public {
+    uint256 sourceId = mintSticker(user2, StickerRarity.COMMON);
+    setStickerLevel(sourceId, 40);
 
-    uint256 priceNAT = 10 ether;
-    setPookyballLevel(left, 40);
-    setPookyballLevel(right, 30);
+    uint256[2] memory parts;
+    for (uint256 i; i < parts.length; i++) {
+      parts[i] = mintSticker(user, StickerRarity.COMMON);
+      setStickerLevel(parts[i], 40);
+    }
 
-    startHoax(user, priceNAT);
-    stickers.setApprovalForAll(address(ascension), true);
-    vm.expectRevert(abi.encodeWithSelector(Ascension.Ineligible.selector, right));
-    ascension.ascend(left, right);
-    vm.stopPrank();
-
-    assertEq(stickers.ownerOf(left), user);
-    assertEq(stickers.ownerOf(right), user);
+    vm.prank(user);
+    vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, sourceId));
+    ascension.ascend(sourceId, parts);
   }
 
-  /// Assert the ascend fails if used Pookyballs are both Legendary rarity
-  function test_ascend_revertIneligible_maximumRarity() public {
-    uint256 left = mintSticker(user, StickerRarity.LEGENDARY);
-    uint256 right = mintSticker(user, StickerRarity.LEGENDARY);
+  function test_ascend_three_revertPartsNotMax() public {
+    uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
+    setStickerLevel(sourceId, 40);
 
-    uint256 priceNAT = 10 ether;
-    setPookyballLevel(left, 120);
-    setPookyballLevel(right, 120);
+    uint256[2] memory parts;
+    for (uint256 i; i < parts.length; i++) {
+      parts[i] = mintSticker(user, StickerRarity.COMMON);
+      setStickerLevel(parts[i], 40);
+    }
 
-    startHoax(user, priceNAT);
-    stickers.setApprovalForAll(address(ascension), true);
+    setStickerLevel(parts[0], 39);
 
-    vm.expectRevert(abi.encodeWithSelector(Ascension.Ineligible.selector, left));
-    ascension.ascend(left, right);
-    vm.stopPrank();
-
-    assertEq(stickers.ownerOf(left), user);
-    assertEq(stickers.ownerOf(right), user);
+    vm.prank(user);
+    vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, parts[0]));
+    ascension.ascend(sourceId, parts);
   }
 
-  /// Assert the ascend fails if used Pookyball rarities mismatch
-  function test_ascend_revertRarityMismatch() public {
-    uint256 left = mintSticker(user, StickerRarity.COMMON);
-    uint256 right = mintSticker(user, StickerRarity.RARE);
+  function test_ascend_three_revertOtherNotOwner() public {
+    uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
+    setStickerLevel(sourceId, 40);
 
-    uint256 priceNAT = 10 ether;
-    setPookyballLevel(left, 40);
-    setPookyballLevel(right, 60);
+    uint256[2] memory parts;
+    for (uint256 i; i < parts.length; i++) {
+      parts[i] = mintSticker(user, StickerRarity.COMMON);
+      setStickerLevel(parts[i], 40);
+    }
 
-    startHoax(user, priceNAT);
-    stickers.setApprovalForAll(address(ascension), true);
+    vm.prank(user);
+    stickers.transferFrom(user, user2, parts[0]);
+
+    vm.prank(user);
+    vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, parts[0]));
+    ascension.ascend(sourceId, parts);
+  }
+
+  function test_ascend_three_revertRarityMismatch() public {
+    uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
+    setStickerLevel(sourceId, 40);
+
+    uint256[2] memory parts;
+    parts[0] = mintSticker(user, StickerRarity.COMMON);
+    setStickerLevel(parts[0], 40);
+    parts[1] = mintSticker(user, StickerRarity.RARE);
+    setStickerLevel(parts[1], 60);
+
+    vm.prank(user);
     vm.expectRevert(
       abi.encodeWithSelector(
-        Ascension.RarityMismatch.selector, StickerRarity.RARE, StickerRarity.EPIC
+        StickersAscension.RarityMismatch.selector, StickerRarity.COMMON, StickerRarity.RARE
       )
     );
-    ascension.ascend(left, right);
-    vm.stopPrank();
-
-    assertEq(stickers.ownerOf(left), user);
-    assertEq(stickers.ownerOf(right), user);
+    ascension.ascend(sourceId, parts);
   }
 
-  struct AscendPass {
-    StickerRarity input;
-    StickerRarity output;
-    uint248 level;
-  }
+  function test_ascend_three_pass() public {
+    for (uint256 i; i < pass.length; i++) {
+      uint256 sourceId = mintSticker(user, pass[i].input);
+      setStickerLevel(sourceId, pass[i].level);
 
-  function test_ascend_pass() public {
-    AscendPass[3] memory data = [
-      AscendPass(StickerRarity.COMMON, StickerRarity.RARE, 40),
-      AscendPass(StickerRarity.RARE, StickerRarity.EPIC, 60),
-      AscendPass(StickerRarity.EPIC, StickerRarity.LEGENDARY, 80)
-    ];
+      uint256[2] memory parts = [mintSticker(user, pass[i].input), mintSticker(user, pass[i].input)];
 
-    for (uint256 i; i < data.length; i++) {
-      uint256 left = mintSticker(user, data[i].input);
-      uint256 right = mintSticker(user, data[i].input);
+      setStickerLevel(parts[0], pass[i].level);
+      setStickerLevel(parts[1], pass[i].level);
 
-      setPookyballLevel(left, data[i].level);
-      setPookyballLevel(right, data[i].level);
-
-      vm.startPrank(user);
-      stickers.setApprovalForAll(address(ascension), true);
-      uint256 ascendedId = ascension.ascend(left, right);
-      vm.stopPrank();
-
-      vm.expectRevert(IERC721A.OwnerQueryForNonexistentToken.selector);
-      stickers.ownerOf(left);
-
-      vm.expectRevert(IERC721A.OwnerQueryForNonexistentToken.selector);
-      stickers.ownerOf(right);
+      vm.prank(user);
+      uint256 ascendedId = ascension.ascend(sourceId, parts);
 
       assertEq(stickers.ownerOf(ascendedId), user);
-      assertTrue(stickers.metadata(ascendedId).rarity == data[i].output);
+
+      vm.expectRevert(IERC721A.OwnerQueryForNonexistentToken.selector);
+      stickers.ownerOf(sourceId);
+      vm.expectRevert(IERC721A.OwnerQueryForNonexistentToken.selector);
+      stickers.ownerOf(parts[0]);
+      vm.expectRevert(IERC721A.OwnerQueryForNonexistentToken.selector);
+      stickers.ownerOf(parts[1]);
+    }
+  }
+
+  // ascend with three maxed Stickers
+  // --------------------------------
+  function test_ascend_sixe_revertSourceNotMax() public {
+    uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
+    setStickerLevel(sourceId, 39);
+
+    uint256[5] memory parts;
+    for (uint256 i; i < parts.length; i++) {
+      parts[i] = mintSticker(user, StickerRarity.COMMON);
+      setStickerLevel(parts[i], 40);
+    }
+
+    vm.prank(user);
+    vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, sourceId));
+    ascension.ascend(sourceId, parts);
+  }
+
+  function test_ascend_six_revertSourceNotOwner() public {
+    uint256 sourceId = mintSticker(user2, StickerRarity.COMMON);
+    setStickerLevel(sourceId, 40);
+
+    uint256[5] memory parts;
+    for (uint256 i; i < parts.length; i++) {
+      parts[i] = mintSticker(user, StickerRarity.COMMON);
+      setStickerLevel(parts[i], 40);
+    }
+
+    vm.prank(user);
+    vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, sourceId));
+    ascension.ascend(sourceId, parts);
+  }
+
+  function test_ascend_six_revertOtherNotOwner() public {
+    uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
+    setStickerLevel(sourceId, 40);
+
+    uint256[5] memory parts;
+    for (uint256 i; i < parts.length; i++) {
+      parts[i] = mintSticker(user, StickerRarity.COMMON);
+      setStickerLevel(parts[i], 40);
+    }
+
+    vm.prank(user);
+    stickers.transferFrom(user, user2, parts[0]);
+
+    vm.prank(user);
+    vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, parts[0]));
+    ascension.ascend(sourceId, parts);
+  }
+
+  function test_ascend_six_revertRarityMismatch() public {
+    uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
+    setStickerLevel(sourceId, 40);
+
+    uint256[5] memory parts;
+    parts[0] = mintSticker(user, StickerRarity.RARE);
+    setStickerLevel(parts[0], 60);
+    for (uint256 i = 1; i < parts.length; i++) {
+      parts[i] = mintSticker(user, StickerRarity.COMMON);
+      setStickerLevel(parts[i], 40);
+    }
+
+    vm.prank(user);
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        StickersAscension.RarityMismatch.selector, StickerRarity.COMMON, StickerRarity.RARE
+      )
+    );
+    ascension.ascend(sourceId, parts);
+  }
+
+  function test_ascend_six_pass() public {
+    for (uint256 i; i < pass.length; i++) {
+      uint256 sourceId = mintSticker(user, pass[i].input);
+      setStickerLevel(sourceId, pass[i].level);
+
+      uint256[5] memory parts;
+      for (uint256 j; j < 5; j++) {
+        parts[j] = mintSticker(user, pass[i].input);
+        setStickerLevel(parts[j], pass[i].level);
+      }
+
+      vm.prank(user);
+      uint256 ascendedId = ascension.ascend(sourceId, parts);
+
+      assertEq(stickers.ownerOf(ascendedId), user);
+
+      vm.expectRevert(IERC721A.OwnerQueryForNonexistentToken.selector);
+      stickers.ownerOf(sourceId);
+
+      for (uint256 j; j < 5; j++) {
+        vm.expectRevert(IERC721A.OwnerQueryForNonexistentToken.selector);
+        stickers.ownerOf(parts[j]);
+      }
     }
   }
 }
