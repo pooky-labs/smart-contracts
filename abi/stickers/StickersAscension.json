@@ -88,7 +88,7 @@
         "type": "uint256"
       },
       {
-        "indexed": true,
+        "indexed": false,
         "internalType": "enum StickerRarity",
         "name": "rarity",
         "type": "uint8"
@@ -202,7 +202,7 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "ascendedId",
         "type": "uint256"
       }
     ],
@@ -226,7 +226,7 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "ascendedId",
         "type": "uint256"
       }
     ],
@@ -250,7 +250,7 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "ascendedId",
         "type": "uint256"
       }
     ],
@@ -369,6 +369,25 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum StickerRarity",
+        "name": "rarity",
+        "type": "uint8"
+      }
+    ],
+    "name": "nextRarity",
+    "outputs": [
+      {
+        "internalType": "enum StickerRarity",
+        "name": "",
+        "type": "uint8"
       }
     ],
     "stateMutability": "pure",

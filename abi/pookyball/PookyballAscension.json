@@ -70,12 +70,12 @@
   {
     "inputs": [
       {
-        "internalType": "uint8",
+        "internalType": "enum PookyballRarity",
         "name": "left",
         "type": "uint8"
       },
       {
-        "internalType": "uint8",
+        "internalType": "enum PookyballRarity",
         "name": "right",
         "type": "uint8"
       }
@@ -115,7 +115,7 @@
       },
       {
         "indexed": false,
-        "internalType": "uint8",
+        "internalType": "enum PookyballRarity",
         "name": "rarity",
         "type": "uint8"
       },
@@ -262,7 +262,7 @@
     "name": "ascendable",
     "outputs": [
       {
-        "internalType": "uint8",
+        "internalType": "enum PookyballRarity",
         "name": "",
         "type": "uint8"
       }

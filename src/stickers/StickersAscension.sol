@@ -2,7 +2,6 @@
 pragma solidity ^0.8.21;
 
 import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
-import { Ascension } from "@/common/Ascension.sol";
 import { Treasury } from "@/common/Treasury.sol";
 import { Signer } from "@/common/Signer.sol";
 import { IStickers, StickerMetadata, StickerRarity } from "@/stickers/IStickers.sol";
@@ -11,13 +10,13 @@ import { IPOK } from "@/tokens/IPOK.sol";
 /// @title StickersAscension
 /// @author Mathieu Bour for Pooky Labs Ltd.
 ///
-/// @notice This contract allow Pooky players to upgrade their Stickers by merging two Stickers into a better single Sticker.
+/// @notice This contract allow Pooky players to upgrade their Stickers by merging Stickers into a better single Sticker.
 contract StickersAscension is OwnableRoles, Signer {
-  /// @notice Fired when a token is ascended.
-  /// @param tokenId The new ascended token id.
-  /// @param rarity The rarity of the new ascended token.
+  /// @notice Fired when a Sticker is ascended.
+  /// @param tokenId The new ascended Sticker id.
+  /// @param rarity The rarity of the new ascended Sticker.
   /// @param parts The Sticker that were used for the ascension.
-  event Ascended(uint256 indexed tokenId, StickerRarity indexed rarity, uint256[] parts);
+  event Ascended(uint256 indexed tokenId, StickerRarity rarity, uint256[] parts);
 
   /// @notice Thrown when the `tokenId` is not eligible for the ascension.
   error Ineligible(uint256 tokenId);
@@ -56,6 +55,21 @@ contract StickersAscension is OwnableRoles, Signer {
     return false;
   }
 
+  /// @notice Get the next rarity after `rarity`.
+  function nextRarity(StickerRarity rarity) public pure returns (StickerRarity) {
+    if (rarity == StickerRarity.COMMON) {
+      return StickerRarity.RARE;
+    } else if (rarity == StickerRarity.RARE) {
+      return StickerRarity.EPIC;
+    } else if (rarity == StickerRarity.EPIC) {
+      return StickerRarity.LEGENDARY;
+    } else if (rarity == StickerRarity.LEGENDARY) {
+      return StickerRarity.MYTHIC;
+    }
+
+    revert UnsupportedRarity(rarity);
+  }
+
   /// @notice Mint the new ascended Sticker.
   /// @dev Unsupported rarities (legendary and mythical) will revert with `UnsupportedRarity`.
   /// @param rarity The ascended Sticker rarity.
@@ -63,17 +77,7 @@ contract StickersAscension is OwnableRoles, Signer {
   /// @return The ascended Sticker token id.
   function _mint(StickerRarity rarity, address recipient) internal returns (uint256) {
     StickerRarity[] memory rarities = new StickerRarity[](1);
-
-    // Find the ascended rarity
-    if (rarity == StickerRarity.COMMON) {
-      rarities[0] = StickerRarity.RARE;
-    } else if (rarity == StickerRarity.RARE) {
-      rarities[0] = StickerRarity.EPIC;
-    } else if (rarity == StickerRarity.EPIC) {
-      rarities[0] = StickerRarity.LEGENDARY;
-    } else {
-      revert UnsupportedRarity(rarity);
-    }
+    rarities[0] = rarity;
 
     stickers.mint(recipient, rarities);
     return stickers.nextTokenId() - 1;
@@ -84,11 +88,11 @@ contract StickersAscension is OwnableRoles, Signer {
   /// @param source The first Sticker id.
   /// @param other The second Sticker id.
   /// @param proof The proof from the back-end: `abi.encode(source, other, address(this))`.
-  /// @return The ascended Sticker id.
+  /// @return ascendedId The ascended Sticker id.
   function ascend(uint256 source, uint256 other, bytes calldata proof)
     external
     onlyVerify(abi.encode(source, other, address(this)), proof)
-    returns (uint256)
+    returns (uint256 ascendedId)
   {
     StickerMetadata memory mSource = stickers.metadata(source);
     if (!isLevelMax(mSource) || stickers.ownerOf(source) != msg.sender) {
@@ -104,20 +108,30 @@ contract StickersAscension is OwnableRoles, Signer {
       revert RarityMismatch(mSource.rarity, mOther.rarity);
     }
 
+    uint256[] memory _parts = new uint[](2);
+    _parts[0] = source;
+    _parts[1] = other;
+
     stickers.burn(source);
     stickers.burn(other);
-    return _mint(mSource.rarity, msg.sender);
+
+    StickerRarity rarity = nextRarity(mSource.rarity);
+    ascendedId = _mint(rarity, msg.sender);
+    emit Ascended(ascendedId, rarity, _parts);
   }
 
   /// @notice Ascend three maxed Stickers of the same rarity.
   /// @param source The reference Sticker to ascend.
   /// @param parts An array of two other maxed Stickers of the same rarity.
-  /// @return The ascended Sticker id.
-  function ascend(uint256 source, uint256[2] memory parts) external returns (uint256) {
+  /// @return ascendedId The ascended Sticker id.
+  function ascend(uint256 source, uint256[2] memory parts) external returns (uint256 ascendedId) {
     StickerMetadata memory mSource = stickers.metadata(source);
     if (!isLevelMax(mSource) || stickers.ownerOf(source) != msg.sender) {
       revert Ineligible(source);
     }
+
+    uint256[] memory _parts = new uint[](parts.length + 1);
+    _parts[0] = source;
 
     for (uint256 i; i < parts.length;) {
       StickerMetadata memory m = stickers.metadata(parts[i]);
@@ -137,18 +151,24 @@ contract StickersAscension is OwnableRoles, Signer {
     }
 
     stickers.burn(source);
-    return _mint(mSource.rarity, msg.sender);
+
+    StickerRarity rarity = nextRarity(mSource.rarity);
+    ascendedId = _mint(rarity, msg.sender);
+    emit Ascended(ascendedId, rarity, _parts);
   }
 
   /// @notice Ascend one maxed Sticker and five Stickers of the same rarity.
   /// @param source The reference Sticker to ascend.
   /// @param parts An array of five other Stickers of the same rarity.
-  /// @return The ascended Sticker id.
-  function ascend(uint256 source, uint256[5] memory parts) external returns (uint256) {
+  /// @return ascendedId The ascended Sticker id.
+  function ascend(uint256 source, uint256[5] memory parts) external returns (uint256 ascendedId) {
     StickerMetadata memory mSource = stickers.metadata(source);
     if (!isLevelMax(mSource) || stickers.ownerOf(source) != msg.sender) {
       revert Ineligible(source);
     }
+
+    uint256[] memory _parts = new uint[](parts.length + 1);
+    _parts[0] = source;
 
     for (uint256 i; i < parts.length;) {
       if (stickers.ownerOf(parts[i]) != msg.sender) {
@@ -161,6 +181,7 @@ contract StickersAscension is OwnableRoles, Signer {
       }
 
       stickers.burn(parts[i]);
+      _parts[i + 1];
 
       unchecked {
         i++;
@@ -168,6 +189,9 @@ contract StickersAscension is OwnableRoles, Signer {
     }
 
     stickers.burn(source);
-    return _mint(mSource.rarity, msg.sender);
+
+    StickerRarity rarity = nextRarity(mSource.rarity);
+    ascendedId = _mint(rarity, msg.sender);
+    emit Ascended(ascendedId, rarity, _parts);
   }
 }
