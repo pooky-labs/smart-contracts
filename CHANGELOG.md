@@ -1,5 +1,15 @@
 # Changelog
 
+## Septenber 8 - Energy
+
+Contract changes :
+
+- Added [`Energy`](https://github.com/pooky-labs/smart-contracts/blob/af1f5206baf678920a488d6b240e11e915676e38/src/common/Energy.sol)
+
+| Contract name                                                                                                                 | Old address | New address                                                                                                                     |
+| ----------------------------------------------------------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [`Energy`](https://github.com/pooky-labs/smart-contracts/blob/af1f5206baf678920a488d6b240e11e915676e38/src/common/Energy.sol) | none        | [`0x356fB0fE98023239b240795003595dbCb63c57cd`](https://polygonscan.com/address/0x356fB0fE98023239b240795003595dbCb63c57cd#code) |
+
 ## August 14 2023 - Stickers
 
 Contract changes:
