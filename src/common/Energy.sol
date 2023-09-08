@@ -5,7 +5,7 @@ import { ERC721A } from "ERC721A/ERC721A.sol";
 import { ERC721ABurnable } from "ERC721A/extensions/ERC721ABurnable.sol";
 import { ERC721AQueryable } from "ERC721A/extensions/ERC721AQueryable.sol";
 import { IERC721A } from "ERC721A/IERC721A.sol";
-import { Ownable } from "solady/auth/Ownable.sol";
+import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
 import { Base64 } from "solady/utils/Base64.sol";
 import { LibString } from "solady/utils/LibString.sol";
 import { Treasury } from "@/common/Treasury.sol";
@@ -13,8 +13,11 @@ import { Treasury } from "@/common/Treasury.sol";
 /// @title Energy
 /// @author Mathieu Bour for Pooky Labs Ltd.
 /// Allow players to purchase a voucher representing energy on the Pooky.gg game.
-contract Energy is ERC721A, ERC721ABurnable, ERC721AQueryable, Ownable, Treasury {
+contract Energy is ERC721A, ERC721ABurnable, ERC721AQueryable, OwnableRoles, Treasury {
   using LibString for uint256;
+
+  /// Role allowed to change the pricing
+  uint256 public constant OPERATOR = _ROLE_0;
 
   /// How much cost 1 Energy point
   uint256 public pricing;
@@ -22,16 +25,23 @@ contract Energy is ERC721A, ERC721ABurnable, ERC721AQueryable, Ownable, Treasury
   /// How much Energy is worth each token
   mapping(uint256 => uint256) public values;
 
-  constructor(address admin, address _treasury, uint256 _pricing)
+  constructor(address admin, address[] memory operators, address _treasury, uint256 _pricing)
     ERC721A("Pooky Energy", "PERG")
     Treasury(_treasury)
   {
     _initializeOwner(admin);
+    for (uint256 i; i < operators.length;) {
+      _grantRoles(operators[i], OPERATOR);
+      unchecked {
+        i++;
+      }
+    }
+
     pricing = _pricing;
   }
 
   /// @notice Change the Energy pricing
-  function setPricing(uint256 _pricing) external onlyOwner {
+  function setPricing(uint256 _pricing) external onlyRolesOrOwner(OPERATOR) {
     pricing = _pricing;
   }
 

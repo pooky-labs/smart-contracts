@@ -23,6 +23,7 @@ contract EnergyTest is BaseTest {
   using LibString for uint256;
 
   address admin = makeAddr("admin");
+  address operator = makeAddr("operator");
   address treasury = makeAddr("treasury");
   address player = makeAddr("player");
 
@@ -31,7 +32,11 @@ contract EnergyTest is BaseTest {
   Energy energy;
 
   function setUp() public {
-    energy = new Energy(admin, treasury, defaultPricing);
+    vm.startPrank(admin);
+    address[] memory operators = new address[](1);
+    operators[0] = operator;
+    energy = new Energy(admin, operators, treasury, defaultPricing);
+    vm.stopPrank();
   }
 
   function test_setPricing_revertUnauthorized() public {
@@ -40,7 +45,16 @@ contract EnergyTest is BaseTest {
     energy.setPricing(1);
   }
 
-  function test_setPricing_pass() public {
+  function test_setPricing_operator_pass() public {
+    uint256 newPricing = 7 ether;
+
+    assertEq(energy.pricing(), defaultPricing);
+    vm.prank(operator);
+    energy.setPricing(newPricing);
+    assertEq(energy.pricing(), newPricing);
+  }
+
+  function test_setPricing_owner_pass() public {
     uint256 newPricing = 7 ether;
 
     assertEq(energy.pricing(), defaultPricing);
