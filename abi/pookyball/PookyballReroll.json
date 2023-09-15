@@ -2,6 +2,16 @@
   {
     "inputs": [
       {
+        "internalType": "contract IPookyball",
+        "name": "_pookyball",
+        "type": "address"
+      },
+      {
+        "internalType": "contract INonceRegistry",
+        "name": "_nonces",
+        "type": "address"
+      },
+      {
         "internalType": "address",
         "name": "admin",
         "type": "address"
@@ -49,6 +59,28 @@
   {
     "inputs": [],
     "name": "NoHandoverRequest",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "nonce",
+        "type": "bytes32"
+      }
+    ],
+    "name": "NonceAlreadyUsed",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "OwnershipRequired",
     "type": "error"
   },
   {
@@ -269,6 +301,19 @@
   },
   {
     "inputs": [],
+    "name": "nonces",
+    "outputs": [
+      {
+        "internalType": "contract INonceRegistry",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "owner",
     "outputs": [
       {
@@ -294,6 +339,19 @@
         "internalType": "uint256",
         "name": "result",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "pookyball",
+    "outputs": [
+      {
+        "internalType": "contract IPookyball",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -337,6 +395,11 @@
         "internalType": "uint256",
         "name": "price",
         "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "nonce",
+        "type": "bytes32"
       },
       {
         "internalType": "bytes",

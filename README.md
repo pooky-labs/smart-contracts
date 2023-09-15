@@ -9,20 +9,21 @@ For more details about the internal architecture of the repository, see [CONTRIB
 
 ## Contracts
 
-| Contract                                                    | Address on Polygon                                                                                                              |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| [`NonceRegistry`](src/common/NonceRegistry.sol)             | [`0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818`](https://polygonscan.com/address/0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818#code) |
-| [`Rewards`](src/common/Rewards.sol)                         | [`0x64A85fb2Ca5ebdC70cBa233a7Ea94672BeF5B372`](https://polygonscan.com/address/0x64A85fb2Ca5ebdC70cBa233a7Ea94672BeF5B372#code) |
-| [`Pookyball`](src/pookyball/Pookyball.sol)                  | [`0xb4859acd9B0A65CA4897c31e5cb5160D9Ff32C0A`](https://polygonscan.com/address/0xb4859acd9B0A65CA4897c31e5cb5160D9Ff32C0A#code) |
-| [`PookyballLevel`](src/pookyball/PookyballLevel.sol)        | [`0xeD494677cf1454ac962ECCA5940B2E787f3095Fc`](https://polygonscan.com/address/0xeD494677cf1454ac962ECCA5940B2E787f3095Fc#code) |
-| [`Pressure`](src/pookyball/Pressure.sol)                    | [`0xa34223AD4d42CB041056287784FE1F91a7e5b21A`](https://polygonscan.com/address/0xa34223AD4d42CB041056287784FE1F91a7e5b21A#code) |
-| [`RefillableSale`](src/pookyball/RefillableSale.sol)        | [`0x57f48000b7573dd55963f15a1bf2490e43fee41c`](https://polygonscan.com/address/0x57f48000b7573dd55963f15a1bf2490e43fee41c#code) |
-| [`Stickers`](src/stickers/Stickers.sol)                     | [`0x440D4955a914D5e29F861aC024A608aE41c56cB6`](https://polygonscan.com/address/0x440D4955a914D5e29F861aC024A608aE41c56cB6#code) |
-| [`StickersController`](src/stickers/StickersController.sol) | [`0x75cc3c6329930758659eD87338B926c90e16d05F`](https://polygonscan.com/address/0x440D4955a914D5e29F861aC024A608aE41c56cB6#code) |
-| [`StickersManager`](src/stickers/StickersManager.sol)       | [`0x534Fda3d9C8A08FD0E57DE8c1Af9B32987614bA1`](https://polygonscan.com/address/0x440D4955a914D5e29F861aC024A608aE41c56cB6#code) |
-| [`StickersLevelUp`](src/stickers/StickersLevelUp.sol)       | [`0x766e81AF624Cd6D2615EF675bDca2aB1ffBCBCbE`](https://polygonscan.com/address/0x440D4955a914D5e29F861aC024A608aE41c56cB6#code) |
-| [`StickersSale`](src/stickers/StickersSale.sol)             | [`0x5d10f5685271b4dc21943438eac77ca549ac3d36`](https://polygonscan.com/address/0x440D4955a914D5e29F861aC024A608aE41c56cB6#code) |
-| [`POK`](src/tokens/POK.sol)                                 | [`0x7b7E3B03f34b17d70C276C4886467D58867Bbc94`](https://polygonscan.com/address/0x7b7E3B03f34b17d70C276C4886467D58867Bbc94#code) |
+| Contract                                                                                                                      | Address on Polygon                                                                                                              |
+| ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [`Energy`](https://github.com/pooky-labs/smart-contracts/blob/af1f5206baf678920a488d6b240e11e915676e38/src/common/Energy.sol) | [`0x356fB0fE98023239b240795003595dbCb63c57cd`](https://polygonscan.com/address/0x356fB0fE98023239b240795003595dbCb63c57cd#code) |
+| [`NonceRegistry`](src/common/NonceRegistry.sol)                                                                               | [`0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818`](https://polygonscan.com/address/0xB08Ee469Dcf9c40B77261d8665A8BbdFad22B818#code) |
+| [`Rewards`](src/common/Rewards.sol)                                                                                           | [`0x64A85fb2Ca5ebdC70cBa233a7Ea94672BeF5B372`](https://polygonscan.com/address/0x64A85fb2Ca5ebdC70cBa233a7Ea94672BeF5B372#code) |
+| [`Pookyball`](src/pookyball/Pookyball.sol)                                                                                    | [`0xb4859acd9B0A65CA4897c31e5cb5160D9Ff32C0A`](https://polygonscan.com/address/0xb4859acd9B0A65CA4897c31e5cb5160D9Ff32C0A#code) |
+| [`PookyballLevel`](src/pookyball/PookyballLevel.sol)                                                                          | [`0xeD494677cf1454ac962ECCA5940B2E787f3095Fc`](https://polygonscan.com/address/0xeD494677cf1454ac962ECCA5940B2E787f3095Fc#code) |
+| [`Pressure`](src/pookyball/Pressure.sol)                                                                                      | [`0xa34223AD4d42CB041056287784FE1F91a7e5b21A`](https://polygonscan.com/address/0xa34223AD4d42CB041056287784FE1F91a7e5b21A#code) |
+| [`RefillableSale`](src/pookyball/RefillableSale.sol)                                                                          | [`0x57f48000b7573dd55963f15a1bf2490e43fee41c`](https://polygonscan.com/address/0x57f48000b7573dd55963f15a1bf2490e43fee41c#code) |
+| [`Stickers`](src/stickers/Stickers.sol)                                                                                       | [`0x440D4955a914D5e29F861aC024A608aE41c56cB6`](https://polygonscan.com/address/0x440D4955a914D5e29F861aC024A608aE41c56cB6#code) |
+| [`StickersController`](src/stickers/StickersController.sol)                                                                   | [`0x75cc3c6329930758659eD87338B926c90e16d05F`](https://polygonscan.com/address/0x440D4955a914D5e29F861aC024A608aE41c56cB6#code) |
+| [`StickersManager`](src/stickers/StickersManager.sol)                                                                         | [`0x534Fda3d9C8A08FD0E57DE8c1Af9B32987614bA1`](https://polygonscan.com/address/0x440D4955a914D5e29F861aC024A608aE41c56cB6#code) |
+| [`StickersLevelUp`](src/stickers/StickersLevelUp.sol)                                                                         | [`0x766e81AF624Cd6D2615EF675bDca2aB1ffBCBCbE`](https://polygonscan.com/address/0x440D4955a914D5e29F861aC024A608aE41c56cB6#code) |
+| [`StickersSale`](src/stickers/StickersSale.sol)                                                                               | [`0x5d10f5685271b4dc21943438eac77ca549ac3d36`](https://polygonscan.com/address/0x440D4955a914D5e29F861aC024A608aE41c56cB6#code) |
+| [`POK`](src/tokens/POK.sol)                                                                                                   | [`0x7b7E3B03f34b17d70C276C4886467D58867Bbc94`](https://polygonscan.com/address/0x7b7E3B03f34b17d70C276C4886467D58867Bbc94#code) |
 
 ## Governance
 

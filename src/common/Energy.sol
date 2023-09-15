@@ -51,7 +51,7 @@ contract Energy is ERC721A, ERC721ABurnable, ERC721AQueryable, OwnableRoles, Tre
   }
 
   /// @notice Generate the on-chain metadata
-  /// @dev Exepcted pattern:
+  /// @dev Expected pattern:
   /// ```
   /// {
   ///   "name": "Voucher {tokenId}",
