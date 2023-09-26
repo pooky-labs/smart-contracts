@@ -4,6 +4,7 @@ src = "src"
 out = "artifacts"
 libs = ["lib"]
 solc = "0.8.21"
+evm_version = "paris"
 bytecode_hash = "none"
 cbor_metadata = false
 fs_permissions = [{ access = "read", path = "./test/datasets" }]
