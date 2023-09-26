@@ -181,7 +181,6 @@ contract StickersAscension is OwnableRoles, Signer {
       }
 
       stickers.burn(parts[i]);
-      _parts[i + 1];
 
       unchecked {
         i++;
