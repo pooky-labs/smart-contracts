@@ -27,7 +27,7 @@ interface IStickersController {
   /// @param stickerId The Sticker token id.
   function attachedTo(uint256 stickerId) external view returns (uint256);
 
-  /// @notice Get the Stickers token ids attahced to a Pookyball.
+  /// @notice Get the Stickers token ids attached to a Pookyball.
   /// @param pookyballId The Pookyball token id.
   function slots(uint256 pookyballId) external view returns (uint256[] memory);
 

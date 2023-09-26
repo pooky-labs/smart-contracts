@@ -4,11 +4,18 @@ pragma solidity ^0.8.21;
 import { ITreasury } from "@/common/ITreasury.sol";
 import { PookyballRarity } from "@/pookyball/IPookyball.sol";
 import { PookyballAscension } from "@/pookyball/PookyballAscension.sol";
+import { StickerRarity } from "@/stickers/IStickers.sol";
 import { BaseTest } from "@test/BaseTest.sol";
 import { AscensionSetup } from "@test/setup/AscensionSetup.sol";
 import { PookyballSetup } from "@test/setup/PookyballSetup.sol";
+import { StickersControllerSetup } from "@test/setup/StickersControllerSetup.sol";
 
-contract PookyballAscensionTest is BaseTest, PookyballSetup, AscensionSetup {
+contract PookyballAscensionTest is
+  BaseTest,
+  PookyballSetup,
+  AscensionSetup,
+  StickersControllerSetup
+{
   address public admin = makeAddr("admin");
   address public treasury = makeAddr("treasury");
   address public user = makeAddr("user");
@@ -16,10 +23,11 @@ contract PookyballAscensionTest is BaseTest, PookyballSetup, AscensionSetup {
   PookyballAscension ascension;
 
   function setUp() public {
-    ascension = new PookyballAscension(pookyball, admin, signer, treasury);
+    ascension = new PookyballAscension(pookyball, controller, admin, signer, treasury);
 
     vm.startPrank(admin);
     pookyball.grantRole(pookyball.MINTER(), address(ascension));
+    controller.grantRoles(address(ascension), controller.REMOVER());
     vm.stopPrank();
   }
 
@@ -215,6 +223,40 @@ contract PookyballAscensionTest is BaseTest, PookyballSetup, AscensionSetup {
       assertEq(pookyball.ownerOf(right), ascension.dead());
       assertEq(pookyball.ownerOf(ascendedId), user);
       assertTrue(pookyball.metadata(ascendedId).rarity == data[i].output);
+    }
+  }
+
+  function test_ascend_pass_withStickers() public {
+    uint256 left = mintPookyball(user, PookyballRarity.COMMON);
+    setPookyballLevel(left, 40);
+    uint256 right = mintPookyball(user, PookyballRarity.COMMON);
+    setPookyballLevel(right, 40);
+    uint256 priceNAT = 10 ether;
+
+    vm.prank(user);
+    stickers.setApprovalForAll(address(controller), true);
+
+    // Attach stickers to left ball
+    uint256[] memory stickerIds = new uint[](3);
+    for (uint256 i; i < stickerIds.length; i++) {
+      stickerIds[i] = mintSticker(user, StickerRarity.COMMON);
+      vm.prank(admin);
+      controller.attach(stickerIds[i], left);
+    }
+
+    for (uint256 i; i < stickerIds.length; i++) {
+      assertEq(stickers.ownerOf(stickerIds[i]), address(controller));
+    }
+
+    startHoax(user, priceNAT);
+    pookyball.setApprovalForAll(address(ascension), true);
+    bytes memory signature = sign(left, right, priceNAT);
+
+    uint256 ascendedId = ascension.ascend{ value: priceNAT }(left, right, priceNAT, signature);
+    vm.stopPrank();
+
+    for (uint256 i; i < stickerIds.length; i++) {
+      assertEq(stickers.ownerOf(stickerIds[i]), user);
     }
   }
 }

@@ -7,6 +7,11 @@
         "type": "address"
       },
       {
+        "internalType": "contract IStickersController",
+        "name": "_controller",
+        "type": "address"
+      },
+      {
         "internalType": "address",
         "name": "admin",
         "type": "address"
@@ -301,6 +306,19 @@
     "name": "completeOwnershipHandover",
     "outputs": [],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "controller",
+    "outputs": [
+      {
+        "internalType": "contract IStickersController",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {

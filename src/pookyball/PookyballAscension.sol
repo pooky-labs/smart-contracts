@@ -5,6 +5,7 @@ import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
 import { Treasury } from "@/common/Treasury.sol";
 import { Signer } from "@/common/Signer.sol";
 import { IPookyball, PookyballMetadata, PookyballRarity } from "@/pookyball/IPookyball.sol";
+import { IStickersController } from "@/stickers/IStickersController.sol";
 import { IPOK } from "@/tokens/IPOK.sol";
 
 /// @title PookyballAscension
@@ -35,17 +36,22 @@ contract PookyballAscension is OwnableRoles, Treasury, Signer {
 
   /// @notice The Pookyball ERC-721 smart contract.
   IPookyball public immutable pookyball;
+  IStickersController public immutable controller;
 
   /// @param _pookyball The Pookyball ERC-721 smart contract.
   /// @param admin The initial contract admin.
   /// @param _treasury The initial treasury.
   /// @param signer The initial signer.
-  constructor(IPookyball _pookyball, address admin, address signer, address _treasury)
-    Signer(signer)
-    Treasury(_treasury)
-  {
+  constructor(
+    IPookyball _pookyball,
+    IStickersController _controller,
+    address admin,
+    address signer,
+    address _treasury
+  ) Signer(signer) Treasury(_treasury) {
     _initializeOwner(admin);
     pookyball = _pookyball;
+    controller = _controller;
   }
 
   /// @notice Check if the `tokenId` is at its maximum level.
@@ -75,9 +81,19 @@ contract PookyballAscension is OwnableRoles, Treasury, Signer {
   }
 
   /// @notice Burn the Pookyball `tokenId` by sending it to the `dead` address.
-  /// @dev This burn requires the use to approve this contract as operator for the Pookyball collection.
+  /// @dev This burn requires the owner to approve this contract as operator for the Pookyball collection.
   function _burn(uint256 tokenId) internal {
-    pookyball.transferFrom(msg.sender, dead, tokenId);
+    uint256[] memory stickers = controller.slots(tokenId);
+    address owner = pookyball.ownerOf(tokenId);
+
+    for (uint256 i; i < stickers.length;) {
+      controller.detach(stickers[i], owner);
+      unchecked {
+        ++i;
+      }
+    }
+
+    pookyball.transferFrom(owner, dead, tokenId); // send Pookyball to dead address
   }
 
   /// @notice Mint the new ascended Pookyball.

@@ -8,6 +8,7 @@ import { Pookyball } from "@/pookyball/Pookyball.sol";
 import { PookyballAscension } from "@/pookyball/PookyballAscension.sol";
 import { PookyballLevelUp } from "@/pookyball/PookyballLevelUp.sol";
 import { Stickers } from "@/stickers/Stickers.sol";
+import { IStickersController } from "@/stickers/IStickersController.sol";
 import { StickersAscension } from "@/stickers/StickersAscension.sol";
 import { POK } from "@/tokens/POK.sol";
 
@@ -15,6 +16,7 @@ contract DeployAscension is Script {
   POK pok = POK(0x3aaB86a3FF752530BbE21a5b5a6A73005f11E348);
   Pookyball pookyball = Pookyball(0x3f64DD5BE5E19dD34744EFcC74c1935004aeB270);
   Stickers stickers = Stickers(0x34813041a976B03ABde279139E5B5D9a8AdB00De);
+  IStickersController controller = IStickersController(0x430288ee1c16B4e8b6B5DD6a76d24cA4d1Dfe8C7);
   NonceRegistry nonces = NonceRegistry(0xCD6d1949be58A4165718bD87EC35b0Ab8B956f55);
 
   address signer = 0xCAFE3e690bf74Ec274210E1c448130c1f8228513;
@@ -34,7 +36,7 @@ contract DeployAscension is Script {
     rewarders[0] = signer;
     Rewards rewards = new Rewards{salt: salt}(pok, pookyball, stickers, nonces, admin, rewarders);
     PookyballAscension pookyballAscension =
-      new PookyballAscension{salt: salt}(pookyball, admin, signer, treasury);
+      new PookyballAscension{salt: salt}(pookyball, controller, admin, signer, treasury);
     StickersAscension stickersAscension = new StickersAscension{salt: salt}(stickers, admin, signer);
     vm.stopBroadcast();
 
