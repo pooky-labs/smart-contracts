@@ -134,6 +134,8 @@ contract StickersAscension is OwnableRoles, Signer {
     _parts[0] = source;
 
     for (uint256 i; i < parts.length;) {
+      _parts[i + 1] = parts[i];
+
       StickerMetadata memory m = stickers.metadata(parts[i]);
       if (!isLevelMax(m) || stickers.ownerOf(parts[i]) != msg.sender) {
         revert Ineligible(parts[i]);
@@ -170,11 +172,15 @@ contract StickersAscension is OwnableRoles, Signer {
     uint256[] memory _parts = new uint[](parts.length + 1);
     _parts[0] = source;
 
+    // Burn parts
     for (uint256 i; i < parts.length;) {
+      _parts[i + 1] = parts[i];
+
       if (stickers.ownerOf(parts[i]) != msg.sender) {
         revert Ineligible(parts[i]);
       }
 
+      // Ensure that the part[i] has the same rarity as the source
       StickerMetadata memory m = stickers.metadata(parts[i]);
       if (mSource.rarity != m.rarity) {
         revert RarityMismatch(mSource.rarity, m.rarity);
