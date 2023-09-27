@@ -16,7 +16,8 @@ contract StickersAscension is OwnableRoles, Signer {
   /// @param tokenId The new ascended Sticker id.
   /// @param rarity The rarity of the new ascended Sticker.
   /// @param parts The Sticker that were used for the ascension.
-  event Ascended(uint256 indexed tokenId, StickerRarity rarity, uint256[] parts);
+  /// @param data Abitrary data.
+  event Ascended(uint256 indexed tokenId, StickerRarity rarity, uint256[] parts, string data);
 
   /// @notice Thrown when the `tokenId` is not eligible for the ascension.
   error Ineligible(uint256 tokenId);
@@ -88,8 +89,9 @@ contract StickersAscension is OwnableRoles, Signer {
   /// @param source The first Sticker id.
   /// @param other The second Sticker id.
   /// @param proof The proof from the back-end: `abi.encode(source, other, address(this))`.
+  /// @param data Abitrary data repeated in the `Ascended` event.
   /// @return ascendedId The ascended Sticker id.
-  function ascend(uint256 source, uint256 other, bytes calldata proof)
+  function ascend(uint256 source, uint256 other, bytes calldata proof, string calldata data)
     external
     onlyVerify(abi.encode(source, other, address(this)), proof)
     returns (uint256 ascendedId)
@@ -117,14 +119,18 @@ contract StickersAscension is OwnableRoles, Signer {
 
     StickerRarity rarity = nextRarity(mSource.rarity);
     ascendedId = _mint(rarity, msg.sender);
-    emit Ascended(ascendedId, rarity, _parts);
+    emit Ascended(ascendedId, rarity, _parts, data);
   }
 
   /// @notice Ascend three maxed Stickers of the same rarity.
   /// @param source The reference Sticker to ascend.
   /// @param parts An array of two other maxed Stickers of the same rarity.
+  /// @param data Abitrary data repeated in the `Ascended` event.
   /// @return ascendedId The ascended Sticker id.
-  function ascend(uint256 source, uint256[2] memory parts) external returns (uint256 ascendedId) {
+  function ascend(uint256 source, uint256[2] memory parts, string calldata data)
+    external
+    returns (uint256 ascendedId)
+  {
     StickerMetadata memory mSource = stickers.metadata(source);
     if (!isLevelMax(mSource) || stickers.ownerOf(source) != msg.sender) {
       revert Ineligible(source);
@@ -156,14 +162,18 @@ contract StickersAscension is OwnableRoles, Signer {
 
     StickerRarity rarity = nextRarity(mSource.rarity);
     ascendedId = _mint(rarity, msg.sender);
-    emit Ascended(ascendedId, rarity, _parts);
+    emit Ascended(ascendedId, rarity, _parts, data);
   }
 
   /// @notice Ascend one maxed Sticker and five Stickers of the same rarity.
   /// @param source The reference Sticker to ascend.
   /// @param parts An array of five other Stickers of the same rarity.
+  /// @param data Abitrary data repeated in the `Ascended` event.
   /// @return ascendedId The ascended Sticker id.
-  function ascend(uint256 source, uint256[5] memory parts) external returns (uint256 ascendedId) {
+  function ascend(uint256 source, uint256[5] memory parts, string calldata data)
+    external
+    returns (uint256 ascendedId)
+  {
     StickerMetadata memory mSource = stickers.metadata(source);
     if (!isLevelMax(mSource) || stickers.ownerOf(source) != msg.sender) {
       revert Ineligible(source);
@@ -197,6 +207,6 @@ contract StickersAscension is OwnableRoles, Signer {
 
     StickerRarity rarity = nextRarity(mSource.rarity);
     ascendedId = _mint(rarity, msg.sender);
-    emit Ascended(ascendedId, rarity, _parts);
+    emit Ascended(ascendedId, rarity, _parts, data);
   }
 }

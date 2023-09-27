@@ -30,7 +30,7 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
   AscendablePass[] pass;
 
-  event Ascended(uint256 indexed tokenId, StickerRarity rarity, uint256[] parts);
+  event Ascended(uint256 indexed tokenId, StickerRarity rarity, uint256[] parts, string data);
 
   function setUp() public {
     (signer, privateKey) = makeAddrAndKey("signer");
@@ -94,7 +94,7 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, sourceId));
-    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId));
+    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId), "");
   }
 
   function test_ascend_identical_revertSourceNotOwner() public {
@@ -105,7 +105,7 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, sourceId));
-    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId));
+    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId), "");
   }
 
   function test_ascend_identical_revertOtherNotMax() public {
@@ -116,7 +116,7 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, otherId));
-    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId));
+    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId), "");
   }
 
   function test_ascend_identical_revertOtherNotOwner() public {
@@ -127,7 +127,7 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, otherId));
-    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId));
+    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId), "");
   }
 
   function test_ascend_identical_revertRarityMismatch() public {
@@ -142,7 +142,7 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
         StickersAscension.RarityMismatch.selector, StickerRarity.COMMON, StickerRarity.RARE
       )
     );
-    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId));
+    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId), "");
   }
 
   function test_ascend_identical_revertInvalidSignature() public {
@@ -153,7 +153,7 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(Signer.InvalidSignature.selector);
-    ascension.ascend(sourceId, otherId, _sign(sourceId, 1000));
+    ascension.ascend(sourceId, otherId, _sign(sourceId, 1000), "");
   }
 
   function test_ascend_identical_pass() public {
@@ -168,10 +168,10 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
       uint256[] memory parts = new uint[](2);
       parts[0] = sourceId;
       parts[1] = otherId;
-      emit Ascended(0, pass[i].output, parts);
+      emit Ascended(0, pass[i].output, parts, "");
 
       vm.prank(user);
-      uint256 ascendedId = ascension.ascend(sourceId, otherId, _sign(sourceId, otherId));
+      uint256 ascendedId = ascension.ascend(sourceId, otherId, _sign(sourceId, otherId), "");
 
       assertEq(stickers.ownerOf(ascendedId), user);
 
@@ -196,7 +196,7 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, sourceId));
-    ascension.ascend(sourceId, parts);
+    ascension.ascend(sourceId, parts, "");
   }
 
   function test_ascend_three_revertSourceNotOwner() public {
@@ -211,7 +211,7 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, sourceId));
-    ascension.ascend(sourceId, parts);
+    ascension.ascend(sourceId, parts, "");
   }
 
   function test_ascend_three_revertPartsNotMax() public {
@@ -228,7 +228,7 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, parts[0]));
-    ascension.ascend(sourceId, parts);
+    ascension.ascend(sourceId, parts, "");
   }
 
   function test_ascend_three_revertOtherNotOwner() public {
@@ -246,7 +246,7 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, parts[0]));
-    ascension.ascend(sourceId, parts);
+    ascension.ascend(sourceId, parts, "");
   }
 
   function test_ascend_three_revertRarityMismatch() public {
@@ -265,7 +265,7 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
         StickersAscension.RarityMismatch.selector, StickerRarity.COMMON, StickerRarity.RARE
       )
     );
-    ascension.ascend(sourceId, parts);
+    ascension.ascend(sourceId, parts, "");
   }
 
   function test_ascend_three_pass() public {
@@ -283,10 +283,10 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
       _parts[1] = parts[0];
       _parts[2] = parts[1];
       vm.expectEmit(false, true, true, true, address(ascension));
-      emit Ascended(0, pass[i].output, _parts);
+      emit Ascended(0, pass[i].output, _parts, "");
 
       vm.prank(user);
-      uint256 ascendedId = ascension.ascend(sourceId, parts);
+      uint256 ascendedId = ascension.ascend(sourceId, parts, "");
 
       assertEq(stickers.ownerOf(ascendedId), user);
 
@@ -313,7 +313,7 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, sourceId));
-    ascension.ascend(sourceId, parts);
+    ascension.ascend(sourceId, parts, "");
   }
 
   function test_ascend_six_revertSourceNotOwner() public {
@@ -328,7 +328,7 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, sourceId));
-    ascension.ascend(sourceId, parts);
+    ascension.ascend(sourceId, parts, "");
   }
 
   function test_ascend_six_revertOtherNotOwner() public {
@@ -346,7 +346,7 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, parts[0]));
-    ascension.ascend(sourceId, parts);
+    ascension.ascend(sourceId, parts, "");
   }
 
   function test_ascend_six_revertRarityMismatch() public {
@@ -367,7 +367,7 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
         StickersAscension.RarityMismatch.selector, StickerRarity.COMMON, StickerRarity.RARE
       )
     );
-    ascension.ascend(sourceId, parts);
+    ascension.ascend(sourceId, parts, "");
   }
 
   function test_ascend_six_pass() public {
@@ -384,10 +384,10 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
       }
 
       vm.expectEmit(false, true, true, true, address(ascension));
-      emit Ascended(0, pass[i].output, _parts);
+      emit Ascended(0, pass[i].output, _parts, "");
 
       vm.prank(user);
-      uint256 ascendedId = ascension.ascend(sourceId, parts);
+      uint256 ascendedId = ascension.ascend(sourceId, parts, "");
 
       assertEq(stickers.ownerOf(ascendedId), user);
 

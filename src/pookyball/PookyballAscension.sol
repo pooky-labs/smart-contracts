@@ -21,8 +21,13 @@ contract PookyballAscension is OwnableRoles, Treasury, Signer {
   /// @param rarity The rarity of the new ascended token.
   /// @param left The first token id.
   /// @param right The second token id.
+  /// @param data Abitrary data.
   event Ascended(
-    uint256 indexed tokenId, PookyballRarity rarity, uint256 indexed left, uint256 indexed right
+    uint256 indexed tokenId,
+    PookyballRarity rarity,
+    uint256 indexed left,
+    uint256 indexed right,
+    string data
   );
 
   /// @notice Thrown when the `tokenId` is not eligible for the ascension.
@@ -114,7 +119,14 @@ contract PookyballAscension is OwnableRoles, Treasury, Signer {
   /// @param right The second Pookyball token id.
   /// @param priceNAT The price in native currency.
   /// @param proof The proof of `abi.encode(left, right, priceNAT)`.
-  function ascend(uint256 left, uint256 right, uint256 priceNAT, bytes calldata proof)
+  /// @param data Abitrary data repeated in the `Ascended` event.
+  function ascend(
+    uint256 left,
+    uint256 right,
+    uint256 priceNAT,
+    bytes calldata proof,
+    string calldata data
+  )
     external
     payable
     onlyVerify(abi.encode(left, right, priceNAT), proof)
@@ -137,7 +149,7 @@ contract PookyballAscension is OwnableRoles, Treasury, Signer {
     _burn(right);
     uint256 ascendedId = _mint(rarity, msg.sender);
 
-    emit Ascended(ascendedId, rarity, left, right);
+    emit Ascended(ascendedId, rarity, left, right, data);
     return ascendedId;
   }
 }

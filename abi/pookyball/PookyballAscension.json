@@ -135,6 +135,12 @@
         "internalType": "uint256",
         "name": "right",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "data",
+        "type": "string"
       }
     ],
     "name": "Ascended",
@@ -238,6 +244,11 @@
         "internalType": "bytes",
         "name": "proof",
         "type": "bytes"
+      },
+      {
+        "internalType": "string",
+        "name": "data",
+        "type": "string"
       }
     ],
     "name": "ascend",
