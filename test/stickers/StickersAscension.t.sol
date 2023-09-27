@@ -49,6 +49,47 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
     pass.push(AscendablePass(StickerRarity.LEGENDARY, StickerRarity.MYTHIC, 100));
   }
 
+  /// Sign the parameters for ascension.
+  function _sign(uint256 sourceId, uint256 otherId) internal view returns (bytes memory) {
+    bytes32 hash =
+      keccak256(abi.encode(sourceId, otherId, address(ascension))).toEthSignedMessageHash();
+    (uint8 v, bytes32 r, bytes32 s) = vm.sign(privateKey, hash);
+    return abi.encodePacked(r, s, v);
+  }
+
+  function sign(uint256 left, uint256 right, string memory data)
+    internal
+    view
+    returns (bytes memory signature)
+  {
+    bytes32 hash =
+      keccak256(abi.encode(left, right, data, address(ascension))).toEthSignedMessageHash();
+    (uint8 v, bytes32 r, bytes32 s) = vm.sign(privateKey, hash);
+    return abi.encodePacked(r, s, v);
+  }
+
+  function sign(uint256 source, uint256[2] memory parts, string memory data)
+    internal
+    view
+    returns (bytes memory signature)
+  {
+    bytes32 hash =
+      keccak256(abi.encode(source, parts, data, address(ascension))).toEthSignedMessageHash();
+    (uint8 v, bytes32 r, bytes32 s) = vm.sign(privateKey, hash);
+    signature = abi.encodePacked(r, s, v);
+  }
+
+  function sign(uint256 source, uint256[5] memory parts, string memory data)
+    internal
+    view
+    returns (bytes memory signature)
+  {
+    bytes32 hash =
+      keccak256(abi.encode(source, parts, data, address(ascension))).toEthSignedMessageHash();
+    (uint8 v, bytes32 r, bytes32 s) = vm.sign(privateKey, hash);
+    signature = abi.encodePacked(r, s, v);
+  }
+
   function test_isLevelMax() public {
     assertFalse(ascension.isLevelMax(StickerMetadata(39, StickerRarity.COMMON)));
     assertTrue(ascension.isLevelMax(StickerMetadata(40, StickerRarity.COMMON)));
@@ -79,25 +120,20 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
   // ascend with two identical Stickers
   // ----------------------------------
-  function _sign(uint256 sourceId, uint256 otherId) internal view returns (bytes memory) {
-    bytes32 hash =
-      keccak256(abi.encode(sourceId, otherId, address(ascension))).toEthSignedMessageHash();
-    (uint8 v, bytes32 r, bytes32 s) = vm.sign(privateKey, hash);
-    return abi.encodePacked(r, s, v);
-  }
-
   function test_ascend_identical_revertSourceNotMax() public {
     uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
     setStickerLevel(sourceId, 39);
     uint256 otherId = mintSticker(user, StickerRarity.COMMON);
     setStickerLevel(otherId, 40);
+    string memory data = "test_ascend_identical_revertSourceNotMax";
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, sourceId));
-    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId), "");
+    ascension.ascend(sourceId, otherId, data, sign(sourceId, otherId, data));
   }
 
   function test_ascend_identical_revertSourceNotOwner() public {
+    string memory data = "test_ascend_identical_revertSourceNotOwner";
     uint256 sourceId = mintSticker(user2, StickerRarity.COMMON);
     setStickerLevel(sourceId, 40);
     uint256 otherId = mintSticker(user, StickerRarity.COMMON);
@@ -105,10 +141,11 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, sourceId));
-    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId), "");
+    ascension.ascend(sourceId, otherId, data, sign(sourceId, otherId, data));
   }
 
   function test_ascend_identical_revertOtherNotMax() public {
+    string memory data = "test_ascend_identical_revertOtherNotMax";
     uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
     setStickerLevel(sourceId, 40);
     uint256 otherId = mintSticker(user, StickerRarity.COMMON);
@@ -116,10 +153,11 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, otherId));
-    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId), "");
+    ascension.ascend(sourceId, otherId, data, sign(sourceId, otherId, data));
   }
 
   function test_ascend_identical_revertOtherNotOwner() public {
+    string memory data = "test_ascend_identical_revertOtherNotOwner";
     uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
     setStickerLevel(sourceId, 40);
     uint256 otherId = mintSticker(user2, StickerRarity.COMMON);
@@ -127,10 +165,11 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, otherId));
-    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId), "");
+    ascension.ascend(sourceId, otherId, data, sign(sourceId, otherId, data));
   }
 
   function test_ascend_identical_revertRarityMismatch() public {
+    string memory data = "test_ascend_identical_revertRarityMismatch";
     uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
     setStickerLevel(sourceId, 40);
     uint256 otherId = mintSticker(user, StickerRarity.RARE);
@@ -142,10 +181,11 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
         StickersAscension.RarityMismatch.selector, StickerRarity.COMMON, StickerRarity.RARE
       )
     );
-    ascension.ascend(sourceId, otherId, _sign(sourceId, otherId), "");
+    ascension.ascend(sourceId, otherId, data, sign(sourceId, otherId, data));
   }
 
   function test_ascend_identical_revertInvalidSignature() public {
+    string memory data = "test_ascend_identical_revertInvalidSignature";
     uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
     setStickerLevel(sourceId, 40);
     uint256 otherId = mintSticker(user, StickerRarity.RARE);
@@ -153,10 +193,12 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(Signer.InvalidSignature.selector);
-    ascension.ascend(sourceId, otherId, _sign(sourceId, 1000), "");
+    ascension.ascend(sourceId, otherId, data, sign(sourceId, 1000, data));
   }
 
   function test_ascend_identical_pass() public {
+    string memory data = "test_ascend_identical_pass";
+
     for (uint256 i; i < pass.length; i++) {
       uint256 sourceId = mintSticker(user, pass[i].input);
       setStickerLevel(sourceId, pass[i].level);
@@ -168,10 +210,10 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
       uint256[] memory parts = new uint[](2);
       parts[0] = sourceId;
       parts[1] = otherId;
-      emit Ascended(0, pass[i].output, parts, "");
+      emit Ascended(0, pass[i].output, parts, data);
 
       vm.prank(user);
-      uint256 ascendedId = ascension.ascend(sourceId, otherId, _sign(sourceId, otherId), "");
+      uint256 ascendedId = ascension.ascend(sourceId, otherId, data, sign(sourceId, otherId, data));
 
       assertEq(stickers.ownerOf(ascendedId), user);
 
@@ -187,6 +229,7 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
   function test_ascend_three_revertSourceNotMax() public {
     uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
     setStickerLevel(sourceId, 39);
+    string memory data = "test_ascend_three_revertSourceNotMax";
 
     uint256[2] memory parts;
     for (uint256 i; i < parts.length; i++) {
@@ -196,12 +239,13 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, sourceId));
-    ascension.ascend(sourceId, parts, "");
+    ascension.ascend(sourceId, parts, data, sign(sourceId, parts, data));
   }
 
   function test_ascend_three_revertSourceNotOwner() public {
     uint256 sourceId = mintSticker(user2, StickerRarity.COMMON);
     setStickerLevel(sourceId, 40);
+    string memory data = "test_ascend_three_revertSourceNotOwner";
 
     uint256[2] memory parts;
     for (uint256 i; i < parts.length; i++) {
@@ -211,12 +255,13 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, sourceId));
-    ascension.ascend(sourceId, parts, "");
+    ascension.ascend(sourceId, parts, data, sign(sourceId, parts, data));
   }
 
   function test_ascend_three_revertPartsNotMax() public {
     uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
     setStickerLevel(sourceId, 40);
+    string memory data = "test_ascend_three_revertPartsNotMax";
 
     uint256[2] memory parts;
     for (uint256 i; i < parts.length; i++) {
@@ -228,12 +273,13 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, parts[0]));
-    ascension.ascend(sourceId, parts, "");
+    ascension.ascend(sourceId, parts, data, sign(sourceId, parts, data));
   }
 
   function test_ascend_three_revertOtherNotOwner() public {
     uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
     setStickerLevel(sourceId, 40);
+    string memory data = "test_ascend_three_revertOtherNotOwner";
 
     uint256[2] memory parts;
     for (uint256 i; i < parts.length; i++) {
@@ -246,12 +292,13 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, parts[0]));
-    ascension.ascend(sourceId, parts, "");
+    ascension.ascend(sourceId, parts, data, sign(sourceId, parts, data));
   }
 
   function test_ascend_three_revertRarityMismatch() public {
     uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
     setStickerLevel(sourceId, 40);
+    string memory data = "test_ascend_three_revertRarityMismatch";
 
     uint256[2] memory parts;
     parts[0] = mintSticker(user, StickerRarity.COMMON);
@@ -265,10 +312,12 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
         StickersAscension.RarityMismatch.selector, StickerRarity.COMMON, StickerRarity.RARE
       )
     );
-    ascension.ascend(sourceId, parts, "");
+    ascension.ascend(sourceId, parts, data, sign(sourceId, parts, data));
   }
 
   function test_ascend_three_pass() public {
+    string memory data = "test_ascend_three_pass";
+
     for (uint256 i; i < pass.length; i++) {
       uint256 sourceId = mintSticker(user, pass[i].input);
       setStickerLevel(sourceId, pass[i].level);
@@ -283,10 +332,10 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
       _parts[1] = parts[0];
       _parts[2] = parts[1];
       vm.expectEmit(false, true, true, true, address(ascension));
-      emit Ascended(0, pass[i].output, _parts, "");
+      emit Ascended(0, pass[i].output, _parts, data);
 
       vm.prank(user);
-      uint256 ascendedId = ascension.ascend(sourceId, parts, "");
+      uint256 ascendedId = ascension.ascend(sourceId, parts, data, sign(sourceId, parts, data));
 
       assertEq(stickers.ownerOf(ascendedId), user);
 
@@ -304,6 +353,7 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
   function test_ascend_six_revertSourceNotMax() public {
     uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
     setStickerLevel(sourceId, 39);
+    string memory data = "test_ascend_six_revertSourceNotMax";
 
     uint256[5] memory parts;
     for (uint256 i; i < parts.length; i++) {
@@ -313,12 +363,13 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, sourceId));
-    ascension.ascend(sourceId, parts, "");
+    ascension.ascend(sourceId, parts, data, sign(sourceId, parts, data));
   }
 
   function test_ascend_six_revertSourceNotOwner() public {
     uint256 sourceId = mintSticker(user2, StickerRarity.COMMON);
     setStickerLevel(sourceId, 40);
+    string memory data = "test_ascend_six_revertSourceNotOwner";
 
     uint256[5] memory parts;
     for (uint256 i; i < parts.length; i++) {
@@ -328,12 +379,13 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, sourceId));
-    ascension.ascend(sourceId, parts, "");
+    ascension.ascend(sourceId, parts, data, sign(sourceId, parts, data));
   }
 
   function test_ascend_six_revertOtherNotOwner() public {
     uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
     setStickerLevel(sourceId, 40);
+    string memory data = "test_ascend_six_revertOtherNotOwner";
 
     uint256[5] memory parts;
     for (uint256 i; i < parts.length; i++) {
@@ -346,12 +398,13 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
     vm.prank(user);
     vm.expectRevert(abi.encodeWithSelector(StickersAscension.Ineligible.selector, parts[0]));
-    ascension.ascend(sourceId, parts, "");
+    ascension.ascend(sourceId, parts, data, sign(sourceId, parts, data));
   }
 
   function test_ascend_six_revertRarityMismatch() public {
     uint256 sourceId = mintSticker(user, StickerRarity.COMMON);
     setStickerLevel(sourceId, 40);
+    string memory data = "test_ascend_six_revertRarityMismatch";
 
     uint256[5] memory parts;
     parts[0] = mintSticker(user, StickerRarity.RARE);
@@ -367,11 +420,12 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
         StickersAscension.RarityMismatch.selector, StickerRarity.COMMON, StickerRarity.RARE
       )
     );
-    ascension.ascend(sourceId, parts, "");
+    ascension.ascend(sourceId, parts, data, sign(sourceId, parts, data));
   }
 
   function test_ascend_six_pass() public {
     uint256[] memory _parts = new uint[](6);
+    string memory data = "test_ascend_six_pass";
 
     for (uint256 i; i < pass.length; i++) {
       uint256 sourceId = _parts[0] = mintSticker(user, pass[i].input);
@@ -384,11 +438,10 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
       }
 
       vm.expectEmit(false, true, true, true, address(ascension));
-      emit Ascended(0, pass[i].output, _parts, "");
+      emit Ascended(0, pass[i].output, _parts, data);
 
       vm.prank(user);
-      uint256 ascendedId = ascension.ascend(sourceId, parts, "");
-
+      uint256 ascendedId = ascension.ascend(sourceId, parts, data, sign(sourceId, parts, data));
       assertEq(stickers.ownerOf(ascendedId), user);
 
       // Ensure all stickers are burnt

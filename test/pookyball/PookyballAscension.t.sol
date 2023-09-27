@@ -6,16 +6,13 @@ import { PookyballRarity } from "@/pookyball/IPookyball.sol";
 import { PookyballAscension } from "@/pookyball/PookyballAscension.sol";
 import { StickerRarity } from "@/stickers/IStickers.sol";
 import { BaseTest } from "@test/BaseTest.sol";
-import { AscensionSetup } from "@test/setup/AscensionSetup.sol";
 import { PookyballSetup } from "@test/setup/PookyballSetup.sol";
 import { StickersControllerSetup } from "@test/setup/StickersControllerSetup.sol";
+import { ECDSA } from "solady/utils/ECDSA.sol";
 
-contract PookyballAscensionTest is
-  BaseTest,
-  PookyballSetup,
-  AscensionSetup,
-  StickersControllerSetup
-{
+contract PookyballAscensionTest is BaseTest, PookyballSetup, StickersControllerSetup {
+  using ECDSA for bytes32;
+
   event Ascended(
     uint256 indexed tokenId,
     PookyballRarity rarity,
@@ -24,6 +21,8 @@ contract PookyballAscensionTest is
     string data
   );
 
+  address internal signer;
+  uint256 internal privateKey;
   address public admin = makeAddr("admin");
   address public treasury = makeAddr("treasury");
   address public user = makeAddr("user");
@@ -31,6 +30,7 @@ contract PookyballAscensionTest is
   PookyballAscension ascension;
 
   function setUp() public {
+    (signer, privateKey) = makeAddrAndKey("signer");
     ascension = new PookyballAscension(pookyball, controller, admin, signer, treasury);
 
     vm.startPrank(admin);
@@ -42,6 +42,18 @@ contract PookyballAscensionTest is
   struct AscendableLevelInsufficientLevel {
     PookyballRarity rarity;
     uint256 level;
+  }
+
+  /// Sign the parameters for ascension.
+  function sign(uint256 left, uint256 right, uint256 priceNAT, string memory data)
+    internal
+    view
+    returns (bytes memory)
+  {
+    bytes32 hash = keccak256(abi.encode(left, right, priceNAT, data, address(ascension)))
+      .toEthSignedMessageHash();
+    (uint8 v, bytes32 r, bytes32 s) = vm.sign(privateKey, hash);
+    return abi.encodePacked(r, s, v);
   }
 
   function test_ascendable_revertIneligible_insufficientLevel() public {
@@ -92,6 +104,7 @@ contract PookyballAscensionTest is
   function test_ascend_revertIneligible_nonOwner() public {
     uint256 left = mintPookyball(user, PookyballRarity.COMMON);
     uint256 right = mintPookyball(admin, PookyballRarity.COMMON);
+    string memory data = "test_ascend_revertIneligible_nonOwner";
 
     uint256 priceNAT = 10 ether;
     setPookyballLevel(left, 40);
@@ -99,10 +112,10 @@ contract PookyballAscensionTest is
 
     startHoax(user, priceNAT);
     pookyball.setApprovalForAll(address(ascension), true);
-    bytes memory signature = sign(left, right, priceNAT);
+    bytes memory signature = sign(left, right, priceNAT, data);
 
     vm.expectRevert(abi.encodeWithSelector(PookyballAscension.Ineligible.selector, right));
-    ascension.ascend{ value: priceNAT }(left, right, priceNAT, signature, "");
+    ascension.ascend{ value: priceNAT }(left, right, priceNAT, data, signature);
     vm.stopPrank();
 
     assertEq(pookyball.ownerOf(left), user);
@@ -113,6 +126,7 @@ contract PookyballAscensionTest is
   function test_ascend_revertIneligible_notMaxLevel() public {
     uint256 left = mintPookyball(user, PookyballRarity.COMMON);
     uint256 right = mintPookyball(user, PookyballRarity.COMMON);
+    string memory data = "test_ascend_revertIneligible_notMaxLevel";
 
     uint256 priceNAT = 10 ether;
     setPookyballLevel(left, 40);
@@ -120,10 +134,10 @@ contract PookyballAscensionTest is
 
     startHoax(user, priceNAT);
     pookyball.setApprovalForAll(address(ascension), true);
-    bytes memory signature = sign(left, right, priceNAT);
+    bytes memory signature = sign(left, right, priceNAT, data);
 
     vm.expectRevert(abi.encodeWithSelector(PookyballAscension.Ineligible.selector, right));
-    ascension.ascend{ value: priceNAT }(left, right, priceNAT, signature, "");
+    ascension.ascend{ value: priceNAT }(left, right, priceNAT, data, signature);
     vm.stopPrank();
 
     assertEq(pookyball.ownerOf(left), user);
@@ -134,6 +148,7 @@ contract PookyballAscensionTest is
   function test_ascend_revertIneligible_maximumRarity() public {
     uint256 left = mintPookyball(user, PookyballRarity.LEGENDARY);
     uint256 right = mintPookyball(user, PookyballRarity.LEGENDARY);
+    string memory data = "test_ascend_revertIneligible_maximumRarity";
 
     uint256 priceNAT = 10 ether;
     setPookyballLevel(left, 120);
@@ -141,10 +156,10 @@ contract PookyballAscensionTest is
 
     startHoax(user, priceNAT);
     pookyball.setApprovalForAll(address(ascension), true);
-    bytes memory signature = sign(left, right, priceNAT);
+    bytes memory signature = sign(left, right, priceNAT, data);
 
     vm.expectRevert(abi.encodeWithSelector(PookyballAscension.Ineligible.selector, left));
-    ascension.ascend{ value: priceNAT }(left, right, priceNAT, signature, "");
+    ascension.ascend{ value: priceNAT }(left, right, priceNAT, data, signature);
     vm.stopPrank();
 
     assertEq(pookyball.ownerOf(left), user);
@@ -155,6 +170,7 @@ contract PookyballAscensionTest is
   function test_ascend_revertRarityMismatch() public {
     uint256 left = mintPookyball(user, PookyballRarity.COMMON);
     uint256 right = mintPookyball(user, PookyballRarity.RARE);
+    string memory data = "test_ascend_revertRarityMismatch";
 
     uint256 priceNAT = 10 ether;
     setPookyballLevel(left, 40);
@@ -162,14 +178,14 @@ contract PookyballAscensionTest is
 
     startHoax(user, priceNAT);
     pookyball.setApprovalForAll(address(ascension), true);
-    bytes memory signature = sign(left, right, priceNAT);
+    bytes memory signature = sign(left, right, priceNAT, data);
 
     vm.expectRevert(
       abi.encodeWithSelector(
         PookyballAscension.RarityMismatch.selector, PookyballRarity.RARE, PookyballRarity.EPIC
       )
     );
-    ascension.ascend{ value: priceNAT }(left, right, priceNAT, signature, "");
+    ascension.ascend{ value: priceNAT }(left, right, priceNAT, data, signature);
     vm.stopPrank();
 
     assertEq(pookyball.ownerOf(left), user);
@@ -179,6 +195,7 @@ contract PookyballAscensionTest is
   function test_ascend_revertInsufficientValue() public {
     uint256 left = mintPookyball(user, PookyballRarity.COMMON);
     uint256 right = mintPookyball(user, PookyballRarity.COMMON);
+    string memory data = "test_ascend_revertInsufficientValue";
 
     uint256 priceNAT = 10 ether;
     setPookyballLevel(left, 40);
@@ -186,12 +203,12 @@ contract PookyballAscensionTest is
 
     startHoax(user, priceNAT);
     pookyball.setApprovalForAll(address(ascension), true);
-    bytes memory signature = sign(left, right, priceNAT);
+    bytes memory signature = sign(left, right, priceNAT, data);
 
     vm.expectRevert(
       abi.encodeWithSelector(ITreasury.InsufficientValue.selector, priceNAT, priceNAT - 1)
     );
-    ascension.ascend{ value: priceNAT - 1 }(left, right, priceNAT, signature, "");
+    ascension.ascend{ value: priceNAT - 1 }(left, right, priceNAT, data, signature);
     vm.stopPrank();
 
     assertEq(pookyball.ownerOf(left), user);
@@ -223,13 +240,13 @@ contract PookyballAscensionTest is
 
       startHoax(user, priceNAT);
       pookyball.setApprovalForAll(address(ascension), true);
-      bytes memory signature = sign(left, right, priceNAT);
+      bytes memory signature = sign(left, right, priceNAT, data);
 
       vm.expectEmit(false, true, true, true, address(ascension));
       emit Ascended(0, cases[i].output, left, right, data);
 
       uint256 ascendedId =
-        ascension.ascend{ value: priceNAT }(left, right, priceNAT, signature, data);
+        ascension.ascend{ value: priceNAT }(left, right, priceNAT, data, signature);
       vm.stopPrank();
 
       assertEq(pookyball.ownerOf(left), ascension.dead());
@@ -264,12 +281,12 @@ contract PookyballAscensionTest is
 
     startHoax(user, priceNAT);
     pookyball.setApprovalForAll(address(ascension), true);
-    bytes memory signature = sign(left, right, priceNAT);
+    bytes memory signature = sign(left, right, priceNAT, data);
 
     vm.expectEmit(false, true, true, true, address(ascension));
     emit Ascended(0, PookyballRarity.RARE, left, right, data);
 
-    uint256 ascendedId = ascension.ascend{ value: priceNAT }(left, right, priceNAT, signature, data);
+    uint256 ascendedId = ascension.ascend{ value: priceNAT }(left, right, priceNAT, data, signature);
     vm.stopPrank();
 
     assertEq(pookyball.ownerOf(ascendedId), user);

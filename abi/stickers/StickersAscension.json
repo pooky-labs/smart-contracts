@@ -194,14 +194,19 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint256[2]",
+        "internalType": "uint256[5]",
         "name": "parts",
-        "type": "uint256[2]"
+        "type": "uint256[5]"
       },
       {
         "internalType": "string",
         "name": "data",
         "type": "string"
+      },
+      {
+        "internalType": "bytes",
+        "name": "proof",
+        "type": "bytes"
       }
     ],
     "name": "ascend",
@@ -228,14 +233,14 @@
         "type": "uint256"
       },
       {
-        "internalType": "bytes",
-        "name": "proof",
-        "type": "bytes"
-      },
-      {
         "internalType": "string",
         "name": "data",
         "type": "string"
+      },
+      {
+        "internalType": "bytes",
+        "name": "proof",
+        "type": "bytes"
       }
     ],
     "name": "ascend",
@@ -257,14 +262,19 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint256[5]",
+        "internalType": "uint256[2]",
         "name": "parts",
-        "type": "uint256[5]"
+        "type": "uint256[2]"
       },
       {
         "internalType": "string",
         "name": "data",
         "type": "string"
+      },
+      {
+        "internalType": "bytes",
+        "name": "proof",
+        "type": "bytes"
       }
     ],
     "name": "ascend",

@@ -88,12 +88,12 @@ contract StickersAscension is OwnableRoles, Signer {
   /// @dev Since the Stickers attributes are stored off-chain, calling this function requires a proof from the Pooky back-end.
   /// @param source The first Sticker id.
   /// @param other The second Sticker id.
-  /// @param proof The proof from the back-end: `abi.encode(source, other, address(this))`.
   /// @param data Abitrary data repeated in the `Ascended` event.
+  /// @param proof The proof from the back-end: `abi.encode(source, other, data, address(this))`.
   /// @return ascendedId The ascended Sticker id.
-  function ascend(uint256 source, uint256 other, bytes calldata proof, string calldata data)
+  function ascend(uint256 source, uint256 other, string calldata data, bytes calldata proof)
     external
-    onlyVerify(abi.encode(source, other, address(this)), proof)
+    onlyVerify(abi.encode(source, other, data, address(this)), proof)
     returns (uint256 ascendedId)
   {
     StickerMetadata memory mSource = stickers.metadata(source);
@@ -126,9 +126,16 @@ contract StickersAscension is OwnableRoles, Signer {
   /// @param source The reference Sticker to ascend.
   /// @param parts An array of two other maxed Stickers of the same rarity.
   /// @param data Abitrary data repeated in the `Ascended` event.
+  /// @param proof The proof from the back-end: `abi.encode(source, parts, data, address(this))`.
   /// @return ascendedId The ascended Sticker id.
-  function ascend(uint256 source, uint256[2] memory parts, string calldata data)
+  function ascend(
+    uint256 source,
+    uint256[2] memory parts,
+    string calldata data,
+    bytes calldata proof
+  )
     external
+    onlyVerify(abi.encode(source, parts, data, address(this)), proof)
     returns (uint256 ascendedId)
   {
     StickerMetadata memory mSource = stickers.metadata(source);
@@ -169,9 +176,16 @@ contract StickersAscension is OwnableRoles, Signer {
   /// @param source The reference Sticker to ascend.
   /// @param parts An array of five other Stickers of the same rarity.
   /// @param data Abitrary data repeated in the `Ascended` event.
+  /// @param proof The proof from the back-end: `abi.encode(source, parts, data, address(this))`.
   /// @return ascendedId The ascended Sticker id.
-  function ascend(uint256 source, uint256[5] memory parts, string calldata data)
+  function ascend(
+    uint256 source,
+    uint256[5] memory parts,
+    string calldata data,
+    bytes calldata proof
+  )
     external
+    onlyVerify(abi.encode(source, parts, data, address(this)), proof)
     returns (uint256 ascendedId)
   {
     StickerMetadata memory mSource = stickers.metadata(source);

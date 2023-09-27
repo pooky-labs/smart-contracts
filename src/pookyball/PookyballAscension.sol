@@ -118,18 +118,18 @@ contract PookyballAscension is OwnableRoles, Treasury, Signer {
   /// @param left The first Pookyball token id.
   /// @param right The second Pookyball token id.
   /// @param priceNAT The price in native currency.
-  /// @param proof The proof of `abi.encode(left, right, priceNAT)`.
   /// @param data Abitrary data repeated in the `Ascended` event.
+  /// @param proof The proof of `abi.encode(left, right, priceNAT, data, address(this))`.
   function ascend(
     uint256 left,
     uint256 right,
     uint256 priceNAT,
-    bytes calldata proof,
-    string calldata data
+    string calldata data,
+    bytes calldata proof
   )
     external
     payable
-    onlyVerify(abi.encode(left, right, priceNAT), proof)
+    onlyVerify(abi.encode(left, right, priceNAT, data, address(this)), proof)
     forwarder
     returns (uint256)
   {

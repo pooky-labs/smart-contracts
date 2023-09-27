@@ -241,14 +241,14 @@
         "type": "uint256"
       },
       {
-        "internalType": "bytes",
-        "name": "proof",
-        "type": "bytes"
-      },
-      {
         "internalType": "string",
         "name": "data",
         "type": "string"
+      },
+      {
+        "internalType": "bytes",
+        "name": "proof",
+        "type": "bytes"
       }
     ],
     "name": "ascend",
