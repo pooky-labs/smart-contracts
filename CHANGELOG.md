@@ -1,8 +1,18 @@
 # Changelog
 
+## October 9 - PookyballReroll
+
+Contract changes:
+
+- Added [`PookyballReroll`](https://github.com/pooky-labs/smart-contracts/blob/1c40639834a1f5f7bafb191c2cc7c94a8a2be92f/src/pookyball/PookyballReroll.sol)
+
+| Contract name                                                                                                                                      | Old address | New address                                                                                                                     |
+| -------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| [`PookyballReroll`](https://github.com/pooky-labs/smart-contracts/blob/1c40639834a1f5f7bafb191c2cc7c94a8a2be92f/src/pookyball/PookyballReroll.sol) | none        | [`0x336033401230245EA9BD940Cb1b4cA91AF16415f`](https://polygonscan.com/address/0x336033401230245EA9BD940Cb1b4cA91AF16415f#code) |
+
 ## Septenber 8 - Energy
 
-Contract changes :
+Contract changes:
 
 - Added [`Energy`](https://github.com/pooky-labs/smart-contracts/blob/af1f5206baf678920a488d6b240e11e915676e38/src/common/Energy.sol)
 
