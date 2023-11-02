@@ -82,6 +82,10 @@ contract PookyballAscension is OwnableRoles, Treasury, Signer {
       return PookyballRarity.LEGENDARY;
     }
 
+    if (m.rarity == PookyballRarity.LEGENDARY && m.level >= 100) {
+      return PookyballRarity.MYTHIC;
+    }
+
     revert Ineligible(tokenId);
   }
 
