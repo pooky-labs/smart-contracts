@@ -3,7 +3,7 @@
 src = "src"
 out = "artifacts"
 libs = ["lib"]
-solc = "0.8.21"
+solc = "0.8.22"
 evm_version = "paris"
 bytecode_hash = "none"
 cbor_metadata = false

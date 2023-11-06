@@ -57,10 +57,11 @@ contract PookyballAscensionTest is BaseTest, PookyballSetup, StickersControllerS
   }
 
   function test_ascendable_revertIneligible_insufficientLevel() public {
-    AscendableLevelInsufficientLevel[3] memory data = [
+    AscendableLevelInsufficientLevel[4] memory data = [
       AscendableLevelInsufficientLevel(PookyballRarity.COMMON, 39),
       AscendableLevelInsufficientLevel(PookyballRarity.RARE, 59),
-      AscendableLevelInsufficientLevel(PookyballRarity.EPIC, 79)
+      AscendableLevelInsufficientLevel(PookyballRarity.EPIC, 79),
+      AscendableLevelInsufficientLevel(PookyballRarity.LEGENDARY, 99)
     ];
 
     for (uint256 i; i < data.length; i++) {
@@ -73,8 +74,8 @@ contract PookyballAscensionTest is BaseTest, PookyballSetup, StickersControllerS
   }
 
   function test_ascendable_revertLegendary() public {
-    uint256 tokenId = mintPookyball(user, PookyballRarity.LEGENDARY);
-    setPookyballLevel(tokenId, 100);
+    uint256 tokenId = mintPookyball(user, PookyballRarity.MYTHIC);
+    setPookyballLevel(tokenId, 120);
 
     vm.expectRevert(abi.encodeWithSelector(PookyballAscension.Ineligible.selector, tokenId));
     ascension.ascendable(user, tokenId);
@@ -87,10 +88,11 @@ contract PookyballAscensionTest is BaseTest, PookyballSetup, StickersControllerS
   }
 
   function test_ascendable_pass() public {
-    AscendablePass[3] memory data = [
+    AscendablePass[4] memory data = [
       AscendablePass(PookyballRarity.COMMON, PookyballRarity.RARE, 40),
       AscendablePass(PookyballRarity.RARE, PookyballRarity.EPIC, 60),
-      AscendablePass(PookyballRarity.EPIC, PookyballRarity.LEGENDARY, 80)
+      AscendablePass(PookyballRarity.EPIC, PookyballRarity.LEGENDARY, 80),
+      AscendablePass(PookyballRarity.LEGENDARY, PookyballRarity.MYTHIC, 100)
     ];
 
     for (uint256 i; i < data.length; i++) {
@@ -144,10 +146,10 @@ contract PookyballAscensionTest is BaseTest, PookyballSetup, StickersControllerS
     assertEq(pookyball.ownerOf(right), user);
   }
 
-  /// Assert the ascend fails if used Pookyballs are both Legendary rarity
+  /// Assert the ascend fails if used Pookyballs are both Mythic rarity
   function test_ascend_revertIneligible_maximumRarity() public {
-    uint256 left = mintPookyball(user, PookyballRarity.LEGENDARY);
-    uint256 right = mintPookyball(user, PookyballRarity.LEGENDARY);
+    uint256 left = mintPookyball(user, PookyballRarity.MYTHIC);
+    uint256 right = mintPookyball(user, PookyballRarity.MYTHIC);
     string memory data = "test_ascend_revertIneligible_maximumRarity";
 
     uint256 priceNAT = 10 ether;
@@ -223,10 +225,11 @@ contract PookyballAscensionTest is BaseTest, PookyballSetup, StickersControllerS
   }
 
   function test_ascend_pass() public {
-    AscendPass[3] memory cases = [
+    AscendPass[4] memory cases = [
       AscendPass(PookyballRarity.COMMON, PookyballRarity.RARE, 40, 10 ether),
       AscendPass(PookyballRarity.RARE, PookyballRarity.EPIC, 60, 40 ether),
-      AscendPass(PookyballRarity.EPIC, PookyballRarity.LEGENDARY, 80, 160 ether)
+      AscendPass(PookyballRarity.EPIC, PookyballRarity.LEGENDARY, 80, 160 ether),
+      AscendPass(PookyballRarity.LEGENDARY, PookyballRarity.MYTHIC, 100, 1000 ether)
     ];
     string memory data = "i love pizza";
 

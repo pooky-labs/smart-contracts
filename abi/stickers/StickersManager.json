@@ -1,0 +1,149 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "contract IStickersController",
+        "name": "_controller",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "pookyballId",
+        "type": "uint256"
+      }
+    ],
+    "name": "InsufficientFreeSlot",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "OwnershipRequired",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "stickerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "pookyballId",
+        "type": "uint256"
+      }
+    ],
+    "name": "attach",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "controller",
+    "outputs": [
+      {
+        "internalType": "contract IStickersController",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "pookyball",
+    "outputs": [
+      {
+        "internalType": "contract IPookyball",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "stickerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "previousStickerId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "pookyballId",
+        "type": "uint256"
+      }
+    ],
+    "name": "replace",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "pookyballId",
+        "type": "uint256"
+      }
+    ],
+    "name": "slots",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "total",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "unlocked",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "free",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stickers",
+    "outputs": [
+      {
+        "internalType": "contract IStickers",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

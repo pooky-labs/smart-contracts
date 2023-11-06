@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "artifacts": "ts-node --esm script/artifacts.ts",
+    "artifacts": "tsx script/artifacts.ts",
     "test": "forge test",
     "coverage": "forge coverage --report lcov --report summary",
     "lint": "solhint '{src,test}/**/*.sol'"
@@ -23,7 +23,7 @@
     "lefthook": "^1.4.1",
     "rimraf": "^5.0.1",
     "solhint": "^3.4.1",
-    "ts-node": "^10.9.1",
+    "tsx": "^3.14.0",
     "typescript": "^5.0.4"
   }
 }
