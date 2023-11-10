@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 import { OwnableRoles } from "solady/auth/OwnableRoles.sol";
 import { Treasury } from "@/common/Treasury.sol";
 import { Signer } from "@/common/Signer.sol";
+import { IPookyball } from "@/pookyball/IPookyball.sol";
 import { IStickers, StickerMetadata, StickerRarity } from "@/stickers/IStickers.sol";
+import { IStickersController } from "@/stickers/IStickersController.sol";
 import { IPOK } from "@/tokens/IPOK.sol";
 
 /// @title StickersAscension
@@ -28,13 +30,21 @@ contract StickersAscension is OwnableRoles, Signer {
   /// @notice Thrown when the rarities of the two source Stickers do not match.
   error RarityMismatch(StickerRarity source, StickerRarity other);
 
+  /// @notice The StickersController smart contract, used to detach stickers if necessary.
+  IStickersController public immutable controller;
+
   /// @notice The Stickers ERC-721 smart contract.
   IStickers public immutable stickers;
 
-  /// @param _stickers The Stickers ERC-721 smart contract.
-  constructor(IStickers _stickers, address admin, address _signer) Signer(_signer) {
+  /// @notice The Pookyball ERC-721 smart contract.
+  IPookyball public immutable pookyball;
+
+  /// @param _controller  The StickersController smart contract, used to detach stickers if necessary.
+  constructor(IStickersController _controller, address admin, address _signer) Signer(_signer) {
     _initializeOwner(admin);
-    stickers = _stickers;
+    controller = _controller;
+    stickers = _controller.stickers();
+    pookyball = _controller.pookyball();
   }
 
   /// @notice Check if the provided metadata is at the maximum level, based on the rarity.
@@ -84,6 +94,32 @@ contract StickersAscension is OwnableRoles, Signer {
     return stickers.nextTokenId() - 1;
   }
 
+  /// @dev Burn a sticker, checking that
+  function _burn(uint256 stickerId, address sender, bool requireMax)
+    internal
+    returns (StickerMetadata memory metadata)
+  {
+    metadata = stickers.metadata(stickerId);
+    if (requireMax && !isLevelMax(metadata)) {
+      revert Ineligible(stickerId);
+    }
+
+    if (stickers.ownerOf(stickerId) == sender) {
+      // pass
+    } else if (
+      stickers
+        // Sticker is attached to a Pookyball, check the owner the Pookyball
+        .ownerOf(stickerId) == address(controller)
+        && pookyball.ownerOf(controller.attachedTo(stickerId)) == sender
+    ) {
+      stickers.transferFrom(address(controller), address(this), stickerId);
+    } else {
+      revert Ineligible(stickerId);
+    }
+
+    stickers.burn(stickerId);
+  }
+
   /// @notice Ascend two maxed identical Stickers of the same rarity.
   /// @dev Since the Stickers attributes are stored off-chain, calling this function requires a proof from the Pooky back-end.
   /// @param source The first Sticker id.
@@ -96,16 +132,8 @@ contract StickersAscension is OwnableRoles, Signer {
     onlyVerify(abi.encode(source, other, data, address(this)), proof)
     returns (uint256 ascendedId)
   {
-    StickerMetadata memory mSource = stickers.metadata(source);
-    if (!isLevelMax(mSource) || stickers.ownerOf(source) != msg.sender) {
-      revert Ineligible(source);
-    }
-
-    StickerMetadata memory mOther = stickers.metadata(other);
-    if (!isLevelMax(mOther) || stickers.ownerOf(other) != msg.sender) {
-      revert Ineligible(other);
-    }
-
+    StickerMetadata memory mSource = _burn(source, msg.sender, true);
+    StickerMetadata memory mOther = _burn(other, msg.sender, true);
     if (mSource.rarity != mOther.rarity) {
       revert RarityMismatch(mSource.rarity, mOther.rarity);
     }
@@ -113,9 +141,6 @@ contract StickersAscension is OwnableRoles, Signer {
     uint256[] memory _parts = new uint[](2);
     _parts[0] = source;
     _parts[1] = other;
-
-    stickers.burn(source);
-    stickers.burn(other);
 
     StickerRarity rarity = nextRarity(mSource.rarity);
     ascendedId = _mint(rarity, msg.sender);
@@ -138,34 +163,19 @@ contract StickersAscension is OwnableRoles, Signer {
     onlyVerify(abi.encode(source, parts, data, address(this)), proof)
     returns (uint256 ascendedId)
   {
-    StickerMetadata memory mSource = stickers.metadata(source);
-    if (!isLevelMax(mSource) || stickers.ownerOf(source) != msg.sender) {
-      revert Ineligible(source);
-    }
+    StickerMetadata memory mSource = _burn(source, msg.sender, true);
 
     uint256[] memory _parts = new uint[](parts.length + 1);
     _parts[0] = source;
 
-    for (uint256 i; i < parts.length;) {
+    for (uint256 i; i < parts.length; i++) {
       _parts[i + 1] = parts[i];
-
-      StickerMetadata memory m = stickers.metadata(parts[i]);
-      if (!isLevelMax(m) || stickers.ownerOf(parts[i]) != msg.sender) {
-        revert Ineligible(parts[i]);
-      }
+      StickerMetadata memory m = _burn(parts[i], msg.sender, true);
 
       if (mSource.rarity != m.rarity) {
         revert RarityMismatch(mSource.rarity, m.rarity);
       }
-
-      stickers.burn(parts[i]);
-
-      unchecked {
-        i++;
-      }
     }
-
-    stickers.burn(source);
 
     StickerRarity rarity = nextRarity(mSource.rarity);
     ascendedId = _mint(rarity, msg.sender);
@@ -188,36 +198,22 @@ contract StickersAscension is OwnableRoles, Signer {
     onlyVerify(abi.encode(source, parts, data, address(this)), proof)
     returns (uint256 ascendedId)
   {
-    StickerMetadata memory mSource = stickers.metadata(source);
-    if (!isLevelMax(mSource) || stickers.ownerOf(source) != msg.sender) {
-      revert Ineligible(source);
-    }
+    StickerMetadata memory mSource = _burn(source, msg.sender, true);
 
     uint256[] memory _parts = new uint[](parts.length + 1);
     _parts[0] = source;
 
     // Burn parts
-    for (uint256 i; i < parts.length;) {
+    for (uint256 i; i < parts.length; i++) {
       _parts[i + 1] = parts[i];
 
-      if (stickers.ownerOf(parts[i]) != msg.sender) {
-        revert Ineligible(parts[i]);
-      }
+      StickerMetadata memory m = _burn(parts[i], msg.sender, false);
 
       // Ensure that the part[i] has the same rarity as the source
-      StickerMetadata memory m = stickers.metadata(parts[i]);
       if (mSource.rarity != m.rarity) {
         revert RarityMismatch(mSource.rarity, m.rarity);
       }
-
-      stickers.burn(parts[i]);
-
-      unchecked {
-        i++;
-      }
     }
-
-    stickers.burn(source);
 
     StickerRarity rarity = nextRarity(mSource.rarity);
     ascendedId = _mint(rarity, msg.sender);

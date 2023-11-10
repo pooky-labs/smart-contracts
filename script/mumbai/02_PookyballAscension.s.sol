@@ -8,7 +8,7 @@ import { Pookyball } from "@/pookyball/Pookyball.sol";
 import { PookyballAscension } from "@/pookyball/PookyballAscension.sol";
 import { StickersController } from "@/stickers/StickersController.sol";
 
-contract DeployAscension is Script {
+contract DeployPookyballAscension is Script {
   Pookyball pookyball = Pookyball(0x3f64DD5BE5E19dD34744EFcC74c1935004aeB270);
   StickersController controller = StickersController(0x430288ee1c16B4e8b6B5DD6a76d24cA4d1Dfe8C7);
 

@@ -8,9 +8,10 @@ import { Signer } from "@/common/Signer.sol";
 import { StickerMetadata, StickerRarity } from "@/stickers/IStickers.sol";
 import { StickersAscension } from "@/stickers/StickersAscension.sol";
 import { BaseTest } from "@test/BaseTest.sol";
-import { StickersSetup } from "@test/setup/StickersSetup.sol";
+import { PookyballSetup } from "@test/setup/PookyballSetup.sol";
+import { StickersControllerSetup } from "@test/setup/StickersControllerSetup.sol";
 
-contract StickersAscensionTest is BaseTest, StickersSetup {
+contract StickersAscensionTest is BaseTest, StickersControllerSetup {
   using ECDSA for bytes32;
 
   address public admin = makeAddr("admin");
@@ -34,7 +35,7 @@ contract StickersAscensionTest is BaseTest, StickersSetup {
 
   function setUp() public {
     (signer, privateKey) = makeAddrAndKey("signer");
-    ascension = new StickersAscension(stickers, admin, signer);
+    ascension = new StickersAscension(controller, admin, signer);
 
     vm.startPrank(admin);
     stickers.grantRoles(address(ascension), stickers.MINTER());

@@ -2,8 +2,8 @@
   {
     "inputs": [
       {
-        "internalType": "contract IStickers",
-        "name": "_stickers",
+        "internalType": "contract IStickersController",
+        "name": "_controller",
         "type": "address"
       },
       {
@@ -309,6 +309,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "controller",
+    "outputs": [
+      {
+        "internalType": "contract IStickersController",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -451,6 +464,19 @@
         "internalType": "uint256",
         "name": "result",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "pookyball",
+    "outputs": [
+      {
+        "internalType": "contract IPookyball",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
