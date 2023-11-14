@@ -194,40 +194,6 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint256[5]",
-        "name": "parts",
-        "type": "uint256[5]"
-      },
-      {
-        "internalType": "string",
-        "name": "data",
-        "type": "string"
-      },
-      {
-        "internalType": "bytes",
-        "name": "proof",
-        "type": "bytes"
-      }
-    ],
-    "name": "ascend",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "ascendedId",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "source",
-        "type": "uint256"
-      },
-      {
         "internalType": "uint256",
         "name": "other",
         "type": "uint256"
@@ -243,7 +209,7 @@
         "type": "bytes"
       }
     ],
-    "name": "ascend",
+    "name": "ascend2",
     "outputs": [
       {
         "internalType": "uint256",
@@ -277,7 +243,41 @@
         "type": "bytes"
       }
     ],
-    "name": "ascend",
+    "name": "ascend3",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "ascendedId",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "source",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[5]",
+        "name": "parts",
+        "type": "uint256[5]"
+      },
+      {
+        "internalType": "string",
+        "name": "data",
+        "type": "string"
+      },
+      {
+        "internalType": "bytes",
+        "name": "proof",
+        "type": "bytes"
+      }
+    ],
+    "name": "ascend6",
     "outputs": [
       {
         "internalType": "uint256",

@@ -127,7 +127,7 @@ contract StickersAscension is OwnableRoles, Signer {
   /// @param data Abitrary data repeated in the `Ascended` event.
   /// @param proof The proof from the back-end: `abi.encode(source, other, data, address(this))`.
   /// @return ascendedId The ascended Sticker id.
-  function ascend(uint256 source, uint256 other, string calldata data, bytes calldata proof)
+  function ascend2(uint256 source, uint256 other, string calldata data, bytes calldata proof)
     external
     onlyVerify(abi.encode(source, other, data, address(this)), proof)
     returns (uint256 ascendedId)
@@ -153,7 +153,7 @@ contract StickersAscension is OwnableRoles, Signer {
   /// @param data Abitrary data repeated in the `Ascended` event.
   /// @param proof The proof from the back-end: `abi.encode(source, parts, data, address(this))`.
   /// @return ascendedId The ascended Sticker id.
-  function ascend(
+  function ascend3(
     uint256 source,
     uint256[2] memory parts,
     string calldata data,
@@ -188,7 +188,7 @@ contract StickersAscension is OwnableRoles, Signer {
   /// @param data Abitrary data repeated in the `Ascended` event.
   /// @param proof The proof from the back-end: `abi.encode(source, parts, data, address(this))`.
   /// @return ascendedId The ascended Sticker id.
-  function ascend(
+  function ascend6(
     uint256 source,
     uint256[5] memory parts,
     string calldata data,
