@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.22;
 
 import { LevelUp } from "@/common/LevelUp.sol";
 import { IPookyball, PookyballMetadata, PookyballRarity } from "@/pookyball/IPookyball.sol";
