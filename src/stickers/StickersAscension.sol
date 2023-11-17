@@ -112,7 +112,7 @@ contract StickersAscension is OwnableRoles, Signer {
         .ownerOf(stickerId) == address(controller)
         && pookyball.ownerOf(controller.attachedTo(stickerId)) == sender
     ) {
-      stickers.transferFrom(address(controller), address(this), stickerId);
+      controller.detach(stickerId, address(this));
     } else {
       revert Ineligible(stickerId);
     }
