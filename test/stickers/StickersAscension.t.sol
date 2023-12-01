@@ -5,6 +5,7 @@ import { IERC721A } from "ERC721A/IERC721A.sol";
 import { ECDSA } from "solady/utils/ECDSA.sol";
 import { ITreasury } from "@/common/ITreasury.sol";
 import { Signer } from "@/common/Signer.sol";
+import { PookyballRarity } from "@/pookyball/IPookyball.sol";
 import { StickerMetadata, StickerRarity } from "@/stickers/IStickers.sol";
 import { StickersAscension } from "@/stickers/StickersAscension.sol";
 import { BaseTest } from "@test/BaseTest.sol";
@@ -206,6 +207,47 @@ contract StickersAscensionTest is BaseTest, StickersControllerSetup {
 
       uint256 otherId = mintSticker(user, pass[i].input);
       setStickerLevel(otherId, pass[i].level);
+
+      vm.expectEmit(false, true, true, true, address(ascension));
+      uint256[] memory parts = new uint[](2);
+      parts[0] = sourceId;
+      parts[1] = otherId;
+      emit Ascended(0, pass[i].output, parts, data);
+
+      vm.prank(user);
+      uint256 ascendedId = ascension.ascend2(sourceId, otherId, data, sign(sourceId, otherId, data));
+
+      assertEq(stickers.ownerOf(ascendedId), user);
+
+      vm.expectRevert(IERC721A.OwnerQueryForNonexistentToken.selector);
+      stickers.ownerOf(sourceId);
+      vm.expectRevert(IERC721A.OwnerQueryForNonexistentToken.selector);
+      stickers.ownerOf(otherId);
+    }
+  }
+
+  function test_ascend2_attached_pass() public {
+    string memory data = "test_ascend2_attached_pass";
+
+    vm.prank(user);
+    stickers.setApprovalForAll(address(controller), true);
+
+    vm.startPrank(admin);
+    controller.grantRoles(address(this), controller.LINKER());
+    controller.grantRoles(address(ascension), controller.REMOVER());
+    vm.stopPrank();
+
+    for (uint256 i; i < pass.length; i++) {
+      uint256 sourceId = mintSticker(user, pass[i].input);
+      setStickerLevel(sourceId, pass[i].level);
+
+      uint256 otherId = mintSticker(user, pass[i].input);
+      setStickerLevel(otherId, pass[i].level);
+
+      uint256 pookyballId = mintPookyball(user, PookyballRarity.COMMON);
+
+      controller.attach(sourceId, pookyballId);
+      controller.attach(otherId, pookyballId);
 
       vm.expectEmit(false, true, true, true, address(ascension));
       uint256[] memory parts = new uint[](2);
