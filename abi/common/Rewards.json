@@ -1,538 +1,538 @@
 [
   {
+    "type": "constructor",
     "inputs": [
       {
-        "internalType": "contract IPOK",
         "name": "_pok",
-        "type": "address"
+        "type": "address",
+        "internalType": "contract IPOK"
       },
       {
-        "internalType": "contract IPookyball",
         "name": "_pookyball",
-        "type": "address"
+        "type": "address",
+        "internalType": "contract IPookyball"
       },
       {
-        "internalType": "contract IStickers",
         "name": "_stickers",
-        "type": "address"
+        "type": "address",
+        "internalType": "contract IStickers"
       },
       {
-        "internalType": "contract INonceRegistry",
         "name": "_nonces",
-        "type": "address"
+        "type": "address",
+        "internalType": "contract INonceRegistry"
       },
       {
-        "internalType": "address",
         "name": "admin",
-        "type": "address"
+        "type": "address",
+        "internalType": "address"
       },
       {
-        "internalType": "address[]",
         "name": "rewarders",
-        "type": "address[]"
+        "type": "address[]",
+        "internalType": "address[]"
       }
     ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
+    "stateMutability": "nonpayable"
   },
   {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "nonce",
-        "type": "bytes32"
-      }
-    ],
-    "name": "AlreadyClaimed",
-    "type": "error"
+    "type": "receive",
+    "stateMutability": "payable"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "expected",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "actual",
-        "type": "uint256"
-      }
-    ],
-    "name": "InsufficientBalance",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "InvalidSignature",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NewOwnerIsZeroAddress",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NoHandoverRequest",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "TransferFailed",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "Unauthorized",
-    "type": "error"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "pendingOwner",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipHandoverCanceled",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "pendingOwner",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipHandoverRequested",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "oldOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "amountNAT",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amountPOK",
-            "type": "uint256"
-          },
-          {
-            "internalType": "enum PookyballRarity[]",
-            "name": "pookyballs",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "enum StickerRarity[]",
-            "name": "stickers",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "bytes32[]",
-            "name": "nonces",
-            "type": "bytes32[]"
-          }
-        ],
-        "indexed": false,
-        "internalType": "struct RewardsData",
-        "name": "rewards",
-        "type": "tuple"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "data",
-        "type": "string"
-      }
-    ],
-    "name": "RewardsClaimed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "roles",
-        "type": "uint256"
-      }
-    ],
-    "name": "RolesUpdated",
-    "type": "event"
-  },
-  {
-    "inputs": [],
+    "type": "function",
     "name": "REWARDER",
+    "inputs": [],
     "outputs": [
       {
-        "internalType": "uint256",
         "name": "",
-        "type": "uint256"
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
+    "stateMutability": "view"
   },
   {
-    "inputs": [],
+    "type": "function",
     "name": "cancelOwnershipHandover",
+    "inputs": [],
     "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
+    "stateMutability": "payable"
   },
   {
+    "type": "function",
+    "name": "claim",
     "inputs": [
       {
+        "name": "rewards",
+        "type": "tuple",
+        "internalType": "struct RewardsData",
         "components": [
           {
-            "internalType": "uint256",
             "name": "amountNAT",
-            "type": "uint256"
+            "type": "uint256",
+            "internalType": "uint256"
           },
           {
-            "internalType": "uint256",
             "name": "amountPOK",
-            "type": "uint256"
+            "type": "uint256",
+            "internalType": "uint256"
           },
           {
-            "internalType": "enum PookyballRarity[]",
             "name": "pookyballs",
-            "type": "uint8[]"
+            "type": "uint8[]",
+            "internalType": "enum PookyballRarity[]"
           },
           {
-            "internalType": "enum StickerRarity[]",
             "name": "stickers",
-            "type": "uint8[]"
+            "type": "uint8[]",
+            "internalType": "enum StickerRarity[]"
           },
           {
-            "internalType": "bytes32[]",
             "name": "nonces",
-            "type": "bytes32[]"
+            "type": "bytes32[]",
+            "internalType": "bytes32[]"
           }
-        ],
-        "internalType": "struct RewardsData",
-        "name": "rewards",
-        "type": "tuple"
+        ]
       },
       {
-        "internalType": "bytes",
         "name": "signature",
-        "type": "bytes"
+        "type": "bytes",
+        "internalType": "bytes"
       },
       {
-        "internalType": "string",
         "name": "data",
-        "type": "string"
+        "type": "string",
+        "internalType": "string"
       }
     ],
-    "name": "claim",
     "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    "stateMutability": "nonpayable"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "pendingOwner",
-        "type": "address"
-      }
-    ],
+    "type": "function",
     "name": "completeOwnershipHandover",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "roles",
-        "type": "uint256"
-      }
-    ],
-    "name": "grantRoles",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "roles",
-        "type": "uint256"
-      }
-    ],
-    "name": "hasAllRoles",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "roles",
-        "type": "uint256"
-      }
-    ],
-    "name": "hasAnyRole",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "nonces",
-    "outputs": [
-      {
-        "internalType": "contract INonceRegistry",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "result",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "pendingOwner",
-        "type": "address"
+        "type": "address",
+        "internalType": "address"
       }
     ],
-    "name": "ownershipHandoverExpiresAt",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "result",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "pok",
-    "outputs": [
-      {
-        "internalType": "contract IPOK",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "pookyball",
-    "outputs": [
-      {
-        "internalType": "contract IPookyball",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "renounceOwnership",
     "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
+    "stateMutability": "payable"
   },
   {
+    "type": "function",
+    "name": "grantRoles",
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "roles",
-        "type": "uint256"
-      }
-    ],
-    "name": "renounceRoles",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "requestOwnershipHandover",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "user",
-        "type": "address"
+        "type": "address",
+        "internalType": "address"
       },
       {
-        "internalType": "uint256",
         "name": "roles",
-        "type": "uint256"
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ],
-    "name": "revokeRoles",
     "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
+    "stateMutability": "payable"
   },
   {
+    "type": "function",
+    "name": "hasAllRoles",
     "inputs": [
       {
-        "internalType": "address",
         "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "rolesOf",
-    "outputs": [
+        "type": "address",
+        "internalType": "address"
+      },
       {
-        "internalType": "uint256",
         "name": "roles",
-        "type": "uint256"
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "stickers",
     "outputs": [
       {
-        "internalType": "contract IStickers",
         "name": "",
-        "type": "address"
+        "type": "bool",
+        "internalType": "bool"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
+    "stateMutability": "view"
   },
   {
+    "type": "function",
+    "name": "hasAnyRole",
     "inputs": [
       {
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
+        "name": "user",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "roles",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
   },
   {
+    "type": "function",
+    "name": "nonces",
     "inputs": [],
-    "name": "withdraw",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract INonceRegistry"
+      }
+    ],
+    "stateMutability": "view"
   },
   {
-    "stateMutability": "payable",
-    "type": "receive"
+    "type": "function",
+    "name": "owner",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "result",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "ownershipHandoverExpiresAt",
+    "inputs": [
+      {
+        "name": "pendingOwner",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "result",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "pok",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract IPOK"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "pookyball",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract IPookyball"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "renounceOwnership",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "renounceRoles",
+    "inputs": [
+      {
+        "name": "roles",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "requestOwnershipHandover",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "revokeRoles",
+    "inputs": [
+      {
+        "name": "user",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "roles",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "rolesOf",
+    "inputs": [
+      {
+        "name": "user",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "roles",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "stickers",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract IStickers"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "transferOwnership",
+    "inputs": [
+      {
+        "name": "newOwner",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "withdraw",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "OwnershipHandoverCanceled",
+    "inputs": [
+      {
+        "name": "pendingOwner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "OwnershipHandoverRequested",
+    "inputs": [
+      {
+        "name": "pendingOwner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "OwnershipTransferred",
+    "inputs": [
+      {
+        "name": "oldOwner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "newOwner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "RewardsClaimed",
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "rewards",
+        "type": "tuple",
+        "indexed": false,
+        "internalType": "struct RewardsData",
+        "components": [
+          {
+            "name": "amountNAT",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "amountPOK",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "pookyballs",
+            "type": "uint8[]",
+            "internalType": "enum PookyballRarity[]"
+          },
+          {
+            "name": "stickers",
+            "type": "uint8[]",
+            "internalType": "enum StickerRarity[]"
+          },
+          {
+            "name": "nonces",
+            "type": "bytes32[]",
+            "internalType": "bytes32[]"
+          }
+        ]
+      },
+      {
+        "name": "data",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "RolesUpdated",
+    "inputs": [
+      {
+        "name": "user",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "roles",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "AlreadyClaimed",
+    "inputs": [
+      {
+        "name": "nonce",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "InsufficientBalance",
+    "inputs": [
+      {
+        "name": "expected",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "actual",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "InvalidSignature",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NewOwnerIsZeroAddress",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NoHandoverRequest",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "TransferFailed",
+    "inputs": [
+      {
+        "name": "recipient",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "Unauthorized",
+    "inputs": []
   }
 ]
